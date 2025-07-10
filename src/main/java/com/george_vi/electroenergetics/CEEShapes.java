@@ -40,13 +40,7 @@ public class CEEShapes {
     public static final VoxelShaper CUT_OFF_SWITCH_ROLL = shape(4,0, 4,12,5,12)
             .add(6,0, 0,10,5,16).forDirectional();
 
-    public static final VoxelShaper ENERGY_METER = shape(0,0, 12,16,4,16)
-            .add(2,4, 8,14,16,16)
-            .forHorizontal(Direction.NORTH);
-
-    public static final VoxelShaper ENERGY_METER_UPSIDE_DOWN = shape(0,12, 12,16,16,16)
-            .add(2,0, 8,14,12,16)
-            .forHorizontal(Direction.NORTH);
+    public static final VoxelShaper ENERGY_METER = shape(2,2, 9,14,14,16).forHorizontal(Direction.NORTH);
 
     public static final VoxelShaper ELECTRIC_MOTOR = shape(0,5, 0,16,15,16)
             .add(2,3, 2,14,5,14)

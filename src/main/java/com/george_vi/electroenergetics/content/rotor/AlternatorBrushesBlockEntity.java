@@ -82,7 +82,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
                 .forGoggles(tooltip);
 
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(totalStress) / 9.6)))
+                .text(LangNumberFormat.format(Math.round(Math.abs(totalStress))))
                 .translate("generic.watts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);

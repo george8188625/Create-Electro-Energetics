@@ -14,6 +14,7 @@ import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlock;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodBlock;
+import com.george_vi.electroenergetics.content.pole.ConcretePoleBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
@@ -59,6 +60,20 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<ConcretePoleBlock> CONCRETE_POLE = REGISTRATE.block("concrete_pole", ConcretePoleBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> BlockStateGen.horizontalAxisBlock(c, p, bs ->
+                    !(bs.getValue(ConcretePoleBlock.BOTTOM) || bs.getValue(ConcretePoleBlock.TOP)) ? AssetLookup.partialBaseModel(c, p, "middle") :
+                            bs.getValue(ConcretePoleBlock.BOTTOM) && bs.getValue(ConcretePoleBlock.TOP) ? AssetLookup.partialBaseModel(c, p) :
+                                    bs.getValue(ConcretePoleBlock.BOTTOM) ? AssetLookup.partialBaseModel(c, p, "bottom") : AssetLookup.partialBaseModel(c, p, "top")
+                    ))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block_middle"))
             .build()
             .register();
 
@@ -218,8 +233,8 @@ public class CEEBlocks {
             .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
                     ConfiguredModel.builder()
-                            .modelFile(state.getValue(EnergyMeterBlock.UPSIDE_DOWN) ?
-                                    AssetLookup.partialBaseModel(c, p, "upside_down") :
+                            .modelFile(state.getValue(EnergyMeterBlock.INVERTED) ?
+                                    AssetLookup.partialBaseModel(c, p, "inverted") :
                                     AssetLookup.partialBaseModel(c, p))
                             .rotationY((int) state.getValue(EnergyMeterBlock.FACING).getOpposite().toYRot())
                             .build()

@@ -39,6 +39,7 @@ public record ChangeEnergyMeterStatePacket(boolean reset, boolean disconnect, Bl
             device.extraData().putDouble("totalEnergy", 0);
         device.extraData().putBoolean("closed", !disconnect);
         be.disconnected = disconnect;
+        be.sendData();
 
         AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
     }

@@ -1,6 +1,5 @@
-package com.george_vi.electroenergetics.simulation;
+package com.george_vi.electroenergetics;
 
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorDevice;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.connector.ConnectorDevice;
@@ -12,15 +11,17 @@ import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterDevice;
 import com.george_vi.electroenergetics.content.fuse.FuseDevice;
 import com.george_vi.electroenergetics.content.gauge.GaugeDevice;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
+import com.george_vi.electroenergetics.content.pole.ConcretePoleDevice;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesDevice;
 import com.george_vi.electroenergetics.content.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SimulatedDevices {
+public class CEESimulatedDevices {
     static Map<ResourceLocation, SimulatedDevice> BY_ID = new HashMap<>();
 
     public static final SimulatedDevice CONNECTOR = register(new ConnectorDevice(CreateElecrtoEnergetics.rl("connector")));
@@ -38,9 +39,10 @@ public class SimulatedDevices {
     public static final SimulatedDevice FUSE = register(new FuseDevice(CreateElecrtoEnergetics.rl("fuse")));
     public static final SimulatedDevice ACCUMULATOR = register(new AccumulatorDevice(CreateElecrtoEnergetics.rl("accumulator")));
     public static final SimulatedDevice CONVERTER = register(new ConverterDevice(CreateElecrtoEnergetics.rl("converter")));
+    public static final SimulatedDevice CONCRETE_POLE = register(new ConcretePoleDevice(CreateElecrtoEnergetics.rl("concrete_pole")));
 
     public static SimulatedDevice register(SimulatedDevice device) {
-        BY_ID.put(device.id, device);
+        BY_ID.put(device.getID(), device);
         return device;
     }
 

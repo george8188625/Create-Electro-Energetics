@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,7 +40,7 @@ public class DoubleConnectorBlock extends SimpleDeviceBlock implements IWrenchab
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.CONNECTOR;
+        return CEESimulatedDevices.CONNECTOR;
     }
 
     @Override

@@ -1,0 +1,60 @@
+{
+  "variants": {
+    "axis=x,bottom=false,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/concrete_pole/block_middle",
+      "y": 90
+    },
+    "axis=x,bottom=false,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/concrete_pole/block_middle",
+      "y": 90
+    },
+    "axis=x,bottom=false,top=true,waterlogged=false": {
+      "model": "electroenergetics:block/concrete_pole/block_top",
+      "y": 90
+    },
+    "axis=x,bottom=false,top=true,waterlogged=true": {
+      "model": "electroenergetics:block/concrete_pole/block_top",
+      "y": 90
+    },
+    "axis=x,bottom=true,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/concrete_pole/block_bottom",
+      "y": 90
+    },
+    "axis=x,bottom=true,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/concrete_pole/block_bottom",
+      "y": 90
+    },
+    "axis=x,bottom=true,top=true,waterlogged=false": {
+      "model": "electroenergetics:block/concrete_pole/block",
+      "y": 90
+    },
+    "axis=x,bottom=true,top=true,waterlogged=true": {
+      "model": "electroenergetics:block/concrete_pole/block",
+      "y": 90
+    },
+    "axis=z,bottom=false,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/concrete_pole/block_middle"
+    },
+    "axis=z,bottom=false,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/concrete_pole/block_middle"
+    },
+    "axis=z,bottom=false,top=true,waterlogged=false": {
+      "model": "electroenergetics:block/concrete_pole/block_top"
+    },
+    "axis=z,bottom=false,top=true,waterlogged=true": {
+      "model": "electroenergetics:block/concrete_pole/block_top"
+    },
+    "axis=z,bottom=true,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/concrete_pole/block_bottom"
+    },
+    "axis=z,bottom=true,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/concrete_pole/block_bottom"
+    },
+    "axis=z,bottom=true,top=true,waterlogged=false": {
+      "model": "electroenergetics:block/concrete_pole/block"
+    },
+    "axis=z,bottom=true,top=true,waterlogged=true": {
+      "model": "electroenergetics:block/concrete_pole/block"
+    }
+  }
+}

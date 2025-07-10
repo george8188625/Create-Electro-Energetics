@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -31,7 +31,7 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.CREATIVE_BATTERY;
+        return CEESimulatedDevices.CREATIVE_BATTERY;
     }
 
     @Override

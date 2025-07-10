@@ -162,16 +162,22 @@ public class WireRenderer {
     }
 
     public static void removeVoltageData(Node node) {
-        NODE_VOLTAGES.remove(node);
+        synchronized ("get_node_voltages") {
+            NODE_VOLTAGES.remove(node);
+        }
     }
     public static Map<Node, Float> getAllVoltages() {
-        return Map.copyOf(NODE_VOLTAGES);
+        synchronized ("get_node_voltages") {
+            return Map.copyOf(NODE_VOLTAGES);
+        }
     }
 
     public static void addVoltageData(Node node, float voltage) {
-        if (!NODE_VOLTAGES.containsKey(node))
-            NODE_VOLTAGES.put(node, voltage);
-        else
-            NODE_VOLTAGES.replace(node, voltage);
+        synchronized ("get_node_voltages") {
+            if (!NODE_VOLTAGES.containsKey(node))
+                NODE_VOLTAGES.put(node, voltage);
+            else
+                NODE_VOLTAGES.replace(node, voltage);
+        }
     }
 }

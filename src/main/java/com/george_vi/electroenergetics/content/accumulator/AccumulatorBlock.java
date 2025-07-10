@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.accumulator;
 
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.AllShapes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -52,7 +52,7 @@ public class AccumulatorBlock extends SimpleDeviceBlock {
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.ACCUMULATOR;
+        return CEESimulatedDevices.ACCUMULATOR;
     }
 
     @Override

@@ -4,32 +4,27 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -43,7 +38,7 @@ public class GroundRodBlock extends SimpleDeviceBlock implements IWrenchable, Si
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.GROUND_ROD;
+        return CEESimulatedDevices.GROUND_ROD;
     }
 
     @Override

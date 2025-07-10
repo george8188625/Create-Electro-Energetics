@@ -21,10 +21,9 @@ public class AlternatorBrushesDevice extends SimulatedDevice {
         if (!level.isLoaded(pos))
             return;
         double stress = extraData.getFloat("stress");
-        double power = stress / 9.6;
         double voltage = extraData.getFloat("voltage");
 
-        bridges.builder(pos).energyLimitedSource(0, 1, power, Math.abs(voltage));
+        bridges.builder(pos).energyLimitedSource(0, 1, stress, Math.abs(voltage));
     }
 
     @Override

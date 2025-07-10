@@ -1,6 +1,7 @@
 {
   "values": [
     "electroenergetics:connector",
+    "electroenergetics:concrete_pole",
     "electroenergetics:double_connector",
     "electroenergetics:triple_connector",
     "electroenergetics:quad_connector",

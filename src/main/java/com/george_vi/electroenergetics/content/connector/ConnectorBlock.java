@@ -3,22 +3,14 @@ package com.george_vi.electroenergetics.content.connector;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.createmod.catnip.lang.Lang;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.FrontAndTop;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -34,10 +26,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.ticks.LevelTickAccess;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Map;
 
 public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, SimpleWaterloggedBlock {
@@ -52,7 +42,7 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.CONNECTOR;
+        return CEESimulatedDevices.CONNECTOR;
     }
 
     @Override

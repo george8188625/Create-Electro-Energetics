@@ -1,6 +1,5 @@
 package com.george_vi.electroenergetics.simulation;
 
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

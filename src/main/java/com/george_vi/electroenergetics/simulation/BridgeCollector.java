@@ -15,6 +15,8 @@ public class BridgeCollector {
     }
 
     public void bridge(Node node1, Node node2, double resistance, double voltageSource) {
+        if (node1.equals(node2))
+            return;
         if (resistance == 0)
             throw new IllegalArgumentException("Resistance can't be zero!");
         bridges.add(new ElectricalNodeConnection(node1, node2, resistance, voltageSource));

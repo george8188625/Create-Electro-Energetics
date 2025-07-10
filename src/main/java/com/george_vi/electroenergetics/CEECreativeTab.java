@@ -42,6 +42,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.MAGNET_BLOCK.asStack());
                         output.accept(CEEBlocks.ACCUMULATOR.asStack());
                         output.accept(CEEBlocks.CONVERTER.asStack());
+                        output.accept(CEEBlocks.CONCRETE_POLE.asStack());
                     }))
                     .build());
 

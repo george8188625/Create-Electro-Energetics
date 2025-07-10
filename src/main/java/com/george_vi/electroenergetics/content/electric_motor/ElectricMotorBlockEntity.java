@@ -119,7 +119,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public float calculateAddedStressCapacity() {
-        float capacity = 128;
+        float capacity = 128 / 9.6f;
         this.lastCapacityProvided = capacity;
         return capacity;
     }

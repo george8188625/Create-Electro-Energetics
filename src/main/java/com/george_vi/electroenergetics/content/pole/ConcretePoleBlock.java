@@ -1,0 +1,107 @@
+package com.george_vi.electroenergetics.content.pole;
+
+import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.simibubi.create.AllShapes;
+import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.ticks.LevelTickAccess;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.Map;
+
+public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock {
+    public static BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
+    public static BooleanProperty TOP = BooleanProperty.create("top");
+    public static BooleanProperty BOTTOM = BooleanProperty.create("bottom");
+
+    public ConcretePoleBlock(Properties properties) {
+        super(properties);
+        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false).setValue(BOTTOM, true).setValue(TOP, true));
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockState below = context.getLevel().getBlockState(context.getClickedPos().below());
+        BlockState above = context.getLevel().getBlockState(context.getClickedPos().above());
+        return withWater(defaultBlockState().setValue(BOTTOM, !CEEBlocks.CONCRETE_POLE.has(below))
+                .setValue(TOP, !CEEBlocks.CONCRETE_POLE.has(above)).setValue(AXIS, context.getHorizontalDirection().getAxis()), context);
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(WATERLOGGED, AXIS, TOP, BOTTOM);
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return AllShapes.TEN_VOXEL_POLE.get(Direction.Axis.Y);
+    }
+
+    @Override
+    protected SimulatedDevice getDevice() {
+        return CEESimulatedDevices.CONCRETE_POLE;
+    }
+
+    @Override
+    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        if (!hasNodes(state))
+            return Collections.emptyMap();
+        return CEENodeConfigurations.CONCRETE_POLE.getNodes(state.getValue(BOTTOM) ? Direction.UP : Direction.DOWN);
+    }
+
+    @Override
+    public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
+        if (!hasNodes(state))
+            return null;
+        return CEENodeConfigurations.CONCRETE_POLE.getNodePos(state.getValue(BOTTOM) ? Direction.UP : Direction.DOWN, id);
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        BlockState below = level.getBlockState(pos.below());
+        BlockState above = level.getBlockState(pos.above());
+
+        if (CEEBlocks.CONCRETE_POLE.has(below) == state.getValue(BOTTOM) ||
+                CEEBlocks.CONCRETE_POLE.has(above) == state.getValue(TOP)) {
+            LevelTickAccess<Block> blockTicks = level.getBlockTicks();
+            if (!blockTicks.hasScheduledTick(pos, this))
+                level.scheduleTick(pos, this, 1);
+        }
+
+        updateWater(level, state, pos);
+        return state.setValue(BOTTOM, !CEEBlocks.CONCRETE_POLE.has(below))
+                .setValue(TOP, !CEEBlocks.CONCRETE_POLE.has(above));
+    }
+
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        return fluidState(state);
+    }
+
+    private boolean hasNodes(BlockState state) {
+        return state.getValue(TOP) ^ state.getValue(BOTTOM);
+    }
+}

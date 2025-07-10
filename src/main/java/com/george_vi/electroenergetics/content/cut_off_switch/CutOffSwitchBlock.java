@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.cut_off_switch;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
 import com.george_vi.electroenergetics.simulation.*;
@@ -52,7 +53,7 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.CUT_OFF_SWITCH;
+        return CEESimulatedDevices.CUT_OFF_SWITCH;
     }
 
     @Override

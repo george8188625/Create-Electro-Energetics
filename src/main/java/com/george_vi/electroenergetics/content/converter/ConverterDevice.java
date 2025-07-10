@@ -36,6 +36,7 @@ public class ConverterDevice extends SimulatedDevice {
         if (voltages.size() != 2 && voltages.size() != 3)
             return;
         double storedEnergy = extraData.getDouble("storedEnergy");
+        double conversionRate = 0.37;
 
         if (extraData.getBoolean("source")) {
             double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
@@ -49,7 +50,7 @@ public class ConverterDevice extends SimulatedDevice {
                 BlockState state = level.getBlockState(pos);
                 IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()), state.getValue(ConverterBlock.FACING));
                 if (energyStorage != null)
-                    storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - storedEnergy) / 3.556), false) * 3.556;
+                    storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - storedEnergy) / conversionRate), false) * conversionRate;
             }
 
             extraData.putDouble("storedEnergy", storedEnergy);
@@ -66,7 +67,7 @@ public class ConverterDevice extends SimulatedDevice {
             BlockState state = level.getBlockState(pos);
             IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()), state.getValue(ConverterBlock.FACING));
             if (energyStorage != null)
-                storedEnergy -= energyStorage.receiveEnergy((int) (storedEnergy / 3.556), false) * 3.556;
+                storedEnergy -= energyStorage.receiveEnergy((int) (storedEnergy / conversionRate), false) * conversionRate;
         }
 
         extraData.putDouble("storedEnergy", storedEnergy);

@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -74,7 +74,7 @@ public class TransformerBlock extends SimpleDeviceBlock implements SimpleWaterlo
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.TRANSFORMER;
+        return CEESimulatedDevices.TRANSFORMER;
     }
 
     // 0,1 Primary / 2,3 Secondary

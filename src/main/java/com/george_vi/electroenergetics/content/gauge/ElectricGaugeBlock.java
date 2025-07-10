@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.content.kinetics.gauge.GaugeBlock;
 import com.simibubi.create.foundation.block.IBE;
 import net.createmod.catnip.levelWrappers.WrappedLevel;
@@ -46,7 +46,7 @@ public class ElectricGaugeBlock extends SimpleDeviceBlock implements IBE<Electri
 
     @Override
     protected SimulatedDevice getDevice() {
-        return voltmeter ? SimulatedDevices.VOLTMETER : SimulatedDevices.AMMETER;
+        return voltmeter ? CEESimulatedDevices.VOLTMETER : CEESimulatedDevices.AMMETER;
     }
 
     @Override

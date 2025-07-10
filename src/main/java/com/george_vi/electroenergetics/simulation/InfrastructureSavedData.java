@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.wire_spool.ClearWireConnectionsPacket;
 import com.george_vi.electroenergetics.content.wire_spool.SendWireConnectionsPacket;
 import net.createmod.catnip.data.Pair;
@@ -121,7 +122,7 @@ public class InfrastructureSavedData extends SavedData {
 
         NBTHelper.iterateCompoundList(compoundTag.getList("Devices", Tag.TAG_COMPOUND), tag -> {
             BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
-            SimulatedDevice device = SimulatedDevices.get(ResourceLocation.parse(tag.getString("ID")));
+            SimulatedDevice device = CEESimulatedDevices.get(ResourceLocation.parse(tag.getString("ID")));
             if (device == null)
                 return;
             sd.DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, tag.getCompound("ExtraData"), sd.NODES_BY_POS.getOrDefault(pos, new ArrayList<>())));
@@ -153,11 +154,30 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public void addDevice(BlockPos pos, SimulatedDevice device, CompoundTag extraData, List<Integer> nodeIDs) {
-        if (DEVICES.containsKey(pos))
-            if (DEVICES.get(pos).simulatedDevice == device)
+        if (DEVICES.containsKey(pos)) {
+            SimulatedDeviceInstance di = DEVICES.get(pos);
+            if (di.simulatedDevice == device) {
+                List<Node> oldNodes = NODES_BY_POS.get(pos);
+                List<Node> nodes = nodeIDs.stream().map(id -> new Node(id, pos)).toList();
+
+                if (oldNodes != null && oldNodes.stream().map(Node::id).toList().equals(nodeIDs))
+                    return;
+
+                if (oldNodes != null)
+                    for (Node node : oldNodes) {
+                        getConnections(node).forEach(this::removeConnection);
+                        NODES.remove(node);
+                    }
+
+                NODES_BY_POS.replace(pos, nodes);
+
+                for (Node node : nodes)
+                    NODES.put(node, new ArrayList<>());
+
                 return;
-            else
+            } else
                 removeDevice(pos);
+        }
 
         List<Node> nodes = new ArrayList<>();
         for (int id : nodeIDs)

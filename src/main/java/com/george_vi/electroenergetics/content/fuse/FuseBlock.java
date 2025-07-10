@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -48,7 +48,7 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.FUSE;
+        return CEESimulatedDevices.FUSE;
     }
 
     @Override

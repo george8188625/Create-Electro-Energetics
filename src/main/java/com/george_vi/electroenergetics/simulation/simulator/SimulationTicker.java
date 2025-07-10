@@ -73,8 +73,11 @@ public class SimulationTicker {
             Node node1 = connection.node1();
             Node node2 = connection.node2();
 
-            adjacency.get(node1).add(node2);
-            adjacency.get(node2).add(node1);
+            if (adjacency.containsKey(node1) && adjacency.containsKey(node2)) {
+                adjacency.get(node1).add(node2);
+                adjacency.get(node2).add(node1);
+            }
+
             connectionProperties.put(new DirectionSensitiveNodeConnection(connection), new ElectricalProperties(getWireResistance(node1, node2), 0));
             connectionProperties.put(new DirectionSensitiveNodeConnection(connection).invert(), new ElectricalProperties(getWireResistance(node1, node2), 0));
         }

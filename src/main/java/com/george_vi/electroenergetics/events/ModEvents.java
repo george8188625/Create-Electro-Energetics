@@ -1,19 +1,12 @@
 package com.george_vi.electroenergetics.events;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
-import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.ponder.CEEPonderPlugin;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.simibubi.create.AllKeys;
-import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.Create;
 import com.simibubi.create.content.contraptions.wrench.RadialWrenchMenu;
-import com.simibubi.create.content.contraptions.wrench.RadialWrenchMenuSubmitPacket;
-import com.simibubi.create.foundation.advancement.AllAdvancements;
-import com.simibubi.create.foundation.ponder.CreatePonderPlugin;
 import com.simibubi.create.foundation.utility.FilesHelper;
 import com.tterrag.registrate.providers.ProviderType;
 import net.createmod.ponder.foundation.PonderIndex;
@@ -23,12 +16,10 @@ import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = CreateElecrtoEnergetics.ID)
 public class ModEvents {
@@ -57,7 +48,6 @@ public class ModEvents {
     public static void clientInit(FMLClientSetupEvent event) {
         PonderIndex.addPlugin(new CEEPonderPlugin());
 
-        RadialWrenchMenu.registerRotationProperty(DoubleConnectorBlock.ROLL, "Roll");
         RadialWrenchMenu.registerRotationProperty(DoubleConnectorBlock.ROLL, "Roll");
         RadialWrenchMenu.registerRotationProperty(ConnectorBlock.STYLE, "Style");
     }

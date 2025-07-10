@@ -5,8 +5,7 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
-import com.simibubi.create.AllShapes;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
@@ -62,7 +61,7 @@ public class ConverterBlock extends SimpleDeviceBlock implements IWrenchable, IB
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.CONVERTER;
+        return CEESimulatedDevices.CONVERTER;
     }
 
     @Override

@@ -6,7 +6,7 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.Node;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
@@ -32,7 +32,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.ticks.LevelTickAccess;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +66,7 @@ public class ElectricMotorBlock extends DirectionalKineticBlock implements Devic
 
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        InfrastructureSavedData.load(level).addDevice(pos, SimulatedDevices.ELECTRIC_MOTOR, List.of(0, 1));
+        InfrastructureSavedData.load(level).addDevice(pos, CEESimulatedDevices.ELECTRIC_MOTOR, List.of(0, 1));
         super.tick(state, level, pos, random);
     }
 

@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -54,7 +54,7 @@ public class BulbBlock extends SimpleDeviceBlock implements SimpleWaterloggedBlo
 
     @Override
     protected SimulatedDevice getDevice() {
-        return SimulatedDevices.BULB;
+        return CEESimulatedDevices.BULB;
     }
 
     @Override
