@@ -1,0 +1,159 @@
+package com.george_vi.electroenergetics.content.converter;
+
+import com.george_vi.electroenergetics.CEEBlockEntityTypes;
+import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDevices;
+import com.simibubi.create.AllShapes;
+import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import com.simibubi.create.foundation.block.IBE;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+
+public class ConverterBlock extends SimpleDeviceBlock implements IWrenchable, IBE<ConverterBlockEntity> {
+    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final BooleanProperty ROLL = BooleanProperty.create("roll");
+    public static final BooleanProperty SOURCE = BooleanProperty.create("source");
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
+    public ConverterBlock(Properties properties) {
+        super(properties);
+        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false).setValue(SOURCE, false));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING, ROLL, SOURCE, WATERLOGGED);
+    }
+
+    @Override
+    protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("source", state.getValue(SOURCE));
+        return tag;
+    }
+
+
+    @Override
+    protected SimulatedDevice getDevice() {
+        return SimulatedDevices.CONVERTER;
+    }
+
+    @Override
+    public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {
+        if (targetedFace.getAxis() == originalState.getValue(FACING).getAxis())
+            return originalState.cycle(ROLL);
+        return IWrenchable.super.getRotatedBlockState(originalState, targetedFace);
+    }
+
+    @Override
+    public InteractionResult onWrenched(BlockState state, UseOnContext context) {
+        if (context.getClickedFace().getAxis() == state.getValue(FACING).getAxis())
+            return IWrenchable.super.onWrenched(state, context);
+
+        if (context.getLevel() instanceof ServerLevel serverLevel) {
+            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
+            if (device != null)
+                device.extraData().putBoolean("source", !state.getValue(SOURCE));
+            serverLevel.setBlockAndUpdate(context.getClickedPos(), state.cycle(SOURCE));
+            AllSoundEvents.WRENCH_ROTATE.playOnServer(context.getLevel(), context.getClickedPos());
+        }
+
+        return InteractionResult.SUCCESS;
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        if (context.getClickedFace().getAxis().isVertical())
+            return defaultBlockState().setValue(FACING, context.getClickedFace()).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X).setValue(SOURCE, context.getPlayer() != null && context.getPlayer().isShiftKeyDown());
+        return defaultBlockState().setValue(FACING, context.getClickedFace()).setValue(SOURCE, context.getPlayer() != null && context.getPlayer().isShiftKeyDown());
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return CEEShapes.CONVERTER.get(state.getValue(FACING));
+    }
+
+    @Override
+    protected BlockState updateShape(
+            BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        if (state.getValue(WATERLOGGED)) {
+            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+        }
+
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
+
+    @Override
+    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        if (state.getValue(FACING).getAxis().isVertical())
+            return state.getValue(ROLL) ?
+                    Map.of(new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 3/16f), 0, new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 13/16f), 1) :
+                    Map.of(new Vec3(3/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f), 0, new Vec3(13/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f), 1);
+        if (state.getValue(FACING).getAxis() == Direction.Axis.X)
+            return state.getValue(ROLL) ?
+                    Map.of(new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 3/16f, 0.5f), 0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 13/16f, 0.5f), 1) :
+                    Map.of(new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 3/16f), 0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 13/16f), 1);
+        return state.getValue(ROLL) ?
+                Map.of(new Vec3(0.5f, 3/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 0, new Vec3(0.5f, 13/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 1) :
+                Map.of(new Vec3(3/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 0, new Vec3(13/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 1);
+    }
+
+    @Override
+    public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
+        if (state.getValue(FACING).getAxis().isVertical())
+            return state.getValue(ROLL) ?
+                    id == 0 ? new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 3/16f) : new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 13/16f) :
+                    id == 0 ? new Vec3(3/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f) : new Vec3(13/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f);
+        if (state.getValue(FACING).getAxis() == Direction.Axis.X)
+            return state.getValue(ROLL) ?
+                    id == 0 ? new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 3/16f, 0.5f) : new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 14/16f, 0.5f) :
+                    id == 0  ? new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 3/16f) : new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 0.5f, 14/16f);
+        return state.getValue(ROLL) ?
+                id == 0 ?new Vec3(0.5f, 3/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f) : new Vec3(0.5f, 13/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f) :
+                id == 0 ?new Vec3(3/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f) : new Vec3(13/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f);
+
+    }
+
+    @Override
+    public Class<ConverterBlockEntity> getBlockEntityClass() {
+        return ConverterBlockEntity.class;
+    }
+
+    @Override
+    public BlockEntityType<? extends ConverterBlockEntity> getBlockEntityType() {
+        return CEEBlockEntityTypes.CONVERTER.get();
+    }
+}

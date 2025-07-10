@@ -1,0 +1,24 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "electroenergetics:block/cable",
+		"particle": "electroenergetics:block/cable"
+	},
+	"elements": [
+		{
+			"from": [3, 3, 3],
+			"to": [13, 13, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3, 3, 3]},
+			"faces": {
+				"north": {"uv": [8.5, 7, 13.5, 12], "texture": "#0"},
+				"east": {"uv": [8.5, 7, 13.5, 12], "texture": "#0"},
+				"south": {"uv": [8.5, 7, 13.5, 12], "texture": "#0"},
+				"west": {"uv": [8.5, 7, 13.5, 12], "texture": "#0"},
+				"up": {"uv": [8.5, 7, 13.5, 12], "texture": "#0"},
+				"down": {"uv": [8.5, 7, 13.5, 12], "texture": "#0"}
+			}
+		}
+	],
+	"display": {}
+}

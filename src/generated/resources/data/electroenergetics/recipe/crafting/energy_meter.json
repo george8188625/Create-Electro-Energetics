@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "P": {
+      "item": "create:precision_mechanism"
+    },
+    "a": {
+      "item": "electroenergetics:ammeter"
+    },
+    "s": {
+      "tag": "c:plates/iron"
+    },
+    "v": {
+      "item": "electroenergetics:voltmeter"
+    }
+  },
+  "pattern": [
+    "CCC",
+    "vPa",
+    " s "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:energy_meter"
+  }
+}

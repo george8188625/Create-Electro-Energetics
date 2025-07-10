@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "electroenergetics:block/alternator_rotor/block",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "electroenergetics:block/alternator_rotor/block"
+    },
+    "axis=z": {
+      "model": "electroenergetics:block/alternator_rotor/block",
+      "x": 90,
+      "y": 180
+    }
+  }
+}

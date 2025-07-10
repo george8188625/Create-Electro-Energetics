@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "priority": 1234,
+  "package": "com.george_vi.electroenergetics.mixins",
+  "refmap": "electroenergetics.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "LevelRendererAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

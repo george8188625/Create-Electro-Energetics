@@ -1,0 +1,11 @@
+{
+  "hum": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:hum"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.hum"
+  }
+}

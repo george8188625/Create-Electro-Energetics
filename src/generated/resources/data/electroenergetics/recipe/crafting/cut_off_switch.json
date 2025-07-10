@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "S": {
+      "tag": "c:plates/copper"
+    },
+    "k": {
+      "item": "minecraft:dried_kelp"
+    }
+  },
+  "pattern": [
+    " k ",
+    " S ",
+    "CAC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:cut_off_switch"
+  }
+}

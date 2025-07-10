@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "electroenergetics:ammeter"
+    }
+  },
+  "pattern": [
+    "G"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:voltmeter"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "tag": "minecraft:wooden_slabs"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "S",
+    "s",
+    "S"
+  ],
+  "result": {
+    "count": 8,
+    "id": "electroenergetics:empty_spool"
+  }
+}

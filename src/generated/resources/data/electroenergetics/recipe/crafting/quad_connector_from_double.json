@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "electroenergetics:double_connector"
+    },
+    {
+      "item": "electroenergetics:double_connector"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:quad_connector"
+  }
+}

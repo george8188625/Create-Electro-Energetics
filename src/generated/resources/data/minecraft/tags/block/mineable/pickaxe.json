@@ -1,0 +1,25 @@
+{
+  "values": [
+    "electroenergetics:connector",
+    "electroenergetics:double_connector",
+    "electroenergetics:triple_connector",
+    "electroenergetics:quad_connector",
+    "electroenergetics:ground_rod",
+    "electroenergetics:creative_battery",
+    "electroenergetics:fuse",
+    "electroenergetics:broken_fuse",
+    "electroenergetics:bulb",
+    "electroenergetics:broken_bulb",
+    "electroenergetics:cut_off_switch",
+    "electroenergetics:energy_meter",
+    "electroenergetics:accumulator",
+    "electroenergetics:ammeter",
+    "electroenergetics:voltmeter",
+    "electroenergetics:electric_motor",
+    "electroenergetics:transformer",
+    "electroenergetics:alternator_rotor",
+    "electroenergetics:alternator_brushes",
+    "electroenergetics:magnet",
+    "electroenergetics:converter"
+  ]
+}

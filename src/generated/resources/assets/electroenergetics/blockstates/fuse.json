@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "electroenergetics:block/fuse",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "electroenergetics:block/fuse",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "electroenergetics:block/fuse",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "electroenergetics:block/fuse",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "electroenergetics:block/fuse"
+    },
+    "facing=west": {
+      "model": "electroenergetics:block/fuse",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "electroenergetics:connector"
+    },
+    {
+      "item": "electroenergetics:connector"
+    },
+    {
+      "item": "electroenergetics:connector"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:triple_connector"
+  }
+}

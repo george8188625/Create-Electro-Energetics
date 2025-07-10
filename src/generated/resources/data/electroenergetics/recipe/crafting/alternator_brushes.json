@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "create:industrial_iron_block"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "S": {
+      "item": "create:shaft"
+    }
+  },
+  "pattern": [
+    " B ",
+    "CSC",
+    " B "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:alternator_brushes"
+  }
+}

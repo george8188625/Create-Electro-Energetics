@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "T": {
+      "tag": "minecraft:terracotta"
+    },
+    "n": {
+      "tag": "c:nuggets/copper"
+    }
+  },
+  "pattern": [
+    " n ",
+    " A ",
+    "TTT"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:connector"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "g": {
+      "item": "minecraft:glass"
+    },
+    "w": {
+      "tag": "c:wires/copper"
+    }
+  },
+  "pattern": [
+    " g ",
+    " w ",
+    "CAC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:bulb"
+  }
+}

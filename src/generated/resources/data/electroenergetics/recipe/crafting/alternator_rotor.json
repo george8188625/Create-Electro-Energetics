@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "create:industrial_iron_block"
+    },
+    "S": {
+      "item": "create:shaft"
+    },
+    "W": {
+      "item": "electroenergetics:wire_spool"
+    }
+  },
+  "pattern": [
+    "BWB",
+    "WSW",
+    "BWB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:alternator_rotor"
+  }
+}

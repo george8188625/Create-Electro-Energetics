@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ammeter": {
+      "conditions": {
+        "items": [
+          {
+            "items": "electroenergetics:ammeter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "electroenergetics:crafting/voltmeter_from_ammeter"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ammeter"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "electroenergetics:crafting/voltmeter_from_ammeter"
+    ]
+  }
+}

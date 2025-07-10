@@ -1,0 +1,52 @@
+package com.george_vi.electroenergetics;
+
+import com.simibubi.create.AllCreativeModeTabs;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+public class CEECreativeTab {
+    private static final DeferredRegister<CreativeModeTab> REGISTER =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateElecrtoEnergetics.ID);
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_TAB = REGISTER.register("base",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.electroenergetics"))
+                    .withTabsBefore(AllCreativeModeTabs.PALETTES_CREATIVE_TAB.getId())
+                    .icon(CEEBlocks.CONNECTOR::asStack)
+                    .displayItems(((parameters, output) -> {
+                        output.accept(CEEBlocks.CONNECTOR.asStack());
+                        output.accept(CEEBlocks.DOUBLE_CONNECTOR.asStack());
+                        output.accept(CEEBlocks.TRIPLE_CONNECTOR.asStack());
+                        output.accept(CEEBlocks.QUAD_CONNECTOR.asStack());
+                        output.accept(CEEItems.WIRE_SPOOL.asStack());
+                        output.accept(CEEItems.EMPTY_SPOOL.asStack());
+                        output.accept(CEEItems.INSULATED_WIRE.asStack());
+                        output.accept(CEEItems.COPPER_WIRE.asStack());
+                        output.accept(CEEBlocks.CREATIVE_BATTERY.asStack());
+                        output.accept(CEEBlocks.BULB.asStack());
+                        output.accept(CEEBlocks.CUT_OFF_SWITCH.asStack());
+                        output.accept(CEEBlocks.ENERGY_METER.asStack());
+                        output.accept(CEEBlocks.AMMETER.asStack());
+                        output.accept(CEEBlocks.VOLTMETER.asStack());
+                        output.accept(CEEBlocks.FUSE.asStack());
+                        output.accept(CEEBlocks.GROUND_ROD.asStack());
+                        output.accept(CEEBlocks.TRANSFORMER.asStack());
+                        output.accept(CEEBlocks.ELECTRIC_MOTOR.asStack());
+                        output.accept(CEEBlocks.ALTERNATOR_ROTOR.asStack());
+                        output.accept(CEEBlocks.ALTERNATOR_BRUSHES.asStack());
+                        output.accept(CEEBlocks.MAGNET_BLOCK.asStack());
+                        output.accept(CEEBlocks.ACCUMULATOR.asStack());
+                        output.accept(CEEBlocks.CONVERTER.asStack());
+                    }))
+                    .build());
+
+    public static void register(IEventBus bus) {
+        REGISTER.register(bus);
+    }
+
+}

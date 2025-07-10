@@ -1,0 +1,43 @@
+{
+  "itemGroup.electroenergetics": "Create: Electro Energetics",
+
+  "electroenergetics.wire_spool.too_far_away": "Too far away!",
+  "electroenergetics.wire_spool.invalid_connection": "Invalid connection!",
+
+  "electroenergetics.gui.energy_meter": "Energy Meter",
+  "electroenergetics.gui.energy_meter.disconnected": "Power Disconnected",
+  "electroenergetics.gui.energy_meter.connected": "Power Connected",
+  "electroenergetics.gui.energy_meter.connect": "Connect Power",
+  "electroenergetics.gui.energy_meter.disconnect": "Disconnect Power",
+  "electroenergetics.gui.energy_meter.disconnect_tip_1": "Click to toggle",
+  "electroenergetics.gui.energy_meter.reset": "Reset Meter",
+  "electroenergetics.gui.energy_meter.reset_tip_1": "Click to reset",
+  "electroenergetics.gui.goggles.electric_stats": "Electric Stats",
+  "electroenergetics.gui.goggles.energy_consumption": "Energy Consumption:",
+  "electroenergetics.gui.goggles.energy_generation": "Energy Generation:",
+  "electroenergetics.gui.goggles.power": "Power:",
+  "electroenergetics.gui.goggles.primary_voltage": "Primary Coil Voltage:",
+  "electroenergetics.gui.goggles.secondary_voltage": "Secondary Coil Voltage:",
+  "electroenergetics.gui.goggles.voltage": "Voltage:",
+  "electroenergetics.gui.goggles.at_current_voltage": "at current voltage",
+
+  "electroenergetics.nodes.node": "Node",
+  "electroenergetics.nodes.feed": "Feed",
+  "electroenergetics.nodes.load": "Load",
+  "electroenergetics.nodes.neutral": "Neutral",
+  "electroenergetics.nodes.positive": "Positive",
+  "electroenergetics.nodes.negative": "Negative",
+  "electroenergetics.nodes.primary": "Primary",
+  "electroenergetics.nodes.secondary": "Secondary",
+
+  "electroenergetics.generic.voltage": "Voltage",
+  "electroenergetics.generic.current": "Current",
+  "electroenergetics.generic.wattage": "Wattage",
+  "electroenergetics.generic.volts": "V",
+  "electroenergetics.generic.amps": "A",
+  "electroenergetics.generic.watts": "W",
+
+  "electroenergetics.transformer.ratio": "Ratio",
+
+  "electroenergetics.subtitle.hum": "Hum"
+}

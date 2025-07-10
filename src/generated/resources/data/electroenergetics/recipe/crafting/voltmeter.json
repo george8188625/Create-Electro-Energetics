@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy_block"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "c": {
+      "item": "minecraft:compass"
+    }
+  },
+  "pattern": [
+    " c ",
+    "CAC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:voltmeter"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "k": {
+      "item": "minecraft:dried_kelp"
+    },
+    "w": {
+      "tag": "c:wires/copper"
+    }
+  },
+  "pattern": [
+    "www",
+    "wkw",
+    "www"
+  ],
+  "result": {
+    "count": 8,
+    "id": "electroenergetics:insulated_wire"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "I": {
+      "item": "create:industrial_iron_block"
+    },
+    "M": {
+      "item": "electroenergetics:magnet"
+    },
+    "R": {
+      "item": "electroenergetics:alternator_rotor"
+    }
+  },
+  "pattern": [
+    " IC",
+    "MRM",
+    "CI "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:electric_motor"
+  }
+}
