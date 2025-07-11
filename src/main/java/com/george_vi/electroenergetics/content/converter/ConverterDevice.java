@@ -23,22 +23,22 @@ public class ConverterDevice extends SimulatedDevice {
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        if (extraData.getBoolean("source"))
+        if (extraData.getBoolean("Source"))
             bridges.builder(pos)
-                    .energyLimitedSource(0, 1, extraData.getDouble("storedEnergy"), extraData.getDouble("voltage"));
+                    .energyLimitedSource(0, 1, extraData.getDouble("StoredEnergy"), extraData.getDouble("Voltage"));
         else
             bridges.builder(pos)
-                    .resistor(0, 1, extraData.contains("resistance") ? extraData.getDouble("resistance") : 999999);
+                    .resistor(0, 1, extraData.contains("Resistance") ? extraData.getDouble("Resistance") : 999999);
     }
 
     @Override
     public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
         if (voltages.size() != 2 && voltages.size() != 3)
             return;
-        double storedEnergy = extraData.getDouble("storedEnergy");
+        double storedEnergy = extraData.getDouble("StoredEnergy");
         double conversionRate = 0.37;
 
-        if (extraData.getBoolean("source")) {
+        if (extraData.getBoolean("Source")) {
             double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
 
             double current = sourceAmps.getOrDefault(new NodeConnection(pos, 0, 1000), 0d);
@@ -53,13 +53,13 @@ public class ConverterDevice extends SimulatedDevice {
                     storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - storedEnergy) / conversionRate), false) * conversionRate;
             }
 
-            extraData.putDouble("storedEnergy", storedEnergy);
+            extraData.putDouble("StoredEnergy", storedEnergy);
             return;
         }
 
         double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
 
-        double power = (vd * vd) / (extraData.contains("resistance") ? extraData.getDouble("resistance") : 999999);
+        double power = (vd * vd) / (extraData.contains("Resistance") ? extraData.getDouble("Resistance") : 999999);
 
         storedEnergy += power;
 
@@ -70,9 +70,9 @@ public class ConverterDevice extends SimulatedDevice {
                 storedEnergy -= energyStorage.receiveEnergy((int) (storedEnergy / conversionRate), false) * conversionRate;
         }
 
-        extraData.putDouble("storedEnergy", storedEnergy);
+        extraData.putDouble("StoredEnergy", storedEnergy);
 
         if (vd > 1)
-            extraData.putDouble("resistance", Math.max(30, vd / (Math.max((MAX_ENERGY - storedEnergy), 0.01) / vd)));
+            extraData.putDouble("Resistance", Math.max(30, vd / (Math.max((MAX_ENERGY - storedEnergy), 0.01) / vd)));
     }
 }

@@ -9,6 +9,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class CEEShapes {
     public static final VoxelShaper CONNECTOR = shape(6,0, 6,10,10,10).forDirectional();
+
+    public static final VoxelShaper CONNECTOR_SHORT = shape(6,0, 6,10,7,10).forDirectional();
+
     public static final VoxelShaper QUAD_CONNECTOR = shape(6,0, 1,10,7,15)
             .add(1, 0, 6, 15, 7, 10).forDirectional();
 

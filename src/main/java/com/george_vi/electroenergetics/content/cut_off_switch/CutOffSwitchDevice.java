@@ -15,7 +15,7 @@ public class CutOffSwitchDevice extends SimulatedDevice {
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        if (extraData.getBoolean("closed"))
+        if (extraData.getBoolean("Closed"))
             bridges.builder(pos).resistor(0, 1, 0.001);
     }
 }

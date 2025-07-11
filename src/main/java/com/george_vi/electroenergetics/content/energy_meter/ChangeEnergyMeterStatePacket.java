@@ -36,8 +36,8 @@ public record ChangeEnergyMeterStatePacket(boolean reset, boolean disconnect, Bl
             return;
 
         if (reset)
-            device.extraData().putDouble("totalEnergy", 0);
-        device.extraData().putBoolean("closed", !disconnect);
+            device.extraData().putDouble("TotalEnergy", 0);
+        device.extraData().putBoolean("Closed", !disconnect);
         be.disconnected = disconnect;
         be.sendData();
 

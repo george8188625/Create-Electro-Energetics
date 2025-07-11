@@ -1,4 +1,4 @@
-// 1.21.1	2025-07-10T19:27:43.119474	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-07-12T00:20:21.6832507	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -7,7 +7,7 @@ b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/am
 d559c0a9eb0b6946a749be415010fd6ced4191fa assets/electroenergetics/blockstates/broken_fuse.json
 88cd7477826044d6829279e7782aab602f7a4cd6 assets/electroenergetics/blockstates/bulb.json
 26aa9925a737df60304f5f5924661aa4a3d62cbb assets/electroenergetics/blockstates/concrete_pole.json
-a686080a3012e12848cfac03478377bdc18bab8a assets/electroenergetics/blockstates/connector.json
+5fa1a18d5f52d59a000fe78ea429522be1244d5e assets/electroenergetics/blockstates/connector.json
 111f7a1d3d317e469b5f845f8ec43c17156d0ff6 assets/electroenergetics/blockstates/converter.json
 de9b130ef597a608d81f95623b8b15f450a2ce97 assets/electroenergetics/blockstates/creative_battery.json
 7a91c60a2b82a797df9673afb3038750aab05079 assets/electroenergetics/blockstates/cut_off_switch.json

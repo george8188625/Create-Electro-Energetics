@@ -23,7 +23,7 @@ public class FuseDevice extends SimulatedDevice {
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        if (!extraData.getBoolean("broken"))
+        if (!extraData.getBoolean("Broken"))
             bridges.builder(pos).resistor(0, 1, 0.1);
     }
 
@@ -33,14 +33,14 @@ public class FuseDevice extends SimulatedDevice {
             return;
         double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
         double current = vd / 0.1;
-        float temp = (float) Math.max(extraData.getFloat("temp") - 80 + Math.min(current, 500), 0);
-        if (current < 1 || extraData.getBoolean("broken"))
+        float temp = (float) Math.max(extraData.getFloat("Temp") - 80 + Math.min(current, 500), 0);
+        if (current < 1 || extraData.getBoolean("Broken"))
             temp = 0;
-        extraData.putFloat("temp", temp);
+        extraData.putFloat("Temp", temp);
 
 
         if (temp > 2500) {
-            extraData.putBoolean("broken", true);
+            extraData.putBoolean("Broken", true);
 
             if (level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
@@ -54,7 +54,7 @@ public class FuseDevice extends SimulatedDevice {
 
         if (level.isLoaded(pos)) {
             BlockState state = level.getBlockState(pos);
-            if (state.getBlock() instanceof FuseBlock fb && fb.broken != extraData.getBoolean("broken"))
+            if (state.getBlock() instanceof FuseBlock fb && fb.broken != extraData.getBoolean("Broken"))
                 level.setBlockAndUpdate(pos, (fb.broken ? CEEBlocks.FUSE.get() : CEEBlocks.BROKEN_FUSE.get()).withPropertiesOf(state));
         }
     }

@@ -59,7 +59,7 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
     @Override
     protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
-        tag.putBoolean("closed", state.getValue(CLOSED));
+        tag.putBoolean("Closed", state.getValue(CLOSED));
         return tag;
     }
 
@@ -76,7 +76,7 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
         if (level instanceof ServerLevel serverLevel) {
             InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
             if (device != null)
-                device.extraData().putBoolean("closed", !state.getValue(CLOSED));
+                device.extraData().putBoolean("Closed", !state.getValue(CLOSED));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
         } else {
             Vec3 pPos = Vec3.atCenterOf(pos);

@@ -21,12 +21,12 @@ public class VoltageRegulatorDevice extends SimulatedDevice {
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
 
         bridges.builder(pos)
-                        .resistor(0, 1, extraData.getDouble("primaryResistance") == 0 ? 10 : extraData.getDouble("primaryResistance"))
-                        .idealVoltageSource(3, 2, extraData.getDouble("secondaryVoltage"));
+                        .resistor(0, 1, extraData.getDouble("PrimaryResistance") == 0 ? 10 : extraData.getDouble("PrimaryResistance"))
+                        .idealVoltageSource(3, 2, extraData.getDouble("SecondaryVoltage"));
     }
     @Override
     public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
-        float targetedVoltage = extraData.getFloat("voltage");
+        float targetedVoltage = extraData.getFloat("Voltage");
         if (voltages.size() < 4) return;
 
         Node p1 = new Node(0, pos), p2 = new Node(1, pos);
@@ -37,16 +37,16 @@ public class VoltageRegulatorDevice extends SimulatedDevice {
             vPrimary = 0;
 
 
-        double storedEnergy = extraData.getDouble("storedEnergy");
+        double storedEnergy = extraData.getDouble("StoredEnergy");
 
         double vLastTickHighestPrimary = vPrimary > 0 ?
-                Math.max(Math.abs(extraData.getDouble("lastPrimaryVoltage")), Math.abs(vPrimary)) :
-                -Math.max(Math.abs(extraData.getDouble("lastPrimaryVoltage")), Math.abs(vPrimary));
+                Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary)) :
+                -Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary));
 
-        double maxEnergy = 1_000 * Math.abs(vLastTickHighestPrimary / 1);
+        double maxEnergy = 1_000 * Math.abs(vLastTickHighestPrimary);
 
         double load = Math.abs(sourceAmps.getOrDefault(new NodeConnection(s1, s2), 0d) * (voltages.get(s1) - voltages.get(s2)));
-        double primaryCurrent = vPrimary / (extraData.getDouble("primaryResistance") == 0 ? 10 : extraData.getDouble("primaryResistance"));
+        double primaryCurrent = vPrimary / (extraData.getDouble("PrimaryResistance") == 0 ? 10 : extraData.getDouble("PrimaryResistance"));
         double incomingEnergy = primaryCurrent * vPrimary;
 
         storedEnergy += incomingEnergy;
@@ -57,9 +57,9 @@ public class VoltageRegulatorDevice extends SimulatedDevice {
 //        if (storedEnergy > 0)
 //            storedEnergy /= 1.02;
 
-        extraData.putDouble("primaryResistance", storedEnergy < maxEnergy ? Math.abs(vLastTickHighestPrimary / (((maxEnergy - storedEnergy > 1000 ? (maxEnergy - storedEnergy) / 100 : maxEnergy - storedEnergy) + load) / vLastTickHighestPrimary)) : 999999);
-        extraData.putDouble("storedEnergy", storedEnergy);
-        extraData.putDouble("secondaryVoltage", storedEnergy > 100 ? storedEnergy / 1_000 : 0);
-        extraData.putDouble("lastPrimaryVoltage", vPrimary);
+        extraData.putDouble("PrimaryResistance", storedEnergy < maxEnergy ? Math.abs(vLastTickHighestPrimary / (((maxEnergy - storedEnergy > 1000 ? (maxEnergy - storedEnergy) / 100 : maxEnergy - storedEnergy) + load) / vLastTickHighestPrimary)) : 999999);
+        extraData.putDouble("StoredEnergy", storedEnergy);
+        extraData.putDouble("SecondaryVoltage", storedEnergy > 100 ? storedEnergy / 1_000 : 0);
+        extraData.putDouble("LastPrimaryVoltage", vPrimary);
     }
 }

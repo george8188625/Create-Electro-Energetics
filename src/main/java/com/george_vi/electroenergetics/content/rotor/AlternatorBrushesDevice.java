@@ -20,8 +20,8 @@ public class AlternatorBrushesDevice extends SimulatedDevice {
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
         if (!level.isLoaded(pos))
             return;
-        double stress = extraData.getFloat("stress");
-        double voltage = extraData.getFloat("voltage");
+        double stress = extraData.getFloat("Stress");
+        double voltage = extraData.getFloat("Voltage");
 
         bridges.builder(pos).energyLimitedSource(0, 1, stress, Math.abs(voltage));
     }

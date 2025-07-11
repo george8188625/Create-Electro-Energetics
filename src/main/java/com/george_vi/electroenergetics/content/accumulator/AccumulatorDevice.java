@@ -18,8 +18,8 @@ public class AccumulatorDevice extends SimulatedDevice {
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        double storedEnergy = extraData.getDouble("storedEnergy");
-        boolean discharging = extraData.getBoolean("discharging");
+        double storedEnergy = extraData.getDouble("StoredEnergy");
+        boolean discharging = extraData.getBoolean("Discharging");
         if (!discharging)
             bridges.builder(pos).resistor(0, 1, 30);
         else
@@ -32,8 +32,8 @@ public class AccumulatorDevice extends SimulatedDevice {
         if (voltages.size() != 3 && voltages.size() != 2)
             return;
 
-        double storedEnergy = extraData.getDouble("storedEnergy");
-        boolean discharging = extraData.getBoolean("discharging");
+        double storedEnergy = extraData.getDouble("StoredEnergy");
+        boolean discharging = extraData.getBoolean("Discharging");
 
         double voltage = storedEnergy / 10_000;
 
@@ -48,8 +48,8 @@ public class AccumulatorDevice extends SimulatedDevice {
 
         discharging = vd - voltage <= 1;
 
-        extraData.putBoolean("discharging", discharging);
-        extraData.putDouble("storedEnergy", storedEnergy);
+        extraData.putBoolean("Discharging", discharging);
+        extraData.putDouble("StoredEnergy", storedEnergy);
         return;
     }
 }

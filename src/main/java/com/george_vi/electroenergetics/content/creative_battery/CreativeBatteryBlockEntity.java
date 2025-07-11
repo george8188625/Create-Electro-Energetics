@@ -53,7 +53,7 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
         InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null) {
-            deviceInstance.extraData().putFloat("voltage", voltage.value * 10);
+            deviceInstance.extraData().putFloat("Voltage", voltage.value * 10);
         }
     }
 

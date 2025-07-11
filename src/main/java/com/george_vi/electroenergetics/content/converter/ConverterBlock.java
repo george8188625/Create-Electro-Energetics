@@ -54,7 +54,7 @@ public class ConverterBlock extends SimpleDeviceBlock implements IWrenchable, IB
     @Override
     protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
-        tag.putBoolean("source", state.getValue(SOURCE));
+        tag.putBoolean("Source", state.getValue(SOURCE));
         return tag;
     }
 
@@ -79,7 +79,7 @@ public class ConverterBlock extends SimpleDeviceBlock implements IWrenchable, IB
         if (context.getLevel() instanceof ServerLevel serverLevel) {
             InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
             if (device != null)
-                device.extraData().putBoolean("source", !state.getValue(SOURCE));
+                device.extraData().putBoolean("Source", !state.getValue(SOURCE));
             serverLevel.setBlockAndUpdate(context.getClickedPos(), state.cycle(SOURCE));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(context.getLevel(), context.getClickedPos());
         }

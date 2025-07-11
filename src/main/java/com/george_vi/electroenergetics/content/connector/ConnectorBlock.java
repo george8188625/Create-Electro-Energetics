@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.BlockPos;
@@ -58,6 +59,10 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (state.getValue(STYLE) == Style.LONG)
+            return AllShapes.FOUR_VOXEL_POLE.get(state.getValue(FACING).getAxis());
+        if (state.getValue(STYLE) == Style.OUTER)
+            return CEEShapes.CONNECTOR_SHORT.get(state.getValue(FACING));
         return CEEShapes.CONNECTOR.get(state.getValue(FACING));
     }
 
@@ -83,12 +88,12 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
 
     @Override
     public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        return state.getValue(STYLE) == Style.LONG ? CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodes(state.getValue(FACING)) : Map.of(new Vec3(0.5,0.5,0.5), 0);
+        return state.getValue(STYLE) == Style.LONG ? CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodes(state.getValue(FACING)) : state.getValue(STYLE) == Style.OUTER ? CEENodeConfigurations.SHORT_CONNECTOR.getNodes(state.getValue(FACING)) : Map.of(new Vec3(0.5,0.5,0.5), 0);
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
-        return state.getValue(STYLE) == Style.LONG ? CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodePos(state.getValue(FACING), id) : new Vec3(0.5, 0.5, 0.5);
+        return state.getValue(STYLE) == Style.LONG ? CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodePos(state.getValue(FACING), id) : state.getValue(STYLE) == Style.OUTER ? CEENodeConfigurations.SHORT_CONNECTOR.getNodePos(state.getValue(FACING), id) : new Vec3(0.5, 0.5, 0.5);
     }
 
     @Override

@@ -46,10 +46,10 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-        tag.putFloat("voltage", voltage);
-        tag.put("voltages", NBTHelper.writeCompoundList(voltages, (v) -> {
+        tag.putFloat("Voltage", voltage);
+        tag.put("Voltages", NBTHelper.writeCompoundList(voltages, (v) -> {
             CompoundTag t = new CompoundTag();
-            t.putFloat("v", v);
+            t.putFloat("V", v);
             return t;
         }));
     }
@@ -57,9 +57,9 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-        voltage = tag.getFloat("voltage");
-        avgVoltage = tag.getFloat("avgVoltage");
-        voltages = NBTHelper.readCompoundList(tag.getList("voltages", Tag.TAG_COMPOUND), t -> t.getFloat("v"));
+        voltage = tag.getFloat("Voltage");
+        avgVoltage = tag.getFloat("AvgVoltage");
+        voltages = NBTHelper.readCompoundList(tag.getList("Voltages", Tag.TAG_COMPOUND), t -> t.getFloat("V"));
     }
 
     @Override

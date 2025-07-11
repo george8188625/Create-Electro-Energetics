@@ -70,7 +70,7 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
         if (level instanceof ServerLevel serverLevel) {
             InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
             if (device != null)
-                device.extraData().putBoolean("broken", false);
+                device.extraData().putBoolean("Broken", false);
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
         }
 

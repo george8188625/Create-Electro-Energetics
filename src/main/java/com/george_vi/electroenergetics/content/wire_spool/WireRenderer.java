@@ -65,10 +65,10 @@ public class WireRenderer {
 
             renderWire(points, pos1, pos2, pose, buffer);
 
-            if (points.size() >= 7) {
+            if (points.size() >= 14) {
                 if (state1.getBlock() instanceof DeviceBlock db &&
                         db.isOuterInsulator(mc.level, connection.node1().sourcePos(), state1, connection.node1().id())) {
-                    Vec3 nextPoint = points.get(3);
+                    Vec3 nextPoint = points.get(5);
                     CachedBuffers.partial(CEEPartialModels.INSULATOR, Blocks.ANDESITE.defaultBlockState())
                             .translate(pos1)
                             .rotateY((float) Math.atan2(nextPoint.x() - pos1.x(), nextPoint.z() - pos1.z()))
@@ -83,7 +83,7 @@ public class WireRenderer {
 
                 if (state2.getBlock() instanceof DeviceBlock db &&
                         db.isOuterInsulator(mc.level, connection.node2().sourcePos(), state2, connection.node2().id())) {
-                    Vec3 nextPoint = points.get(points.size() - 3);
+                    Vec3 nextPoint = points.get(points.size() - 6);
                     CachedBuffers.partial(CEEPartialModels.INSULATOR, Blocks.ANDESITE.defaultBlockState())
                             .translate(pos2)
                             .rotateY((float) Math.atan2(nextPoint.x() - pos2.x(), nextPoint.z() - pos2.z()))
@@ -106,7 +106,7 @@ public class WireRenderer {
                 Vec3 pos1 = positionsToConnect.get(i);
                 Vec3 pos2 = positionsToConnect.get(i + 1);
 
-                List<Vec3> points = cablePoints(pos1, pos2, 5);
+                List<Vec3> points = cablePoints(pos1, pos2, 3);
 
                 renderWire(points, pos1, pos2, pose, buffer);
             }

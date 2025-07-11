@@ -13,6 +13,9 @@ public class CEENodeConfigurations {
     public static final NodeConfigurator SINGLE_MIDDLE_TOP =  new NodeConfigurator.Builder()
             .add(new Vec3(0.5f, 14/16f, 0.5f)).simple();
 
+    public static final NodeConfigurator SHORT_CONNECTOR =  new NodeConfigurator.Builder()
+            .add(new Vec3(0.5f, 5/16f, 0.5f)).simple();
+
     public static final NodeConfigurator DOUBLE_CONNECTOR =  new NodeConfigurator.Builder()
             .add(new Vec3(3/16f, 5/16f, 0.5f))
             .add(new Vec3(13/16f, 5/16f, 0.5f)).simple();

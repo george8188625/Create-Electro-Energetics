@@ -70,7 +70,7 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
     @Override
     protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
-        tag.putBoolean("closed", true);
+        tag.putBoolean("Closed", true);
         return tag;
     }
 

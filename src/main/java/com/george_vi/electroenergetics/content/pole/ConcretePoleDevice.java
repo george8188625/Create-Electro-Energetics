@@ -23,14 +23,14 @@ public class ConcretePoleDevice extends SimulatedDevice {
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
         if (level.isLoaded(pos)) {
             BlockState state = level.getBlockState(pos);
-            extraData.putBoolean("top", state.getValue(ConcretePoleBlock.TOP));
-            extraData.putBoolean("bottom", state.getValue(ConcretePoleBlock.BOTTOM));
+            extraData.putBoolean("Top", state.getValue(ConcretePoleBlock.TOP));
+            extraData.putBoolean("Bottom", state.getValue(ConcretePoleBlock.BOTTOM));
         }
 
-        if (!extraData.contains("top"))
+        if (!extraData.contains("Top"))
             return;
 
-        if (extraData.getBoolean("bottom")) {
+        if (extraData.getBoolean("Bottom")) {
             InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
 
             int length = 0;
@@ -38,7 +38,7 @@ public class ConcretePoleDevice extends SimulatedDevice {
                 InfrastructureSavedData.SimulatedDeviceInstance di = sd.getDevice(pos.above(i));
                 if (di == null || di.simulatedDevice() != CEESimulatedDevices.CONCRETE_POLE)
                     return;
-                else if (di.extraData().getBoolean("top")) {
+                else if (di.extraData().getBoolean("Top")) {
                     length = i;
                     break;
                 }
@@ -48,7 +48,7 @@ public class ConcretePoleDevice extends SimulatedDevice {
                 bridges.bridge(new Node(0, pos), new Node(0, pos.above(length)), CEEConfigs.server().wireResistance.get() * length, 0);
         }
 
-        if (extraData.getBoolean("top") || extraData.getBoolean("bottom"))
+        if (extraData.getBoolean("Top") || extraData.getBoolean("Bottom"))
             bridges.builder(pos)
                     .resistor(0, 1, CEEConfigs.server().wireResistance.get())
                     .resistor(1, 2, CEEConfigs.server().wireResistance.get())

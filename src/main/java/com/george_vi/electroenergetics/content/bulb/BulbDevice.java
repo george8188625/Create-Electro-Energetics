@@ -25,7 +25,7 @@ public class BulbDevice extends SimulatedDevice {
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        if (!extraData.getBoolean("destroyed"))
+        if (!extraData.getBoolean("Destroyed"))
             bridges.builder(pos).resistor(0, 1, CEEConfigs.server().bulbResistance.get());
     }
 
@@ -36,7 +36,7 @@ public class BulbDevice extends SimulatedDevice {
         double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
         if (level.isLoaded(pos)) {
             BlockState state = level.getBlockState(pos);
-            if (extraData.getBoolean("destroyed")) {
+            if (extraData.getBoolean("Destroyed")) {
                 if (CEEBlocks.BULB.has(state)) {
                     level.setBlockAndUpdate(pos, CEEBlocks.BROKEN_BULB.get().withPropertiesOf(state));
                     Vec3 pPos = Vec3.atCenterOf(pos);
@@ -45,7 +45,7 @@ public class BulbDevice extends SimulatedDevice {
                 return;
             }
 
-            extraData.putDouble("lastVoltage", vd);
+            extraData.putDouble("LastVoltage", vd);
 
             int light = getLightLevel(vd);
 
@@ -60,7 +60,7 @@ public class BulbDevice extends SimulatedDevice {
             }
         }
         if (vd / CEEConfigs.server().bulbResistance.get() > CEEConfigs.server().bulbBreakAmperage.get())
-            extraData.putBoolean("destroyed", true);
+            extraData.putBoolean("Destroyed", true);
     }
 
     private int getLightLevel(double vd) {

@@ -146,7 +146,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
 
         if (deviceInstance != null) {
             int i = ratio.value;
-            deviceInstance.extraData().putFloat("ratio", i > 8 ? (float) 1 / (i - 7) : (float) (i + 1));
+            deviceInstance.extraData().putFloat("Ratio", i > 8 ? (float) 1 / (i - 7) : (float) (i + 1));
         }
     }
 

@@ -140,7 +140,7 @@ public class TransformerBlock extends SimpleDeviceBlock implements SimpleWaterlo
     @Override
     protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
-        tag.putFloat("ratio", 3);
+        tag.putFloat("Ratio", 3);
         return tag;
     }
 

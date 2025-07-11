@@ -54,8 +54,8 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
         if (deviceInstance == null)
             return;
 
-        deviceInstance.extraData().putDouble("stress", totalStress);
-        deviceInstance.extraData().putDouble("voltage", rotors.isEmpty() ? 0 : (double) magnets / rotors.size() * 50);
+        deviceInstance.extraData().putDouble("Stress", totalStress);
+        deviceInstance.extraData().putDouble("Voltage", rotors.isEmpty() ? 0 : (double) magnets / rotors.size() * 50);
     }
 
     @Override

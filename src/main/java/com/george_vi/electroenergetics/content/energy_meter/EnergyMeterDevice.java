@@ -18,7 +18,7 @@ public class EnergyMeterDevice extends SimulatedDevice {
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        if (extraData.getBoolean("closed")) {
+        if (extraData.getBoolean("Closed")) {
             bridges.builder(pos).resistor(0, 2, 0.001);
             bridges.builder(pos).resistor(1, 3, 0.001);
             bridges.builder(pos).resistor(0, 1, 9999);
@@ -32,12 +32,12 @@ public class EnergyMeterDevice extends SimulatedDevice {
         double vd = voltages.get(new Node(0, pos)) - voltages.get(new Node(2, pos));
         double v = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
         double amps = vd / 0.001;
-        double totalEnergy = extraData.getDouble("totalEnergy");
+        double totalEnergy = extraData.getDouble("TotalEnergy");
 
-        if (Math.abs(amps) > 0.01 && extraData.getBoolean("closed"))
+        if (Math.abs(amps) > 0.01 && extraData.getBoolean("Closed"))
             totalEnergy += (amps * v / 72000) / 1000;
 
-        extraData.putDouble("totalEnergy", totalEnergy);
+        extraData.putDouble("TotalEnergy", totalEnergy);
 
         if (!level.isLoaded(pos))
             return;

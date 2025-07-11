@@ -91,7 +91,7 @@ public class BulbBlock extends SimpleDeviceBlock implements SimpleWaterloggedBlo
         if (level instanceof ServerLevel sl) {
             InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = InfrastructureSavedData.load(sl).getDevice(pos);
             if (deviceInstance != null)
-                deviceInstance.extraData().putBoolean("destroyed", broken);
+                deviceInstance.extraData().putBoolean("Destroyed", broken);
         }
 
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);

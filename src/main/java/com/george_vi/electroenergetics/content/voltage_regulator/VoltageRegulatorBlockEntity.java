@@ -139,7 +139,7 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
 
         if (deviceInstance != null) {
             int i = voltage.value;
-            deviceInstance.extraData().putFloat("voltage", i * 10);
+            deviceInstance.extraData().putFloat("Voltage", i * 10);
         }
     }
 
