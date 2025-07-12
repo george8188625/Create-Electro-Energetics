@@ -34,8 +34,10 @@
   "electroenergetics.generic.current": "Current",
   "electroenergetics.generic.wattage": "Wattage",
   "electroenergetics.generic.volts": "V",
+  "electroenergetics.generic.kilovolts": "kV",
   "electroenergetics.generic.amps": "A",
   "electroenergetics.generic.watts": "W",
+  "electroenergetics.generic.kilowatts": "kW",
 
   "electroenergetics.transformer.ratio": "Ratio",
 

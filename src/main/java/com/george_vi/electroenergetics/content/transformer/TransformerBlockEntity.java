@@ -13,7 +13,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatter;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
-import com.simibubi.create.foundation.utility.DistExecutor;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.createmod.catnip.math.VecHelper;
@@ -22,8 +21,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -37,12 +39,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
+
     public TransformerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+        setLazyTickRate(20);
     }
 
     protected ScrollValueBehaviour ratio;
-    int tick = 0;
+    protected double power;
+    protected double lastSentPower = -1;
 
     List<Float> voltages = new ArrayList<>();
     float avgVoltage = 0;
@@ -70,6 +75,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
+
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .translate("gui.goggles.secondary_voltage")
                 .style(ChatFormatting.GRAY)
@@ -79,6 +85,16 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
+
+        Lang.builder(CreateElecrtoEnergetics.ID)
+                .translate("gui.goggles.power")
+                .style(ChatFormatting.GRAY)
+                .forGoggles(tooltip);
+        Lang.builder(CreateElecrtoEnergetics.ID)
+                .text(LangNumberFormat.format(Math.round(power)))
+                .translate("generic.watts")
+                .style(ChatFormatting.AQUA)
+                .forGoggles(tooltip, 1);
         return true;
     }
 
@@ -86,9 +102,23 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
     public void tick() {
         super.tick();
         if (!level.isClientSide)
+            if (Math.abs(lastSentPower - power) > 100) {
+                lastSentPower = power;
+                sendData();
+            }
+
+        if (!level.isClientSide)
             return;
 
         CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickAudio);
+    }
+
+    @Override
+    public void lazyTick() {
+        if (level.isClientSide)
+            return;
+        lastSentPower = power;
+        sendData();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -100,7 +130,6 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
 
         Float v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
         Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
-        tick++;
         if (v1 != null && v2 != null) {
             setVoltage(v1 - v2);
             if (avgVoltage > 10) {
@@ -108,8 +137,10 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                     Minecraft.getInstance()
                             .getSoundManager()
                             .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
-                else if (soundInstance != null)
+                else if (soundInstance != null) {
+                    soundInstance.setVolume((float) Mth.clamp(power / 200000, 0.05, 0.7));
                     soundInstance.keepAlive();
+                }
             } else if (soundInstance != null);
         }
     }
@@ -148,6 +179,20 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
             int i = ratio.value;
             deviceInstance.extraData().putFloat("Ratio", i > 8 ? (float) 1 / (i - 7) : (float) (i + 1));
         }
+    }
+
+    @Override
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
+        if (clientPacket)
+            tag.putDouble("Power", power);
+    }
+
+    @Override
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
+        if (clientPacket)
+            power = tag.getDouble("Power");
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {

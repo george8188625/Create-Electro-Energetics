@@ -97,7 +97,7 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
     }
 
     @Override
-    public boolean isOuterInsulator(Level level, BlockPos blockPos, BlockState state, int id) {
+    public boolean isOuterInsulator(Level level, BlockPos pos, BlockState state, int id) {
         return state.getValue(STYLE) == Style.OUTER;
     }
 

@@ -24,6 +24,7 @@ public class TransformerDevice extends SimulatedDevice {
                 .resistor(0, 1, extraData.getDouble("PrimaryResistance") == 0 ? 10 : extraData.getDouble("PrimaryResistance"))
                 .energyLimitedSource(3, 2, extraData.getDouble("StoredEnergy"), extraData.getDouble("SecondaryVoltage"));
     }
+
     @Override
     public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
         if (voltages.size() < 4) return;
@@ -44,7 +45,7 @@ public class TransformerDevice extends SimulatedDevice {
                 Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary)) :
                 - Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary));
 
-        double maxEnergy = 1_00 * Math.abs(vLastTickHighestPrimary / ratio) + 1;
+        double maxEnergy = 1_20 * Math.abs(vLastTickHighestPrimary / ratio) + 1;
 
         double current = 0;
         for (Double d : sourceAmps.values())
@@ -53,6 +54,10 @@ public class TransformerDevice extends SimulatedDevice {
         double load = Math.abs(current * (voltages.get(s1) - voltages.get(s2)));
         double primaryCurrent = vPrimary / (extraData.getDouble("PrimaryResistance") == 0 ? 10 : extraData.getDouble("PrimaryResistance"));
         double incomingEnergy = primaryCurrent * vPrimary;
+
+        if (level.isLoaded(pos))
+            if (level.getBlockEntity(pos) instanceof TransformerBlockEntity be)
+                be.power = load;
 
         storedEnergy += incomingEnergy;
         if (load < 100 && storedEnergy > 100)
@@ -77,7 +82,8 @@ public class TransformerDevice extends SimulatedDevice {
 
         extraData.putDouble("PrimaryResistance", storedEnergy / maxEnergy < 0.75 ? resistance / 10 : resistance);
         extraData.putDouble("StoredEnergy", storedEnergy);
-        extraData.putDouble("SecondaryVoltage", storedEnergy > 100 ? storedEnergy / 1_00 : 0);
+        extraData.putDouble("SecondaryVoltage", storedEnergy > 100 ? Math.min(Math.abs(vLastTickHighestPrimary / ratio), storedEnergy / 1_00) : 0);
         extraData.putDouble("LastPrimaryVoltage", vPrimary);
+
     }
 }

@@ -10,6 +10,7 @@ import com.george_vi.electroenergetics.simulation.*;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -24,7 +25,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -45,14 +45,18 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
     public static final BooleanProperty ROLL = BooleanProperty.create("roll");
     public static final BooleanProperty CLOSED = BooleanProperty.create("closed");
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public final boolean isDouble;
 
-    public CutOffSwitchBlock(BlockBehaviour.Properties properties) {
+    public CutOffSwitchBlock(Properties properties, boolean isDouble) {
         super(properties);
+        this.isDouble = isDouble;
         registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
     }
 
     @Override
     protected SimulatedDevice getDevice() {
+        if (isDouble)
+            return CEESimulatedDevices.DOUBLE_SWITCH;
         return CEESimulatedDevices.CUT_OFF_SWITCH;
     }
 
@@ -81,12 +85,14 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
         } else {
             Vec3 pPos = Vec3.atCenterOf(pos);
             pPos = pPos.subtract(Vec3.atLowerCornerOf(state.getValue(FACING).getNormal()).multiply(0.25, 0.25, 0.25));
-            if (state.getValue(CLOSED)){
-                Float v1 = WireRenderer.getAllVoltages().get(new Node(0, pos));
-                Float v2 = WireRenderer.getAllVoltages().get(new Node(1, pos));
-                if (v1 != null && v2 != null && Math.abs(v1 - v2) > 0.0003)
-                    for (int i = 0; i < (Math.abs(v1 - v2) * 10) + 1; i++)
-                        level.addParticle(ParticleTypes.BUBBLE_POP, pPos.offsetRandom(level.random, 0.3f).x, pPos.offsetRandom(level.random, 0.3f).y, pPos.offsetRandom(level.random, 0.3f).z, 0, 0, 0);
+            if (state.getValue(CLOSED)) {
+                for (int l : isDouble ? Iterate.zeroAndOne : new int[]{0}) {
+                    Float v1 = WireRenderer.getAllVoltages().get(new Node(l, pos));
+                    Float v2 = WireRenderer.getAllVoltages().get(new Node((isDouble ? 2 : 1) + l, pos));
+                    if (v1 != null && v2 != null && Math.abs(v1 - v2) > 0.0003)
+                        for (int i = 0; i < (Math.abs(v1 - v2) * 10) + 1; i++)
+                            level.addParticle(ParticleTypes.BUBBLE_POP, pPos.offsetRandom(level.random, 0.3f).x, pPos.offsetRandom(level.random, 0.3f).y, pPos.offsetRandom(level.random, 0.3f).z, 0, 0, 0);
+                }
             }
         }
         level.setBlockAndUpdate(pos, state.cycle(CLOSED));
@@ -110,6 +116,8 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (isDouble)
+            return CEEShapes.DOUBLE_SWITCH.get(state.getValue(FACING));
         return (state.getValue(ROLL) ? CEEShapes.CUT_OFF_SWITCH_ROLL : CEEShapes.CUT_OFF_SWITCH).get(state.getValue(FACING));
     }
 
@@ -130,6 +138,10 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
 
     @Override
     public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        if (isDouble)
+            return state.getValue(ROLL) ?
+                    CEENodeConfigurations.DOUBLE_SWITCH_ROLL.getNodes(state.getValue(FACING)) :
+                    CEENodeConfigurations.DOUBLE_SWITCH.getNodes(state.getValue(FACING));
         return state.getValue(ROLL) ?
                 CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodes(state.getValue(FACING)) :
                 CEENodeConfigurations.DOUBLE_CONNECTOR.getNodes(state.getValue(FACING));
@@ -137,6 +149,10 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
+        if (isDouble)
+            return state.getValue(ROLL) ?
+                    CEENodeConfigurations.DOUBLE_SWITCH_ROLL.getNodePos(state.getValue(FACING), id) :
+                    CEENodeConfigurations.DOUBLE_SWITCH.getNodePos(state.getValue(FACING), id);
         return state.getValue(ROLL) ?
                 CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodePos(state.getValue(FACING), id) :
                 CEENodeConfigurations.DOUBLE_CONNECTOR.getNodePos(state.getValue(FACING), id);

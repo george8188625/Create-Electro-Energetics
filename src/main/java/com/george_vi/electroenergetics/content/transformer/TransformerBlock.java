@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
+import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -77,64 +78,20 @@ public class TransformerBlock extends SimpleDeviceBlock implements SimpleWaterlo
         return CEESimulatedDevices.TRANSFORMER;
     }
 
-    // 0,1 Primary / 2,3 Secondary
     @Override
     public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        if (state.getValue(FACING) == Direction.NORTH)
-            return Map.of(
-                    new Vec3(5/16f, 14/16f, 13/16f), 0,
-                    new Vec3(11/16f, 14/16f, 13/16f), 1,
-                    new Vec3(5/16f, 14/16f, 3/16f), 2,
-                    new Vec3(11/16f, 14/16f, 3/16f), 3
-            );
-        if (state.getValue(FACING) == Direction.EAST)
-            return Map.of(
-                    new Vec3(3/16f, 14/16f, 5/16f), 0,
-                    new Vec3(3/16f, 14/16f, 11/16f), 1,
-                    new Vec3(13/16f, 14/16f, 5/16f), 2,
-                    new Vec3(13/16f, 14/16f, 11/16f), 3
-            );
-        if (state.getValue(FACING) == Direction.SOUTH)
-            return Map.of(
-                    new Vec3(5/16f, 14/16f, 3/16f), 0,
-                    new Vec3(11/16f, 14/16f, 3/16f), 1,
-                    new Vec3(5/16f, 14/16f, 13/16f), 2,
-                    new Vec3(11/16f, 14/16f, 13/16f), 3
-            );
-        return Map.of(
-                new Vec3(13/16f, 14/16f, 5/16f), 0,
-                new Vec3(13/16f, 14/16f, 11/16f), 1,
-                new Vec3(3/16f, 14/16f, 5/16f), 2,
-                new Vec3(3/16f, 14/16f, 11/16f), 3
-        );
+        return CEENodeConfigurations.TRANSFORMER.getNodes(state.getValue(FACING));
     }
 
     @Override
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
+
         return id == 0 || id == 1 ? Component.translatable("electroenergetics.nodes.primary") : Component.translatable("electroenergetics.nodes.secondary");
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
-        if (state.getValue(FACING) == Direction.NORTH)
-            return id == 0 ? new Vec3(5/16f, 14/16f, 13/16f) :
-                    id == 1 ? new Vec3(11/16f, 14/16f, 13/16f) :
-                    id == 2 ? new Vec3(5/16f, 14/16f, 3/16f) :
-                    new Vec3(11/16f, 14/16f, 3/16f);
-        if (state.getValue(FACING) == Direction.EAST)
-            return id == 0 ? new Vec3(3/16f, 14/16f, 5/16f) :
-                    id == 1 ? new Vec3(3/16f, 14/16f, 11/16f) :
-                    id == 2 ? new Vec3(13/16f, 14/16f, 5/16f) :
-                    new Vec3(13/16f, 14/16f, 11/16f);
-        if (state.getValue(FACING) == Direction.SOUTH)
-            return id == 0 ? new Vec3(5/16f, 14/16f, 3/16f) :
-                    id == 1 ? new Vec3(11/16f, 14/16f, 3/16f) :
-                    id == 2 ? new Vec3(5/16f, 14/16f, 13/16f) :
-                    new Vec3(11/16f, 14/16f, 13/16f);
-        return id == 0 ? new Vec3(13/16f, 14/16f, 5/16f) :
-                id == 1 ? new Vec3(13/16f, 14/16f, 11/16f) :
-                id == 2 ? new Vec3(3/16f, 14/16f, 5/16f) :
-                new Vec3(3/16f, 14/16f, 11/16f);
+        return CEENodeConfigurations.TRANSFORMER.getNodePos(state.getValue(FACING), id);
     }
 
     @Override

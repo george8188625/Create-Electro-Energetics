@@ -88,6 +88,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     public void tick() {
         super.tick();
         tick++;
+
         if (voltages.isEmpty())
             avgVoltage = 0;
         else
@@ -107,14 +108,16 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
         Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
         if (v1 != null && v2 != null)
             setVoltage(v1 - v2);
-        if (Math.abs(avgVoltage) > 79) {
-            if (soundInstance == null || soundInstance.isStopped())
+        if (Math.abs(avgVoltage) > 60) {
+            if (soundInstance == null || soundInstance.isStopped()) {
                 Minecraft.getInstance()
                         .getSoundManager()
                         .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
-            else if (soundInstance != null)
+            } else if (soundInstance != null) {
                 soundInstance.keepAlive();
-        } else if (soundInstance != null);
+                soundInstance.setVolume((Math.abs(voltage) / (Math.abs(avgVoltage) + 1) > 1.3) || isOverStressed() ? 0.5f : 0.05f);
+            }
+        }
     }
 
     @Override

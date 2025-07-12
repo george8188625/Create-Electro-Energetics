@@ -12,6 +12,7 @@ import com.george_vi.electroenergetics.content.fuse.FuseDevice;
 import com.george_vi.electroenergetics.content.gauge.GaugeDevice;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleDevice;
+import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayDevice;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesDevice;
 import com.george_vi.electroenergetics.content.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorDevice;
@@ -27,7 +28,8 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice CONNECTOR = register(new ConnectorDevice(CreateElecrtoEnergetics.rl("connector")));
     public static final SimulatedDevice CREATIVE_BATTERY = register(new CreativeBatteryDevice(CreateElecrtoEnergetics.rl("creative_battery")));
     public static final SimulatedDevice BULB = register(new BulbDevice(CreateElecrtoEnergetics.rl("bulb")));
-    public static final SimulatedDevice CUT_OFF_SWITCH = register(new CutOffSwitchDevice(CreateElecrtoEnergetics.rl("cut_off_switch")));
+    public static final SimulatedDevice CUT_OFF_SWITCH = register(new CutOffSwitchDevice(CreateElecrtoEnergetics.rl("cut_off_switch"), 1));
+    public static final SimulatedDevice DOUBLE_SWITCH = register(new CutOffSwitchDevice(CreateElecrtoEnergetics.rl("double_switch"), 2));
     public static final SimulatedDevice ENERGY_METER = register(new EnergyMeterDevice(CreateElecrtoEnergetics.rl("energy_meter")));
     public static final SimulatedDevice ELECTRIC_MOTOR = register(new ElectricMotorDevice(CreateElecrtoEnergetics.rl("electric_motor")));
     public static final SimulatedDevice TRANSFORMER = register(new TransformerDevice(CreateElecrtoEnergetics.rl("transformer")));
@@ -39,6 +41,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice FUSE = register(new FuseDevice(CreateElecrtoEnergetics.rl("fuse")));
     public static final SimulatedDevice ACCUMULATOR = register(new AccumulatorDevice(CreateElecrtoEnergetics.rl("accumulator")));
     public static final SimulatedDevice CONVERTER = register(new ConverterDevice(CreateElecrtoEnergetics.rl("converter")));
+    public static final SimulatedDevice REDSTONE_RELAY = register(new RedstoneRelayDevice(CreateElecrtoEnergetics.rl("redstone_relay")));
     public static final SimulatedDevice CONCRETE_POLE = register(new ConcretePoleDevice(CreateElecrtoEnergetics.rl("concrete_pole")));
 
     public static SimulatedDevice register(SimulatedDevice device) {

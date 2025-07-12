@@ -38,7 +38,7 @@ public class CEEBlockEntityTypes {
             .register();
 
     public static final BlockEntityEntry<TransformerBlockEntity> TRANSFORMER = REGISTRATE.blockEntity("transformer", TransformerBlockEntity::new)
-            .validBlock(CEEBlocks.TRANSFORMER::get)
+            .validBlocks(CEEBlocks.TRANSFORMER::get)
             .register();
 
 //    public static final BlockEntityEntry<VoltageRegulatorBlockEntity> VOLTAGE_REGULATOR = REGISTRATE.blockEntity("voltage_regulator", VoltageRegulatorBlockEntity::new)

@@ -96,9 +96,12 @@ public class WireApplyingBehaviour {
             }
 
             if (closestDistance < 0.4)
-                if (WireRenderer.getAllVoltages().containsKey(new Node(closestNodeID, pos)))
-                    mc.gui.setOverlayMessage(db.getNodeLabel(level, pos, state, closestNodeID).withStyle(ChatFormatting.GOLD).append(Component.literal(" ")).append(Component.literal(String.format("%.1f", WireRenderer.getAllVoltages().get(new Node(closestNodeID, pos)))).withStyle(ChatFormatting.GRAY)).append(Component.literal("V").withStyle(ChatFormatting.GRAY)), false);
-                else
+                if (WireRenderer.getAllVoltages().containsKey(new Node(closestNodeID, pos))) {
+                    float voltage = WireRenderer.getAllVoltages().get(new Node(closestNodeID, pos));
+                    mc.gui.setOverlayMessage(db.getNodeLabel(level, pos, state, closestNodeID).withStyle(ChatFormatting.GOLD)
+                            .append(Component.literal(" "))
+                            .append(Component.literal(String.format("%.1f", Math.abs(voltage) > 1000 ? voltage / 1000 : voltage) + (Math.abs(voltage) > 1000 ? "kV" : "V")).withStyle(ChatFormatting.GRAY)), false);
+                } else
                     mc.gui.setOverlayMessage(db.getNodeLabel(level, pos, state, closestNodeID).withStyle(ChatFormatting.GOLD), false);
         } else {
             closestDistance = 0;

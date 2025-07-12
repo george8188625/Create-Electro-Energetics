@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.wire_spool.ClearWireConnectionsPacket;
 import com.george_vi.electroenergetics.content.wire_spool.SendWireConnectionsPacket;
+import com.mojang.logging.LogUtils;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.platform.CatnipServices;
@@ -17,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
+import org.slf4j.Logger;
 
 import java.util.*;
 
@@ -28,6 +30,7 @@ public class InfrastructureSavedData extends SavedData {
     // CONNECTION - WIRE TYPE, TEMPERATURE
     Map<NodeConnection, Pair<WireTypes.WireType, Float>> CONNECTION_DATA = new HashMap<>();
     ServerLevel level;
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public InfrastructureSavedData(ServerLevel level) {
         this.level = level;
@@ -123,8 +126,17 @@ public class InfrastructureSavedData extends SavedData {
         NBTHelper.iterateCompoundList(compoundTag.getList("Devices", Tag.TAG_COMPOUND), tag -> {
             BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
             SimulatedDevice device = CEESimulatedDevices.get(ResourceLocation.parse(tag.getString("ID")));
-            if (device == null)
+            if (device == null) {
+                List<Node> nodes = sd.NODES_BY_POS.get(pos);
+                for (Node node : nodes) {
+                    for (NodeConnection connection : sd.getConnections(node))
+                        sd.removeConnection(connection);
+                    sd.NODES.remove(node);
+                }
+                sd.NODES_BY_POS.remove(pos);
+                LOGGER.warn("Could not load device: {} at pos: {} in: {}. No device with such ID, removing...", tag.getString("ID"), pos.toShortString(), level.dimension().location().toString());
                 return;
+            }
             sd.DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, tag.getCompound("ExtraData"), sd.NODES_BY_POS.getOrDefault(pos, new ArrayList<>())));
         });
 
@@ -160,7 +172,7 @@ public class InfrastructureSavedData extends SavedData {
                 List<Node> oldNodes = NODES_BY_POS.get(pos);
                 List<Node> nodes = nodeIDs.stream().map(id -> new Node(id, pos)).toList();
 
-                if (oldNodes != null && oldNodes.stream().map(Node::id).toList().equals(nodeIDs))
+                if (oldNodes != null && oldNodes.stream().map(Node::id).sorted().toList().equals(nodeIDs.stream().sorted().toList()))
                     return;
 
                 if (oldNodes != null)

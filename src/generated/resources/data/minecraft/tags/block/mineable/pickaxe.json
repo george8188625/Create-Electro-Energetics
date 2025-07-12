@@ -12,6 +12,8 @@
     "electroenergetics:bulb",
     "electroenergetics:broken_bulb",
     "electroenergetics:cut_off_switch",
+    "electroenergetics:double_switch",
+    "electroenergetics:redstone_relay",
     "electroenergetics:energy_meter",
     "electroenergetics:accumulator",
     "electroenergetics:ammeter",

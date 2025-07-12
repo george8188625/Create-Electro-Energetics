@@ -82,6 +82,18 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
         float number8 = (float) (totalEnergy / 1000000 % 1);
         float number9 = (float) (totalEnergy / 10000000 % 1);
 
+//        number0 = Math.round(number0 * 10) / 10f;
+//        number1 = Math.round(number1 * 10) / 10f;
+//        number2 = Math.round(number2 * 10) / 10f;
+//        number3 = Math.round(number3 * 10) / 10f;
+//        number4 = Math.round(number4 * 10) / 10f;
+//        number5 = Math.round(number5 * 10) / 10f;
+//        number6 = Math.round(number6 * 10) / 10f;
+//        number7 = Math.round(number7 * 10) / 10f;
+//        number8 = Math.round(number8 * 10) / 10f;
+//        number9 = Math.round(number9 * 10) / 10f;
+
+
         graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 185, y + 27, 0, 243, 210 - (number0 * 210) + 6, 13, 30, 256, 256);
         graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 168, y + 27, 0, 243, 210 - (number1 * 210) + 6, 13, 30, 256, 256);
         graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 151, y + 27, 0, 243, 210 - (number2 * 210) + 6, 13, 30, 256, 256);

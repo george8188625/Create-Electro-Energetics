@@ -15,18 +15,16 @@ import com.george_vi.electroenergetics.content.fuse.FuseBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlock;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodBlock;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleBlock;
+import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
-import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlock;
-import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.content.kinetics.gauge.GaugeGenerator;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.ModelGen;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.tterrag.registrate.util.entry.BlockEntry;
-import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
@@ -34,14 +32,6 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
-import net.minecraft.world.level.storage.loot.predicates.InvertedLootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 
 import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE;
@@ -211,7 +201,7 @@ public class CEEBlocks {
             .build()
             .register();
 
-    public static final BlockEntry<CutOffSwitchBlock> CUT_OFF_SWITCH = REGISTRATE.block("cut_off_switch", CutOffSwitchBlock::new)
+    public static final BlockEntry<CutOffSwitchBlock> CUT_OFF_SWITCH = REGISTRATE.block("cut_off_switch", properties -> new CutOffSwitchBlock(properties, false))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
@@ -221,6 +211,42 @@ public class CEEBlocks {
                                     state.getValue(CutOffSwitchBlock.CLOSED) ? AssetLookup.partialBaseModel(c, p, "closed_roll") : AssetLookup.partialBaseModel(c, p, "roll"))
                             .rotationX(state.getValue(CutOffSwitchBlock.FACING) == Direction.DOWN ? 180 : state.getValue(CutOffSwitchBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
                             .rotationY(state.getValue(CutOffSwitchBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(CutOffSwitchBlock.FACING).toYRot() : 0)
+                            .build()
+            )))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<CutOffSwitchBlock> DOUBLE_SWITCH = REGISTRATE.block("double_switch", properties -> new CutOffSwitchBlock(properties, true))
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
+            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
+                    ConfiguredModel.builder()
+                            .modelFile(!state.getValue(CutOffSwitchBlock.ROLL) ?
+                                    state.getValue(CutOffSwitchBlock.CLOSED) ? AssetLookup.partialBaseModel(c, p, "closed") : AssetLookup.partialBaseModel(c, p) :
+                                    state.getValue(CutOffSwitchBlock.CLOSED) ? AssetLookup.partialBaseModel(c, p, "closed_roll") : AssetLookup.partialBaseModel(c, p, "roll"))
+                            .rotationX(state.getValue(CutOffSwitchBlock.FACING) == Direction.DOWN ? 180 : state.getValue(CutOffSwitchBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
+                            .rotationY(state.getValue(CutOffSwitchBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(CutOffSwitchBlock.FACING).toYRot() : 0)
+                            .build()
+            )))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<RedstoneRelayBlock> REDSTONE_RELAY = REGISTRATE.block("redstone_relay", RedstoneRelayBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
+            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
+                    ConfiguredModel.builder()
+                            .modelFile(!state.getValue(RedstoneRelayBlock.ROLL) ?
+                                    state.getValue(RedstoneRelayBlock.POWERED) ? AssetLookup.partialBaseModel(c, p, "powered") : AssetLookup.partialBaseModel(c, p) :
+                                    state.getValue(RedstoneRelayBlock.POWERED) ? AssetLookup.partialBaseModel(c, p, "powered_roll") : AssetLookup.partialBaseModel(c, p, "roll"))
+                            .rotationX(state.getValue(RedstoneRelayBlock.FACING) == Direction.DOWN ? 180 : state.getValue(RedstoneRelayBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
+                            .rotationY(state.getValue(RedstoneRelayBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(RedstoneRelayBlock.FACING).toYRot() : 0)
                             .build()
             )))
             .transform(pickaxeOnly())
@@ -287,10 +313,10 @@ public class CEEBlocks {
     public static final BlockEntry<TransformerBlock> TRANSFORMER = REGISTRATE.block("transformer", TransformerBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .blockstate(BlockStateGen.horizontalBlockProvider(false))
             .transform(pickaxeOnly())
             .item()
-            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .model((c, p) -> p.blockItem(c::getEntry))
             .build()
             .register();
 

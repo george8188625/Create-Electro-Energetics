@@ -42,7 +42,7 @@ public class BridgeCollector {
 
         public Builder voltageSourceWithResistance(int n1, int n2, double resistance, double voltage) {
             collector.addInternalNode(1000 + i, pos);
-            collector.bridge(new Node(n1, pos), new Node(1000 + i, pos), 99999999, voltage);
+            collector.bridge(new Node(n1, pos), new Node(1000 + i, pos), 999999999, voltage);
             collector.bridge(new Node(1000 + i, pos), new Node(n2, pos), resistance, 0);
             i++;
             return this;
@@ -56,14 +56,14 @@ public class BridgeCollector {
                 resistance = (voltage * voltage) / (4 * energy);
 
             collector.addInternalNode(1000 + i, pos);
-            collector.bridge(new Node(n1, pos), new Node(1000 + i, pos), 99999, energy <= 0 ? 0 : voltage);
+            collector.bridge(new Node(n1, pos), new Node(1000 + i, pos), 999999999, energy <= 0 ? 0 : voltage);
             collector.bridge(new Node(1000 + i, pos), new Node(n2, pos), resistance + 0.5, 0);
             i++;
             return this;
         }
 
         public Builder idealVoltageSource(int n1, int n2, double voltage) {
-            collector.bridge(new Node(n1, pos), new Node(n2, pos), 99999999, voltage);
+            collector.bridge(new Node(n1, pos), new Node(n2, pos), 999999999, voltage);
             return this;
         }
 

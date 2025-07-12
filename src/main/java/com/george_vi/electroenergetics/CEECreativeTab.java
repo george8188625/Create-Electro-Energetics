@@ -30,6 +30,8 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.CREATIVE_BATTERY.asStack());
                         output.accept(CEEBlocks.BULB.asStack());
                         output.accept(CEEBlocks.CUT_OFF_SWITCH.asStack());
+                        output.accept(CEEBlocks.DOUBLE_SWITCH.asStack());
+                        output.accept(CEEBlocks.REDSTONE_RELAY.asStack());
                         output.accept(CEEBlocks.ENERGY_METER.asStack());
                         output.accept(CEEBlocks.AMMETER.asStack());
                         output.accept(CEEBlocks.VOLTMETER.asStack());

@@ -41,7 +41,7 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock {
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
 
         List<Node> oldNodes = sd.getNodesAt(pos);
-        if (!oldNodes.stream().map(Node::id).toList().equals(nodes)) {
+        if (!oldNodes.stream().map(Node::id).sorted().toList().equals(nodes.stream().sorted().toList())) {
             for (Node node : oldNodes)
                 Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(sd.getConnections(node).size() * 8));
         }
