@@ -1,0 +1,96 @@
+package com.george_vi.electroenergetics.content.wire_spool;
+
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
+import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.platform.CatnipServices;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
+
+import java.util.*;
+
+public class LoadedWireManager {
+    public static Map<UUID, List<ChunkPos>> loadedChunks = new HashMap<>();
+    static final int renderDistance = 20;
+
+    public static void handlePlayerEnterNewSection(ServerPlayer player, ChunkPos newPos) {
+        List<ChunkPos> chunks = loadedChunks.computeIfAbsent(player.getUUID(), uuid -> new ArrayList<>());
+
+        InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) player.level());
+
+        List<ChunkPos> newChunks = new ArrayList<>();
+        List<ChunkPos> chunksToLoad = new ArrayList<>();
+        for (int x = -renderDistance; x <= renderDistance; x++) {
+            for (int z = -renderDistance; z <= renderDistance; z++) {
+                ChunkPos chunk = new ChunkPos(x + newPos.x, z + newPos.z);
+                chunksToLoad.add(chunk);
+                if (!chunks.contains(chunk))
+                    newChunks.add(chunk);
+            }
+        }
+
+        List<Node> newNodes = new ArrayList<>(sd.getNodes().stream().filter(n -> newChunks.contains(new ChunkPos(n.sourcePos()))).toList());
+
+        for (Node node : newNodes) {
+            for (NodeConnection connection : sd.getConnections(node)) {
+                if (chunks.contains(new ChunkPos(connection.node2().sourcePos())))
+                    continue;
+                CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection));
+            }
+        }
+
+        chunks.addAll(newChunks);
+        List<ChunkPos> chunksToRemove = new ArrayList<>();
+        for (int i = 0; i < chunks.size(); i++) {
+            ChunkPos chunk = chunks.get(i);
+            if (!chunksToLoad.contains(chunk))
+                chunksToRemove.add(chunk);
+        }
+
+        for (ChunkPos chunkPos : chunksToRemove)
+            chunks.remove(chunkPos);
+
+        List<Node> nodesToRemove = new ArrayList<>(sd.getNodes().stream().filter(n -> chunksToRemove.contains(new ChunkPos(n.sourcePos()))).toList());
+        List<NodeConnection> connectionsToRemove = new ArrayList<>();
+        for (Node node : nodesToRemove) {
+            for (NodeConnection connection : sd.getConnections(node)) {
+                if (chunks.contains(new ChunkPos(connection.node2().sourcePos())))
+                    continue;
+                connectionsToRemove.add(connection);
+            }
+        }
+
+        CatnipServices.NETWORK.sendToClient(player, new ClearWireConnectionsPacket(connectionsToRemove.stream().map(c -> Pair.of(c.node1(), c.node2())).toList(), false));
+    }
+
+    public static void handleWireRemoved(NodeConnection connection, ServerLevel level) {
+        ChunkPos chunk1 = new ChunkPos(connection.node1().sourcePos());
+        ChunkPos chunk2 = new ChunkPos(connection.node2().sourcePos());
+        for (ServerPlayer player : level.getPlayers(p -> true)) {
+            for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList()))
+                if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {
+                    CatnipServices.NETWORK.sendToClient(player, ClearWireConnectionsPacket.clearWire(connection));
+                    break;
+                }
+        }
+    }
+
+    public static void handleWireAdded(NodeConnection connection, ServerLevel level) {
+        ChunkPos chunk1 = new ChunkPos(connection.node1().sourcePos());
+        ChunkPos chunk2 = new ChunkPos(connection.node2().sourcePos());
+        for (ServerPlayer player : level.getPlayers(p -> true)) {
+            for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList()))
+                if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {
+                    CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection));
+                    break;
+                }
+        }
+    }
+
+    public static void unloadForPlayer(ServerPlayer player) {
+        loadedChunks.remove(player.getUUID());
+        CatnipServices.NETWORK.sendToClient(player, ClearWireConnectionsPacket.clearAll());
+    }
+}

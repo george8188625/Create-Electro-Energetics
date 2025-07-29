@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "C": {
-      "item": "electroenergetics:connector"
+      "item": "electroenergetics:double_connector"
     },
     "P": {
       "item": "create:precision_mechanism"
@@ -19,7 +19,7 @@
     }
   },
   "pattern": [
-    "CCC",
+    "C C",
     "vPa",
     " s "
   ],

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "s": {
+      "tag": "c:plates/iron"
+    }
+  },
+  "pattern": [
+    " ss",
+    "AAA",
+    "A  "
+  ],
+  "result": {
+    "count": 3,
+    "id": "electroenergetics:pole_mount"
+  }
+}

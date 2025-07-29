@@ -117,4 +117,14 @@ public class CEENodeConfigurations {
             .add(new Vec3(14/16f, 2/16f, 5/16f))
             .add(new Vec3(14/16f, 2/16f, 11/16f))
             .simple();
+
+    public static final NodeConfigurator PUMP = new NodeConfigurator.Builder()
+            .add(new Vec3(1/16f, 8/16f, 8/16f))
+            .add(new Vec3(15/16f, 8/16f, 8/16f))
+            .simple();
+
+    public static final NodeConfigurator PUMP_ROLL = new NodeConfigurator.Builder()
+            .add(new Vec3(8/16f, 8/16f, 1/16f))
+            .add(new Vec3(8/16f, 8/16f, 15/16f))
+            .simple();
 }

@@ -32,7 +32,7 @@ public record ChangeEnergyMeterStatePacket(boolean reset, boolean disconnect, Bl
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
         InfrastructureSavedData.SimulatedDeviceInstance device = sd.getDevice(pos);
 
-        if (device == null || !(device.simulatedDevice() instanceof EnergyMeterDevice meter))
+        if (device == null || !(device.simulatedDevice() instanceof EnergyMeterDevice || device.simulatedDevice() instanceof TriPolarEnergyMeterDevice))
             return;
 
         if (reset)

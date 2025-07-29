@@ -1,5 +1,7 @@
 package com.george_vi.electroenergetics.simulation;
 
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
-import com.george_vi.electroenergetics.simulation.Node;
-import com.george_vi.electroenergetics.simulation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 
 import java.util.Objects;
 

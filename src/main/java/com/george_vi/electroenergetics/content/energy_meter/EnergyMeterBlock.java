@@ -50,10 +50,12 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
     public static final BooleanProperty INVERTED = BlockStateProperties.INVERTED;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public final boolean triPolar;
 
-    public EnergyMeterBlock(Properties properties) {
+    public EnergyMeterBlock(Properties properties, boolean triPolar) {
         super(properties);
         registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+        this.triPolar = triPolar;
     }
 
     @Override
@@ -64,7 +66,7 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
 
     @Override
     protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.ENERGY_METER;
+        return triPolar ? CEESimulatedDevices.TRI_POLAR_ENERGY_METER : CEESimulatedDevices.ENERGY_METER;
     }
 
     @Override
@@ -118,6 +120,11 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
 
     @Override
     public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        if (triPolar) {
+            if (state.getValue(INVERTED))
+                return CEENodeConfigurations.TRI_POLAR_METERING_MIRRORED.getNodes(state.getValue(FACING));
+            return CEENodeConfigurations.TRI_POLAR_METERING.getNodes(state.getValue(FACING));
+        }
         if (state.getValue(INVERTED))
             return CEENodeConfigurations.BI_POLAR_METERING_MIRRORED.getNodes(state.getValue(FACING));
         return CEENodeConfigurations.BI_POLAR_METERING.getNodes(state.getValue(FACING));
@@ -125,6 +132,11 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
+        if (triPolar) {
+            if (state.getValue(INVERTED))
+                return CEENodeConfigurations.TRI_POLAR_METERING_MIRRORED.getNodePos(state.getValue(FACING), id);
+            return CEENodeConfigurations.TRI_POLAR_METERING.getNodePos(state.getValue(FACING), id);
+        }
         if (state.getValue(INVERTED))
             return CEENodeConfigurations.BI_POLAR_METERING_MIRRORED.getNodePos(state.getValue(FACING), id);
         return CEENodeConfigurations.BI_POLAR_METERING.getNodePos(state.getValue(FACING), id);
@@ -132,6 +144,12 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
 
     @Override
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
+        if (triPolar)
+            return id == 0 ? Component.translatable("electroenergetics.nodes.feed_negative") :
+                   id == 2 ? Component.translatable("electroenergetics.nodes.feed_positive") :
+                   id == 3 ? Component.translatable("electroenergetics.nodes.load_negative") :
+                   id == 5 ? Component.translatable("electroenergetics.nodes.load_positive") :
+                            Component.translatable("electroenergetics.nodes.neutral");
         return id == 0 ? Component.translatable("electroenergetics.nodes.feed") :
                 id == 2 ? Component.translatable("electroenergetics.nodes.load") :
                         Component.translatable("electroenergetics.nodes.neutral");

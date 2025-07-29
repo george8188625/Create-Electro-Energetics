@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.converter;
 
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.Node;
-import com.george_vi.electroenergetics.simulation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +19,7 @@ public class ConverterDevice extends SimulatedDevice {
         super(id);
     }
 
-    static final int MAX_ENERGY = 10_000;
+    static final int MAX_ENERGY = 100_000;
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
@@ -36,7 +36,7 @@ public class ConverterDevice extends SimulatedDevice {
         if (voltages.size() != 2 && voltages.size() != 3)
             return;
         double storedEnergy = extraData.getDouble("StoredEnergy");
-        double conversionRate = 0.37;
+            double conversionRate = 34;
 
         if (extraData.getBoolean("Source")) {
             double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
@@ -73,6 +73,6 @@ public class ConverterDevice extends SimulatedDevice {
         extraData.putDouble("StoredEnergy", storedEnergy);
 
         if (vd > 1)
-            extraData.putDouble("Resistance", Math.max(30, vd / (Math.max((MAX_ENERGY - storedEnergy), 0.01) / vd)));
+            extraData.putDouble("Resistance", Math.max(5, vd / (Math.max((MAX_ENERGY - storedEnergy), 0.01) / vd)));
     }
 }

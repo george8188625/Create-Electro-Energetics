@@ -1,11 +1,10 @@
 package com.george_vi.electroenergetics.content.pole;
 
-import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.Node;
+import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

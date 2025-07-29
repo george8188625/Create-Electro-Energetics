@@ -1,8 +1,9 @@
 package com.george_vi.electroenergetics.content;
 
 import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.*;
-import com.simibubi.create.foundation.item.ItemHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -43,7 +44,7 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock {
         List<Node> oldNodes = sd.getNodesAt(pos);
         if (!oldNodes.stream().map(Node::id).sorted().toList().equals(nodes.stream().sorted().toList())) {
             for (Node node : oldNodes)
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(sd.getConnections(node).size() * 8));
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(sd.getConnections(node).size() * CEEConfigs.server().wiresPerSpool.get()));
         }
 
         sd.addDevice(pos, getDevice(), getExtraData(level, state, pos), nodes);
@@ -55,7 +56,7 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock {
         if (level instanceof ServerLevel sl && state.getBlock() != level.getBlockState(pos).getBlock() && shouldReplaceDeviceFor(state, newState)) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
             for (Node node : sd.getNodesAt(pos))
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(sd.getConnections(node).size() * 8));
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(sd.getConnections(node).size() * CEEConfigs.server().wiresPerSpool.get()));
             sd.removeDevice(pos);
         }
         super.onRemove(state, level, pos, newState, movedByPiston);

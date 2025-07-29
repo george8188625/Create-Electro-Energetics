@@ -2,6 +2,8 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.*;
 import com.george_vi.electroenergetics.simulation.util.LUSolver;
 import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
@@ -145,6 +147,8 @@ public class SimulationTicker {
 
             Map<Node, Double> results = network.getResults(mnaResults, simulationNodes);
 
+            int minVoltage = 0;
+            int maxVoltage = 0;
             for (Map.Entry<Node, Double> e : results.entrySet()) {
                 double voltage = e.getValue();
 
@@ -152,14 +156,17 @@ public class SimulationTicker {
                     resultsPerBlock.put(e.getKey().sourcePos(), new HashMap<>());
                 resultsPerBlock.get(e.getKey().sourcePos()).put(e.getKey(), voltage);
 
+                minVoltage = (int) Math.min(voltage, minVoltage);
+                maxVoltage = (int) Math.max(voltage, maxVoltage);
+
                 InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(e.getKey().sourcePos());
                 if (deviceInstance != null)
-                    level.getPlayers(player -> player.blockPosition().atY(0).distManhattan(e.getKey().sourcePos().atY(0)) < deviceInstance.simulatedDevice().sendVoltagesDistance()).forEach(
+                    level.getPlayers(player -> Math.sqrt(player.blockPosition().atY(0).distSqr(e.getKey().sourcePos().atY(0))) < deviceInstance.simulatedDevice().sendVoltagesDistance()).forEach(
                             player -> CatnipServices.NETWORK.sendToClient(player, new SendVoltageDataPacket(e.getKey().sourcePos(), e.getKey().id(), (float) voltage)));
             }
             long networkEnd = System.nanoTime();
 
-            performances.add(new SimulationPerformance(preOptimizationNodes, postOptimizationNodes, (int) (networkEnd - networkStart) / 1000, (int) (optimizationEnd - optimizationStart) / 1000, (int) (solveEnd - solveStart) / 1000));
+            performances.add(new SimulationPerformance(preOptimizationNodes, postOptimizationNodes, (int) (networkEnd - networkStart) / 1000, (int) (optimizationEnd - optimizationStart) / 1000, (int) (solveEnd - solveStart) / 1000, minVoltage, maxVoltage));
         }
 
 
@@ -221,8 +228,8 @@ public class SimulationTicker {
 
 
 
-    static double getWireResistance(Node node1, Node node2) {
-        double res = Math.sqrt(node1.sourcePos().distManhattan(node2.sourcePos())) * CEEConfigs.server().wireResistance.get();
+    public static double getWireResistance(Node node1, Node node2) {
+        double res = Math.sqrt(node1.sourcePos().distSqr(node2.sourcePos())) * CEEConfigs.server().wireResistance.get();
         return res == 0 ? CEEConfigs.server().wireResistance.get() : res;
     }
 
@@ -236,5 +243,5 @@ public class SimulationTicker {
         }
     }
 
-    public record SimulationPerformance(int nodes, int optimizedNodes, int totalTime, int optimizationTime, int solutionTime) { }
+    public record SimulationPerformance(int nodes, int optimizedNodes, int totalTime, int optimizationTime, int solutionTime, int minVoltage, int maxVoltage) { }
 }

@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.simulation;
+package com.george_vi.electroenergetics.foundation;
 
 import net.minecraft.core.BlockPos;
 

@@ -6,14 +6,14 @@
       "item": "create:andesite_alloy_block"
     },
     "C": {
-      "item": "electroenergetics:connector"
+      "item": "electroenergetics:double_connector"
     },
     "W": {
       "item": "electroenergetics:wire_spool"
     }
   },
   "pattern": [
-    "CCC",
+    "C C",
     "WAW",
     "AAA"
   ],

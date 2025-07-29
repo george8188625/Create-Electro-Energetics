@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:light_gray_concrete"
+    },
+    "W": {
+      "item": "electroenergetics:wire_spool"
+    }
+  },
+  "pattern": [
+    "CCC",
+    "CWC",
+    "CCC"
+  ],
+  "result": {
+    "count": 8,
+    "id": "electroenergetics:concrete_pole"
+  }
+}

@@ -4,17 +4,14 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
-import com.george_vi.electroenergetics.simulation.Node;
-import com.simibubi.create.content.decoration.steamWhistle.WhistleSoundInstance;
+import com.george_vi.electroenergetics.foundation.Node;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.createmod.catnip.nbt.NBTHelper;
-import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -58,7 +55,6 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         voltage = tag.getFloat("Voltage");
-        avgVoltage = tag.getFloat("AvgVoltage");
         voltages = NBTHelper.readCompoundList(tag.getList("Voltages", Tag.TAG_COMPOUND), t -> t.getFloat("V"));
     }
 
@@ -72,7 +68,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(avgVoltage * avgVoltage / 30)))
+                .text(LangNumberFormat.format(Math.round(avgVoltage * avgVoltage / CEEConfigs.server().motorResistance.get())))
                 .translate("generic.watts")
                 .style(ChatFormatting.AQUA)
                 .space()
@@ -86,13 +82,13 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     int tick = 0;
     @Override
     public void tick() {
-        super.tick();
-        tick++;
-
         if (voltages.isEmpty())
             avgVoltage = 0;
         else
             avgVoltage = voltages.stream().reduce(Float::sum).orElse(0f) / voltages.size();
+
+        super.tick();
+        tick++;
 
         if ((Math.abs(voltageBeforeLastChange - avgVoltage) < 80 && ((Math.abs(avgVoltage) > 40 && Math.abs(voltageBeforeLastChange) > 40) || (Math.abs(avgVoltage) < 40 && Math.abs(voltageBeforeLastChange) < 40))))
             if (!(tick % 40 == 0 && Math.abs(voltageBeforeLastChange - avgVoltage) > 5))
@@ -115,7 +111,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
                         .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
             } else if (soundInstance != null) {
                 soundInstance.keepAlive();
-                soundInstance.setVolume((Math.abs(voltage) / (Math.abs(avgVoltage) + 1) > 1.3) || isOverStressed() ? 0.5f : 0.05f);
+                soundInstance.setVolume((Math.abs(voltage) / (Math.abs(avgVoltage) + 1) > 1.3) || isOverStressed() ? 0.2f : 0.05f);
             }
         }
     }
@@ -123,6 +119,11 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public float calculateAddedStressCapacity() {
         float capacity = 128 / 9.6f;
+        if (getGeneratedSpeed() == AllConfigs.server().kinetics.maxRotationSpeed.get()) {
+            float vS = avgVoltage * avgVoltage;
+            vS /= (float) (13 * CEEConfigs.server().motorResistance.get());
+            capacity *= vS / AllConfigs.server().kinetics.maxRotationSpeed.get();
+        }
         this.lastCapacityProvided = capacity;
         return capacity;
     }

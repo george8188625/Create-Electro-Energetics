@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.events;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
+import com.george_vi.electroenergetics.foundation.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.ponder.CEEPonderPlugin;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -13,9 +14,13 @@ import net.createmod.ponder.foundation.PonderIndex;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import java.util.Map;
@@ -23,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = CreateElecrtoEnergetics.ID)
 public class ModEvents {
+
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
@@ -44,11 +50,18 @@ public class ModEvents {
         generator.addProvider(event.includeServer(), new CEEStandardRecipeGen(packOutput, lookupProvider));
     }
 
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void clientInit(FMLClientSetupEvent event) {
         PonderIndex.addPlugin(new CEEPonderPlugin());
 
         RadialWrenchMenu.registerRotationProperty(DoubleConnectorBlock.ROLL, "Roll");
         RadialWrenchMenu.registerRotationProperty(ConnectorBlock.STYLE, "Style");
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void registerGuiOverlays(RegisterGuiLayersEvent event) {
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, CreateElecrtoEnergetics.rl("electric_properties_overlay"), ElectricPropertiesOverlay.INSTANCE);
     }
 }

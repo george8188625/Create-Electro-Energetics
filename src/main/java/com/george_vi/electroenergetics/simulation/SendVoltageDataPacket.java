@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
+import com.george_vi.electroenergetics.foundation.Node;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;

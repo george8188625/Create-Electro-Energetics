@@ -29,6 +29,10 @@
   "electroenergetics.nodes.negative": "Negative",
   "electroenergetics.nodes.primary": "Primary",
   "electroenergetics.nodes.secondary": "Secondary",
+  "electroenergetics.nodes.feed_negative": "Feed - Negative",
+  "electroenergetics.nodes.feed_positive": "Feed - Positive",
+  "electroenergetics.nodes.load_negative": "Load - Negative",
+  "electroenergetics.nodes.load_positive": "Load - Positive",
 
   "electroenergetics.generic.voltage": "Voltage",
   "electroenergetics.generic.current": "Current",

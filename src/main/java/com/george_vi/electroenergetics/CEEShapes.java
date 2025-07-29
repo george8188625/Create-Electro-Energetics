@@ -56,6 +56,12 @@ public class CEEShapes {
 
     public static final VoxelShaper CONVERTER = shape(0, 0, 0, 16, 5, 16).forDirectional();
 
+    public static final VoxelShaper POLE_MOUNT = shape(5, 13, 5, 11, 16, 11)
+            .add(7, 5, 7, 9, 15, 22).forHorizontal(Direction.SOUTH);
+
+    public static final VoxelShaper POLE_MOUNT_INVERTED = shape(5, 0, 5, 11, 3, 11)
+            .add(7, 1, 7, 9, 11, 22).forHorizontal(Direction.SOUTH);
+
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);
     }

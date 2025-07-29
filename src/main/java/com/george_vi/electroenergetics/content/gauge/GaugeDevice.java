@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.gauge;
 
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.Node;
-import com.george_vi.electroenergetics.simulation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +33,7 @@ public class GaugeDevice extends SimulatedDevice {
         double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
 
         if (level.getBlockEntity(pos) instanceof ElectricGaugeBlockEntity be)
-            be.setValue(voltmeter ? vd : vd / 0.1);
+            be.voltage = vd;
     }
 
     @Override

@@ -2,8 +2,8 @@ package com.george_vi.electroenergetics.content.electric_motor;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.Node;
-import com.george_vi.electroenergetics.simulation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

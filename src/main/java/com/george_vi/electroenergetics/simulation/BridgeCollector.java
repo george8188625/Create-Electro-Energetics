@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.simulation;
 
+import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalNodeConnection;
 import net.minecraft.core.BlockPos;
 
@@ -15,7 +16,8 @@ public class BridgeCollector {
     }
 
     public void bridge(Node node1, Node node2, double resistance, double voltageSource) {
-        if (node1.equals(node2))
+        // Don't Bridge a node to itself, Don't accept any NaN values, that can mess up entire grids
+        if (node1.equals(node2) || Double.isNaN(resistance) || Double.isNaN(voltageSource))
             return;
         if (resistance == 0)
             throw new IllegalArgumentException("Resistance can't be zero!");
@@ -49,15 +51,18 @@ public class BridgeCollector {
         }
 
         public Builder energyLimitedSource(int n1, int n2, double energy, double voltage) {
+            return energyLimitedSource(n1, n2, energy, voltage, 0);
+        }
+        public Builder energyLimitedSource(int n1, int n2, double energy, double voltage, double internalResistance) {
             double resistance;
-            if (voltage == 0 || energy < 0)
+            if (voltage == 0 || energy <= 0)
                 resistance = 0.01;
             else
                 resistance = (voltage * voltage) / (4 * energy);
 
             collector.addInternalNode(1000 + i, pos);
             collector.bridge(new Node(n1, pos), new Node(1000 + i, pos), 999999999, energy <= 0 ? 0 : voltage);
-            collector.bridge(new Node(1000 + i, pos), new Node(n2, pos), resistance + 0.5, 0);
+            collector.bridge(new Node(1000 + i, pos), new Node(n2, pos), resistance + internalResistance, 0);
             i++;
             return this;
         }

@@ -2,9 +2,9 @@ package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
-import com.george_vi.electroenergetics.simulation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.simulation.Node;
+import com.george_vi.electroenergetics.foundation.Node;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.Camera;
@@ -15,7 +15,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +29,7 @@ public class WireRenderer {
     public static List<NodeConnection> WIRE_CONNECTIONS = new ArrayList<>();
     public static Map<Node, Float> NODE_VOLTAGES = new HashMap<>();
 
+    @OnlyIn(Dist.CLIENT)
     public static void render(LevelRenderer levelRenderer, PoseStack pose, Camera camera) {
         Minecraft mc = Minecraft.getInstance();
         mc.level.getProfiler().push("renderCEEWires");
@@ -60,10 +64,10 @@ public class WireRenderer {
             pos1 = pos1.add(devicePos1.getX(), devicePos1.getY(), devicePos1.getZ());
             pos2 = pos2.add(devicePos2.getX(), devicePos2.getY(), devicePos2.getZ());
 
-
             List<Vec3> points = cablePoints(pos1, pos2, 1);
+            List<Vec3> renderedPoints = cablePoints(pos1, pos2, 1, mc.gameRenderer.getMainCamera().getPosition());
 
-            renderWire(points, pos1, pos2, pose, buffer);
+            renderWire(renderedPoints, pos1, pos2, pose, buffer, levelRenderer);
 
             if (points.size() >= 14) {
                 if (state1.getBlock() instanceof DeviceBlock db &&
@@ -108,7 +112,7 @@ public class WireRenderer {
 
                 List<Vec3> points = cablePoints(pos1, pos2, 3);
 
-                renderWire(points, pos1, pos2, pose, buffer);
+                renderWire(points, pos1, pos2, pose, buffer, levelRenderer);
             }
         }
 
@@ -117,28 +121,66 @@ public class WireRenderer {
         mc.level.getProfiler().pop();
     }
 
-    public static void renderWire(List<Vec3> points, Vec3 pos1, Vec3 pos2, PoseStack pose, MultiBufferSource buffer) {
+    public static void renderWire(List<Vec3> points, Vec3 pos1, Vec3 pos2, PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer) {
         Minecraft mc = Minecraft.getInstance();
+        double miny = pos1.y;
+        for (Vec3 point : points)
+            miny = Math.min(miny, point.y());
+
+        if (!levelRenderer.getFrustum().isVisible(new AABB(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z).setMinY(miny)))
+            return;
+
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
-            CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
-                    .translate(point)
-                    .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
-                    .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                    .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                    .light(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))))
-                    .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+                CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
+                        .translate(point)
+                        .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                        .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                        .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                        .light(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))))
+                        .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
         }
     }
 
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip) {
+        return cablePoints(pos1, pos2, dip, 1);
+    }
+
+    private static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, Vec3 position) {
+        float distance = (float) pos1.distanceTo(pos2);
+
+        double resolution = (distance * 2);
+        float a = (0.05f / distance) * dip;
+
+        float shortestDistance = 9999;
+        for (int x = 0; x < resolution; x++) {
+            float particleLevel = (float) (a * x * (x - resolution));
+            Vec3 point = pos1.add((pos2.subtract(pos1)).multiply(1 / resolution, 1 / resolution, 1 / resolution).multiply(x, x, x)).add(0, particleLevel, 0);
+            shortestDistance = (float) Math.min(shortestDistance, position.distanceTo(point));
+        }
+        float detail;
+        if (shortestDistance < 10)
+            detail = 1;
+        else if (shortestDistance < 20)
+            detail = 2;
+        else if (shortestDistance < 40)
+            detail = 10;
+        else
+            detail = 20;
+
+        return cablePoints(pos1, pos2, dip, detail);
+    }
+
+    public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, float detail) {
         List<Vec3> points = new ArrayList<>();
         float distance = (float) pos1.distanceTo(pos2);
-        float a = (0.05f / distance) * dip;
-        for (int x = 0; x < distance * 2; x++) {
-            float particleLevel = a * x * (x - distance * 2);
-            Vec3 point = pos1.add((pos2.subtract(pos1)).multiply(1 / (distance * 2), 1 / (distance * 2), 1 / (distance * 2)).multiply(x, x, x)).add(0, particleLevel, 0);
+
+        double resolution = (distance * 2) / detail;
+        float a = (0.05f / distance) * dip * detail * detail;
+        for (int x = 0; x < resolution; x++) {
+            float particleLevel = (float) (a * x * (x - resolution));
+            Vec3 point = pos1.add((pos2.subtract(pos1)).multiply(1 / resolution, 1 / resolution, 1 / resolution).multiply(x, x, x)).add(0, particleLevel, 0);
             points.add(point);
         }
         return points;

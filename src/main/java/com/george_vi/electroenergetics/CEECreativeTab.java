@@ -27,24 +27,28 @@ public class CEECreativeTab {
                         output.accept(CEEItems.EMPTY_SPOOL.asStack());
                         output.accept(CEEItems.INSULATED_WIRE.asStack());
                         output.accept(CEEItems.COPPER_WIRE.asStack());
+                        output.accept(CEEItems.CLAMP_METER.asStack());
                         output.accept(CEEBlocks.CREATIVE_BATTERY.asStack());
                         output.accept(CEEBlocks.BULB.asStack());
                         output.accept(CEEBlocks.CUT_OFF_SWITCH.asStack());
                         output.accept(CEEBlocks.DOUBLE_SWITCH.asStack());
                         output.accept(CEEBlocks.REDSTONE_RELAY.asStack());
                         output.accept(CEEBlocks.ENERGY_METER.asStack());
+                        output.accept(CEEBlocks.TRI_POLAR_ENERGY_METER.asStack());
                         output.accept(CEEBlocks.AMMETER.asStack());
                         output.accept(CEEBlocks.VOLTMETER.asStack());
                         output.accept(CEEBlocks.FUSE.asStack());
                         output.accept(CEEBlocks.GROUND_ROD.asStack());
                         output.accept(CEEBlocks.TRANSFORMER.asStack());
                         output.accept(CEEBlocks.ELECTRIC_MOTOR.asStack());
+                        output.accept(CEEBlocks.ELECTRIC_PUMP.asStack());
                         output.accept(CEEBlocks.ALTERNATOR_ROTOR.asStack());
                         output.accept(CEEBlocks.ALTERNATOR_BRUSHES.asStack());
                         output.accept(CEEBlocks.MAGNET_BLOCK.asStack());
                         output.accept(CEEBlocks.ACCUMULATOR.asStack());
                         output.accept(CEEBlocks.CONVERTER.asStack());
                         output.accept(CEEBlocks.CONCRETE_POLE.asStack());
+                        output.accept(CEEBlocks.POLE_MOUNT.asStack());
                     }))
                     .build());
 

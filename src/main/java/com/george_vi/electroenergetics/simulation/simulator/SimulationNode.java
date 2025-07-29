@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
-import com.george_vi.electroenergetics.simulation.Node;
+import com.george_vi.electroenergetics.foundation.Node;
 
 import java.util.HashMap;
 import java.util.List;

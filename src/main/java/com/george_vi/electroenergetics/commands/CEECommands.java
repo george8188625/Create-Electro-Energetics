@@ -3,9 +3,12 @@ package com.george_vi.electroenergetics.commands;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.sun.jdi.connect.Connector;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -15,6 +18,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
@@ -36,42 +40,57 @@ public class CEECommands {
             .then(
                 Commands.literal("performance")
                       .requires(cs -> cs.hasPermission(2))
-                      .executes(ctx -> {
-                          CommandSourceStack source = ctx.getSource();
-                          source.sendSuccess(() -> Component.literal("-+------<< Simulation Performance: >>------+-"), false);
-                          source.sendSuccess(() -> Component.literal("Networks: " + SimulationTicker.performances.size()).withStyle(blue), false);
-                          for (SimulationTicker.SimulationPerformance performance : List.copyOf(SimulationTicker.performances).stream().sorted((Comparator.comparingInt(SimulationTicker.SimulationPerformance::totalTime))).toList()) {
-                              if (performance.nodes() == 1)
-                                  continue;
-                              source.sendSuccess(() -> Component.literal("-+---<< Network: >>---+-"), false);
-                              source.sendSuccess(() -> Component.literal("- Nodes: " + performance.nodes()).withStyle(blue), false);
-                              source.sendSuccess(() -> Component.literal("  Nodes after optimization: " + performance.optimizedNodes()).withStyle(blue), false);
-                              source.sendSuccess(() -> Component.literal("  Optimization Time: " + performance.optimizationTime() + "μs").withStyle(blue), false);
-                              source.sendSuccess(() -> Component.literal("  Solution Time: " + performance.solutionTime() + "μs").withStyle(blue), false);
-                              float percentage = (float) (performance.totalTime() == 0 ? 0 : performance.totalTime()) / (SimulationTicker.totalTime == 0 ? 1 : SimulationTicker.totalTime);
-                              source.sendSuccess(() -> Component.literal("  Total Time: " + performance.totalTime() + "μs").withStyle(darkBlue).append(Component.literal(" (" + String.format("%.1f", percentage * 100) + "%)").withStyle(percentage > 0.5 ? orange : darkestBlue)), false);
-                          }
-                          source.sendSuccess(() -> Component.literal("Whole simulation: " + SimulationTicker.totalTime + "μs").withStyle(darkBlue), false);
-                          source.sendSuccess(() -> Component.literal("-+--------------------------------+-"), false);
-                          return 1;
-                      })
+                      .executes(CEECommands::performance)
             ).then(
-                    Commands.literal("device_data")
-                            .requires(cs -> cs.hasPermission(2))
-                            .then(Commands.argument("pos", BlockPosArgument.blockPos())
-                                    .executes(ctx -> {
-                                        CommandSourceStack source = ctx.getSource();
-                                        BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
-                                        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = InfrastructureSavedData.load(source.getLevel()).getDevice(pos);
-                                        if (deviceInstance == null)
-                                            throw NO_DEVICE_ERROR.create();
-                                        source.sendSuccess(() -> Component.literal("The device's stored data is: ").append(NbtUtils.toPrettyComponent(deviceInstance.extraData())), false);
-                                        return 1;
-                                    }))
-                );
+                Commands.literal("device_data")
+                        .requires(cs -> cs.hasPermission(2))
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(CEECommands::deviceData))
+            ).then(
+                Commands.literal("devices")
+                        .requires(cs -> cs.hasPermission(2))
+                        .then(Commands.argument("distance", IntegerArgumentType.integer(1))
+                            .executes(CEECommands::devices))
+            );
 
         dispatcher.register(root);
 
 
+    }
+
+    public static int performance(CommandContext<CommandSourceStack> ctx) {
+        CommandSourceStack source = ctx.getSource();
+        source.sendSuccess(() -> Component.literal("-+------<< Simulation Performance: >>------+-"), false);
+        source.sendSuccess(() -> Component.literal("Networks: " + SimulationTicker.performances.size()).withStyle(blue), false);
+        for (SimulationTicker.SimulationPerformance performance : List.copyOf(SimulationTicker.performances).stream().sorted((Comparator.comparingInt(SimulationTicker.SimulationPerformance::totalTime))).toList()) {
+            if (performance.nodes() == 1)
+                continue;
+            source.sendSuccess(() -> Component.literal("Network of Voltage " + performance.minVoltage() + " - " + performance.maxVoltage() + " N: " + performance.nodes() + " ON: " + performance.optimizedNodes() + " OT: " + performance.optimizationTime() + "μs ST: " + performance.solutionTime() + "μs TT: " + performance.totalTime() + "μs"), false);
+        }
+        source.sendSuccess(() -> Component.literal("Whole simulation: " + SimulationTicker.totalTime + "μs").withStyle(darkBlue), false);
+        source.sendSuccess(() -> Component.literal("-+--------------------------------+-"), false);
+        return 1;
+    }
+
+    public static int deviceData(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        CommandSourceStack source = ctx.getSource();
+        BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
+        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = InfrastructureSavedData.load(source.getLevel()).getDevice(pos);
+        if (deviceInstance == null)
+            throw NO_DEVICE_ERROR.create();
+        source.sendSuccess(() -> Component.literal("The device's stored data is: ").append(NbtUtils.toPrettyComponent(deviceInstance.extraData())), false);
+        return 1;
+    }
+
+    public static int devices(CommandContext<CommandSourceStack> ctx) {
+        CommandSourceStack source = ctx.getSource();
+        BlockPos pos = BlockPos.containing(source.getPosition());
+        int distance = IntegerArgumentType.getInteger(ctx, "distance");
+
+        for (InfrastructureSavedData.SimulatedDeviceInstance instance : InfrastructureSavedData.load(source.getLevel()).getDevices())
+            if (Math.sqrt(instance.pos().distSqr(pos)) <= distance)
+                source.sendSuccess(() -> Component.literal(instance.simulatedDevice().getID().toString() + " : " + instance.pos().toShortString()).withStyle(blue), false);
+
+        return 1;
     }
 }

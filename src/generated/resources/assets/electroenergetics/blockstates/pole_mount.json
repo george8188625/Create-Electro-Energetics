@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=east,inverted=false,waterlogged=false": {
+      "model": "electroenergetics:block/pole_mount/block",
+      "y": 90
+    },
+    "facing=east,inverted=false,waterlogged=true": {
+      "model": "electroenergetics:block/pole_mount/block",
+      "y": 90
+    },
+    "facing=east,inverted=true,waterlogged=false": {
+      "model": "electroenergetics:block/pole_mount/block_upside_down",
+      "y": 90
+    },
+    "facing=east,inverted=true,waterlogged=true": {
+      "model": "electroenergetics:block/pole_mount/block_upside_down",
+      "y": 90
+    },
+    "facing=north,inverted=false,waterlogged=false": {
+      "model": "electroenergetics:block/pole_mount/block"
+    },
+    "facing=north,inverted=false,waterlogged=true": {
+      "model": "electroenergetics:block/pole_mount/block"
+    },
+    "facing=north,inverted=true,waterlogged=false": {
+      "model": "electroenergetics:block/pole_mount/block_upside_down"
+    },
+    "facing=north,inverted=true,waterlogged=true": {
+      "model": "electroenergetics:block/pole_mount/block_upside_down"
+    },
+    "facing=south,inverted=false,waterlogged=false": {
+      "model": "electroenergetics:block/pole_mount/block",
+      "y": 180
+    },
+    "facing=south,inverted=false,waterlogged=true": {
+      "model": "electroenergetics:block/pole_mount/block",
+      "y": 180
+    },
+    "facing=south,inverted=true,waterlogged=false": {
+      "model": "electroenergetics:block/pole_mount/block_upside_down",
+      "y": 180
+    },
+    "facing=south,inverted=true,waterlogged=true": {
+      "model": "electroenergetics:block/pole_mount/block_upside_down",
+      "y": 180
+    },
+    "facing=west,inverted=false,waterlogged=false": {
+      "model": "electroenergetics:block/pole_mount/block",
+      "y": 270
+    },
+    "facing=west,inverted=false,waterlogged=true": {
+      "model": "electroenergetics:block/pole_mount/block",
+      "y": 270
+    },
+    "facing=west,inverted=true,waterlogged=false": {
+      "model": "electroenergetics:block/pole_mount/block_upside_down",
+      "y": 270
+    },
+    "facing=west,inverted=true,waterlogged=true": {
+      "model": "electroenergetics:block/pole_mount/block_upside_down",
+      "y": 270
+    }
+  }
+}

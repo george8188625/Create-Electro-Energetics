@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.Node;
+import com.george_vi.electroenergetics.foundation.Node;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -138,7 +138,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                             .getSoundManager()
                             .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
                 else if (soundInstance != null) {
-                    soundInstance.setVolume((float) Mth.clamp(power / 200000, 0.05, 0.7));
+                    soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.7));
                     soundInstance.keepAlive();
                 }
             } else if (soundInstance != null);

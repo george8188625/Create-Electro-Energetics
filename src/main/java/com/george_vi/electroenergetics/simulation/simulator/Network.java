@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.Node;
+import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;

@@ -2,12 +2,12 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.content.wire_spool.ClearWireConnectionsPacket;
-import com.george_vi.electroenergetics.content.wire_spool.SendWireConnectionsPacket;
+import com.george_vi.electroenergetics.content.wire_spool.LoadedWireManager;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.mojang.logging.LogUtils;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.nbt.NBTHelper;
-import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -16,7 +16,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.slf4j.Logger;
 
@@ -241,10 +240,7 @@ public class InfrastructureSavedData extends SavedData {
         NODES.get(connection.node1()).remove(connection.node2());
         NODES.get(connection.node2()).remove(connection.node1());
         CONNECTION_DATA.remove(connection);
-        for (ServerPlayer player : level.getPlayers(player -> player.blockPosition().atY(0).distManhattan(connection.node1().sourcePos().atY(0)) < 300
-                || player.blockPosition().atY(0).distManhattan(connection.node2().sourcePos().atY(0)) < 300))
-            CatnipServices.NETWORK.sendToClient(player, new ClearWireConnectionsPacket(connection.node1().sourcePos(), connection.node1().id(), connection.node2().sourcePos(), connection.node2().id(), false));
-
+        LoadedWireManager.handleWireRemoved(connection, level);
         setDirty();
     }
 
@@ -259,14 +255,12 @@ public class InfrastructureSavedData extends SavedData {
             nodes.add(node1);
             return nodes;
         });
-        CONNECTION_DATA.put(new NodeConnection(node1, node2), Pair.of(WireTypes.STANDARD, 0f));
+        NodeConnection connection = new NodeConnection(node1, node2);
+        CONNECTION_DATA.put(connection, Pair.of(WireTypes.STANDARD, 0f));
         setDirty();
 
-        for (ServerPlayer player : level.getPlayers(player -> player.blockPosition().atY(0).distManhattan(node1.sourcePos().atY(0)) < 250
-         || player.blockPosition().atY(0).distManhattan(node2.sourcePos().atY(0)) < 250))
-            CatnipServices.NETWORK.sendToClient(player, new SendWireConnectionsPacket(node1.sourcePos(), node1.id(), node2.sourcePos(), node2.id()));
-
-        return new NodeConnection(node1, node2);
+        LoadedWireManager.handleWireAdded(connection, level);
+        return connection;
     }
 
     public boolean isConnected(Node node1, Node node2) {

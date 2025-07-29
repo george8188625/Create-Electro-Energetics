@@ -1,13 +1,12 @@
 package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.Node;
-import com.george_vi.electroenergetics.simulation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
@@ -21,7 +20,7 @@ public class TransformerDevice extends SimulatedDevice {
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
 
         bridges.builder(pos)
-                .resistor(0, 1, extraData.getDouble("PrimaryResistance") == 0 ? 10 : extraData.getDouble("PrimaryResistance"))
+                .resistor(0, 1, extraData.getDouble("PrimaryResistance") == 0 ? 9999999 : extraData.getDouble("PrimaryResistance"))
                 .energyLimitedSource(3, 2, extraData.getDouble("StoredEnergy"), extraData.getDouble("SecondaryVoltage"));
     }
 
@@ -45,7 +44,9 @@ public class TransformerDevice extends SimulatedDevice {
                 Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary)) :
                 - Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary));
 
-        double maxEnergy = 1_20 * Math.abs(vLastTickHighestPrimary / ratio) + 1;
+//        double maxEnergy = 1_20 * Math.abs(vLastTickHighestPrimary / ratio) + 1;
+
+        double maxEnergy = 2_000_000;
 
         double current = 0;
         for (Double d : sourceAmps.values())
@@ -74,7 +75,7 @@ public class TransformerDevice extends SimulatedDevice {
             double divisor = (availableEnergy > 1000 ? availableEnergy / 100 : availableEnergy) + load;
             resistance = Math.abs(vLastTickHighestPrimary / (divisor / vLastTickHighestPrimary));
         } else if (load > 10) {
-            double divisor = (storedEnergy > maxEnergy ? load / 3.0 : load);
+            double divisor = (storedEnergy > maxEnergy ? load / 2.0 : load * 2);
             resistance = Math.abs(vLastTickHighestPrimary / (divisor / vLastTickHighestPrimary));
         } else {
             resistance = 999999;
@@ -82,7 +83,7 @@ public class TransformerDevice extends SimulatedDevice {
 
         extraData.putDouble("PrimaryResistance", storedEnergy / maxEnergy < 0.75 ? resistance / 10 : resistance);
         extraData.putDouble("StoredEnergy", storedEnergy);
-        extraData.putDouble("SecondaryVoltage", storedEnergy > 100 ? Math.min(Math.abs(vLastTickHighestPrimary / ratio), storedEnergy / 1_00) : 0);
+        extraData.putDouble("SecondaryVoltage", storedEnergy > 100 ? vLastTickHighestPrimary / ratio : 0);
         extraData.putDouble("LastPrimaryVoltage", vPrimary);
 
     }

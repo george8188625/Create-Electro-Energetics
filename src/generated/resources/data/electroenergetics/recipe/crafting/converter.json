@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy_block"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "W": {
+      "item": "electroenergetics:wire_spool"
+    }
+  },
+  "pattern": [
+    "C C",
+    "WAW",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:converter"
+  }
+}

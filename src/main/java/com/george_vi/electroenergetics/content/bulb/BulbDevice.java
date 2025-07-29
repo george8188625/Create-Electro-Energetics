@@ -2,10 +2,9 @@ package com.george_vi.electroenergetics.content.bulb;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.config.CEEServer;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.Node;
-import com.george_vi.electroenergetics.simulation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;

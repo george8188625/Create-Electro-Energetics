@@ -1,29 +1,39 @@
 package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.electroenergetics.simulation.NodeConnection;
-import com.george_vi.electroenergetics.simulation.Node;
+import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public record ClearWireConnectionsPacket(BlockPos pos1, int id1, BlockPos pos2, int id2, boolean all) implements ClientboundPacketPayload {
+public record ClearWireConnectionsPacket(List<Pair<Node, Node>> connections, boolean all) implements ClientboundPacketPayload {
+
     public static final StreamCodec<ByteBuf, ClearWireConnectionsPacket> STREAM_CODEC = StreamCodec.composite(
-            BlockPos.STREAM_CODEC, ClearWireConnectionsPacket::pos1,
-            ByteBufCodecs.INT, ClearWireConnectionsPacket::id1,
-            BlockPos.STREAM_CODEC, ClearWireConnectionsPacket::pos2,
-            ByteBufCodecs.INT, ClearWireConnectionsPacket::id2,
+            CatnipStreamCodecBuilders.list(Pair.streamCodec(Node.STREAM_CODEC, Node.STREAM_CODEC)), ClearWireConnectionsPacket::connections,
             ByteBufCodecs.BOOL, ClearWireConnectionsPacket::all,
             ClearWireConnectionsPacket::new
     );
 
+
     public static ClearWireConnectionsPacket clearAll() {
-        return new ClearWireConnectionsPacket(BlockPos.ZERO, 0, BlockPos.ZERO, 0, true);
+        return new ClearWireConnectionsPacket(Collections.emptyList(), true);
+    }
+
+    public static ClearWireConnectionsPacket clearWire(Node node1, Node node2) {
+        return new ClearWireConnectionsPacket(List.of(Pair.of(node1, node2)), false);
+    }
+
+    public static ClearWireConnectionsPacket clearWire(NodeConnection connection) {
+        return clearWire(connection.node1(), connection.node2());
     }
 
     @Override
@@ -33,8 +43,9 @@ public record ClearWireConnectionsPacket(BlockPos pos1, int id1, BlockPos pos2, 
             return;
         }
 
-        NodeConnection toRemove = new NodeConnection(new Node(id1, pos1), new Node(id2, pos2));
-        WireRenderer.removeConnections(toRemove);
+        for (Pair<Node, Node> connection : connections()) {
+            WireRenderer.removeConnections(new NodeConnection(connection.getFirst(), connection.getSecond()));
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
+import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.*;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;

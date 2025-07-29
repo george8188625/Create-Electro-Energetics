@@ -10,11 +10,13 @@ import com.george_vi.electroenergetics.content.converter.ConverterBlock;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchBlock;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlock;
+import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlock;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlock;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodBlock;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleBlock;
+import com.george_vi.electroenergetics.content.pole.PoleMountBlock;
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
@@ -35,7 +37,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 
 import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE;
-import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
 import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 
 public class CEEBlocks {
@@ -65,6 +66,19 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block_middle"))
+            .build()
+            .register();
+
+    public static final BlockEntry<PoleMountBlock> POLE_MOUNT = REGISTRATE.block("pole_mount", PoleMountBlock::new)
+            .initialProperties(SharedProperties::softMetal)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
+                    bs.getValue(PoleMountBlock.INVERTED) ? AssetLookup.partialBaseModel(c, p, "upside_down") :
+                            AssetLookup.partialBaseModel(c, p)
+            ))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
             .build()
             .register();
 
@@ -255,7 +269,24 @@ public class CEEBlocks {
             .build()
             .register();
 
-    public static final BlockEntry<EnergyMeterBlock> ENERGY_METER = REGISTRATE.block("energy_meter", EnergyMeterBlock::new)
+    public static final BlockEntry<EnergyMeterBlock> ENERGY_METER = REGISTRATE.block("energy_meter", properties -> new EnergyMeterBlock(properties, false))
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
+            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
+                    ConfiguredModel.builder()
+                            .modelFile(state.getValue(EnergyMeterBlock.INVERTED) ?
+                                    AssetLookup.partialBaseModel(c, p, "inverted") :
+                                    AssetLookup.partialBaseModel(c, p))
+                            .rotationY((int) state.getValue(EnergyMeterBlock.FACING).getOpposite().toYRot())
+                            .build()
+            )))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<EnergyMeterBlock> TRI_POLAR_ENERGY_METER = REGISTRATE.block("tri_polar_energy_meter", properties -> new EnergyMeterBlock(properties, true))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
@@ -309,6 +340,18 @@ public class CEEBlocks {
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()
             .register();
+
+    public static final BlockEntry<ElectricPumpBlock> ELECTRIC_PUMP = REGISTRATE.block("electric_pump", ElectricPumpBlock::new)
+            .initialProperties(SharedProperties::copperMetal)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.directionalBlock(c.get(), bs ->
+                    bs.getValue(ElectricPumpBlock.ROLL) ? AssetLookup.partialBaseModel(c, p, "roll") : AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
 
     public static final BlockEntry<TransformerBlock> TRANSFORMER = REGISTRATE.block("transformer", TransformerBlock::new)
             .initialProperties(SharedProperties::stone)

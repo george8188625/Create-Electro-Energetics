@@ -17,9 +17,9 @@ public class CEEConfigs {
 
     private static final Map<ModConfig.Type, ConfigBase> CONFIGS = new EnumMap<>(ModConfig.Type.class);
 
-    private static CEEServer server;
+    private static CServer server;
 
-    public static CEEServer server() {
+    public static CServer server() {
         return server;
     }
 
@@ -41,7 +41,7 @@ public class CEEConfigs {
     }
 
     public static void register(ModLoadingContext context, ModContainer container) {
-        server = register(CEEServer::new, ModConfig.Type.SERVER);
+        server = register(CServer::new, ModConfig.Type.SERVER);
 
         for (Map.Entry<ModConfig.Type, ConfigBase> pair : CONFIGS.entrySet())
             container.registerConfig(pair.getKey(), pair.getValue().specification);

@@ -15,10 +15,10 @@
   "pattern": [
     " n ",
     " A ",
-    "TTT"
+    " T "
   ],
   "result": {
-    "count": 1,
+    "count": 4,
     "id": "electroenergetics:connector"
   }
 }

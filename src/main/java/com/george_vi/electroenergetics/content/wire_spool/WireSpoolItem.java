@@ -5,15 +5,10 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.Node;
+import com.george_vi.electroenergetics.foundation.Node;
 import com.simibubi.create.AllSoundEvents;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -23,9 +18,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
-
-import java.util.Map;
 
 public class WireSpoolItem extends Item {
     public WireSpoolItem(Properties properties) {
@@ -34,15 +26,13 @@ public class WireSpoolItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        if (player.isShiftKeyDown()) {
-            ItemStack heldItem = player.getItemInHand(usedHand);
-            if (heldItem.getComponents().has(CEEDataComponents.CONNECTOR_CLICKED_POS))
-                heldItem.remove(CEEDataComponents.CONNECTOR_CLICKED_POS);
-            if (heldItem.getComponents().has(CEEDataComponents.CONNECTOR_CLICKED))
-                heldItem.remove(CEEDataComponents.CONNECTOR_CLICKED);
-            return InteractionResultHolder.success(heldItem);
-        }
-        return super.use(level, player, usedHand);
+        if (!player.isShiftKeyDown())
+            return super.use(level, player, usedHand);
+
+        ItemStack heldItem = player.getItemInHand(usedHand);
+        if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE))
+            heldItem.remove(CEEDataComponents.SELECTED_NODE);
+        return InteractionResultHolder.success(heldItem);
     }
 
 
@@ -55,55 +45,33 @@ public class WireSpoolItem extends Item {
         BlockState state = level.getBlockState(pos);
 
         if (player.isShiftKeyDown()) {
-            if (heldItem.getComponents().has(CEEDataComponents.CONNECTOR_CLICKED_POS))
-                heldItem.remove(CEEDataComponents.CONNECTOR_CLICKED_POS);
-            if (heldItem.getComponents().has(CEEDataComponents.CONNECTOR_CLICKED))
-                heldItem.remove(CEEDataComponents.CONNECTOR_CLICKED);
+            if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE))
+                heldItem.remove(CEEDataComponents.SELECTED_NODE);
             return InteractionResult.SUCCESS;
         }
 
         if (!(state.getBlock() instanceof DeviceBlock db))
             return InteractionResult.PASS;
 
+        Node hoveredNode = Node.closestNode(level, context.getClickLocation(), 0.4f);
 
-        // Get clicked Node
 
-        int closestSlot = 0;
-        double closestDistance = 100;
-        Vec3 lookingPos = context.getClickLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
-
-        for (Map.Entry<Vec3, Integer> n : db.getNodePositions(level, pos, state).entrySet()) {
-            if (lookingPos.distanceTo(n.getKey()) < closestDistance) {
-                closestDistance = lookingPos.distanceTo(n.getKey());
-                closestSlot = n.getValue();
-            }
-        }
-
-        // Connect / Select
-
-        if (heldItem.getComponents().has(CEEDataComponents.CONNECTOR_CLICKED_POS) && heldItem.getComponents().has(CEEDataComponents.CONNECTOR_CLICKED)) {
+        if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
             if (!(player.level() instanceof ServerLevel sl))
                 return InteractionResult.SUCCESS;
 
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            Integer selectedID = heldItem.get(CEEDataComponents.CONNECTOR_CLICKED);
-            BlockPos selectedPos =  heldItem.get(CEEDataComponents.CONNECTOR_CLICKED_POS);
+            Node originalNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
 
-            if (selectedID == null || selectedPos == null)
-                return InteractionResult.FAIL;
-
-            Node node1 = sd.getNode(selectedPos, selectedID);
-            Node node2 = sd.getNode(pos, closestSlot);
-
-            if ((node1 == null || node2 == null) ||
-                    (node1.sourcePos().equals(node2.sourcePos()) && !db.canSelfConnect(level, pos, state, node1.id(), node2.id())) ||
-                    (sd.isConnected(node1, node2)) ||
-                    selectedPos.distManhattan(pos) > CEEConfigs.server().maxWireLength.get()) {
+            if ((hoveredNode == null || originalNode == null) ||
+                    (hoveredNode.sourcePos().equals(originalNode.sourcePos()) && !db.canSelfConnect(level, pos, state, hoveredNode.id(), originalNode.id())) ||
+                    (sd.isConnected(hoveredNode, originalNode)) ||
+                    Math.sqrt(originalNode.sourcePos().distSqr(hoveredNode.sourcePos())) > CEEConfigs.server().maxWireLength.get()) {
                 AllSoundEvents.DENY.playOnServer(level, pos);
                 return InteractionResult.FAIL;
             }
 
-            sd.connect(node1, node2);
+            sd.connect(originalNode, hoveredNode);
 
             AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);
 
@@ -112,16 +80,13 @@ public class WireSpoolItem extends Item {
                 player.getInventory().placeItemBackInInventory(CEEItems.EMPTY_SPOOL.asStack());
             }
 
-            if (heldItem.getComponents().has(CEEDataComponents.CONNECTOR_CLICKED_POS))
-                heldItem.remove(CEEDataComponents.CONNECTOR_CLICKED_POS);
-            if (heldItem.getComponents().has(CEEDataComponents.CONNECTOR_CLICKED_POS))
-                heldItem.remove(CEEDataComponents.CONNECTOR_CLICKED_POS);
+            if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE))
+                heldItem.remove(CEEDataComponents.SELECTED_NODE);
 
             return InteractionResult.SUCCESS;
         }
 
-        heldItem.set(CEEDataComponents.CONNECTOR_CLICKED_POS, pos);
-        heldItem.set(CEEDataComponents.CONNECTOR_CLICKED, closestSlot);
+        heldItem.set(CEEDataComponents.SELECTED_NODE, hoveredNode);
 
         AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
 

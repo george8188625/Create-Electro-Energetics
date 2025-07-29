@@ -2,9 +2,8 @@ package com.george_vi.electroenergetics.content.gauge;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
-import com.george_vi.electroenergetics.simulation.Node;
+import com.george_vi.electroenergetics.foundation.Node;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
-import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.item.TooltipHelper;
@@ -27,6 +26,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public float prevDialState;
     public int color;
     public final boolean voltmeter;
+    public double voltage;
 
     ElectricGaugeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, boolean voltmeter) {
         super(type, pos, state);
@@ -59,15 +59,18 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public void tick() {
         super.tick();
 
-        Float v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
-        if (level.isClientSide() && v1 != null && v2 != null)
-            setValue(voltmeter ? Math.abs(v1 - v2) : Math.abs(v1 - v2) / 0.01);
+        if (level.isClientSide()) {
+            Float v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
+            Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
 
-        prevDialState = dialState;
-        dialState += (dialTarget - dialState) * .125f;
-        if (dialState > 1 && level.random.nextFloat() < 1 / 2f)
-            dialState -= (dialState - 1) * level.random.nextFloat();
+            if (v1 != null && v2 != null)
+                setValue(voltmeter ? Math.abs(v1 - v2) : Math.abs(v1 - v2) / 0.01);
+
+            prevDialState = dialState;
+            dialState += (dialTarget - dialState) * .125f;
+            if (dialState > 1 && level.random.nextFloat() < 1 / 2f)
+                dialState -= (dialState - 1) * level.random.nextFloat();
+        }
     }
 
     @Override

@@ -48,7 +48,7 @@ public class ElectricHumSoundInstance extends AbstractTickableSoundInstance {
             return;
 
         }
-        volume = Math.max(0, volume - .25f);
+        volume = Math.max(0, volume - .125f);
         if (volume == 0)
             stop();
     }

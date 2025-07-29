@@ -10,9 +10,9 @@
     }
   },
   "pattern": [
-    "www",
+    " w ",
     "wsw",
-    "www"
+    " w "
   ],
   "result": {
     "count": 1,

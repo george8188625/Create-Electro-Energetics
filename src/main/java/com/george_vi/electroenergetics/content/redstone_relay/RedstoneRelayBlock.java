@@ -38,7 +38,7 @@ public class RedstoneRelayBlock extends SimpleDeviceBlock implements IWrenchable
 
     public RedstoneRelayBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false).setValue(POWERED, false));
     }
 
     @Override
@@ -87,8 +87,10 @@ public class RedstoneRelayBlock extends SimpleDeviceBlock implements IWrenchable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         if (context.getClickedFace().getAxis().isVertical())
-            return withWater(super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X), context);
-        return withWater(super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()), context);
+            return withWater(super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X), context).setValue(POWERED,
+                    context.getLevel().hasNeighborSignal(context.getClickedPos()));
+        return withWater(super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()), context).setValue(POWERED,
+                context.getLevel().hasNeighborSignal(context.getClickedPos()));
     }
 
     @Override

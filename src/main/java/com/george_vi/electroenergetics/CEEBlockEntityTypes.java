@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlockEntity;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
+import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlockEntity;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeRenderer;
@@ -20,7 +21,7 @@ import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE
 
 public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<EnergyMeterBlockEntity> ENERGY_METER = REGISTRATE.blockEntity("energy_meter", EnergyMeterBlockEntity::new)
-            .validBlock(CEEBlocks.ENERGY_METER::get)
+            .validBlocks(CEEBlocks.ENERGY_METER::get, CEEBlocks.TRI_POLAR_ENERGY_METER::get)
             .register();
 
     public static final BlockEntityEntry<ElectricGaugeBlockEntity> VOLTMETER = REGISTRATE.blockEntity("voltmeter", ElectricGaugeBlockEntity::voltmeter)
@@ -39,6 +40,10 @@ public class CEEBlockEntityTypes {
 
     public static final BlockEntityEntry<TransformerBlockEntity> TRANSFORMER = REGISTRATE.blockEntity("transformer", TransformerBlockEntity::new)
             .validBlocks(CEEBlocks.TRANSFORMER::get)
+            .register();
+
+    public static final BlockEntityEntry<ElectricPumpBlockEntity> ELECTRIC_PUMP = REGISTRATE.blockEntity("electric_pump", ElectricPumpBlockEntity::new)
+            .validBlocks(CEEBlocks.ELECTRIC_PUMP::get)
             .register();
 
 //    public static final BlockEntityEntry<VoltageRegulatorBlockEntity> VOLTAGE_REGULATOR = REGISTRATE.blockEntity("voltage_regulator", VoltageRegulatorBlockEntity::new)
