@@ -10,5 +10,9 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "BannerItemMixin",
+    "HangingSignItemMixin"
+  ]
 }

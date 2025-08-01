@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.creative_battery;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
-import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.foundation.block.IBE;

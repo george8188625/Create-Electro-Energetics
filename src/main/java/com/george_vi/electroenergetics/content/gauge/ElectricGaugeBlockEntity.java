@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.gauge;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
-import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
+import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;

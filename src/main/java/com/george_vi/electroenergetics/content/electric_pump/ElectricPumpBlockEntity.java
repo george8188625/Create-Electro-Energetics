@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.electric_pump;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
+import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.simibubi.create.content.fluids.pump.PumpBlockEntity;
 import com.simibubi.create.foundation.advancement.AllAdvancements;

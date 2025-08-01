@@ -1,12 +1,10 @@
 package com.george_vi.electroenergetics.content.energy_meter;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.electroenergetics.content.wire_spool.SendWireConnectionsPacket;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.simibubi.create.AllSoundEvents;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

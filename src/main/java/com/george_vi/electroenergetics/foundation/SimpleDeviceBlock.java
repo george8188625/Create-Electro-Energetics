@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content;
+package com.george_vi.electroenergetics.foundation;
 
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.config.CEEConfigs;
@@ -40,13 +40,6 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock {
         List<Integer> nodes = new ArrayList<>(getNodePositions(level, pos, state).values());
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-
-        List<Node> oldNodes = sd.getNodesAt(pos);
-        if (!oldNodes.stream().map(Node::id).sorted().toList().equals(nodes.stream().sorted().toList())) {
-            for (Node node : oldNodes)
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(sd.getConnections(node).size() * CEEConfigs.server().wiresPerSpool.get()));
-        }
-
         sd.addDevice(pos, getDevice(), getExtraData(level, state, pos), nodes);
         super.tick(state, level, pos, random);
     }
@@ -55,8 +48,6 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock {
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (level instanceof ServerLevel sl && state.getBlock() != level.getBlockState(pos).getBlock() && shouldReplaceDeviceFor(state, newState)) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            for (Node node : sd.getNodesAt(pos))
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(sd.getConnections(node).size() * CEEConfigs.server().wiresPerSpool.get()));
             sd.removeDevice(pos);
         }
         super.onRemove(state, level, pos, newState, movedByPiston);

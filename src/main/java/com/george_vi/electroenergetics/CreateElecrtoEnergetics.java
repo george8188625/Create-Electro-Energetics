@@ -26,14 +26,16 @@ public class CreateElecrtoEnergetics
         modEventBus.addListener((GatherDataEvent event) -> event.addProvider(new RegistrateDataProvider(REGISTRATE, ID, event)));
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
-        CEEBlocks.register();
         CEEItems.register();
+        CEEBlocks.register();
         CEEPackets.register();
         CEEPartialModels.register();
         CEEBlockEntityTypes.register();
+        CEEWireTypes.register(modEventBus);
         CEESoundEvents.register(modEventBus);
         CEECreativeTab.register(modEventBus);
         CEEDataComponents.register(modEventBus);
+        CEEWireAttachments.register(modEventBus);
         CEEConfigs.register(modLoadingContext, modContainer);
     }
 

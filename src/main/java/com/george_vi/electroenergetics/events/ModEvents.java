@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.events;
 
+import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
@@ -22,6 +23,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -63,5 +65,12 @@ public class ModEvents {
     @SubscribeEvent
     public static void registerGuiOverlays(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, CreateElecrtoEnergetics.rl("electric_properties_overlay"), ElectricPropertiesOverlay.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public static void newRegistry(NewRegistryEvent event) {
+        event.register(CEERegistries.WIRE_TYPE);
+        event.register(CEERegistries.CABLE_TYPE);
+        event.register(CEERegistries.WIRE_ATTACHMENT_TYPE);
     }
 }

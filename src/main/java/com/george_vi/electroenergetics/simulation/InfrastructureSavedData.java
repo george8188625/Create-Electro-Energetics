@@ -1,10 +1,13 @@
 package com.george_vi.electroenergetics.simulation;
 
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.content.wire_spool.LoadedWireManager;
+import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
+import com.george_vi.electroenergetics.content.wire.WireAttachment;
+import com.george_vi.electroenergetics.content.wire.WireAttachmentType;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.mojang.logging.LogUtils;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.nbt.NBTHelper;
@@ -16,7 +19,10 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -25,9 +31,8 @@ public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, SimulatedDeviceInstance> DEVICES = new HashMap<>();
     Map<Node, List<Node>> NODES = new HashMap<>();
     Map<BlockPos, List<Node>> NODES_BY_POS = new HashMap<>();
-    Map<BlockPos, CableTypes.CableType> CABLES = new HashMap<>();
-    // CONNECTION - WIRE TYPE, TEMPERATURE
-    Map<NodeConnection, Pair<WireTypes.WireType, Float>> CONNECTION_DATA = new HashMap<>();
+    Map<BlockPos, CableType> CABLES = new HashMap<>();
+    Map<NodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
     ServerLevel level;
     public static final Logger LOGGER = LogUtils.getLogger();
 
@@ -67,8 +72,18 @@ public class InfrastructureSavedData extends SavedData {
 
                 subNodeTag.put("Pos", NbtUtils.writeBlockPos(node.sourcePos()));
                 subNodeTag.putInt("ID", node.id());
-                subNodeTag.putString("WireType", CreateElecrtoEnergetics.rl("standard").toString());
-                subNodeTag.putFloat("Temperature", CONNECTION_DATA.get(new NodeConnection(e.getKey(), node)).getSecond());
+                WireData connectionData = CONNECTION_DATA.get(new NodeConnection(e.getKey(), node));
+
+                ListTag attachmentList = new ListTag();
+                for (Pair<Float, WireAttachment> attachment : connectionData.attachments()) {
+                    CompoundTag attachmentTag = attachment.getSecond().write();
+                    attachmentTag.putFloat("Point", attachment.getFirst());
+                    attachmentList.add(attachmentTag);
+                }
+                subNodeTag.put("Attachments", attachmentList);
+
+                subNodeTag.putString("WireType", CEERegistries.WIRE_TYPE.getKey(connectionData.wireType()).toString());
+                subNodeTag.putFloat("Temperature", connectionData.temperature());
 
                 connectedNodesList.add(subNodeTag);
             }
@@ -81,10 +96,10 @@ public class InfrastructureSavedData extends SavedData {
         // Save Cables
 
         ListTag cableList = new ListTag();
-        for (Map.Entry<BlockPos, CableTypes.CableType> e : CABLES.entrySet()) {
+        for (Map.Entry<BlockPos, CableType> e : CABLES.entrySet()) {
             CompoundTag cableTag = new CompoundTag();
             cableTag.put("Pos", NbtUtils.writeBlockPos(e.getKey()));
-            cableTag.putString("ID", e.getValue().getID().toString());
+            cableTag.putString("ID", CEERegistries.CABLE_TYPE.getKey(e.getValue()).toString());
             cableList.add(cableTag);
         }
         compoundTag.put("Cables", cableList);
@@ -106,12 +121,33 @@ public class InfrastructureSavedData extends SavedData {
             BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
             int id = tag.getInt("ID");
             List<Node> connectedNodes = new ArrayList<>();
-            NBTHelper.iterateCompoundList(tag.getList("ConnectedNodes", Tag.TAG_COMPOUND), connectionTag -> {
-                connectedNodes.add(new Node(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")));
-                sd.CONNECTION_DATA.computeIfAbsent(new NodeConnection(new Node(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")),
-                        new Node(id, pos)), c -> Pair.of(WireTypes.STANDARD, connectionTag.getFloat("Temperature")));
-            });
             Node node = new Node(id, pos);
+            NBTHelper.iterateCompoundList(tag.getList("ConnectedNodes", Tag.TAG_COMPOUND), connectionTag -> {
+                Node connectedNode = new Node(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos"));
+                connectedNodes.add(connectedNode);
+                WireType wireType;
+
+                try {
+                    wireType = CEERegistries.WIRE_TYPE.get(ResourceLocation.parse(connectionTag.getString("WireType")));
+                    if (wireType == null)
+                        wireType = CEEWireTypes.STANDARD.get();
+                } catch (Throwable e) {
+                    LOGGER.warn("Could not load wire type between nodes: {}, {} with id: {} in: {}", node, connectedNode, connectionTag.getString("WireType"), level.dimension().location());
+                    wireType = CEEWireTypes.STANDARD.get();
+                }
+
+                List<Pair<Float, WireAttachment>> attachments = new ArrayList<>();
+                NBTHelper.iterateCompoundList(connectionTag.getList("Attachments", Tag.TAG_COMPOUND), attachmentTag -> {
+                   float point = attachmentTag.getFloat("Point");
+                   WireAttachment attachment = WireAttachment.read(attachmentTag);
+                   attachments.add(Pair.of(point, attachment));
+                });
+
+
+                WireType finalWireType = wireType;
+                sd.CONNECTION_DATA.computeIfAbsent(new NodeConnection(new Node(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")),
+                        new Node(id, pos)), c -> new WireData(finalWireType, connectionTag.getFloat("Temperature"), attachments));
+            });
             sd.NODES.put(node, connectedNodes);
             sd.NODES_BY_POS.computeIfAbsent(pos, ((p) -> new ArrayList<>()));
             sd.NODES_BY_POS.computeIfPresent(pos, ((p, nodes) -> {
@@ -133,7 +169,7 @@ public class InfrastructureSavedData extends SavedData {
                     sd.NODES.remove(node);
                 }
                 sd.NODES_BY_POS.remove(pos);
-                LOGGER.warn("Could not load device: {} at pos: {} in: {}. No device with such ID, removing...", tag.getString("ID"), pos.toShortString(), level.dimension().location().toString());
+                LOGGER.warn("Could not load device: {} at pos: {} in: {}. No device with such ID, removing...", tag.getString("ID"), pos.toShortString(), level.dimension().location());
                 return;
             }
             sd.DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, tag.getCompound("ExtraData"), sd.NODES_BY_POS.getOrDefault(pos, new ArrayList<>())));
@@ -143,10 +179,15 @@ public class InfrastructureSavedData extends SavedData {
 
         NBTHelper.iterateCompoundList(compoundTag.getList("Cables", Tag.TAG_COMPOUND), tag -> {
             BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
-            CableTypes.CableType type = CableTypes.get(ResourceLocation.parse(tag.getString("ID")));
-            if (type == null)
+            CableType cableType = null;
+            try {
+                cableType = CEERegistries.CABLE_TYPE.get(ResourceLocation.parse(tag.getString("ID")));
+            } catch (Throwable e) {
+                LOGGER.warn("Could not load cable type: {} at pos: {} in: {}", tag.getString("ID"), pos, level.dimension().location());
+            }
+            if (cableType == null)
                 return;
-            sd.CABLES.put(pos, type);
+            sd.CABLES.put(pos, cableType);
         });
         return sd;
     }
@@ -156,7 +197,7 @@ public class InfrastructureSavedData extends SavedData {
                 .computeIfAbsent(new Factory<>(() -> new InfrastructureSavedData(level), (compoundTag, provider) -> InfrastructureSavedData.load(level, compoundTag, provider)), "electroenergetics_infrastructure");
     }
 
-    public void addCable(BlockPos pos, CableTypes.CableType type) {
+    public void addCable(BlockPos pos, CableType type) {
         CABLES.put(pos, type);
     }
 
@@ -213,7 +254,9 @@ public class InfrastructureSavedData extends SavedData {
         List<Node> nodes = NODES_BY_POS.get(pos);
         if (nodes != null)
             for (Node node : nodes) {
-                getConnections(node).forEach(this::removeConnection);
+                List<NodeConnection> connections = getConnections(node);
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(connections.size() * CEEConfigs.server().wiresPerSpool.get()));
+                connections.forEach(this::removeConnection);
                 NODES.remove(node);
             }
         NODES_BY_POS.remove(pos);
@@ -237,14 +280,28 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public void removeConnection(NodeConnection connection) {
+
         NODES.get(connection.node1()).remove(connection.node2());
         NODES.get(connection.node2()).remove(connection.node1());
-        CONNECTION_DATA.remove(connection);
+        WireData connectionData = CONNECTION_DATA.remove(connection);
+        if (connectionData != null) {
+            for (Pair<Float, WireAttachment> attachment : connectionData.attachments()) {
+                Vec3 pos;
+                if (connection.node1().compareTo(connection.node2()) > 0)
+                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), 1.0f - attachment.getFirst());
+                else
+                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), attachment.getFirst());
+
+                for (ItemStack stack : attachment.getSecond().getDrops(level))
+                    Containers.dropItemStack(level, pos.x(), pos.y(), pos.z(), stack);
+
+            }
+        }
         LoadedWireManager.handleWireRemoved(connection, level);
         setDirty();
     }
 
-    public NodeConnection connect(Node node1, Node node2) {
+    public NodeConnection connect(Node node1, Node node2, WireType wireType) {
         if (!(NODES.containsKey(node1) && NODES.containsKey(node2)))
             throw new IllegalArgumentException("Node: " + (NODES.containsKey(node2) ? node1.toString() : node1) + "Doesn't exist.");
         NODES.compute(node1, (node, nodes) -> {
@@ -256,10 +313,11 @@ public class InfrastructureSavedData extends SavedData {
             return nodes;
         });
         NodeConnection connection = new NodeConnection(node1, node2);
-        CONNECTION_DATA.put(connection, Pair.of(WireTypes.STANDARD, 0f));
+        WireData data = new WireData(wireType, 0f, Collections.emptyList());
+        CONNECTION_DATA.put(connection, data);
         setDirty();
 
-        LoadedWireManager.handleWireAdded(connection, level);
+        LoadedWireManager.handleWireAdded(connection, data, level);
         return connection;
     }
 
@@ -268,11 +326,21 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public float getConnectionTemperature(NodeConnection connection) {
-        return CONNECTION_DATA.getOrDefault(connection, Pair.of(WireTypes.STANDARD, 0f)).getSecond();
+        WireData data = CONNECTION_DATA.get(connection);
+        return data == null ? 0f : data.temperature();
     }
 
     public void setConnectionTemperature(NodeConnection connection, float temp) {
-        CONNECTION_DATA.computeIfPresent(connection, (k, v) -> Pair.of(v.getFirst(), temp));
+        CONNECTION_DATA.computeIfPresent(connection, (k, v) -> new WireData(v.wireType(), temp, v.attachments()));
+    }
+
+    public WireData getConnectionData(NodeConnection connection) {
+        return CONNECTION_DATA.get(connection);
+    }
+
+    public void setConnectionData(NodeConnection connection, WireData data) {
+        LoadedWireManager.handleWireAdded(connection, data, level);
+        CONNECTION_DATA.put(connection, data);
     }
 
     public List<Node> getNodesAt(BlockPos pos) {

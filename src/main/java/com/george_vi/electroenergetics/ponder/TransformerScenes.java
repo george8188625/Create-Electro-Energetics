@@ -1,8 +1,6 @@
 package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
-import com.george_vi.electroenergetics.simulation.WireTypes;
-import com.simibubi.create.content.kinetics.gauge.StressGaugeBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
@@ -35,14 +33,14 @@ public class TransformerScenes {
         scene.idle(80);
 
         connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 0), Direction.WEST),
-                util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.WEST), WireTypes.STANDARD);
+                util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.WEST));
         connections.createConnection(util.vector().of(4 + 5/16f, 30/16f, 4 + 3/16f),
-                util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.WEST), WireTypes.STANDARD);
+                util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.WEST));
 
         connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 0), Direction.EAST),
-                util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.EAST), WireTypes.STANDARD);
+                util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.EAST));
         connections.createConnection(util.vector().of(4 + 11/16f, 30/16f, 4 + 3/16f),
-                util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.EAST), WireTypes.STANDARD);
+                util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.EAST));
 
         scene.world().modifyBlockEntityNBT(util.select().position(4, 1, 2), ElectricGaugeBlockEntity.class,
                 nbt -> nbt.putFloat("Value", .3f));
@@ -63,14 +61,14 @@ public class TransformerScenes {
         scene.idle(50);
 
         connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 8), Direction.WEST),
-                util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.WEST), WireTypes.STANDARD);
+                util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.WEST));
         connections.createConnection(util.vector().of(4 + 5/16f, 30/16f, 4 + 13/16f),
-                util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.WEST), WireTypes.STANDARD);
+                util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.WEST));
 
         connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 8), Direction.EAST),
-                util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.EAST), WireTypes.STANDARD);
+                util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.EAST));
         connections.createConnection(util.vector().of(4 + 11/16f, 30/16f, 4 + 13/16f),
-                util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.EAST), WireTypes.STANDARD);
+                util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.EAST));
 
         scene.world().setKineticSpeed(util.select().position(4, 1, 8), 256);
         scene.world().modifyBlockEntityNBT(util.select().position(4, 1, 6), ElectricGaugeBlockEntity.class,
@@ -103,16 +101,16 @@ public class TransformerScenes {
         scene.world().showSection(util.select().position(2, 1, 3), Direction.DOWN);
 
         ElementLink<WirePonderElement> wire1 = connections.createConnection(util.vector().of(4, 1, 0).add(0, 0.5, 0.5),
-                util.vector().of(2, 1, 3).add(0.5, 0.5, 0), WireTypes.STANDARD);
+                util.vector().of(2, 1, 3).add(0.5, 0.5, 0));
         ElementLink<WirePonderElement> wire2 = connections.createConnection(util.vector().of(2, 1, 3).add(0.5, 0.5, 1),
-                util.vector().of(4, 1, 4).add(0, 0.5, 0.5), WireTypes.STANDARD);
+                util.vector().of(4, 1, 4).add(0, 0.5, 0.5));
         ElementLink<WirePonderElement> wire3 = connections.createConnection(util.vector().of(4, 1, 4).add(0, 0.5, 0.5),
-                util.vector().of(4, 1, 8).add(2/16f, 0.5, 3/16f), WireTypes.STANDARD);
+                util.vector().of(4, 1, 8).add(2/16f, 0.5, 3/16f));
 
         ElementLink<WirePonderElement> wire4 = connections.createConnection(util.vector().of(4, 1, 8).add(14/16f, 0.5, 3/16f),
-                util.vector().of(4, 1, 4).add(1, 0.5, 0.5), WireTypes.STANDARD);
+                util.vector().of(4, 1, 4).add(1, 0.5, 0.5));
         ElementLink<WirePonderElement> wire5 =  connections.createConnection(util.vector().of(4, 1, 4).add(1, 0.5, 0.5),
-                util.vector().of(4, 1, 0).add(1, 0.5, 0.5), WireTypes.STANDARD);
+                util.vector().of(4, 1, 0).add(1, 0.5, 0.5));
 
         scene.world().setKineticSpeed(util.select().position(4, 1, 8), 256);
 

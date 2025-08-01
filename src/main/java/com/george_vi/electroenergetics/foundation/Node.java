@@ -14,11 +14,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
-public record Node(int id, BlockPos sourcePos) {
+public record Node(int id, BlockPos sourcePos) implements Comparable<Node> {
     public static final Codec<Node> CODEC = Codec.INT_STREAM.comapFlatMap(
         s -> Util.fixedSize(s, 4).map(a -> new Node(a[0], new BlockPos(a[1], a[2], a[3]))),
         n -> IntStream.of(n.id(), n.sourcePos().getX(), n.sourcePos().getY(), n.sourcePos().getZ())
@@ -66,4 +67,10 @@ public record Node(int id, BlockPos sourcePos) {
         return pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
     }
 
+    @Override
+    public int compareTo(@NotNull Node other) {
+        if (id() == other.id())
+            return sourcePos().compareTo(other.sourcePos());
+        return id - other.id();
+    }
 }

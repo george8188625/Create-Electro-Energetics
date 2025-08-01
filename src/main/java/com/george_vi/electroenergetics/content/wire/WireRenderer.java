@@ -1,11 +1,17 @@
-package com.george_vi.electroenergetics.content.wire_spool;
+package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
+import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.simulation.WireData;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
+import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -26,13 +32,13 @@ import java.util.List;
 import java.util.Map;
 
 public class WireRenderer {
-    public static List<NodeConnection> WIRE_CONNECTIONS = new ArrayList<>();
+    public static List<Pair<NodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
     public static Map<Node, Float> NODE_VOLTAGES = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     public static void render(LevelRenderer levelRenderer, PoseStack pose, Camera camera) {
         Minecraft mc = Minecraft.getInstance();
-        mc.level.getProfiler().push("renderCEEWires");
+        mc.level.getProfiler().push("renderWires");
         if (!(levelRenderer instanceof LevelRendererAccessor acc))
             return;
 
@@ -43,7 +49,9 @@ public class WireRenderer {
         pose.pushPose();
         pose.translate(-camera.getPosition().x(), -camera.getPosition().y(), -camera.getPosition().z());
 
-        for (NodeConnection connection : getAllConnections()) {
+        for (Pair<NodeConnection, WireData> wire : getAllConnections()) {
+            NodeConnection connection = wire.getFirst();
+            WireData wireData = wire.getSecond();
 
             Vec3 pos1 = null;
             Vec3 pos2 = null;
@@ -64,8 +72,28 @@ public class WireRenderer {
             pos1 = pos1.add(devicePos1.getX(), devicePos1.getY(), devicePos1.getZ());
             pos2 = pos2.add(devicePos2.getX(), devicePos2.getY(), devicePos2.getZ());
 
-            List<Vec3> points = cablePoints(pos1, pos2, 1);
-            List<Vec3> renderedPoints = cablePoints(pos1, pos2, 1, mc.gameRenderer.getMainCamera().getPosition());
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1);
+            List<Vec3> renderedPoints = QuadraticWireHelper.cablePoints(pos1, pos2, 1, mc.gameRenderer.getMainCamera().getPosition());
+            mc.getProfiler().popPush("renderWireAttachments");
+            for (Pair<Float, WireAttachment> attachment : wire.getSecond().attachments()) {
+                mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachment.getSecond().type).toString());
+                pose.pushPose();
+                Vec3 offset;
+                if (wire.getFirst().node1().compareTo(wire.getFirst().node2()) > 0)
+                    offset = QuadraticWireHelper.posAt(pos1, pos2, 1.0f - attachment.getFirst());
+                else
+                    offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst());
+                PoseTransformStack msr = TransformStack.of(pose);
+                msr.translate(offset);
+                double angleY = Math.toDegrees(Math.atan2(pos2.x - pos1.x, pos2.z - pos1.z)) + 90;
+                msr.rotateYDegrees((float) angleY);
+                msr.rotateXDegrees(180);
+                int light = LevelRenderer.getLightColor(mc.level, BlockPos.containing(offset));
+                attachment.getSecond().type.render(pose, buffer, levelRenderer, attachment.getSecond(), offset, light);
+                pose.popPose();
+                mc.getProfiler().pop();
+            }
+            mc.getProfiler().popPush("renderWires");
 
             renderWire(renderedPoints, pos1, pos2, pose, buffer, levelRenderer);
 
@@ -110,7 +138,7 @@ public class WireRenderer {
                 Vec3 pos1 = positionsToConnect.get(i);
                 Vec3 pos2 = positionsToConnect.get(i + 1);
 
-                List<Vec3> points = cablePoints(pos1, pos2, 3);
+                List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 3);
 
                 renderWire(points, pos1, pos2, pose, buffer, levelRenderer);
             }
@@ -143,71 +171,42 @@ public class WireRenderer {
         }
     }
 
-    public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip) {
-        return cablePoints(pos1, pos2, dip, 1);
-    }
-
-    private static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, Vec3 position) {
-        float distance = (float) pos1.distanceTo(pos2);
-
-        double resolution = (distance * 2);
-        float a = (0.05f / distance) * dip;
-
-        float shortestDistance = 9999;
-        for (int x = 0; x < resolution; x++) {
-            float particleLevel = (float) (a * x * (x - resolution));
-            Vec3 point = pos1.add((pos2.subtract(pos1)).multiply(1 / resolution, 1 / resolution, 1 / resolution).multiply(x, x, x)).add(0, particleLevel, 0);
-            shortestDistance = (float) Math.min(shortestDistance, position.distanceTo(point));
-        }
-        float detail;
-        if (shortestDistance < 10)
-            detail = 1;
-        else if (shortestDistance < 20)
-            detail = 2;
-        else if (shortestDistance < 40)
-            detail = 10;
-        else
-            detail = 20;
-
-        return cablePoints(pos1, pos2, dip, detail);
-    }
-
-    public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, float detail) {
-        List<Vec3> points = new ArrayList<>();
-        float distance = (float) pos1.distanceTo(pos2);
-
-        double resolution = (distance * 2) / detail;
-        float a = (0.05f / distance) * dip * detail * detail;
-        for (int x = 0; x < resolution; x++) {
-            float particleLevel = (float) (a * x * (x - resolution));
-            Vec3 point = pos1.add((pos2.subtract(pos1)).multiply(1 / resolution, 1 / resolution, 1 / resolution).multiply(x, x, x)).add(0, particleLevel, 0);
-            points.add(point);
-        }
-        return points;
-    }
-
     public static void removeConnections(List<NodeConnection> toRemove) {
         WIRE_CONNECTIONS.removeAll(toRemove);
     }
 
     public static void removeConnections(NodeConnection toRemove) {
+        WIRE_CONNECTIONS.removeIf(w -> w.getFirst().equals(toRemove));
         WIRE_CONNECTIONS.remove(toRemove);
     }
 
-    public static List<NodeConnection> getAllConnections() {
+    public static List<Pair<NodeConnection, WireData>> getAllConnections() {
        return List.copyOf(WIRE_CONNECTIONS);
     }
 
-    public static void addConnection(NodeConnection newConnection) {
-        if (!WIRE_CONNECTIONS.contains(newConnection))
-            WIRE_CONNECTIONS.add(newConnection);
+    public static WireData getConnectionData(NodeConnection connection) {
+        for (Pair<NodeConnection, WireData> wire : getAllConnections()) {
+            if (wire.getFirst().equals(connection))
+                return wire.getSecond();
+        }
+        return null;
     }
 
+    public static void addConnection(NodeConnection newConnection, WireData data) {
+        for (int i = 0; i < WIRE_CONNECTIONS.size(); i++) {
+            if (WIRE_CONNECTIONS.get(i).getFirst().equals(newConnection)) {
+                WIRE_CONNECTIONS.remove(i);
+                break;
+            }
+        }
+        WIRE_CONNECTIONS.add(Pair.of(newConnection, data));
+    }
     public static void removeVoltageData(Node node) {
         synchronized ("get_node_voltages") {
             NODE_VOLTAGES.remove(node);
         }
     }
+
     public static Map<Node, Float> getAllVoltages() {
         synchronized ("get_node_voltages") {
             return Map.copyOf(NODE_VOLTAGES);

@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
-import com.george_vi.electroenergetics.simulation.WireTypes;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.catnip.math.Pointing;
 import net.createmod.ponder.api.element.ElementLink;
@@ -45,7 +45,7 @@ public class ConnectorScenes {
                 .rightClick();
         scene.idle(40);
 
-        ElementLink<WirePonderElement> wire = connections.createConnection(util.vector().of(2, 1.5, 4.5), util.vector().centerOf(1, 1, 2), WireTypes.STANDARD);
+        ElementLink<WirePonderElement> wire = connections.createConnection(util.vector().of(2, 1.5, 4.5), util.vector().centerOf(1, 1, 2));
 
         scene.idle(20);
 
@@ -70,13 +70,13 @@ public class ConnectorScenes {
 
         scene.idle(40);
 
-        connections.createConnection(util.vector().of(2, 1.5, 4.5), util.vector().centerOf(1, 1, 2), WireTypes.STANDARD);
+        connections.createConnection(util.vector().of(2, 1.5, 4.5), util.vector().centerOf(1, 1, 2));
         scene.idle(2);
-        connections.createConnection(util.vector().of(46/16f, 19/16f, 0.5), util.vector().centerOf(3, 1, 2), WireTypes.STANDARD);
+        connections.createConnection(util.vector().of(46/16f, 19/16f, 0.5), util.vector().centerOf(3, 1, 2));
         scene.idle(2);
-        connections.createConnection(util.vector().of(3, 1.5, 4.5), util.vector().centerOf(3, 1, 2), WireTypes.STANDARD);
+        connections.createConnection(util.vector().of(3, 1.5, 4.5), util.vector().centerOf(3, 1, 2));
         scene.idle(2);
-        connections.createConnection(util.vector().of(34/16f, 19/16f, 0.5), util.vector().centerOf(1, 1, 2), WireTypes.STANDARD);
+        connections.createConnection(util.vector().of(34/16f, 19/16f, 0.5), util.vector().centerOf(1, 1, 2));
         scene.idle(2);
 
         scene.world().modifyBlock(util.grid().at(2, 1, 0), s -> s.setValue(BulbBlock.LIGHT, 2), false);
@@ -99,10 +99,10 @@ public class ConnectorScenes {
         scene.world().showSection(firstPlatform, Direction.DOWN);
 
         scene.idle(20);
-        connections.createConnection(util.vector().of(2, 1.5,0.5), util.vector().centerOf(1, 1, 2), WireTypes.STANDARD);
-        connections.createConnection(util.vector().of(3, 1.5,0.5), util.vector().centerOf(3, 1, 2), WireTypes.STANDARD);
-        connections.createConnection(util.vector().centerOf(1, 1,2), util.vector().centerOf(1, 1, 4), WireTypes.STANDARD);
-        connections.createConnection(util.vector().centerOf(3, 1,2), util.vector().centerOf(3, 1, 4), WireTypes.STANDARD);
+        connections.createConnection(util.vector().of(2, 1.5,0.5), util.vector().centerOf(1, 1, 2));
+        connections.createConnection(util.vector().of(3, 1.5,0.5), util.vector().centerOf(3, 1, 2));
+        connections.createConnection(util.vector().centerOf(1, 1,2), util.vector().centerOf(1, 1, 4));
+        connections.createConnection(util.vector().centerOf(3, 1,2), util.vector().centerOf(3, 1, 4));
         scene.idle(20);
 
         scene.overlay().showText(70)
@@ -114,16 +114,16 @@ public class ConnectorScenes {
 
         scene.world().showSection(wires, Direction.DOWN);
         scene.idle(15);
-        connections.createConnection(util.vector().centerOf(1, 1,13), util.vector().centerOf(1, 1, 4), WireTypes.STANDARD);
-        connections.createConnection(util.vector().centerOf(3, 1,13), util.vector().centerOf(3, 1, 4), WireTypes.STANDARD);
-        connections.createConnection(util.vector().centerOf(1, 1,13), util.vector().centerOf(1, 1, 22), WireTypes.STANDARD);
-        connections.createConnection(util.vector().centerOf(3, 1,13), util.vector().centerOf(3, 1, 22), WireTypes.STANDARD);
-        connections.createConnection(util.vector().centerOf(1, 1,31), util.vector().centerOf(1, 1, 22), WireTypes.STANDARD);
-        connections.createConnection(util.vector().centerOf(3, 1,31), util.vector().centerOf(3, 1, 22), WireTypes.STANDARD);
-        connections.createConnection(util.vector().centerOf(1, 1,31), util.vector().centerOf(1, 1, 40), WireTypes.STANDARD);
-        connections.createConnection(util.vector().centerOf(3, 1,31), util.vector().centerOf(3, 1, 40), WireTypes.STANDARD);
-        connections.createConnection(util.vector().of(34/16f, 19/16f, 43.5), util.vector().centerOf(1, 1, 40), WireTypes.STANDARD);
-        connections.createConnection(util.vector().of(46/16f, 19/16f, 43.5), util.vector().centerOf(3, 1, 40), WireTypes.STANDARD);
+        connections.createConnection(util.vector().centerOf(1, 1,13), util.vector().centerOf(1, 1, 4));
+        connections.createConnection(util.vector().centerOf(3, 1,13), util.vector().centerOf(3, 1, 4));
+        connections.createConnection(util.vector().centerOf(1, 1,13), util.vector().centerOf(1, 1, 22));
+        connections.createConnection(util.vector().centerOf(3, 1,13), util.vector().centerOf(3, 1, 22));
+        connections.createConnection(util.vector().centerOf(1, 1,31), util.vector().centerOf(1, 1, 22));
+        connections.createConnection(util.vector().centerOf(3, 1,31), util.vector().centerOf(3, 1, 22));
+        connections.createConnection(util.vector().centerOf(1, 1,31), util.vector().centerOf(1, 1, 40));
+        connections.createConnection(util.vector().centerOf(3, 1,31), util.vector().centerOf(3, 1, 40));
+        connections.createConnection(util.vector().of(34/16f, 19/16f, 43.5), util.vector().centerOf(1, 1, 40));
+        connections.createConnection(util.vector().of(46/16f, 19/16f, 43.5), util.vector().centerOf(3, 1, 40));
 
 
         scene.idle(60);

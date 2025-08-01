@@ -2,14 +2,14 @@ package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.foundation.*;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.foundation.ElectricPropertiesOverlay;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.simulation.WireData;
 import com.simibubi.create.AllSpecialTextures;
+import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.lang.FontHelper;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.outliner.Outliner;
@@ -68,7 +68,7 @@ public class WireApplyingBehaviour {
 
         //
 
-        Node hoveredNode = Node.closestNode(level, mc.hitResult.getLocation(), 0.4f);
+        Node hoveredNode = Node.closestNode(level, mc.hitResult.getLocation(), 1f);
         Vec3 hoveredPos = null;
 
         // Display all nodes of block
@@ -147,8 +147,8 @@ public class WireApplyingBehaviour {
         }
 
         if (canConnect)
-            for (NodeConnection connection : WireRenderer.getAllConnections())
-                if (new NodeConnection(selectedNode, hoveredNode).equals(connection)) {
+            for (Pair<NodeConnection, WireData> connection : WireRenderer.getAllConnections())
+                if (new NodeConnection(selectedNode, hoveredNode).equals(connection.getFirst())) {
                     canConnect = false;
                     break;
                 }
@@ -158,7 +158,7 @@ public class WireApplyingBehaviour {
                 .withFaceTexture(AllSpecialTextures.SELECTION);
 
         if (!toRemove && !mc.isPaused()) {
-            for (Vec3 point : WireRenderer.cablePoints(selectedPos, hoveredPos, 1)) {
+            for (Vec3 point : QuadraticWireHelper.cablePoints(selectedPos, hoveredPos, 1)) {
                 if (level.random.nextInt(7) != 0)
                     continue;
                 level.addParticle(new DustParticleOptions(new Vector3f(canConnect ? .3f : .9f, canConnect ? .9f : .3f, .5f), 1),

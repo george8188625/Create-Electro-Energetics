@@ -1,24 +1,28 @@
 package com.george_vi.electroenergetics.content.clamp_meter;
 
-import com.george_vi.electroenergetics.content.WireTargetingItem;
-import com.george_vi.electroenergetics.content.wire_spool.InteractWirePacket;
-import com.george_vi.electroenergetics.content.wire_spool.WireInteractionHandler;
-import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
+import com.george_vi.electroenergetics.content.wire.InteractWirePacket;
+import com.george_vi.electroenergetics.content.wire.WireInteractionHandler;
+import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.content.wire.WireTargeting;
 import com.george_vi.electroenergetics.foundation.ElectricPropertiesOverlay;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
+import com.george_vi.electroenergetics.simulation.WireData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-public class ClampMeterItem extends WireTargetingItem {
+public class ClampMeterItem extends Item implements WireTargeting {
 
     public ClampMeterItem(Properties properties) {
         super(properties);
@@ -43,7 +47,7 @@ public class ClampMeterItem extends WireTargetingItem {
     }
 
     @Override
-    public void interactWire(Level level, Player player, ItemStack stackInHand) {
+    public void interactWire(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
         player.startUsingItem(InteractionHand.MAIN_HAND);
     }
 
@@ -65,10 +69,18 @@ public class ClampMeterItem extends WireTargetingItem {
 
             Float v1 = WireRenderer.getAllVoltages().get(point.node1());
             Float v2 = WireRenderer.getAllVoltages().get(point.node2());
-            if (v1 == null || v2 == null)
+            Pair<NodeConnection, WireData> wire = null;
+            for (Pair<NodeConnection, WireData> connection : WireRenderer.getAllConnections()) {
+                if (connection.getFirst().equals(new NodeConnection(point.node1(), point.node2()))) {
+                    wire = connection;
+                    break;
+                }
+            }
+
+            if (v1 == null || v2 == null || wire == null)
                 return;
 
-            double resistance = SimulationTicker.getWireResistance(point.node1(), point.node2());
+            double resistance = SimulationTicker.getWireResistance(point.node1(), point.node2(), wire.getSecond().wireType());
             CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> setMetering((float) (Math.abs(v1 - v2) / resistance)));
         }
     }

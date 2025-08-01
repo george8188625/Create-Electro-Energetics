@@ -2,10 +2,18 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.Objects;
 
 public class DirectionSensitiveNodeConnection extends NodeConnection {
+    public static StreamCodec<ByteBuf, DirectionSensitiveNodeConnection> STREAM_CODEC = StreamCodec.composite(
+            Node.STREAM_CODEC, DirectionSensitiveNodeConnection::node1,
+            Node.STREAM_CODEC, DirectionSensitiveNodeConnection::node2,
+            DirectionSensitiveNodeConnection::new
+    );
+
     public DirectionSensitiveNodeConnection(Node node1, Node node2) {
         super(node1, node2);
     }

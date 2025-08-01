@@ -1,7 +1,10 @@
-package com.george_vi.electroenergetics.content.wire_spool;
+package com.george_vi.electroenergetics.content.wire;
 
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.simulation.WireData;
+import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -21,7 +24,9 @@ public class WireEffects {
         if (mc.isPaused())
             return;
 
-        for (NodeConnection connection : WireRenderer.getAllConnections()) {
+        for (Pair<NodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
+            NodeConnection connection = wire.getFirst();
+
             Vec3 pos1 = null;
             Vec3 pos2 = null;
 
@@ -41,7 +46,7 @@ public class WireEffects {
             pos1 = pos1.add(devicePos1.getX(), devicePos1.getY(), devicePos1.getZ());
             pos2 = pos2.add(devicePos2.getX(), devicePos2.getY(), devicePos2.getZ());
 
-            List<Vec3> points = WireRenderer.cablePoints(pos1, pos2, 1);
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1);
 
             spawnDrippingWater(points);
         }

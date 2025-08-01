@@ -1,10 +1,9 @@
 package com.george_vi.electroenergetics.ponder;
 
-import com.george_vi.electroenergetics.simulation.WireTypes;
+import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.simulation.WireType;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
-import net.createmod.ponder.foundation.PonderScene;
-import net.createmod.ponder.foundation.instruction.FadeInOutInstruction;
 import net.createmod.ponder.foundation.instruction.FadeIntoSceneInstruction;
 import net.createmod.ponder.foundation.instruction.FadeOutOfSceneInstruction;
 import net.minecraft.core.Direction;
@@ -17,11 +16,15 @@ public class WireConnectionInstructions {
         this.builder = builder;
     }
 
-    public ElementLink<WirePonderElement> createConnection(Vec3 pos1, Vec3 pos2, WireTypes.WireType type) {
+    public ElementLink<WirePonderElement> createConnection(Vec3 pos1, Vec3 pos2, WireType type) {
         return createConnection(pos1, pos2, type, 1);
     }
 
-    public ElementLink<WirePonderElement> createConnection(Vec3 pos1, Vec3 pos2, WireTypes.WireType type, int duration) {
+    public ElementLink<WirePonderElement> createConnection(Vec3 pos1, Vec3 pos2) {
+        return createConnection(pos1, pos2, CEEWireTypes.STANDARD.get(), 1);
+    }
+
+    public ElementLink<WirePonderElement> createConnection(Vec3 pos1, Vec3 pos2, WireType type, int duration) {
         CreateWireConnectionInstruction instruction = new CreateWireConnectionInstruction(duration, Direction.DOWN, new WirePonderElement(pos1, pos2, type));
         builder.addInstruction(instruction);
         return instruction.createLink(builder.getScene());

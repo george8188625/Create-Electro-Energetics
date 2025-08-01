@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.simulation.WireType;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -19,9 +20,14 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.function.Supplier;
+
 public class WireSpoolItem extends Item {
-    public WireSpoolItem(Properties properties) {
+    final Supplier<WireType> wireType;
+
+    public WireSpoolItem(Properties properties, Supplier<WireType> wireType) {
         super(properties);
+        this.wireType = wireType;
     }
 
     @Override
@@ -53,7 +59,7 @@ public class WireSpoolItem extends Item {
         if (!(state.getBlock() instanceof DeviceBlock db))
             return InteractionResult.PASS;
 
-        Node hoveredNode = Node.closestNode(level, context.getClickLocation(), 0.4f);
+        Node hoveredNode = Node.closestNode(level, context.getClickLocation(), 1f);
 
 
         if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
@@ -71,7 +77,7 @@ public class WireSpoolItem extends Item {
                 return InteractionResult.FAIL;
             }
 
-            sd.connect(originalNode, hoveredNode);
+            sd.connect(originalNode, hoveredNode, wireType.get());
 
             AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);
 

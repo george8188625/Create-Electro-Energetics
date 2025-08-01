@@ -75,8 +75,6 @@ public class ElectricMotorBlock extends DirectionalKineticBlock implements Devic
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (level instanceof ServerLevel sl && state.getBlock() != level.getBlockState(pos).getBlock()) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            for (Node node : sd.getNodesAt(pos))
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(sd.getConnections(node).size() * CEEConfigs.server().wiresPerSpool.get()));
             sd.removeDevice(pos);
         }
         super.onRemove(state, level, pos, newState, movedByPiston);

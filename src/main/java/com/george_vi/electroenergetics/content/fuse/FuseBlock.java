@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
-import com.george_vi.electroenergetics.content.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;

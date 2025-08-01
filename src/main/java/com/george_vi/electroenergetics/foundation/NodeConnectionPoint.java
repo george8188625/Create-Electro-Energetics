@@ -1,9 +1,9 @@
 package com.george_vi.electroenergetics.foundation;
 
-import com.george_vi.electroenergetics.content.wire_spool.InteractWirePacket;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.phys.Vec3;
 
 public record NodeConnectionPoint(Node node1, Node node2, float point) {
     public static final StreamCodec<ByteBuf, NodeConnectionPoint> STREAM_CODEC = StreamCodec.composite(
@@ -12,4 +12,12 @@ public record NodeConnectionPoint(Node node1, Node node2, float point) {
             ByteBufCodecs.FLOAT, NodeConnectionPoint::point,
             NodeConnectionPoint::new
     );
+
+    public Vec3 posAt(Vec3 pos1, Vec3 pos2) {
+        return QuadraticWireHelper.posAt(pos1, pos2, point);
+    }
+
+    public NodeConnectionPoint reverse() {
+        return new NodeConnectionPoint(node2, node1, 1.0f - point);
+    }
 }

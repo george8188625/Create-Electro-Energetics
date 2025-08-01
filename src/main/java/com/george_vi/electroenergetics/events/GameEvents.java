@@ -2,6 +2,10 @@ package com.george_vi.electroenergetics.events;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.commands.CEECommands;
+import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
+import com.george_vi.electroenergetics.content.wire.WireEffects;
+import com.george_vi.electroenergetics.content.wire.WireInteractionHandler;
+import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.content.wire_spool.*;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.minecraft.client.Minecraft;

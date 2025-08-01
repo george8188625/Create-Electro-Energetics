@@ -1,7 +1,6 @@
-package com.george_vi.electroenergetics.content.wire_spool;
+package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.electroenergetics.content.WireTargetingItem;
 import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
@@ -18,8 +17,8 @@ public record InteractWirePacket(NodeConnectionPoint point) implements Serverbou
     @Override
     public void handle(ServerPlayer player) {
         ItemStack stackInHand = player.getMainHandItem();
-        if (stackInHand.getItem() instanceof WireTargetingItem item)
-            item.interactWire(player.level(), player, stackInHand);
+        if (stackInHand.getItem() instanceof WireTargeting item)
+            item.interactWire(point(), player.level(), player, stackInHand);
     }
 
     @Override

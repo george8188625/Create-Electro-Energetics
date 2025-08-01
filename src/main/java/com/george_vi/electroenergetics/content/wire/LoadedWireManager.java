@@ -1,8 +1,9 @@
-package com.george_vi.electroenergetics.content.wire_spool;
+package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.simulation.WireData;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.server.level.ServerLevel;
@@ -37,7 +38,7 @@ public class LoadedWireManager {
             for (NodeConnection connection : sd.getConnections(node)) {
                 if (chunks.contains(new ChunkPos(connection.node2().sourcePos())))
                     continue;
-                CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection));
+                CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection, sd.getConnectionData(connection)));
             }
         }
 
@@ -77,13 +78,13 @@ public class LoadedWireManager {
         }
     }
 
-    public static void handleWireAdded(NodeConnection connection, ServerLevel level) {
+    public static void handleWireAdded(NodeConnection connection, WireData data, ServerLevel level) {
         ChunkPos chunk1 = new ChunkPos(connection.node1().sourcePos());
         ChunkPos chunk2 = new ChunkPos(connection.node2().sourcePos());
         for (ServerPlayer player : level.getPlayers(p -> true)) {
             for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList()))
                 if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {
-                    CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection));
+                    CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection, data));
                     break;
                 }
         }

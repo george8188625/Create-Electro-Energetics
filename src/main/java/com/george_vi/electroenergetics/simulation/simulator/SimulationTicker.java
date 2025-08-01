@@ -1,9 +1,10 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.*;
 import com.george_vi.electroenergetics.simulation.util.LUSolver;
 import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
@@ -30,7 +31,7 @@ public class SimulationTicker {
         List<SimulationPerformance> performances = new ArrayList<>();
 
         // SETUP
-        Set<NodeConnection> connections = new HashSet<>();
+        Set<Pair<WireType, NodeConnection>> connections = new HashSet<>();
         Map<Node, List<Node>> adjacency = new HashMap<>();
         Map<DirectionSensitiveNodeConnection, ElectricalProperties> connectionProperties = new HashMap<>();
         List<Node> allNodes = new ArrayList<>();
@@ -41,7 +42,11 @@ public class SimulationTicker {
 
         for (Node node : allNodes) {
             adjacency.put(node, new ArrayList<>());
-            connections.addAll(sd.getConnections(node));
+            for (NodeConnection connection : sd.getConnections(node)) {
+                WireData connectionData = sd.getConnectionData(connection);
+                WireType wireType = connectionData == null ? CEEWireTypes.STANDARD.get() : connectionData.wireType();
+                connections.add(Pair.of(wireType, connection));
+            }
         }
 
         // PRE-TICK / COLLECT BRIDGES
@@ -71,17 +76,17 @@ public class SimulationTicker {
             }
         }
 
-        for (NodeConnection connection : connections) {
-            Node node1 = connection.node1();
-            Node node2 = connection.node2();
+        for (Pair<WireType, NodeConnection> connection : connections) {
+            Node node1 = connection.getSecond().node1();
+            Node node2 = connection.getSecond().node2();
 
             if (adjacency.containsKey(node1) && adjacency.containsKey(node2)) {
                 adjacency.get(node1).add(node2);
                 adjacency.get(node2).add(node1);
             }
 
-            connectionProperties.put(new DirectionSensitiveNodeConnection(connection), new ElectricalProperties(getWireResistance(node1, node2), 0));
-            connectionProperties.put(new DirectionSensitiveNodeConnection(connection).invert(), new ElectricalProperties(getWireResistance(node1, node2), 0));
+            connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0));
+            connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()).invert(), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0));
         }
 
         // DFS
@@ -176,45 +181,47 @@ public class SimulationTicker {
         });
 
         // WIRE BREAKING
-        NodeConnection longestWireToBreak = null;
-        for (NodeConnection connection : connections) {
-            double vd = Math.abs(resultsPerBlock.getOrDefault(connection.node1().sourcePos(), Collections.emptyMap()).getOrDefault(connection.node1(), 0d)
-                    - resultsPerBlock.getOrDefault(connection.node2().sourcePos(), Collections.emptyMap()).getOrDefault(connection.node2(), 0d));
-            double current = vd / getWireResistance(connection.node1(), connection.node2());
+        if (CEEConfigs.server().wiresBreak.get()) {
+            NodeConnection longestWireToBreak = null;
+            for (Pair<WireType, NodeConnection> connection : connections) {
+                double vd = Math.abs(resultsPerBlock.getOrDefault(connection.getSecond().node1().sourcePos(), Collections.emptyMap()).getOrDefault(connection.getSecond().node1(), 0d)
+                        - resultsPerBlock.getOrDefault(connection.getSecond().node2().sourcePos(), Collections.emptyMap()).getOrDefault(connection.getSecond().node2(), 0d));
+                double current = vd / getWireResistance(connection.getSecond().node1(), connection.getSecond().node2(), connection.getFirst());
 
-            float temp = sd.getConnectionTemperature(connection);
+                float temp = sd.getConnectionTemperature(connection.getSecond());
 
-            float newTemp = (float) (Math.min(current, 500));
-            newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
-            newTemp = Math.max(temp - 33.3f + newTemp, 0);
-            sd.setConnectionTemperature(connection, newTemp);
+                float newTemp = (float) (Math.min(current, 500));
+                newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
+                newTemp = Math.max(temp - 33.3f + newTemp, 0);
+                sd.setConnectionTemperature(connection.getSecond(), newTemp);
 
-            if (newTemp > 2000 && level.isLoaded(connection.node1().sourcePos()) && CEEConfigs.server().wiresBreak.get()) {
-                for (Vec3 point : WireRenderer.cablePoints(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), 1)) {
-                    if (level.random.nextInt(100) != 0)
-                        continue;
-                    level.sendParticles(new DustParticleOptions(new Vector3f(0f, 0f, 0f), 1),
-                            point.x(), point.y(), point.z(),
-                            0, 0.5, 0.5, 0.5, 0);
+                if (newTemp > 2000 && level.isLoaded(connection.getSecond().node1().sourcePos())) {
+                    for (Vec3 point : QuadraticWireHelper.cablePoints(Vec3.atCenterOf(connection.getSecond().node1().sourcePos()), Vec3.atCenterOf(connection.getSecond().node2().sourcePos()), 1)) {
+                        if (level.random.nextInt(100) != 0)
+                            continue;
+                        level.sendParticles(new DustParticleOptions(new Vector3f(0f, 0f, 0f), 1),
+                                point.x(), point.y(), point.z(),
+                                0, 0.5, 0.5, 0.5, 0);
+                    }
                 }
-            }
 
-            if (newTemp > 5000 && CEEConfigs.server().wiresBreak.get()) {
-                if (longestWireToBreak == null)
-                    longestWireToBreak = connection;
-                else if (getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2()) < getWireResistance(connection.node1(), connection.node2()))
-                    longestWireToBreak = connection;
-            }
+                if (newTemp > 5000) {
+                    if (longestWireToBreak == null)
+                        longestWireToBreak = connection.getSecond();
+                    else if (getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), connection.getFirst()) < getWireResistance(connection.getSecond().node1(), connection.getSecond().node2(), connection.getFirst()))
+                        longestWireToBreak = connection.getSecond();
+                }
 
-        }
-        if (longestWireToBreak != null) {
-            sd.removeConnection(longestWireToBreak);
-            for (Vec3 point : WireRenderer.cablePoints(Vec3.atCenterOf(longestWireToBreak.node1().sourcePos()), Vec3.atCenterOf(longestWireToBreak.node2().sourcePos()), 1)) {
-                if (level.random.nextInt(3) != 0)
-                    continue;
-                level.sendParticles(ParticleTypes.BUBBLE_POP,
-                        point.x(), point.y(), point.z(),
-                        10, 0.05, 0.05, 0.05, 0);
+            }
+            if (longestWireToBreak != null) {
+                sd.removeConnection(longestWireToBreak);
+                for (Vec3 point : QuadraticWireHelper.cablePoints(Vec3.atCenterOf(longestWireToBreak.node1().sourcePos()), Vec3.atCenterOf(longestWireToBreak.node2().sourcePos()), 1)) {
+                    if (level.random.nextInt(3) != 0)
+                        continue;
+                    level.sendParticles(ParticleTypes.BUBBLE_POP,
+                            point.x(), point.y(), point.z(),
+                            10, 0.05, 0.05, 0.05, 0);
+                }
             }
         }
 
@@ -223,14 +230,13 @@ public class SimulationTicker {
 
         totalTime = (int) ((System.nanoTime() - start) / 1000);
         SimulationTicker.performances = performances;
-        return;
     }
 
 
 
-    public static double getWireResistance(Node node1, Node node2) {
-        double res = Math.sqrt(node1.sourcePos().distSqr(node2.sourcePos())) * CEEConfigs.server().wireResistance.get();
-        return res == 0 ? CEEConfigs.server().wireResistance.get() : res;
+    public static double getWireResistance(Node node1, Node node2, WireType wireType) {
+        double res = Math.sqrt(node1.sourcePos().distSqr(node2.sourcePos())) * wireType.getResistance();
+        return res == 0 ? wireType.getResistance() : res;
     }
 
     static void dfs(Node current, Map<Node, List<Node>> adjacency, Set<Node> visited, Set<Node> component) {

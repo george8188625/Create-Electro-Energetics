@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.wire_spool;
+package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.foundation.Node;
 

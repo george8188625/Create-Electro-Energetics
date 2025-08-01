@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content;
+package com.george_vi.electroenergetics.foundation;
 
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.Direction;

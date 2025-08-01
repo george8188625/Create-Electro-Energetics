@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.electric_motor;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
-import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
+import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.infrastructure.config.AllConfigs;
@@ -132,6 +132,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     public float getGeneratedSpeed() {
         float vS = avgVoltage * avgVoltage;
         vS /= (float) (13 * CEEConfigs.server().motorResistance.get());
+        vS *= avgVoltage < 0 ? -1 : 1;
         return Math.abs(avgVoltage) < 80 ? 0 : Mth.clamp(vS, -AllConfigs.server().kinetics.maxRotationSpeed.get(), AllConfigs.server().kinetics.maxRotationSpeed.get());
     }
 

@@ -4,11 +4,9 @@ import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterItem;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.simibubi.create.AllTags;
-import com.simibubi.create.foundation.data.AssetLookup;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 
@@ -19,7 +17,7 @@ public class CEEItems {
         REGISTRATE.defaultCreativeTab((ResourceKey<CreativeModeTab>) null);
     }
 
-    public static final ItemEntry<WireSpoolItem> WIRE_SPOOL = REGISTRATE.item("wire_spool", WireSpoolItem::new)
+    public static final ItemEntry<WireSpoolItem> WIRE_SPOOL = REGISTRATE.item("wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.STANDARD))
             .register();
     public static final ItemEntry<EmptySpoolItem> EMPTY_SPOOL = REGISTRATE.item("empty_spool", EmptySpoolItem::new)
             .register();
@@ -30,7 +28,6 @@ public class CEEItems {
             .register();
 
     public static final ItemEntry<ClampMeterItem> CLAMP_METER = REGISTRATE.item("clamp_meter", ClampMeterItem::new)
-            .tag(AllTags.optionalTag(BuiltInRegistries.ITEM, CreateElecrtoEnergetics.rl("target_wire")))
             .register();
 
     public static void register() {

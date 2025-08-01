@@ -1,9 +1,7 @@
 package com.george_vi.electroenergetics.ponder;
 
-import com.george_vi.electroenergetics.CEEPartialModels;
-import com.george_vi.electroenergetics.content.wire_spool.WireRenderer;
-import com.george_vi.electroenergetics.simulation.CableTypes;
-import com.george_vi.electroenergetics.simulation.WireTypes;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.simulation.WireType;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.ponder.api.level.PonderLevel;
 import net.createmod.ponder.foundation.element.AnimatedSceneElementBase;
@@ -19,9 +17,9 @@ import java.util.List;
 
 public class WirePonderElement extends AnimatedSceneElementBase {
     final Vec3 pos1, pos2;
-    final WireTypes.WireType type;
+    final WireType type;
 
-    public WirePonderElement(Vec3 pos1, Vec3 pos2, WireTypes.WireType type) {
+    public WirePonderElement(Vec3 pos1, Vec3 pos2, WireType type) {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.type = type;
@@ -29,7 +27,7 @@ public class WirePonderElement extends AnimatedSceneElementBase {
 
     @Override
     protected void renderLast(PonderLevel world, MultiBufferSource buffer, GuiGraphics graphics, float fade, float pt) {
-        List<Vec3> points = WireRenderer.cablePoints(pos1, pos2, 1);
+        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1);
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
