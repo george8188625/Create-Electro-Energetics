@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
@@ -21,7 +22,8 @@ public class ElectricMotorDevice extends SimulatedDevice {
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
         if (level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ElectricMotorBlockEntity be)
-                bridges.bridge(new Node(0, pos), new Node(1, pos), (Math.abs(be.avgVoltage) < 80 || be.isOverStressed()) ? CEEConfigs.server().motorResistance.get() / 3 : CEEConfigs.server().motorResistance.get(), 0);
+                bridges.builder(pos)
+                        .resistor(0, 1, Math.min(CEEConfigs.server().motorResistance.get() * 3, CEEConfigs.server().motorResistance.get() / Mth.clamp(be.load, 0.1, 3)));
     }
 
     @Override

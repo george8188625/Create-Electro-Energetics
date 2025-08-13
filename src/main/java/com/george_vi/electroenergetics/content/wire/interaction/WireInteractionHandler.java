@@ -1,5 +1,7 @@
-package com.george_vi.electroenergetics.content.wire;
+package com.george_vi.electroenergetics.content.wire.interaction;
 
+import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
@@ -32,7 +34,11 @@ public class WireInteractionHandler {
         Minecraft mc = Minecraft.getInstance();
 
         ItemStack stackInHand = mc.player.getMainHandItem();
-        if (!(stackInHand.getItem() instanceof WireTargeting item))
+
+        WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
+                .filter(h -> h.isActiveFor(stackInHand))
+                .findFirst().orElse(null);
+        if (behaviour == null)
             return;
 
         mc.getProfiler().push("rayCastWire");
@@ -101,7 +107,7 @@ public class WireInteractionHandler {
                 double ab_length_squared = ab.lengthSqr();
                 double t = ab_length_squared == 0 ? 0.0 : ap.dot(ab) / ab_length_squared;
 
-                bestProgress = (float) Mth.lerp(t, (double) (i - 1) / points.size(), (double) (i + 1) / points.size());
+                bestProgress = (float) Mth.lerp(t, i - 1, i + 1) / (points.size() - 1);
                 bestPosition = VecHelper.lerp((float) t, prevPoint, nextPoint);
 
             }
@@ -116,10 +122,10 @@ public class WireInteractionHandler {
 
         targetedPoint = new NodeConnectionPoint(bestConnection.node1(), bestConnection.node2(), bestProgress);
 
-        if (item.getWireDisplayType(targetedPoint, mc.level, mc.player, stackInHand) == WireTargeting.DisplayType.DOT) {
+        if (behaviour.getWireDisplayType(targetedPoint, mc.level, mc.player, stackInHand) == WireInteractionBehaviour.DisplayType.DOT) {
             Outliner.getInstance().chaseAABB("cee_wire_interaction_point", AABB.ofSize(bestPosition, 0.01, 0.01, 0.01))
                     .lineWidth(0.15f)
-                    .colored(item.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
+                    .colored(behaviour.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
                     .disableLineNormals();
         } else {
             Vec3 pos1 = null;
@@ -148,7 +154,7 @@ public class WireInteractionHandler {
 
                 Outliner.getInstance().showLine("cee_wire_interaction_line_" + i, point, nextPoint)
                         .lineWidth(0.07f)
-                        .colored(item.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
+                        .colored(behaviour.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
                         .disableLineNormals();
             }
         }

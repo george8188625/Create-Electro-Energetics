@@ -18,8 +18,10 @@ import java.util.List;
 public abstract class WireAttachmentType {
     public abstract float getWidth(WireAttachment attachment);
 
+    public abstract float getHeight(WireAttachment attachment);
+
     @OnlyIn(Dist.CLIENT)
-    public abstract void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light);
+    public abstract void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch);
 
     @OnlyIn(Dist.CLIENT)
     public void renderChain(PoseStack pose, MultiBufferSource buffer, int light) {

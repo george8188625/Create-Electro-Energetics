@@ -1,4 +1,4 @@
-// 1.21.1	2025-07-29T14:59:47.7670834	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-08-13T20:30:42.489743	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -26,8 +26,8 @@ c3bbe76a76a771008b3bc3cea65f951e298c5a68 assets/electroenergetics/blockstates/po
 600c5f36375220f10093b0281d61f9d813217cec assets/electroenergetics/blockstates/triple_connector.json
 d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tri_polar_energy_meter.json
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
-c98ed672390c054f1d31853fb8b174b3b2ea9309 assets/electroenergetics/lang/en_ud.json
-8da146b1f4936ba47a7c01950098f8fca52286a6 assets/electroenergetics/lang/en_us.json
+577c2c2cd854ead3268f75221f7141da3a929251 assets/electroenergetics/lang/en_ud.json
+62e345f841e6aaa7fe13f7fdd0f9a37dcc873747 assets/electroenergetics/lang/en_us.json
 765c328111edefba08ab581cf90002ac3163c985 assets/electroenergetics/models/block/creative_battery.json
 f2a0a8c7269e5b0a9318f61027d189a0c74da680 assets/electroenergetics/models/block/magnet.json
 c49ab7eac9e9bc1062c69face97b3675b9eeca79 assets/electroenergetics/models/item/accumulator.json
@@ -90,5 +90,4 @@ c9022f55b0bd53ee8441dd7fff9ef88076998ee5 data/electroenergetics/loot_table/block
 f3eee256afdc2c974db137095ff397fb1d928acc data/electroenergetics/loot_table/blocks/triple_connector.json
 96addc83e9bbc364f0c7e792fc5191267603eb9d data/electroenergetics/loot_table/blocks/tri_polar_energy_meter.json
 cebbbb548b3077845ff201773a97a64bd08ed537 data/electroenergetics/loot_table/blocks/voltmeter.json
-c093b3197970de850b5fac6e3bdc2ce99c6c79e1 data/electroenergetics/tags/item/target_wire.json
 4f63857c440409f556060cf8c69104092a5facff data/minecraft/tags/block/mineable/pickaxe.json

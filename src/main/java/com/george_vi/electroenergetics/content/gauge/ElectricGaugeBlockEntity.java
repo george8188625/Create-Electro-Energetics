@@ -1,13 +1,20 @@
 package com.george_vi.electroenergetics.content.gauge;
 
+import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.Node;
+import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
+import com.simibubi.create.compat.Mods;
+import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
+import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
+import dan200.computercraft.api.peripheral.PeripheralCapability;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -17,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import java.util.List;
 
@@ -27,6 +35,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public int color;
     public final boolean voltmeter;
     public double voltage;
+    public AbstractComputerBehaviour computerBehaviour;
 
     ElectricGaugeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, boolean voltmeter) {
         super(type, pos, state);
@@ -106,7 +115,24 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+        behaviours.add(computerBehaviour = CCProxy.behaviour(this));
 
+    }
+
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        if (Mods.COMPUTERCRAFT.isLoaded()) {
+            event.registerBlockEntity(
+                    PeripheralCapability.get(),
+                    CEEBlockEntityTypes.VOLTMETER.get(),
+                    (be, context) -> be.computerBehaviour.getPeripheralCapability()
+            );
+
+            event.registerBlockEntity(
+                    PeripheralCapability.get(),
+                    CEEBlockEntityTypes.AMMETER.get(),
+                    (be, context) -> be.computerBehaviour.getPeripheralCapability()
+            );
+        }
     }
 
     public void setValue(double v) {

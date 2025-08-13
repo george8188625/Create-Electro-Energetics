@@ -30,7 +30,7 @@ public class GaugeDevice extends SimulatedDevice {
 
         if (voltages.size() != 2)
             return;
-        double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
+        double vd = voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos));
 
         if (level.getBlockEntity(pos) instanceof ElectricGaugeBlockEntity be)
             be.voltage = vd;

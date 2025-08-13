@@ -33,4 +33,20 @@ public class CEELang extends Lang {
                 .text(String.format("%.1f", Math.abs(power) > 1000 ? power / 1000 : power))
                 .translate(Math.abs(power) > 1000 ? "generic.kilowatts" : "generic.watts");
     }
+
+    public static Object formatEnergy(double energy) {
+        if (Math.abs(energy) > 1000000)
+            return builder()
+                    .text(String.format("%.1f", energy / 1000000))
+                    .translate("generic.megawatthours");
+
+        if (Math.abs(energy) > 1000)
+            return builder()
+                    .text(String.format("%.1f", energy / 1000))
+                    .translate("generic.kilowatthours");
+
+        return builder()
+                .text(String.format("%.1f", energy))
+                .translate("generic.watthours");
+    }
 }

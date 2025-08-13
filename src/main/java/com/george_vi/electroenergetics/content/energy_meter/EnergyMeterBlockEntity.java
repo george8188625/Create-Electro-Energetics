@@ -17,16 +17,16 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
         super(type, pos, state);
     }
 
-    public float totalEnergy = 0;
-    public float oldTotalEnergy = 0;
+    public double totalEnergy = 0;
+    public double oldTotalEnergy = 0;
     public int ticks = 0;
     public boolean disconnected;
     public int lastPacketTick;
     public int thisPacketTick;
     public UUID owner;
 
-    public void setTotalEnergy(float newTotalEnergy) {
-        float d = (Math.abs(newTotalEnergy - totalEnergy));
+    public void setTotalEnergy(double newTotalEnergy) {
+        double d = (Math.abs(newTotalEnergy - totalEnergy));
         totalEnergy = newTotalEnergy;
 
         if ((d > 2 || ticks > 5) && !level.isClientSide) {
@@ -42,7 +42,7 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
         super.read(tag, registries, clientPacket);
 
         oldTotalEnergy = totalEnergy;
-        totalEnergy = tag.getFloat("TotalEnergy");
+        totalEnergy = tag.getDouble("TotalEnergy");
         disconnected = tag.getBoolean("Disconnected");
         if (tag.contains("Owner"))
             owner = tag.getUUID("Owner");
@@ -57,7 +57,7 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
 
-        tag.putFloat("TotalEnergy", totalEnergy);
+        tag.putDouble("TotalEnergy", totalEnergy);
         tag.putBoolean("Disconnected", disconnected);
         if (owner != null)
             tag.putUUID("Owner", owner);

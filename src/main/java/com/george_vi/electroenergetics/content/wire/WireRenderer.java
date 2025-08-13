@@ -89,7 +89,7 @@ public class WireRenderer {
                 msr.rotateYDegrees((float) angleY);
                 msr.rotateXDegrees(180);
                 int light = LevelRenderer.getLightColor(mc.level, BlockPos.containing(offset));
-                attachment.getSecond().type.render(pose, buffer, levelRenderer, attachment.getSecond(), offset, light);
+                attachment.getSecond().type.render(pose, buffer, levelRenderer, attachment.getSecond(), offset, light, QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst()));
                 pose.popPose();
                 mc.getProfiler().pop();
             }

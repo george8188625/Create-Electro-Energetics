@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.energy_meter.ChangeEnergyMeterStatePacket;
 import com.george_vi.electroenergetics.content.wire.ClearWireConnectionsPacket;
-import com.george_vi.electroenergetics.content.wire.InteractWirePacket;
+import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;
 import com.george_vi.electroenergetics.content.wire.SendWireConnectionsPacket;
 import com.george_vi.electroenergetics.simulation.SendVoltageDataPacket;
 import net.createmod.catnip.net.base.BasePacketPayload;

@@ -79,6 +79,7 @@ repositories {
     maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
     maven { url = "https://mvn.devos.one/snapshots" } // Registrate
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // ForgeConfigAPIPort
+    maven { url = "https://maven.squiddev.cc" } // CC: Tweaked
     maven {
         // location of the maven that hosts JEI files since January 2023
         name = "Jared's maven"
@@ -103,7 +104,9 @@ dependencies {
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
     implementation("curse.maven:createaddition-439890:6445614")
-
+    implementation("curse.maven:supplementaries-412082:6829977")
+    implementation("curse.maven:selene-499980:6818413")
+    implementation("cc.tweaked:cc-tweaked-1.21.1-forge:1.116.1")
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }
 

@@ -20,6 +20,10 @@
   "electroenergetics.gui.goggles.secondary_voltage": "Secondary Coil Voltage:",
   "electroenergetics.gui.goggles.voltage": "Voltage:",
   "electroenergetics.gui.goggles.at_current_voltage": "at current voltage",
+  "electroenergetics.gui.goggles.at_current_load": "at current load",
+
+  "electroenergetics.tooltip.energy_meter.owner": "Owner : %1$s",
+  "electroenergetics.tooltip.energy_meter.energy": "Total Energy : %1$s",
 
   "electroenergetics.nodes.node": "Node",
   "electroenergetics.nodes.feed": "Feed",
@@ -42,6 +46,9 @@
   "electroenergetics.generic.amps": "A",
   "electroenergetics.generic.watts": "W",
   "electroenergetics.generic.kilowatts": "kW",
+  "electroenergetics.generic.watthours": "Wh",
+  "electroenergetics.generic.kilowatthours": "kWh",
+  "electroenergetics.generic.megawatthours": "MWh",
 
   "electroenergetics.transformer.ratio": "Ratio",
 

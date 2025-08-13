@@ -61,4 +61,17 @@ public class QuadraticWireHelper {
         }
         return points;
     }
+
+    public static float pointElevationInDegrees(Vec3 pos1, Vec3 pos2, float point) {
+        Vec3 pointAt1 = posAt(pos1, pos2, point);
+        Vec3 pointAt2 = posAt(pos1, pos2, point + 0.01f);
+        Vec3 directionVector = pointAt1.subtract(pointAt2);
+
+        double dx = directionVector.x;
+        double dy = directionVector.y;
+        double dz = directionVector.z;
+
+        double horizontalDistance = Math.sqrt(dx * dx + dz * dz);
+        return (float) Math.toDegrees(Math.atan2(dy, horizontalDistance));
+    }
 }

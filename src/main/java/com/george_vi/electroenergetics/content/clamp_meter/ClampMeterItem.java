@@ -1,9 +1,8 @@
 package com.george_vi.electroenergetics.content.clamp_meter;
 
-import com.george_vi.electroenergetics.content.wire.InteractWirePacket;
-import com.george_vi.electroenergetics.content.wire.WireInteractionHandler;
+import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;
+import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
-import com.george_vi.electroenergetics.content.wire.WireTargeting;
 import com.george_vi.electroenergetics.foundation.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
@@ -22,7 +21,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-public class ClampMeterItem extends Item implements WireTargeting {
+public class ClampMeterItem extends Item {
 
     public ClampMeterItem(Properties properties) {
         super(properties);
@@ -44,11 +43,6 @@ public class ClampMeterItem extends Item implements WireTargeting {
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.SPEAR;
-    }
-
-    @Override
-    public void interactWire(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
-        player.startUsingItem(InteractionHand.MAIN_HAND);
     }
 
     @Override

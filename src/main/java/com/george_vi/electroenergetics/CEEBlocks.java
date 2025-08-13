@@ -12,6 +12,7 @@ import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchBlock;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlock;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlock;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlock;
+import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterItem;
 import com.george_vi.electroenergetics.content.fuse.FuseBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlock;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodBlock;
@@ -281,7 +282,8 @@ public class CEEBlocks {
                             .build()
             )))
             .transform(pickaxeOnly())
-            .item()
+            .item(EnergyMeterItem::new)
+            .properties(p -> p.stacksTo(1))
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
             .build()
             .register();
@@ -298,7 +300,8 @@ public class CEEBlocks {
                             .build()
             )))
             .transform(pickaxeOnly())
-            .item()
+            .item(EnergyMeterItem::new)
+            .properties(p -> p.stacksTo(1))
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
             .build()
             .register();

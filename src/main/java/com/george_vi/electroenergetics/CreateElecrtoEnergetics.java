@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics;
 
+import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -36,7 +37,10 @@ public class CreateElecrtoEnergetics
         CEECreativeTab.register(modEventBus);
         CEEDataComponents.register(modEventBus);
         CEEWireAttachments.register(modEventBus);
+        CEEWireInteractionBehaviours.register(modEventBus);
         CEEConfigs.register(modLoadingContext, modContainer);
+
+        CCProxy.register();
     }
 
     public static ResourceLocation rl(String path) {

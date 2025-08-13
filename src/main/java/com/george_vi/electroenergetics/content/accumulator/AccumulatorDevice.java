@@ -15,6 +15,7 @@ public class AccumulatorDevice extends SimulatedDevice {
     public AccumulatorDevice(ResourceLocation id) {
         super(id);
     }
+    // TODO: fix accumulators
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
@@ -42,11 +43,11 @@ public class AccumulatorDevice extends SimulatedDevice {
         double current = sourceAmps.getOrDefault(new NodeConnection(new Node(1, pos), new Node(1000, pos)), discharging ? 0 : vd / 30);
 
         if (discharging)
-            storedEnergy -= current * vd;
+            storedEnergy -= Math.abs(current * vd);
         else
-            storedEnergy += current * vd;
+            storedEnergy += Math.abs(current * vd);
 
-        discharging = vd - voltage <= 1;
+        discharging = vd - voltage <= 1 && Math.abs(voltage) > 1;
 
         extraData.putBoolean("Discharging", discharging);
         extraData.putDouble("StoredEnergy", storedEnergy);

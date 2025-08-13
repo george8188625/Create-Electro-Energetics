@@ -1,18 +1,15 @@
 package com.george_vi.electroenergetics.content.energy_meter;
 
-import com.george_vi.electroenergetics.CEEBlockEntityTypes;
-import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.CEENodeConfigurations;
-import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.createmod.catnip.gui.ScreenOpener;
 import net.createmod.catnip.platform.CatnipServices;
+import net.mehvahdjukaar.supplementaries.common.block.tiles.SafeBlockTile;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,6 +26,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -36,14 +34,19 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.UsernameCache;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, IBE<EnergyMeterBlockEntity>, ProperWaterloggedBlock {
@@ -61,7 +64,7 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        withBlockEntityDo(level, pos, be -> be.owner = placer.getUUID());
+        withBlockEntityDo(level, pos, be -> be.owner = be.owner == null ? placer.getUUID() : be.owner);
     }
 
     @Override
@@ -73,6 +76,10 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
     protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Closed", true);
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof EnergyMeterBlockEntity be) {
+            tag.putDouble("TotalEnergy", be.totalEnergy);
+        }
         return tag;
     }
 
@@ -153,6 +160,28 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
         return id == 0 ? Component.translatable("electroenergetics.nodes.feed") :
                 id == 2 ? Component.translatable("electroenergetics.nodes.load") :
                         Component.translatable("electroenergetics.nodes.neutral");
+    }
+
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        List<ItemStack> drops = new ArrayList<>(super.getDrops(state, params));
+        if (!(params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof EnergyMeterBlockEntity be))
+            return drops;
+
+        for (int i = 0; i < drops.size(); i++) {
+            ItemStack drop = drops.get(i);
+            if (drop.getItem() instanceof EnergyMeterItem) {
+                drop.set(CEEDataComponents.ENERGY, be.totalEnergy);
+                if (be.owner != null) {
+                    drop.set(CEEDataComponents.OWNER, be.owner);
+                    String username = UsernameCache.getLastKnownUsername(be.owner);
+                    drop.set(CEEDataComponents.OWNER_NAME, username == null ? "Unknown Player" : username);
+                }
+                drops.set(i, drop);
+            }
+        }
+
+        return drops;
     }
 
     @Override

@@ -1,16 +1,20 @@
 package com.george_vi.electroenergetics.events;
 
+import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.commands.CEECommands;
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.content.wire.WireEffects;
-import com.george_vi.electroenergetics.content.wire.WireInteractionHandler;
+import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.*;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -21,6 +25,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = CreateElecrtoEnergetics.ID)
@@ -76,6 +81,20 @@ public class GameEvents {
             return;
 
         LoadedWireManager.handlePlayerEnterNewSection(player, event.getNewPos().chunk());
+    }
+
+    @SubscribeEvent
+    public static void playerInteractItem(PlayerInteractEvent.RightClickItem event) {
+        if (!event.getLevel().isClientSide() || event.getHand() != InteractionHand.MAIN_HAND)
+            return;
+        WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
+                .filter(h -> h.isActiveFor(event.getItemStack()))
+                .findFirst().orElse(null);
+        if (behaviour == null)
+            return;
+
+        if (behaviour.tryUseOnWire(event.getLevel(), event.getEntity(), event.getHand()))
+            event.setCancellationResult(InteractionResult.SUCCESS);
     }
 
     @SubscribeEvent

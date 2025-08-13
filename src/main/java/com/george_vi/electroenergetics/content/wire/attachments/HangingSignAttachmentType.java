@@ -32,9 +32,14 @@ public class HangingSignAttachmentType extends WireAttachmentType {
         return 1f;
     }
 
+    @Override
+    public float getHeight(WireAttachment attachment) {
+        return 1f;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light) {
+    public void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
         Minecraft mc = Minecraft.getInstance();
 
     }
