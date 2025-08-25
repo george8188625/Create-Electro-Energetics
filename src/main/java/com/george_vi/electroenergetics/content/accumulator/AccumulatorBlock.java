@@ -56,12 +56,12 @@ public class AccumulatorBlock extends SimpleDeviceBlock {
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(FACING).getAxis() == Direction.Axis.X)
-            return Map.of(new Vec3(0.5f, 14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 0,
-                    new Vec3(0.5f, 14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 5 : 11)/16f), 1);
-        return Map.of(new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 14/16f, 0.5f), 0,
-                new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 5 : 11)/16f, 14/16f, 0.5f), 1);
+            return Map.of(0, new Vec3(0.5f, 14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f),
+                    1, new Vec3(0.5f, 14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 5 : 11)/16f));
+        return Map.of(0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 14/16f, 0.5f),
+                1, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 5 : 11)/16f, 14/16f, 0.5f));
     }
 
     @Override

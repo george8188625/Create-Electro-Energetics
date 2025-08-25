@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "create:precision_mechanism"
+    },
+    "S": {
+      "item": "create:shaft"
+    },
+    "T": {
+      "item": "electroenergetics:transformer"
+    },
+    "W": {
+      "item": "electroenergetics:wire_spool"
+    }
+  },
+  "pattern": [
+    " S ",
+    "WPW",
+    " T "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:voltage_regulator"
+  }
+}

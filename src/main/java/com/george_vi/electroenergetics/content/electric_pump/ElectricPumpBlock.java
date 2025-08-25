@@ -93,7 +93,7 @@ public class ElectricPumpBlock extends PumpBlock implements DeviceBlock {
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(ROLL))
             return CEENodeConfigurations.PUMP_ROLL.getNodes(state.getValue(FACING));
         return CEENodeConfigurations.PUMP.getNodes(state.getValue(FACING));

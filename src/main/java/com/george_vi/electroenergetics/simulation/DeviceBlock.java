@@ -17,7 +17,7 @@ public interface DeviceBlock {
      * @param state state
      * @return map of positions (relative to the bottom corner of the block) and node IDs (block-local)
      */
-    Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state);
+    Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state);
 
     /**
      * This is used to get the position of a specific node

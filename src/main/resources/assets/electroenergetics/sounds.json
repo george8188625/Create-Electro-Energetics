@@ -7,5 +7,23 @@
       }
     ],
     "subtitle": "electroenergetics.subtitle.hum"
+  },
+  "short_arc": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:short_arc"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.arcing"
+  },
+  "arc": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:arc"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.arcing"
   }
 }

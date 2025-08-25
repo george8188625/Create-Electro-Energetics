@@ -98,6 +98,20 @@ public class GameEvents {
     }
 
     @SubscribeEvent
+    public static void playerInteractOnBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (!event.getLevel().isClientSide() || event.getHand() != InteractionHand.MAIN_HAND)
+            return;
+        WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
+                .filter(h -> h.isActiveFor(event.getItemStack()))
+                .findFirst().orElse(null);
+        if (behaviour == null)
+            return;
+
+        if (behaviour.tryUseOnWire(event.getLevel(), event.getEntity(), event.getHand()))
+            event.setCancellationResult(InteractionResult.SUCCESS);
+    }
+
+    @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
         CEECommands.register(event.getDispatcher());
     }

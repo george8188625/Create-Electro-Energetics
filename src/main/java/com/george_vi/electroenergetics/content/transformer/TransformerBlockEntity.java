@@ -12,7 +12,10 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatter;
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
+import com.simibubi.create.foundation.gui.AllIcons;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.createmod.catnip.math.VecHelper;
@@ -138,7 +141,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                             .getSoundManager()
                             .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
                 else if (soundInstance != null) {
-                    soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.7));
+                    soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.25));
                     soundInstance.keepAlive();
                 }
             } else if (soundInstance != null);
@@ -158,18 +161,18 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                 this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 1, ImmutableList.of(Component.literal("Value")),
-                        new ValueSettingsFormatter(valueSettings -> Component.literal(valueSettings.value() > 8 ? "1 / " + (valueSettings.value() - 7) : (valueSettings.value() + 1) + " / 1")));
+                return new ValueSettingsBoard(label, max, 1, ImmutableList.of(Component.literal("Ratio")),
+                        new ValueSettingsFormatter(valueSettings -> Component.literal(Ratios.values()[(valueSettings.value())].string)));
             }
         };
-        ratio.between(0, 16);
-        ratio.value = 2;
-        ratio.withFormatter(i -> i > 8 ? "1 / " + (i - 7) : (i + 1) + " / 1");
-        ratio.withCallback(i -> this.updateGeneratedRatio());
+        ratio.between(0, Ratios.values().length - 1);
+        ratio.value = 0;
+        ratio.withFormatter(i -> Ratios.values()[i].string);
+        ratio.withCallback(i -> this.updateRatio());
         behaviours.add(ratio);
     }
 
-    private void updateGeneratedRatio() {
+    private void updateRatio() {
         if (!(level instanceof ServerLevel sl))
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
@@ -177,7 +180,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
 
         if (deviceInstance != null) {
             int i = ratio.value;
-            deviceInstance.extraData().putFloat("Ratio", i > 8 ? (float) 1 / (i - 7) : (float) (i + 1));
+            deviceInstance.extraData().putFloat("Ratio", (float) Ratios.values()[i].value);
         }
     }
 
@@ -210,6 +213,90 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
         @Override
         protected boolean isSideActive(BlockState state, Direction direction) {
             return direction.getAxis().isHorizontal() && direction.getAxis() != state.getValue(TransformerBlock.FACING).getAxis();
+        }
+    }
+
+    public enum Ratios implements INamedIconOptions {
+        ONE_OVER_ONE(1, 1),
+
+        ONE_OVER_TWO(1, 2),
+        TWO_OVER_ONE(2, 1),
+
+        ONE_OVER_THREE(1, 3),
+        THREE_OVER_ONE(3, 1),
+        TWO_OVER_THREE(2, 3),
+        THREE_OVER_TWO(3, 2),
+
+        ONE_OVER_FOUR(1, 4),
+        FOUR_OVER_ONE(4, 1),
+        THREE_OVER_FOUR(3, 4),
+        FOUR_OVER_THREE(4, 3),
+
+        ONE_OVER_FIVE(1, 5),
+        FIVE_OVER_ONE(5, 1),
+        TWO_OVER_FIVE(2, 5),
+        FIVE_OVER_TWO(5, 2),
+        THREE_OVER_FIVE(3, 5),
+        FIVE_OVER_THREE(5, 3),
+        FOUR_OVER_FIVE(4, 5),
+        FIVE_OVER_FOUR(5, 4),
+
+        ONE_OVER_SIX(1, 6),
+        SIX_OVER_ONE(6, 1),
+        FIVE_OVER_SIX(5, 6),
+        SIX_OVER_FIVE(6, 5),
+
+        ONE_OVER_SEVEN(1, 7),
+        SEVEN_OVER_ONE(7, 1),
+        TWO_OVER_SEVEN(2, 7),
+        SEVEN_OVER_TWO(7, 2),
+        THREE_OVER_SEVEN(3, 7),
+        SEVEN_OVER_THREE(7, 3),
+        FOUR_OVER_SEVEN(4, 7),
+        SEVEN_OVER_FOUR(7, 4),
+        FIVE_OVER_SEVEN(5, 7),
+        SEVEN_OVER_FIVE(7, 5),
+        SIX_OVER_SEVEN(6, 7),
+        SEVEN_OVER_SIX(7, 6),
+
+        ONE_OVER_EIGHT(1, 8),
+        EIGHT_OVER_ONE(8, 1),
+        THREE_OVER_EIGHT(3, 8),
+        EIGHT_OVER_THREE(8, 3),
+        FIVE_OVER_EIGHT(5, 8),
+        EIGHT_OVER_FIVE(8, 5),
+        SEVEN_OVER_EIGHT(7, 8),
+        EIGHT_OVER_SEVEN(8, 7),
+
+        ONE_OVER_TEN(1, 10),
+        TEN_OVER_ONE(10, 1),
+
+        ONE_OVER_FIFTEEN(1, 15),
+        FIFTEEN_OVER_ONE(15, 1),
+
+        ONE_OVER_TWENTY(1, 20),
+        TWENTY_OVER_ONE(20, 1),
+
+        ONE_OVER_FIFTY(1, 50),
+        FIFTY_OVER_ONE(50, 1),
+        ;
+
+
+        public final double value;
+        public final String string;
+        Ratios(int numerator, int denominator) {
+            value = (double) numerator / denominator;
+            string = numerator + " / " + denominator;
+        }
+
+        @Override
+        public AllIcons getIcon() {
+            return null;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return null;
         }
     }
 }

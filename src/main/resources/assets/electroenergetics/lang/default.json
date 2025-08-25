@@ -37,6 +37,19 @@
   "electroenergetics.nodes.feed_positive": "Feed - Positive",
   "electroenergetics.nodes.load_negative": "Load - Negative",
   "electroenergetics.nodes.load_positive": "Load - Positive",
+  "electroenergetics.nodes.cathode": "Cathode",
+  "electroenergetics.nodes.anode": "Anode",
+  "electroenergetics.nodes.emitter": "Emitter",
+  "electroenergetics.nodes.base": "Base",
+  "electroenergetics.nodes.collector": "Collector",
+  "electroenergetics.nodes.input": "Input",
+  "electroenergetics.nodes.output": "Output",
+  "electroenergetics.nodes.input_n": "Input # %1$s",
+  "electroenergetics.nodes.output_n": "Output # %1$s",
+  "electroenergetics.nodes.ground": "Ground",
+  "electroenergetics.nodes.vcc": "Vcc",
+  "electroenergetics.nodes.carry_in": "Carry In",
+  "electroenergetics.nodes.carry_out": "Carry Out",
 
   "electroenergetics.generic.voltage": "Voltage",
   "electroenergetics.generic.current": "Current",
@@ -52,5 +65,6 @@
 
   "electroenergetics.transformer.ratio": "Ratio",
 
-  "electroenergetics.subtitle.hum": "Hum"
+  "electroenergetics.subtitle.hum": "Hum",
+  "electroenergetics.subtitle.arcing": "Arcing"
 }

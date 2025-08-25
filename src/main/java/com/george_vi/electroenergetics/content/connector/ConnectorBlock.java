@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.connector;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.AllShapes;
@@ -10,6 +11,8 @@ import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -87,13 +90,26 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        return state.getValue(STYLE) == Style.LONG ? CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodes(state.getValue(FACING)) : state.getValue(STYLE) == Style.OUTER ? CEENodeConfigurations.SHORT_CONNECTOR.getNodes(state.getValue(FACING)) : Map.of(new Vec3(0.5,0.5,0.5), 0);
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        return state.getValue(STYLE) == Style.LONG ? CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodes(state.getValue(FACING)) : state.getValue(STYLE) == Style.OUTER ? CEENodeConfigurations.SHORT_CONNECTOR.getNodes(state.getValue(FACING)) : Map.of(0, new Vec3(0.5,0.5,0.5));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return state.getValue(STYLE) == Style.LONG ? CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodePos(state.getValue(FACING), id) : state.getValue(STYLE) == Style.OUTER ? CEENodeConfigurations.SHORT_CONNECTOR.getNodePos(state.getValue(FACING), id) : new Vec3(0.5, 0.5, 0.5);
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        super.tick(state, level, pos, random);
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        InfrastructureSavedData.SimulatedDeviceInstance instance = sd.getDevice(pos);
+        if (instance != null) {
+            if (state.getValue(STYLE) == Style.LONG)
+                instance.extraData().putBoolean("HVSwitchTarget", true);
+            else
+                instance.extraData().remove("HVSwitchTarget");
+        }
     }
 
     @Override

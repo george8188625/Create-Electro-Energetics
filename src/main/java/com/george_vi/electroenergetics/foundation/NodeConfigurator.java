@@ -25,11 +25,11 @@ public class NodeConfigurator {
         return nodes.get(id);
     }
 
-    public Map<Vec3, Integer> getNodes(Direction direction) {
-        Map<Vec3, Integer> result = new HashMap<>();
+    public Map<Integer, Vec3> getNodes(Direction direction) {
+        Map<Integer, Vec3> result = new HashMap<>();
         List<Vec3> nodes = rotate(origin, direction);
         for (int i = 0; i < nodes.size(); i++)
-            result.put(nodes.get(i), i);
+            result.put(i, nodes.get(i));
 
         return result;
     }

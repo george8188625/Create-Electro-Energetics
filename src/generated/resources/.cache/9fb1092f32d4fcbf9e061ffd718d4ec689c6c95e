@@ -1,4 +1,4 @@
-// 1.21.1	2025-07-23T00:34:42.89039	Recipes
+// 1.21.1	2025-08-25T18:12:32.1090616	Recipes
 3aebfa4f38c5a9d6431e63d06c23a7682eb9c06e data/electroenergetics/advancement/recipes/misc/crafting/alternator_brushes.json
 17cb440186b8229ab96e28b4fabfcc6443fd4318 data/electroenergetics/advancement/recipes/misc/crafting/alternator_rotor.json
 2b40210321dd5bc26e17c0c93ae0eedd9b1f87e5 data/electroenergetics/advancement/recipes/misc/crafting/ammeter.json
@@ -17,6 +17,7 @@ eae9b379924c897b517ffacdbbadfe9946ec99f2 data/electroenergetics/advancement/reci
 473e9eb48290c4722c6fcd3115ea65118246467e data/electroenergetics/advancement/recipes/misc/crafting/energy_meter.json
 da36d5357f3bca1b1bfaf1415e7473235decf9a6 data/electroenergetics/advancement/recipes/misc/crafting/fuse.json
 3b0eb2e425247677c97bf2f2d5a1dbadf9400163 data/electroenergetics/advancement/recipes/misc/crafting/ground_rod.json
+babdf5fc3cdc6ce6fd59ca06277f5774a1e33113 data/electroenergetics/advancement/recipes/misc/crafting/hv_switch.json
 c306175636fc6d01ac5fbdb49a1dd77542f62853 data/electroenergetics/advancement/recipes/misc/crafting/insulated_wire.json
 2560a75185f218e64e5fd11e5c96c3260ae90835 data/electroenergetics/advancement/recipes/misc/crafting/magnet_block.json
 a66142b6fbe3b298ef738d3cf4de5d93e9ccc25d data/electroenergetics/advancement/recipes/misc/crafting/pole_mount.json
@@ -26,6 +27,7 @@ f41e8f592ff9f5bc895be6528c68e059de5d502f data/electroenergetics/advancement/reci
 6890916e291f0104ee223b69f71a1e43191dd0e5 data/electroenergetics/advancement/recipes/misc/crafting/transformer.json
 e7a3dfbc9c10192284a14b8fa8a040dbfc6a1c31 data/electroenergetics/advancement/recipes/misc/crafting/triple_connector.json
 69ee77a7633c6d0dd07edbb3ba46dc95b1c05511 data/electroenergetics/advancement/recipes/misc/crafting/tri_polar_energy_meter.json
+e4dbe550ab6173aeb1a25bed8b0f726d1c8e7fe5 data/electroenergetics/advancement/recipes/misc/crafting/voltlage_regulator.json
 3365c624ce9f38dbab67c94cc2728cca23a0e44e data/electroenergetics/advancement/recipes/misc/crafting/voltmeter.json
 d965dbd90a9e86b3e4743ac1954ba69662798287 data/electroenergetics/advancement/recipes/misc/crafting/voltmeter_from_ammeter.json
 cdd4ba7313983d9d4ba364e8a99baa7595dce051 data/electroenergetics/advancement/recipes/misc/crafting/wire_spool.json
@@ -47,6 +49,7 @@ baa0fdbb2102c6b209eb385649922df5e01ca610 data/electroenergetics/recipe/crafting/
 70298a9b34e226a688db864145d73f1dc2c35550 data/electroenergetics/recipe/crafting/energy_meter.json
 69c3deca08049ce15318df5ebaf560f5f03c15d1 data/electroenergetics/recipe/crafting/fuse.json
 e29829f1256fce5fba6be1ac0e1caef5d4627a0a data/electroenergetics/recipe/crafting/ground_rod.json
+3a1cc0f929077f01eda48514a62e2f8be81df3f1 data/electroenergetics/recipe/crafting/hv_switch.json
 01a607602d1a7f9442cb8f57263cba75eeedf789 data/electroenergetics/recipe/crafting/insulated_wire.json
 aec2fe44c55e4325101d39ddff948a04ac687b8a data/electroenergetics/recipe/crafting/magnet_block.json
 63ee99c66d7c83e0bfd86fccd1bdb52bc7e3887c data/electroenergetics/recipe/crafting/pole_mount.json
@@ -56,6 +59,7 @@ de531cc73b76a0f5618351e5b5c8adb93e2e0a3c data/electroenergetics/recipe/crafting/
 fb45180fbc64e32a8566214956ee053af07fbebb data/electroenergetics/recipe/crafting/transformer.json
 a954acdc1a807b0753429c4be3c85dcf10691018 data/electroenergetics/recipe/crafting/triple_connector.json
 0ba73251adc9a9fd9c2f1d6494ddd070dbb8f555 data/electroenergetics/recipe/crafting/tri_polar_energy_meter.json
+3f252a599358070414727d4ac0908f24b7b02bdf data/electroenergetics/recipe/crafting/voltlage_regulator.json
 81822e18569bba3e70f7f5f0fafb8f4de3e460f8 data/electroenergetics/recipe/crafting/voltmeter.json
 a18deafb87a52f5f13c56ae2f26a24d16b7edf39 data/electroenergetics/recipe/crafting/voltmeter_from_ammeter.json
 4fdea6851fd7b8c82f5751555d993f228e7c4691 data/electroenergetics/recipe/crafting/wire_spool.json

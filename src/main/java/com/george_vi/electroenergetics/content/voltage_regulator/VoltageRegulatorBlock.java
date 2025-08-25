@@ -1,5 +1,7 @@
 package com.george_vi.electroenergetics.content.voltage_regulator;
 
+import com.george_vi.electroenergetics.CEEBlockEntityTypes;
+import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -76,36 +78,9 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements SimpleWa
         return CEESimulatedDevices.VOLTAGE_REGULATOR;
     }
 
-    // 0,1 Primary / 2,3 Secondary
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        if (state.getValue(FACING) == Direction.NORTH)
-            return Map.of(
-                    new Vec3(5/16f, 16/16f, 12/16f), 0,
-                    new Vec3(11/16f, 16/16f, 12/16f), 1,
-                    new Vec3(5/16f, 16/16f, 4/16f), 2,
-                    new Vec3(11/16f, 16/16f, 4/16f), 3
-            );
-        if (state.getValue(FACING) == Direction.EAST)
-            return Map.of(
-                    new Vec3(4/16f, 16/16f, 5/16f), 0,
-                    new Vec3(4/16f, 16/16f, 11/16f), 1,
-                    new Vec3(12/16f, 16/16f, 5/16f), 2,
-                    new Vec3(12/16f, 16/16f, 11/16f), 3
-            );
-        if (state.getValue(FACING) == Direction.SOUTH)
-            return Map.of(
-                    new Vec3(5/16f, 16/16f, 4/16f), 0,
-                    new Vec3(11/16f, 16/16f, 4/16f), 1,
-                    new Vec3(5/16f, 16/16f, 12/16f), 2,
-                    new Vec3(11/16f, 16/16f, 12/16f), 3
-            );
-        return Map.of(
-                new Vec3(12/16f, 16/16f, 5/16f), 0,
-                new Vec3(12/16f, 16/16f, 11/16f), 1,
-                new Vec3(4/16f, 16/16f, 5/16f), 2,
-                new Vec3(4/16f, 16/16f, 11/16f), 3
-        );
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        return CEENodeConfigurations.VOLTAGE_REGULATOR.getNodes(state.getValue(FACING));
     }
 
     @Override
@@ -115,25 +90,7 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements SimpleWa
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
-        if (state.getValue(FACING) == Direction.NORTH)
-            return id == 0 ? new Vec3(5/16f, 16/16f, 12/16f) :
-                    id == 1 ? new Vec3(11/16f, 16/16f, 12/16f) :
-                    id == 2 ? new Vec3(5/16f, 16/16f, 4/16f) :
-                    new Vec3(11/16f, 16/16f, 4/16f);
-        if (state.getValue(FACING) == Direction.EAST)
-            return id == 0 ? new Vec3(4/16f, 16/16f, 5/16f) :
-                    id == 1 ? new Vec3(4/16f, 16/16f, 11/16f) :
-                    id == 2 ? new Vec3(12/16f, 16/16f, 5/16f) :
-                    new Vec3(12/16f, 16/16f, 11/16f);
-        if (state.getValue(FACING) == Direction.SOUTH)
-            return id == 0 ? new Vec3(5/16f, 16/16f, 4/16f) :
-                    id == 1 ? new Vec3(11/16f, 16/16f, 4/16f) :
-                    id == 2 ? new Vec3(5/16f, 16/16f, 12/16f) :
-                    new Vec3(11/16f, 16/16f, 12/16f);
-        return id == 0 ? new Vec3(12/16f, 16/16f, 5/16f) :
-                id == 1 ? new Vec3(12/16f, 16/16f, 11/16f) :
-                id == 2 ? new Vec3(4/16f, 16/16f, 5/16f) :
-                new Vec3(4/16f, 16/16f, 11/16f);
+        return CEENodeConfigurations.VOLTAGE_REGULATOR.getNodePos(state.getValue(FACING), id);
     }
 
     @Override
@@ -150,7 +107,6 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements SimpleWa
 
     @Override
     public BlockEntityType<? extends VoltageRegulatorBlockEntity> getBlockEntityType() {
-        return null;
-//        return CEEBlockEntityTypes.VOLTAGE_REGULATOR.get();
+        return CEEBlockEntityTypes.VOLTAGE_REGULATOR.get();
     }
 }

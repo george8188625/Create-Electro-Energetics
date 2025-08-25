@@ -107,16 +107,16 @@ public class ElectricMotorBlock extends DirectionalKineticBlock implements Devic
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(FACING).getAxis() == Direction.Axis.Y)
-            return Map.of(new Vec3(2/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f), 0,
-                    new Vec3(14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f), 1);
+            return Map.of(0, new Vec3(2/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f),
+                    1, new Vec3(14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f));
         if (state.getValue(FACING).getAxis() == Direction.Axis.X)
-            return Map.of(new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f, 2/16f), 0,
-                    new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f, 14/16f), 1);
+            return Map.of(0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f, 2/16f),
+                    1, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f, 14/16f));
 
-        return Map.of(new Vec3(2/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f), 0,
-                new Vec3(14/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f), 1);
+        return Map.of(0, new Vec3(2/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f),
+                1, new Vec3(14/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f));
 
     }
 

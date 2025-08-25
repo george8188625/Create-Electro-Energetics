@@ -116,18 +116,18 @@ public class ConverterBlock extends SimpleDeviceBlock implements IWrenchable, IB
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(FACING).getAxis().isVertical())
             return state.getValue(ROLL) ?
-                    Map.of(new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 3/16f), 0, new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 13/16f), 1) :
-                    Map.of(new Vec3(3/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f), 0, new Vec3(13/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f), 1);
+                    Map.of(0, new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 3/16f), 1, new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 13/16f)) :
+                    Map.of(0, new Vec3(3/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f), 1, new Vec3(13/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f));
         if (state.getValue(FACING).getAxis() == Direction.Axis.X)
             return state.getValue(ROLL) ?
-                    Map.of(new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 3/16f, 0.5f), 0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 13/16f, 0.5f), 1) :
-                    Map.of(new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 3/16f), 0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 13/16f), 1);
+                    Map.of(0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 3/16f, 0.5f), 1, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 13/16f, 0.5f)) :
+                    Map.of(0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 3/16f), 1, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 13/16f));
         return state.getValue(ROLL) ?
-                Map.of(new Vec3(0.5f, 3/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 0, new Vec3(0.5f, 13/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 1) :
-                Map.of(new Vec3(3/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 0, new Vec3(13/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 1);
+                Map.of(0, new Vec3(0.5f, 3/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 1, new Vec3(0.5f, 13/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f)) :
+                Map.of(0, new Vec3(3/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 1, new Vec3(13/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f));
     }
 
     @Override

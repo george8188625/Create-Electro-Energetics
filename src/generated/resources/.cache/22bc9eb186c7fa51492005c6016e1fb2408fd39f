@@ -1,4 +1,4 @@
-// 1.21.1	2025-08-13T20:30:42.489743	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-08-25T18:12:32.1030651	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -18,6 +18,7 @@ dcc0de51f6135a6e3baa6f76bab50ba85c51f05d assets/electroenergetics/blockstates/el
 b7f4521a989fd25e71aeec651522774d3ad74630 assets/electroenergetics/blockstates/energy_meter.json
 9ed9770767e79f7225b43560b9cb129734a8d6cd assets/electroenergetics/blockstates/fuse.json
 92b86cc9ef6ce00af75d35b3f7429992a2edcd36 assets/electroenergetics/blockstates/ground_rod.json
+55a48ccd09ddf603503b6a0b06a5726b406c1021 assets/electroenergetics/blockstates/high_voltage_switch.json
 34d20a50d936348285542ca43b2e608bf1071f00 assets/electroenergetics/blockstates/magnet.json
 c3bbe76a76a771008b3bc3cea65f951e298c5a68 assets/electroenergetics/blockstates/pole_mount.json
 38edb949e6ab979781ba898ecba2fb4e50a2c9d3 assets/electroenergetics/blockstates/quad_connector.json
@@ -25,9 +26,10 @@ c3bbe76a76a771008b3bc3cea65f951e298c5a68 assets/electroenergetics/blockstates/po
 1d6614f80d85c6300b750e52a5d49328d5126b2b assets/electroenergetics/blockstates/transformer.json
 600c5f36375220f10093b0281d61f9d813217cec assets/electroenergetics/blockstates/triple_connector.json
 d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tri_polar_energy_meter.json
+1890500dc4c769a55aeb82cabdc670382dddad47 assets/electroenergetics/blockstates/voltage_regulator.json
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
-577c2c2cd854ead3268f75221f7141da3a929251 assets/electroenergetics/lang/en_ud.json
-62e345f841e6aaa7fe13f7fdd0f9a37dcc873747 assets/electroenergetics/lang/en_us.json
+5ce4256e35b9b65b0bb9594f09659fef6564ac71 assets/electroenergetics/lang/en_ud.json
+a167337f61dafdcbcfae8798c08729c276b46fee assets/electroenergetics/lang/en_us.json
 765c328111edefba08ab581cf90002ac3163c985 assets/electroenergetics/models/block/creative_battery.json
 f2a0a8c7269e5b0a9318f61027d189a0c74da680 assets/electroenergetics/models/block/magnet.json
 c49ab7eac9e9bc1062c69face97b3675b9eeca79 assets/electroenergetics/models/item/accumulator.json
@@ -52,6 +54,7 @@ aed7b310df6ccbc8c6c8fd919262df0be3e70030 assets/electroenergetics/models/item/co
 4805d181e981a69afb7339bb1367c563750b9dc9 assets/electroenergetics/models/item/energy_meter.json
 c9f00fe2e3bfe0530de0ccf608b8168abf8f927e assets/electroenergetics/models/item/fuse.json
 df68c120b29741f729772c5751c5d2db37675050 assets/electroenergetics/models/item/ground_rod.json
+01f54f229807be288902a826ba08fc4a7e4f9cbb assets/electroenergetics/models/item/high_voltage_switch.json
 b25c94a73840b99cfa7e51d61c9c12047b5acf85 assets/electroenergetics/models/item/insulated_wire.json
 7b7d4ee81289b2d4ea46d8caeed3c7e778cc92ac assets/electroenergetics/models/item/magnet.json
 1fb1ccf32cdbddb827dace0fdd411f7f0392ef30 assets/electroenergetics/models/item/pole_mount.json
@@ -60,6 +63,7 @@ b25c94a73840b99cfa7e51d61c9c12047b5acf85 assets/electroenergetics/models/item/in
 900188a8b751b26dfbc84fdbb5968366a303cec7 assets/electroenergetics/models/item/transformer.json
 41a0b061a5f8b2d79cdcb67978f1f5f9af1be1dd assets/electroenergetics/models/item/triple_connector.json
 b060c4a2e77c2547811cc6cc375845e89f24e0a3 assets/electroenergetics/models/item/tri_polar_energy_meter.json
+da06bda1dc5ff39fae82bf83747169140e8f2f0f assets/electroenergetics/models/item/voltage_regulator.json
 7225e515806cf79048d9db0527d41dfcb336702f assets/electroenergetics/models/item/voltmeter.json
 ec43ed92882dcc88c30951d0f9334d65dfadcd01 assets/electroenergetics/models/item/wire_spool.json
 878b81a0e428877a49f279380d2527e329d6d70f data/c/tags/item/wires/copper.json
@@ -82,6 +86,7 @@ ac21a70162adad4d082f1863d1e8a5fe507fa79c data/electroenergetics/loot_table/block
 2b52adcfcd53b40f9c9fc06dc17d09064481a359 data/electroenergetics/loot_table/blocks/energy_meter.json
 429c21d119cbf465aadb1cd6ee3ec06c0196980e data/electroenergetics/loot_table/blocks/fuse.json
 f956ef9d6fa3c8742d7d4375a4c9bba01805681e data/electroenergetics/loot_table/blocks/ground_rod.json
+484d5f1153f8c63debe90a362a1ac31c9072b601 data/electroenergetics/loot_table/blocks/high_voltage_switch.json
 e95b7119250fc92a1da72e7b54133e49927e8719 data/electroenergetics/loot_table/blocks/magnet.json
 437091517ce3d1cd30ecdbb55c3118ecfdecd98e data/electroenergetics/loot_table/blocks/pole_mount.json
 c9022f55b0bd53ee8441dd7fff9ef88076998ee5 data/electroenergetics/loot_table/blocks/quad_connector.json
@@ -89,5 +94,6 @@ c9022f55b0bd53ee8441dd7fff9ef88076998ee5 data/electroenergetics/loot_table/block
 913b9bdcace66a8856fea0522aa64b416c94ced1 data/electroenergetics/loot_table/blocks/transformer.json
 f3eee256afdc2c974db137095ff397fb1d928acc data/electroenergetics/loot_table/blocks/triple_connector.json
 96addc83e9bbc364f0c7e792fc5191267603eb9d data/electroenergetics/loot_table/blocks/tri_polar_energy_meter.json
+2c47b9045a3f3a0393378164ab96e5df3a4d96af data/electroenergetics/loot_table/blocks/voltage_regulator.json
 cebbbb548b3077845ff201773a97a64bd08ed537 data/electroenergetics/loot_table/blocks/voltmeter.json
-4f63857c440409f556060cf8c69104092a5facff data/minecraft/tags/block/mineable/pickaxe.json
+13b79a61de4ec6a1ee3368500c6a53d242a819f7 data/minecraft/tags/block/mineable/pickaxe.json

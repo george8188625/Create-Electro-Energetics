@@ -41,10 +41,10 @@ public class AlternatorBrushesBlock extends DirectionalKineticBlock implements D
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(FACING).getAxis().isHorizontal())
-            return Map.of(new Vec3(8/16f, 2/16f, 8/16f), 0, new Vec3(8/16f, 14/16f, 8/16f), 1);
-        return Map.of(new Vec3(8/16f, 8/16f, 2/16f), 0, new Vec3(8/16f, 8/16f, 14/16f), 1);
+            return Map.of(0, new Vec3(8/16f, 2/16f, 8/16f), 1, new Vec3(8/16f, 14/16f, 8/16f));
+        return Map.of(0, new Vec3(8/16f, 8/16f, 2/16f), 1, new Vec3(8/16f, 8/16f, 14/16f));
     }
 
     @Override

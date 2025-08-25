@@ -9,6 +9,7 @@ import com.george_vi.electroenergetics.content.connector.TripleConnectorBlock;
 import com.george_vi.electroenergetics.content.converter.ConverterBlock;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchBlock;
+import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlock;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlock;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlock;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlock;
@@ -22,6 +23,7 @@ import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayBlock
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
+import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlock;
 import com.simibubi.create.content.kinetics.gauge.GaugeGenerator;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.BlockStateGen;
@@ -272,7 +274,7 @@ public class CEEBlocks {
 
     public static final BlockEntry<EnergyMeterBlock> ENERGY_METER = REGISTRATE.block("energy_meter", properties -> new EnergyMeterBlock(properties, false))
             .initialProperties(SharedProperties::stone)
-            .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
                     ConfiguredModel.builder()
                             .modelFile(state.getValue(EnergyMeterBlock.INVERTED) ?
@@ -290,7 +292,7 @@ public class CEEBlocks {
 
     public static final BlockEntry<EnergyMeterBlock> TRI_POLAR_ENERGY_METER = REGISTRATE.block("tri_polar_energy_meter", properties -> new EnergyMeterBlock(properties, true))
             .initialProperties(SharedProperties::stone)
-            .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
                     ConfiguredModel.builder()
                             .modelFile(state.getValue(EnergyMeterBlock.INVERTED) ?
@@ -303,6 +305,16 @@ public class CEEBlocks {
             .item(EnergyMeterItem::new)
             .properties(p -> p.stacksTo(1))
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<HVSwitchBlock> HV_SWITCH = REGISTRATE.block("high_voltage_switch", HVSwitchBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()
             .register();
 
@@ -366,15 +378,15 @@ public class CEEBlocks {
             .build()
             .register();
 
-//    public static final BlockEntry<VoltageRegulatorBlock> VOLTAGE_REGULATOR = REGISTRATE.block("voltage_regulator", VoltageRegulatorBlock::new)
-//            .initialProperties(SharedProperties::stone)
-//            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-//            .blockstate(BlockStateGen.horizontalBlockProvider(true))
-//            .transform(pickaxeOnly())
-//            .item()
-//            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
-//            .build()
-//            .register();
+    public static final BlockEntry<VoltageRegulatorBlock> VOLTAGE_REGULATOR = REGISTRATE.block("voltage_regulator", VoltageRegulatorBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
 
     public static final BlockEntry<AlternatorRotorBlock> ALTERNATOR_ROTOR = REGISTRATE.block("alternator_rotor", AlternatorRotorBlock::new)
             .initialProperties(SharedProperties::stone)

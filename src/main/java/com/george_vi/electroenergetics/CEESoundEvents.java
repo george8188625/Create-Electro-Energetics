@@ -1,6 +1,5 @@
 package com.george_vi.electroenergetics;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.bus.api.IEventBus;
@@ -12,6 +11,8 @@ public class CEESoundEvents {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
             DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, CreateElecrtoEnergetics.ID);
     public static final Supplier<SoundEvent> HUM = SOUND_EVENTS.register("hum", () -> SoundEvent.createVariableRangeEvent(CreateElecrtoEnergetics.rl("hum")));
+    public static final Supplier<SoundEvent> SHORT_ARC = SOUND_EVENTS.register("short_arc", () -> SoundEvent.createVariableRangeEvent(CreateElecrtoEnergetics.rl("short_arc")));
+    public static final Supplier<SoundEvent> ARC = SOUND_EVENTS.register("arc", () -> SoundEvent.createVariableRangeEvent(CreateElecrtoEnergetics.rl("arc")));
 
     public static void register(IEventBus bus) {
         SOUND_EVENTS.register(bus);

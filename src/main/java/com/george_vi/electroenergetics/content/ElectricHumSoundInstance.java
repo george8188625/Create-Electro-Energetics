@@ -5,6 +5,7 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -16,8 +17,8 @@ public class ElectricHumSoundInstance extends AbstractTickableSoundInstance {
     private int keepAlive;
     private float targetedVolume;
 
-    public ElectricHumSoundInstance(BlockPos pos) {
-        super(CEESoundEvents.HUM.get(), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
+    public ElectricHumSoundInstance(SoundEvent event, BlockPos pos) {
+        super(event, SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
 
         looping = true;
         active = true;
@@ -28,6 +29,10 @@ public class ElectricHumSoundInstance extends AbstractTickableSoundInstance {
         x = v.x;
         y = v.y;
         z = v.z;
+    }
+
+    public ElectricHumSoundInstance(BlockPos pos) {
+        this(CEESoundEvents.HUM.get(), pos);
     }
 
     public void keepAlive() {

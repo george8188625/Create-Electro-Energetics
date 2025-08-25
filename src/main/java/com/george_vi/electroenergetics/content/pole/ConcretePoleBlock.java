@@ -65,7 +65,7 @@ public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterl
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (!hasNodes(state))
             return Collections.emptyMap();
         return CEENodeConfigurations.CONCRETE_POLE.getNodes(state.getValue(BOTTOM) ? Direction.UP : Direction.DOWN);

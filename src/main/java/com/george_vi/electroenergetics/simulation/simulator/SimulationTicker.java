@@ -89,6 +89,12 @@ public class SimulationTicker {
             connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()).invert(), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0));
         }
 
+        // RESET ALL VOLTAGES
+
+        for (Node node : allNodes) {
+            sd.setVoltage(node, 0d);
+        }
+
         // DFS
         Set<Node> visited = new HashSet<>();
         List<Set<Node>> networks = new ArrayList<>();
@@ -164,16 +170,22 @@ public class SimulationTicker {
                 minVoltage = (int) Math.min(voltage, minVoltage);
                 maxVoltage = (int) Math.max(voltage, maxVoltage);
 
-                InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(e.getKey().sourcePos());
-                if (deviceInstance != null)
-                    level.getPlayers(player -> Math.sqrt(player.blockPosition().atY(0).distSqr(e.getKey().sourcePos().atY(0))) < deviceInstance.simulatedDevice().sendVoltagesDistance()).forEach(
-                            player -> CatnipServices.NETWORK.sendToClient(player, new SendVoltageDataPacket(e.getKey().sourcePos(), e.getKey().id(), (float) voltage)));
+                sd.setVoltage(e.getKey(), voltage);
             }
             long networkEnd = System.nanoTime();
 
             performances.add(new SimulationPerformance(preOptimizationNodes, postOptimizationNodes, (int) (networkEnd - networkStart) / 1000, (int) (optimizationEnd - optimizationStart) / 1000, (int) (solveEnd - solveStart) / 1000, minVoltage, maxVoltage));
         }
+        for (Node node : allNodes) {
+            Map<Node, Double> e = resultsPerBlock.get(node.sourcePos());
+            if (e == null) {
+                resultsPerBlock.put(node.sourcePos(), new HashMap<>());
+                e = new HashMap<>();
+            }
+            if (!e.containsKey(node))
+                resultsPerBlock.get(node.sourcePos()).put(node, 0d);
 
+        }
 
         resultsPerBlock.forEach((pos, voltages) -> {
             InfrastructureSavedData.SimulatedDeviceInstance device = sd.getDevice(pos);
@@ -230,6 +242,15 @@ public class SimulationTicker {
 
         totalTime = (int) ((System.nanoTime() - start) / 1000);
         SimulationTicker.performances = performances;
+
+        for (Node node : allNodes) {
+            double voltage = sd.getVoltageAt(node);
+
+            InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(node.sourcePos());
+            if (deviceInstance != null)
+                level.getPlayers(player -> Math.sqrt(player.blockPosition().distSqr(node.sourcePos())) < deviceInstance.simulatedDevice().sendVoltagesDistance()).forEach(
+                        player -> CatnipServices.NETWORK.sendToClient(player, new SendVoltageDataPacket(node.sourcePos(), node.id(), (float) voltage)));
+        }
     }
 
 

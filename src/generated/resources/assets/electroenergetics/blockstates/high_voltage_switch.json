@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,powered=false": {
+      "model": "electroenergetics:block/high_voltage_switch/block",
+      "y": 90
+    },
+    "facing=east,powered=true": {
+      "model": "electroenergetics:block/high_voltage_switch/block",
+      "y": 90
+    },
+    "facing=north,powered=false": {
+      "model": "electroenergetics:block/high_voltage_switch/block"
+    },
+    "facing=north,powered=true": {
+      "model": "electroenergetics:block/high_voltage_switch/block"
+    },
+    "facing=south,powered=false": {
+      "model": "electroenergetics:block/high_voltage_switch/block",
+      "y": 180
+    },
+    "facing=south,powered=true": {
+      "model": "electroenergetics:block/high_voltage_switch/block",
+      "y": 180
+    },
+    "facing=west,powered=false": {
+      "model": "electroenergetics:block/high_voltage_switch/block",
+      "y": 270
+    },
+    "facing=west,powered=true": {
+      "model": "electroenergetics:block/high_voltage_switch/block",
+      "y": 270
+    }
+  }
+}

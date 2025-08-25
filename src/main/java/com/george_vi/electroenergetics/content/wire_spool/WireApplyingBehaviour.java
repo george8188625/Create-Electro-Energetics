@@ -77,8 +77,10 @@ public class WireApplyingBehaviour {
 
         if (hoveredBlockState.getBlock() instanceof DeviceBlock db) {
 
-            for (Map.Entry<Vec3, Integer> n : db.getNodePositions(level, pos, hoveredBlockState).entrySet()) {
-                Outliner.getInstance().showAABB("electroenergetics_node_" + n.getValue(), AABB.ofSize(n.getKey().add(pos.getX(), pos.getY(), pos.getZ()), 4/16f, 4/16f, 4/16f), 3)
+            for (Map.Entry<Integer, Vec3> n : db.getNodePositions(level, pos, hoveredBlockState).entrySet()) {
+                int nodeId = n.getKey();
+                Vec3 nodePos = n.getValue();
+                Outliner.getInstance().showAABB("electroenergetics_node_" + nodeId, AABB.ofSize(nodePos.add(pos.getX(), pos.getY(), pos.getZ()), 4/16f, 4/16f, 4/16f), 3)
                         .colored(FontHelper.Palette.STANDARD_CREATE.primary().getColor().getValue())
                         .withFaceTexture(AllSpecialTextures.SELECTION);
             }
@@ -92,7 +94,6 @@ public class WireApplyingBehaviour {
 
         if (hoveredNode == null) {
             ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
-            // TODO: say its too far away
             CEELang.builder()
                     .translate("wire_spool.too_far_away")
                     .style(ChatFormatting.RED)

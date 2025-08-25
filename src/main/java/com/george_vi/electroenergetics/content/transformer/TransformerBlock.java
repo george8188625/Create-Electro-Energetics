@@ -79,7 +79,7 @@ public class TransformerBlock extends SimpleDeviceBlock implements SimpleWaterlo
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         return CEENodeConfigurations.TRANSFORMER.getNodes(state.getValue(FACING));
     }
 
@@ -97,7 +97,7 @@ public class TransformerBlock extends SimpleDeviceBlock implements SimpleWaterlo
     @Override
     protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
-        tag.putFloat("Ratio", 3);
+        tag.putFloat("Ratio", 1);
         return tag;
     }
 

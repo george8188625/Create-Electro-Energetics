@@ -111,7 +111,7 @@ public class RedstoneRelayBlock extends SimpleDeviceBlock implements IWrenchable
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         return state.getValue(ROLL) ?
                 CEENodeConfigurations.REDSTONE_RELAY_ROLL.getNodes(state.getValue(FACING)) :
                 CEENodeConfigurations.REDSTONE_RELAY.getNodes(state.getValue(FACING));

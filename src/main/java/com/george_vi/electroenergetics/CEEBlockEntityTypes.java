@@ -2,6 +2,8 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlockEntity;
+import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlockEntity;
+import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchRenderer;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlockEntity;
@@ -46,9 +48,9 @@ public class CEEBlockEntityTypes {
             .validBlocks(CEEBlocks.ELECTRIC_PUMP::get)
             .register();
 
-//    public static final BlockEntityEntry<VoltageRegulatorBlockEntity> VOLTAGE_REGULATOR = REGISTRATE.blockEntity("voltage_regulator", VoltageRegulatorBlockEntity::new)
-//            .validBlock(CEEBlocks.VOLTAGE_REGULATOR::get)
-//            .register();
+    public static final BlockEntityEntry<VoltageRegulatorBlockEntity> VOLTAGE_REGULATOR = REGISTRATE.blockEntity("voltage_regulator", VoltageRegulatorBlockEntity::new)
+            .validBlock(CEEBlocks.VOLTAGE_REGULATOR::get)
+            .register();
 
     public static final BlockEntityEntry<ElectricMotorBlockEntity> ELECTRIC_MOTOR = REGISTRATE.blockEntity("electric_motor", ElectricMotorBlockEntity::new)
             .visual(() -> SingleAxisRotatingVisual::shaft, false)
@@ -69,6 +71,11 @@ public class CEEBlockEntityTypes {
 
     public static final BlockEntityEntry<ConverterBlockEntity> CONVERTER = REGISTRATE.blockEntity("converter", ConverterBlockEntity::new)
             .validBlock(CEEBlocks.CONVERTER::get)
+            .register();
+
+    public static final BlockEntityEntry<HVSwitchBlockEntity> HV_SWITCH = REGISTRATE.blockEntity("high_voltage_switch", HVSwitchBlockEntity::new)
+            .validBlock(CEEBlocks.HV_SWITCH::get)
+            .renderer(()  -> HVSwitchRenderer::new)
             .register();
 
 

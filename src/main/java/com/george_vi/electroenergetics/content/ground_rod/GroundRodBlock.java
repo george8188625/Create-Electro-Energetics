@@ -82,8 +82,8 @@ public class GroundRodBlock extends SimpleDeviceBlock implements IWrenchable, Si
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        return Map.of(new Vec3(0.5,3/16f,0.5), 0);
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        return Map.of(0, new Vec3(0.5,3/16f,0.5));
     }
 
     @Override

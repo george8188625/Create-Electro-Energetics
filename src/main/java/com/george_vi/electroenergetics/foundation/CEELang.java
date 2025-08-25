@@ -5,6 +5,7 @@ import com.simibubi.create.Create;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class CEELang extends Lang {
@@ -48,5 +49,9 @@ public class CEELang extends Lang {
         return builder()
                 .text(String.format("%.1f", energy))
                 .translate("generic.watthours");
+    }
+
+    public static MutableComponent nodeLabel(String key, Object... args) {
+        return Component.translatable("electroenergetics.nodes." + key, args);
     }
 }

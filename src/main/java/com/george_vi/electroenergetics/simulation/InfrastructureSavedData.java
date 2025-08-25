@@ -33,6 +33,9 @@ public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, List<Node>> NODES_BY_POS = new HashMap<>();
     Map<BlockPos, CableType> CABLES = new HashMap<>();
     Map<NodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
+
+    // NOT PERSISTENT
+    Map<Node, Double> VOLTAGES = new HashMap<>();
     ServerLevel level;
     public static final Logger LOGGER = LogUtils.getLogger();
 
@@ -149,6 +152,7 @@ public class InfrastructureSavedData extends SavedData {
                         new Node(id, pos)), c -> new WireData(finalWireType, connectionTag.getFloat("Temperature"), attachments));
             });
             sd.NODES.put(node, connectedNodes);
+            sd.VOLTAGES.put(node, 0d);
             sd.NODES_BY_POS.computeIfAbsent(pos, ((p) -> new ArrayList<>()));
             sd.NODES_BY_POS.computeIfPresent(pos, ((p, nodes) -> {
                 nodes.add(node);
@@ -359,6 +363,14 @@ public class InfrastructureSavedData extends SavedData {
 
     public List<Node> getNodes(){
         return NODES.keySet().stream().toList();
+    }
+
+    public double getVoltageAt(Node node) {
+        return VOLTAGES.getOrDefault(node, 0d);
+    }
+
+    public void setVoltage(Node node, double v) {
+        VOLTAGES.put(node, v);
     }
 
     public record SimulatedDeviceInstance(SimulatedDevice simulatedDevice, BlockPos pos, CompoundTag extraData, List<Node> nodes) { }

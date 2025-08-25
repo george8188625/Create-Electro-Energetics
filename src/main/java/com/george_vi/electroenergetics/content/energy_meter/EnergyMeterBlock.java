@@ -9,7 +9,6 @@ import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.createmod.catnip.gui.ScreenOpener;
 import net.createmod.catnip.platform.CatnipServices;
-import net.mehvahdjukaar.supplementaries.common.block.tiles.SafeBlockTile;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -126,7 +125,7 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (triPolar) {
             if (state.getValue(INVERTED))
                 return CEENodeConfigurations.TRI_POLAR_METERING_MIRRORED.getNodes(state.getValue(FACING));

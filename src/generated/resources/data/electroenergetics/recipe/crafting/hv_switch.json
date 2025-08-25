@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "S": {
+      "item": "create:shaft"
+    },
+    "n": {
+      "tag": "c:nuggets/copper"
+    }
+  },
+  "pattern": [
+    " Sn",
+    "CAS",
+    "CC "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:high_voltage_switch"
+  }
+}

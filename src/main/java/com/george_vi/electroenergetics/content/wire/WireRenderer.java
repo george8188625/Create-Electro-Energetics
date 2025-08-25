@@ -97,7 +97,7 @@ public class WireRenderer {
 
             renderWire(renderedPoints, pos1, pos2, pose, buffer, levelRenderer);
 
-            if (points.size() >= 14) {
+            if (points.size() >= 10) {
                 if (state1.getBlock() instanceof DeviceBlock db &&
                         db.isOuterInsulator(mc.level, connection.node1().sourcePos(), state1, connection.node1().id())) {
                     Vec3 nextPoint = points.get(5);
@@ -166,7 +166,9 @@ public class WireRenderer {
                         .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                         .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                         .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                        .light(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))))
+                        .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
+                                Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
+                                        LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
                         .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
         }
     }

@@ -52,8 +52,8 @@ public record Node(int id, BlockPos sourcePos) implements Comparable<Node> {
             BlockPos pos = BlockPos.containing(clickedPos).offset(offset);
             BlockState state = level.getBlockState(pos);
             if (state.getBlock() instanceof DeviceBlock db)
-                for (Map.Entry<Vec3, Integer> e : db.getNodePositions(level, pos, state).entrySet())
-                    nodes.add(Pair.of(e.getKey(), new Node(e.getValue(), pos)));
+                for (Map.Entry<Integer, Vec3> e : db.getNodePositions(level, pos, state).entrySet())
+                    nodes.add(Pair.of(e.getValue(), new Node(e.getKey(), pos)));
         }
 
         return nodes.stream()

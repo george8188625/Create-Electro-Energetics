@@ -307,6 +307,28 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .define('A', AllBlocks.ANDESITE_ALLOY_BLOCK)
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/transformer"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.VOLTAGE_REGULATOR)
+                .pattern(" S ")
+                .pattern("WPW")
+                .pattern(" T ")
+                .define('W', CEEItems.WIRE_SPOOL)
+                .define('S', AllBlocks.SHAFT)
+                .define('T', CEEBlocks.TRANSFORMER)
+                .define('P', AllItems.PRECISION_MECHANISM)
+                .unlockedBy("has_transformer", has(CEEBlocks.TRANSFORMER))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/voltlage_regulator"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.HV_SWITCH)
+                .pattern(" Sn")
+                .pattern("CAS")
+                .pattern("CC ")
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('n', AllTags.commonItemTag("nuggets/copper"))
+                .define('S', AllBlocks.SHAFT)
+                .define('C', CEEBlocks.CONNECTOR)
+                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/hv_switch"));
     }
 }
 

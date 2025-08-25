@@ -4,7 +4,6 @@ import com.simibubi.create.AllCreativeModeTabs;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -32,6 +31,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.BULB.asStack());
                         output.accept(CEEBlocks.CUT_OFF_SWITCH.asStack());
                         output.accept(CEEBlocks.DOUBLE_SWITCH.asStack());
+                        output.accept(CEEBlocks.HV_SWITCH.asStack());
                         output.accept(CEEBlocks.REDSTONE_RELAY.asStack());
                         output.accept(CEEBlocks.ENERGY_METER.asStack());
                         output.accept(CEEBlocks.TRI_POLAR_ENERGY_METER.asStack());
@@ -40,6 +40,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.FUSE.asStack());
                         output.accept(CEEBlocks.GROUND_ROD.asStack());
                         output.accept(CEEBlocks.TRANSFORMER.asStack());
+                        output.accept(CEEBlocks.VOLTAGE_REGULATOR.asStack());
                         output.accept(CEEBlocks.ELECTRIC_MOTOR.asStack());
                         output.accept(CEEBlocks.ELECTRIC_PUMP.asStack());
                         output.accept(CEEBlocks.ALTERNATOR_ROTOR.asStack());

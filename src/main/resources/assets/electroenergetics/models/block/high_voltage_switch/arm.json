@@ -1,0 +1,24 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "electroenergetics:block/hv_switch",
+		"particle": "electroenergetics:block/hv_switch"
+	},
+	"elements": [
+		{
+			"from": [-1, -1, -1],
+			"to": [2, 2, 15],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, -1]},
+			"faces": {
+				"north": {"uv": [3, 4.5, 4.5, 6], "texture": "#0"},
+				"east": {"uv": [0, 0, 8, 1.5], "texture": "#0"},
+				"south": {"uv": [3, 4.5, 4.5, 6], "texture": "#0"},
+				"west": {"uv": [0, 0, 8, 1.5], "texture": "#0"},
+				"up": {"uv": [0, 0, 8, 1.5], "rotation": 90, "texture": "#0"},
+				"down": {"uv": [0, 0, 8, 1.5], "rotation": 90, "texture": "#0"}
+			}
+		}
+	]
+}

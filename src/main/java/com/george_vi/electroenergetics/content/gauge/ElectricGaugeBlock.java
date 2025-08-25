@@ -88,7 +88,7 @@ public class ElectricGaugeBlock extends SimpleDeviceBlock implements IBE<Electri
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         return CEENodeConfigurations.BI_POLAR_DIRECTIONAL.getNodes(Direction.fromAxisAndDirection(getAxis(state), Direction.AxisDirection.POSITIVE));
     }
 

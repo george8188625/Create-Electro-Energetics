@@ -84,7 +84,7 @@ public class TripleConnectorBlock extends SimpleDeviceBlock implements IWrenchab
     }
 
     @Override
-    public Map<Vec3, Integer> getNodePositions(Level level, BlockPos pos, BlockState state) {
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         return state.getValue(ROLL) ?
                 CEENodeConfigurations.TRIPLE_CONNECTOR_ROLL.getNodes(state.getValue(FACING)) :
                 CEENodeConfigurations.TRIPLE_CONNECTOR.getNodes(state.getValue(FACING));

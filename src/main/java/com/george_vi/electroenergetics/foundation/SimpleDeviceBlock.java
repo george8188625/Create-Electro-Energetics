@@ -37,7 +37,7 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock {
 
     @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        List<Integer> nodes = new ArrayList<>(getNodePositions(level, pos, state).values());
+        List<Integer> nodes = new ArrayList<>(getNodePositions(level, pos, state).keySet());
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
         sd.addDevice(pos, getDevice(), getExtraData(level, state, pos), nodes);
