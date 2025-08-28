@@ -1,5 +1,8 @@
 package com.george_vi.electroenergetics;
 
+import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
+import com.george_vi.electroenergetics.content.catenary.PantographBlockEntity;
+import com.george_vi.electroenergetics.content.catenary.PantographRenderer;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlockEntity;
 import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlockEntity;
@@ -26,6 +29,10 @@ public class CEEBlockEntityTypes {
             .validBlocks(CEEBlocks.ENERGY_METER::get, CEEBlocks.TRI_POLAR_ENERGY_METER::get)
             .register();
 
+    public static final BlockEntityEntry<AccumulatorBlockEntity> ACCUMULATOR = REGISTRATE.blockEntity("accumulator", AccumulatorBlockEntity::new)
+            .validBlock(CEEBlocks.ACCUMULATOR)
+            .register();
+
     public static final BlockEntityEntry<ElectricGaugeBlockEntity> VOLTMETER = REGISTRATE.blockEntity("voltmeter", ElectricGaugeBlockEntity::voltmeter)
             .validBlock(CEEBlocks.VOLTMETER::get)
             .renderer(() -> ElectricGaugeRenderer::voltmeter)
@@ -34,6 +41,11 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<ElectricGaugeBlockEntity> AMMETER = REGISTRATE.blockEntity("ammeter", ElectricGaugeBlockEntity::ammeter)
             .validBlock(CEEBlocks.AMMETER::get)
             .renderer(() -> ElectricGaugeRenderer::ammeter)
+            .register();
+
+    public static final BlockEntityEntry<PantographBlockEntity> PANTOGRAPH = REGISTRATE.blockEntity("pantograph", PantographBlockEntity::new)
+            .validBlock(CEEBlocks.PANTOGRAPH::get)
+            .renderer(() -> PantographRenderer::new)
             .register();
 
     public static final BlockEntityEntry<CreativeBatteryBlockEntity> CREATIVE_BATTERY = REGISTRATE.blockEntity("creative_battery", CreativeBatteryBlockEntity::new)

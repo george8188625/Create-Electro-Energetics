@@ -2,6 +2,8 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
+import com.george_vi.electroenergetics.content.catenary.CatenaryHolderBlock;
+import com.george_vi.electroenergetics.content.catenary.PantographBlock;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.QuadConnectorBlock;
@@ -435,6 +437,26 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<CatenaryHolderBlock> CATENARY_HOLDER = REGISTRATE.block("catenary_holder", CatenaryHolderBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> BlockStateGen.simpleBlock(c, p, s -> AssetLookup.standardModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry))
+            .build()
+            .register();
+
+    public static final BlockEntry<PantographBlock> PANTOGRAPH = REGISTRATE.block("pantograph", PantographBlock::new)
+            .initialProperties(SharedProperties::netheriteMetal)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()
             .register();
 

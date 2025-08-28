@@ -8,15 +8,14 @@ import com.george_vi.electroenergetics.content.wire.WireAttachmentType;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.jcraft.jorbis.Block;
 import com.mojang.logging.LogUtils;
+import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
@@ -33,6 +32,9 @@ public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, List<Node>> NODES_BY_POS = new HashMap<>();
     Map<BlockPos, CableType> CABLES = new HashMap<>();
     Map<NodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
+
+    // TRAINS
+    Map<BlockPos, List<BlockPos>> CATENARY = new HashMap<>();
 
     // NOT PERSISTENT
     Map<Node, Double> VOLTAGES = new HashMap<>();
@@ -107,6 +109,20 @@ public class InfrastructureSavedData extends SavedData {
         }
         compoundTag.put("Cables", cableList);
 
+        // Save Railway Catenary
+
+        ListTag catenaryList = new ListTag();
+        for (Map.Entry<BlockPos, List<BlockPos>> e : CATENARY.entrySet()) {
+            CompoundTag catenaryTag = new CompoundTag();
+            ListTag connectionList = new ListTag();
+            for (BlockPos otherPos : e.getValue())
+                connectionList.add(NbtUtils.writeBlockPos(otherPos));
+            catenaryTag.put("From", NbtUtils.writeBlockPos(e.getKey()));
+            catenaryTag.put("Connections", connectionList);
+            catenaryList.add(catenaryTag);
+        }
+        compoundTag.put("Catenary", catenaryList);
+
         return compoundTag;
     }
 
@@ -117,6 +133,7 @@ public class InfrastructureSavedData extends SavedData {
         sd.NODES_BY_POS = new HashMap<>();
         sd.CABLES = new HashMap<>();
         sd.CONNECTION_DATA = new HashMap<>();
+        sd.CATENARY = new HashMap<>();
 
         // Read Nodes / Node Connections
 
@@ -187,12 +204,32 @@ public class InfrastructureSavedData extends SavedData {
             try {
                 cableType = CEERegistries.CABLE_TYPE.get(ResourceLocation.parse(tag.getString("ID")));
             } catch (Throwable e) {
-                LOGGER.warn("Could not load cable type: {} at pos: {} in: {}", tag.getString("ID"), pos, level.dimension().location());
+                LOGGER.warn("Could not load cable type: {} at pos: {} in: {}", tag.getString("ID"), pos.toShortString(), level.dimension().location());
             }
             if (cableType == null)
                 return;
             sd.CABLES.put(pos, cableType);
         });
+
+        // Read Railway Catenary
+
+        ListTag catenaryList = new ListTag();
+        NBTHelper.iterateCompoundList(compoundTag.getList("Catenary", Tag.TAG_COMPOUND), tag -> {
+            BlockPos from = NBTHelper.readBlockPos(tag, "From");
+
+            tag.getList("Connections", Tag.TAG_INT_ARRAY).forEach(tg -> {
+                int[] arr = ((IntArrayTag)tg).getAsIntArray();
+                if (arr.length != 3) {
+                    LOGGER.warn("Could not load catenary connection, invalid position, at pos: {} in: {}", from.toShortString(), level.dimension().location());
+                    return;
+                }
+
+                BlockPos to = new BlockPos(arr[0], arr[1], arr[2]);
+
+                sd.CATENARY.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
+            });
+        });
+
         return sd;
     }
 
@@ -253,14 +290,18 @@ public class InfrastructureSavedData extends SavedData {
         addDevice(pos, device, new CompoundTag(), nodeIDs);
     }
 
+
     public void removeDevice(BlockPos pos) {
         DEVICES.remove(pos);
         List<Node> nodes = NODES_BY_POS.get(pos);
         if (nodes != null)
             for (Node node : nodes) {
                 List<NodeConnection> connections = getConnections(node);
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack(connections.size() * CEEConfigs.server().wiresPerSpool.get()));
                 connections.forEach(this::removeConnection);
+                List<BlockPos> catenaryConnections = List.copyOf(CATENARY.getOrDefault(pos, new ArrayList<>()));
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack((catenaryConnections.size() + connections.size()) * CEEConfigs.server().wiresPerSpool.get()));
+                for (BlockPos connection : catenaryConnections)
+                    removeCatenary(pos, connection);
                 NODES.remove(node);
             }
         NODES_BY_POS.remove(pos);
@@ -306,8 +347,9 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public NodeConnection connect(Node node1, Node node2, WireType wireType) {
+
         if (!(NODES.containsKey(node1) && NODES.containsKey(node2)))
-            throw new IllegalArgumentException("Node: " + (NODES.containsKey(node2) ? node1.toString() : node1) + "Doesn't exist.");
+            throw new IllegalArgumentException("Node: " + (NODES.containsKey(node2) ? node1.toString() : node1) + "doesn't exist.");
         NODES.compute(node1, (node, nodes) -> {
             nodes.add(node2);
             return nodes;
@@ -326,7 +368,7 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public boolean isConnected(Node node1, Node node2) {
-        return NODES.get(node1).contains(node2);
+        return NODES.get(node1).contains(node2) || (node1.id() == 0 && node2.id() == 0 && CATENARY.getOrDefault(node1.sourcePos(), Collections.emptyList()).contains(node2.sourcePos()));
     }
 
     public float getConnectionTemperature(NodeConnection connection) {
@@ -372,6 +414,31 @@ public class InfrastructureSavedData extends SavedData {
     public void setVoltage(Node node, double v) {
         VOLTAGES.put(node, v);
     }
+
+    public void connectCatenary(BlockPos pos1, BlockPos pos2) {
+        CATENARY.computeIfAbsent(pos1, k -> new ArrayList<>()).add(pos2);
+        CATENARY.computeIfAbsent(pos2, k -> new ArrayList<>()).add(pos1);
+        LoadedWireManager.handleCatenaryAdded(pos1, pos2, level);
+    }
+
+    public void removeCatenary(BlockPos pos1, BlockPos pos2) {
+        CATENARY.computeIfAbsent(pos1, k -> new ArrayList<>()).remove(pos2);
+        CATENARY.computeIfAbsent(pos2, k -> new ArrayList<>()).remove(pos1);
+        LoadedWireManager.handleCatenaryRemoved(pos1, pos2, level);
+    }
+
+    public List<Couple<BlockPos>> getAllCatenaryConnections() {
+        List<Couple<BlockPos>> connections = new ArrayList<>();
+        Map<BlockPos, List<BlockPos>> catenary = Map.copyOf(CATENARY);
+        for (Map.Entry<BlockPos, List<BlockPos>> e : catenary.entrySet()) {
+            BlockPos from = e.getKey();
+            for (BlockPos to : e.getValue())
+                if (!connections.contains(Couple.create(to, from)))
+                    connections.add(Couple.create(from, to));
+        }
+        return connections;
+    }
+
 
     public record SimulatedDeviceInstance(SimulatedDevice simulatedDevice, BlockPos pos, CompoundTag extraData, List<Node> nodes) { }
 }

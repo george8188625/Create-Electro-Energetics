@@ -2,7 +2,9 @@ package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
@@ -77,7 +79,16 @@ public class WireSpoolItem extends Item {
                 return InteractionResult.FAIL;
             }
 
-            sd.connect(originalNode, hoveredNode, wireType.get());
+            if (db instanceof CatenaryHolderBlock && (level.getBlockState(originalNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock)) {
+                if (wireType.get() != CEEWireTypes.STANDARD.get() ||
+                        Math.sqrt(originalNode.sourcePos().distSqr(hoveredNode.sourcePos())) > CEEConfigs.server().maxCatenaryLength.get()) {
+                    AllSoundEvents.DENY.playOnServer(level, pos);
+                    return InteractionResult.FAIL;
+                }
+
+                sd.connectCatenary(hoveredNode.sourcePos(), originalNode.sourcePos());
+            } else
+                sd.connect(originalNode, hoveredNode, wireType.get());
 
             AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);
 

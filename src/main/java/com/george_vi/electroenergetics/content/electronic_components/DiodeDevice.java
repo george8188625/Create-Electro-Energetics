@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -23,10 +24,7 @@ public class DiodeDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
-        if (voltages.size() != 2)
-            return;
-
-        extraData.putBoolean("Forward", voltages.get(new Node(0, pos)) > voltages.get(new Node(1, pos)));
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+        extraData.putBoolean("Forward", results.getVoltageAt(pos, 0) > results.getVoltageAt(pos, 1));
     }
 }

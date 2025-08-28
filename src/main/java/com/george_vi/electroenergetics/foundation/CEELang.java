@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.simibubi.create.Create;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangBuilder;
+import net.createmod.catnip.lang.LangNumberFormat;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,8 +18,8 @@ public class CEELang extends Lang {
         if (Math.abs(voltage) < 0.01)
             voltage = 0;
         return builder()
-                .text(String.format("%.1f", Math.abs(voltage) > 1000 ? voltage / 1000 : voltage))
-                .translate(Math.abs(voltage) > 1000 ? "generic.kilovolts" : "generic.volts");
+                .text(String.format("%.1f", Math.abs(voltage) >= 1000 ? voltage / 1000 : voltage))
+                .translate(Math.abs(voltage) >= 1000 ? "generic.kilovolts" : "generic.volts");
     }
 
     public static LangBuilder formatAmperage(double amperage) {
@@ -31,11 +32,11 @@ public class CEELang extends Lang {
 
     public static LangBuilder formatPower(double power) {
         return builder()
-                .text(String.format("%.1f", Math.abs(power) > 1000 ? power / 1000 : power))
+                .text(LangNumberFormat.format(Math.abs(power) > 1000 ? power / 1000 : power))
                 .translate(Math.abs(power) > 1000 ? "generic.kilowatts" : "generic.watts");
     }
 
-    public static Object formatEnergy(double energy) {
+    public static LangBuilder formatEnergy(double energy) {
         if (Math.abs(energy) > 1000000)
             return builder()
                     .text(String.format("%.1f", energy / 1000000))

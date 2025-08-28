@@ -44,7 +44,7 @@ public class ConcretePoleDevice extends SimulatedDevice {
             }
 
             if (length > 0)
-                bridges.bridge(new Node(0, pos), new Node(0, pos.above(length)), CEEConfigs.server().wireResistance.get() * length, 0);
+                bridges.bridge(new Node(0, pos), new Node(0, pos.above(length)), CEEConfigs.server().wireResistance.get() * length, 0, 0);
         }
 
         if (extraData.getBoolean("Top") || extraData.getBoolean("Bottom"))

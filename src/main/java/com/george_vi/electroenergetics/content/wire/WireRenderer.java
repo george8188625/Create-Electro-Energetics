@@ -11,6 +11,7 @@ import com.george_vi.electroenergetics.simulation.WireData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.Camera;
@@ -33,6 +34,7 @@ import java.util.Map;
 
 public class WireRenderer {
     public static List<Pair<NodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
+    public static List<Couple<BlockPos>> CATENARY = new ArrayList<>();
     public static Map<Node, Float> NODE_VOLTAGES = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
@@ -48,6 +50,76 @@ public class WireRenderer {
 
         pose.pushPose();
         pose.translate(-camera.getPosition().x(), -camera.getPosition().y(), -camera.getPosition().z());
+
+        for (Couple<BlockPos> connection : List.copyOf(CATENARY)) {
+            AABB bb = AABB.encapsulatingFullBlocks(connection.getFirst(), connection.getSecond());
+            if (!levelRenderer.getFrustum().isVisible(bb))
+                continue;
+
+            Vec3 start = Vec3.atCenterOf(connection.getFirst()).add(0, -0.5, 0);
+            Vec3 end = Vec3.atCenterOf(connection.getSecond()).add(0, -0.5, 0);
+
+            List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(start, end, 0, 10);
+
+            for (int i = 0; i < lowerWirePoints.size(); i++) {
+                Vec3 point = lowerWirePoints.get(i);
+                Vec3 nextPoint = i == lowerWirePoints.size() - 1 ? end : lowerWirePoints.get(i + 1);
+                CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
+                        .translate(point)
+                        .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                        .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                        .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                        .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
+                                Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
+                                        LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
+                        .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+            }
+
+
+            Vec3 topStart = start.add(0, 1, 0);
+            Vec3 topEnd = end.add(0, 1, 0);
+
+            float distance = (float) start.distanceTo(topEnd);
+
+
+            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 200f * (0.05f / distance), 3);
+
+            for (int i = 0; i < upperWirePoints.size(); i++) {
+                Vec3 point = upperWirePoints.get(i);
+                Vec3 nextPoint = i == upperWirePoints.size() - 1 ? topEnd : upperWirePoints.get(i + 1);
+                CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
+                        .translate(point)
+                        .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                        .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                        .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                        .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
+                                Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
+                                        LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
+                        .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+
+                Vec3 closest;
+                Vec3 ab = end.subtract(start);
+                Vec3 ap = point.subtract(start);
+                double denom = ab.lengthSqr();
+                if (denom == 0)
+                    closest = start;
+                else {
+                    double t = ap.dot(ab) / denom;
+                    t = Math.max(0, Math.min(1, t));
+                    closest = start.add(ab.scale(t));
+                }
+
+                CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
+                        .translate(point)
+                        .rotateY((float) Math.atan2(closest.x() - point.x(), closest.z() - point.z()))
+                        .rotateX(-(float) Math.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
+                        .scaleZ((float) (point.distanceTo(closest) * 2) + 0.02f)
+                        .light(BlockPos.containing(point).equals(BlockPos.containing(closest)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(closest).multiply(0.5, 0.5, 0.5))) :
+                                Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
+                                        LevelRenderer.getLightColor(mc.level, BlockPos.containing(closest))))
+                        .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+            }
+        }
 
         for (Pair<NodeConnection, WireData> wire : getAllConnections()) {
             NodeConnection connection = wire.getFirst();
@@ -75,7 +147,7 @@ public class WireRenderer {
             List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1);
             List<Vec3> renderedPoints = QuadraticWireHelper.cablePoints(pos1, pos2, 1, mc.gameRenderer.getMainCamera().getPosition());
             mc.getProfiler().popPush("renderWireAttachments");
-            for (Pair<Float, WireAttachment> attachment : wire.getSecond().attachments()) {
+            for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
                 mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachment.getSecond().type).toString());
                 pose.pushPose();
                 Vec3 offset;
@@ -161,15 +233,15 @@ public class WireRenderer {
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
-                CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
-                        .translate(point)
-                        .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
-                        .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                        .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                        .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                                Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
-                                        LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
-                        .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+            CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
+                    .translate(point)
+                    .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                    .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                    .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
+                            Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
+                                    LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
+                    .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
         }
     }
 
@@ -179,7 +251,6 @@ public class WireRenderer {
 
     public static void removeConnections(NodeConnection toRemove) {
         WIRE_CONNECTIONS.removeIf(w -> w.getFirst().equals(toRemove));
-        WIRE_CONNECTIONS.remove(toRemove);
     }
 
     public static List<Pair<NodeConnection, WireData>> getAllConnections() {
@@ -203,6 +274,17 @@ public class WireRenderer {
         }
         WIRE_CONNECTIONS.add(Pair.of(newConnection, data));
     }
+
+    public static void addCatenary(Couple<BlockPos> connection) {
+        if (!CATENARY.contains(connection.swap()))
+            CATENARY.add(connection);
+    }
+
+    public static void removeCatenary(Couple<BlockPos> connection) {
+        CATENARY.removeIf(c -> c.equals(connection.swap()));
+        CATENARY.removeIf(c -> c.equals(connection));
+    }
+
     public static void removeVoltageData(Node node) {
         synchronized ("get_node_voltages") {
             NODE_VOLTAGES.remove(node);

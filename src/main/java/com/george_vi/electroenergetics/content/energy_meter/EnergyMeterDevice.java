@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -26,11 +27,9 @@ public class EnergyMeterDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
-        if (voltages.size() != 4)
-            return;
-        double vd = voltages.get(new Node(0, pos)) - voltages.get(new Node(2, pos));
-        double v = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+        double vd = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 2);
+        double v = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
         double amps = vd / 0.001;
         double totalEnergy = extraData.getDouble("TotalEnergy");
 

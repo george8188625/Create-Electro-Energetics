@@ -21,6 +21,7 @@
   "electroenergetics.gui.goggles.voltage": "Voltage:",
   "electroenergetics.gui.goggles.at_current_voltage": "at current voltage",
   "electroenergetics.gui.goggles.at_current_load": "at current load",
+  "electroenergetics.gui.goggles.stored_energy": "Stored Energy:",
 
   "electroenergetics.tooltip.energy_meter.owner": "Owner : %1$s",
   "electroenergetics.tooltip.energy_meter.energy": "Total Energy : %1$s",

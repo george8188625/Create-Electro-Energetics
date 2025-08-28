@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "electroenergetics:block/pantograph/block",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "electroenergetics:block/pantograph/block"
+    },
+    "facing=south": {
+      "model": "electroenergetics:block/pantograph/block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "electroenergetics:block/pantograph/block",
+      "y": 270
+    }
+  }
+}

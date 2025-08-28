@@ -11,7 +11,7 @@ public class DissolvedProperties extends ElectricalProperties {
     final List<Double> originalResistances;
 
     public DissolvedProperties(List<Node> originalNodes, List<Double> originalResistances) {
-        super(originalResistances.stream().mapToDouble(d -> d).sum(), 0);
+        super(originalResistances.stream().mapToDouble(d -> d).sum(), 0, 0);
         this.originalNodes = originalNodes;
         this.originalResistances = originalResistances;
     }

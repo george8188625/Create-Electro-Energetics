@@ -19,9 +19,6 @@ public class CreativeBatteryDevice extends SimulatedDevice {
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
         bridges.builder(pos)
-                .idealVoltageSource(0, 1, extraData.contains("Voltage") ? extraData.getDouble("Voltage") : 240);
+                .idealVoltageSource(0, 1, extraData.contains("Voltage") ? extraData.getDouble("Voltage") : 2.4);
     }
-
-    @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {}
 }

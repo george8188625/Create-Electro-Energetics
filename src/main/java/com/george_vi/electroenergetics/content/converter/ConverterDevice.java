@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -32,16 +33,14 @@ public class ConverterDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
-        if (voltages.size() != 2 && voltages.size() != 3)
-            return;
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
         double storedEnergy = extraData.getDouble("StoredEnergy");
-            double conversionRate = 34;
+        double conversionRate = 34;
 
+        double vd = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
         if (extraData.getBoolean("Source")) {
-            double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
 
-            double current = sourceAmps.getOrDefault(new NodeConnection(pos, 0, 1000), 0d);
+            double current = results.getCurrentThrough(pos, 0, 1);
             double power = Math.abs(current) * vd;
 
             storedEnergy -= power;
@@ -57,9 +56,7 @@ public class ConverterDevice extends SimulatedDevice {
             return;
         }
 
-        double vd = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
-
-        double power = (vd * vd) / (extraData.contains("Resistance") ? extraData.getDouble("Resistance") : 999999);
+        double power = vd * results.getCurrentThrough(pos, 0, 1);
 
         storedEnergy += power;
 

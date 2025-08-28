@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
@@ -98,10 +99,10 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
                 .translate("gui.goggles.energy_consumption")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
+        float wattage = Math.round(avgVoltage * avgVoltage /
+                Math.min(CEEConfigs.server().motorResistance.get() * 3, CEEConfigs.server().motorResistance.get() / Mth.clamp(load, 0.1, 3)));
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(avgVoltage * avgVoltage /
-                        Math.min(CEEConfigs.server().motorResistance.get() * 3, CEEConfigs.server().motorResistance.get() / Mth.clamp(load, 0.1, 3)))))
-                .translate("generic.watts")
+                .add(CEELang.formatPower(wattage))
                 .style(ChatFormatting.AQUA)
                 .space()
                 .add(Component.translatable("electroenergetics.gui.goggles.at_current_load")
@@ -163,7 +164,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     }
 
     public void setVoltage(float voltage) {
-        if (voltages.size() >= 30)
+        if (voltages.size() >= 10)
             voltages.remove(0);
         voltages.add(voltage);
         this.voltage = voltage;

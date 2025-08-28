@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -24,13 +25,11 @@ public class GaugeDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
         if (!level.isLoaded(pos))
             return;
 
-        if (voltages.size() != 2)
-            return;
-        double vd = voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos));
+        double vd = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
 
         if (level.getBlockEntity(pos) instanceof ElectricGaugeBlockEntity be)
             be.voltage = vd;

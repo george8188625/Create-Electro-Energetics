@@ -33,6 +33,14 @@ public record Node(int id, BlockPos sourcePos) implements Comparable<Node> {
 
     public static final Node ZERO = new Node(0, BlockPos.ZERO);
 
+
+    /**
+     * @return is the node a property of the device, otherwise it's probably an added node by {@link com.george_vi.electroenergetics.events.AddToElectricGraphEvent}
+     */
+    public boolean isDeviceOwned() {
+        return sourcePos.getX() != Integer.MAX_VALUE;
+    }
+
     public static Node closestNode(Level level, Vec3 clickedPos, float threshold) {
 
         List<Pair<Vec3, Node>> nodes = new ArrayList<>();
@@ -72,5 +80,13 @@ public record Node(int id, BlockPos sourcePos) implements Comparable<Node> {
         if (id() == other.id())
             return sourcePos().compareTo(other.sourcePos());
         return id - other.id();
+    }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "id=" + id +
+                ", sourcePos=" + sourcePos +
+                '}';
     }
 }

@@ -38,7 +38,7 @@ public class Network {
             if (adjacency.get(node).size() == 2 && !(sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)) {
 
                 List<ElectricalProperties> connections = getConnections(node).values().stream().toList();
-                if (connections.get(0).voltageSource() == 0 && connections.get(1).voltageSource() == 0)
+                if (connections.get(0).voltageSource() == 0 && connections.get(1).voltageSource() == 0 && connections.get(0).currentSource() == 0 && connections.get(1).currentSource() == 0)
                     toDissolve.add(node);
             }
         }
@@ -174,6 +174,7 @@ public class Network {
     public Pair<Map<Couple<SimulationNode>, Double>, Pair<SparseMatrix<Double>, double[]>> formMatrix(Map<Node, SimulationNode> simulationNodes) {
         List<Node> groundRods = new ArrayList<>();
         Map<Couple<SimulationNode>, Double> voltageSources = new HashMap<>();
+        Map<Couple<SimulationNode>, Double> currentSources = new HashMap<>();
 
         for (Node node : getAllNodes())
             if (sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)
@@ -194,7 +195,9 @@ public class Network {
                 totalConductance += 1 / node.getConnectionProperties(adjacentNode).resistance();
                 if (node.getConnectionProperties(adjacentNode).voltageSource() != 0 && !voltageSources.containsKey(Couple.create(adjacentNode, node)))
                     voltageSources.put(Couple.create(node, adjacentNode), node.getConnectionProperties(adjacentNode).voltageSource());
-                if ((groundRods.isEmpty() && !groundSet) && node.getConnectionProperties(adjacentNode).voltageSource() > 0 ) {
+                if (node.getConnectionProperties(adjacentNode).currentSource() != 0 && !currentSources.containsKey(Couple.create(adjacentNode, node)))
+                    currentSources.put(Couple.create(node, adjacentNode), node.getConnectionProperties(adjacentNode).currentSource());
+                if ((groundRods.isEmpty() && !groundSet) && (node.getConnectionProperties(adjacentNode).voltageSource() > 0 || node.getConnectionProperties(adjacentNode).currentSource() > 0)) {
                     groundSet = true;
                     totalConductance += 1;
                 }
@@ -215,6 +218,15 @@ public class Network {
         }
 
         double[] d = new double[conductanceMatrix.size() + voltageSources.size()];
+
+
+        for (Map.Entry<Couple<SimulationNode>, Double> e : currentSources.entrySet()) {
+            Couple<SimulationNode> con = e.getKey();
+            double v = e.getValue();
+            d[con.getFirst().id] = -v;
+            d[con.getSecond().id] = v;
+        }
+
         int i = 0;
         for (Couple<SimulationNode> source : voltageSources.keySet()) {
             conductanceMatrix.set(simulationNodes.size() + i, source.getFirst().id, 1d);

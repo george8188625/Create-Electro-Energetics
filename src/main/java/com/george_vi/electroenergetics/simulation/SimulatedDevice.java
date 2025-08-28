@@ -32,11 +32,10 @@ public class SimulatedDevice {
      * This method is called once per device after the simulation. Each device can now process the voltages, currents and show results in the world.
      * @param pos in-world position of the devices block (this position will not always be loaded, before accessing check with {@link Level#isLoaded(BlockPos position)})
      * @param level level that the device is in
-     * @param voltages solved voltages of all nodes
-     * @param sourceAmps current through voltage sources (only voltage sources)
+     * @param results a holder for the resulting voltages, also containing methods useful for calculating currents etc.
      * @param extraData saved data local to the device
      */
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {}
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {}
 
     /**
      * Returns the maximum distance at which the server will send node voltages to clients.

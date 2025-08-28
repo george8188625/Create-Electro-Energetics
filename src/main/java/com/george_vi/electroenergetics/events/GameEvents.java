@@ -115,4 +115,9 @@ public class GameEvents {
     public static void registerCommands(RegisterCommandsEvent event) {
         CEECommands.register(event.getDispatcher());
     }
+
+    @SubscribeEvent
+    public static void attachToElectricGraph(AddToElectricGraphEvent event) {
+
+    }
 }

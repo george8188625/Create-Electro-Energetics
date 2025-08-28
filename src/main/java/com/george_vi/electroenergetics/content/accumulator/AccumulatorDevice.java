@@ -1,9 +1,12 @@
 package com.george_vi.electroenergetics.content.accumulator;
 
+import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlockEntity;
+import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -15,42 +18,29 @@ public class AccumulatorDevice extends SimulatedDevice {
     public AccumulatorDevice(ResourceLocation id) {
         super(id);
     }
-    // TODO: fix accumulators
+
+    double capacitance = 100;
+    double timeStep = 0.05;
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        double storedEnergy = extraData.getDouble("StoredEnergy");
-        boolean discharging = extraData.getBoolean("Discharging");
-        if (!discharging)
-            bridges.builder(pos).resistor(0, 1, 30);
-        else
-            bridges.builder(pos)
-                    .energyLimitedSource(1, 0, storedEnergy, storedEnergy / -10_000);
+        double lastVoltage = extraData.getDouble("LastVoltage");
+
+        double conductance = capacitance / timeStep;
+        double historyCurrent = conductance * lastVoltage;
+
+        bridges.bridge(new Node(0, pos), new Node(1, pos), 1 / conductance, 0, -historyCurrent);
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
-        if (voltages.size() != 3 && voltages.size() != 2)
-            return;
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+        extraData.putDouble("LastVoltage", results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
+        double v = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
+        if (level.isLoaded(pos)) {
+            if (level.getBlockEntity(pos) instanceof AccumulatorBlockEntity be) {
+                be.energy = (float) ((capacitance / 2) * (v*v)) / 3600;
 
-        double storedEnergy = extraData.getDouble("StoredEnergy");
-        boolean discharging = extraData.getBoolean("Discharging");
-
-        double voltage = storedEnergy / 10_000;
-
-        double vd = voltages.get(new Node(1, pos)) - voltages.get(new Node(0, pos));
-
-        double current = sourceAmps.getOrDefault(new NodeConnection(new Node(1, pos), new Node(1000, pos)), discharging ? 0 : vd / 30);
-
-        if (discharging)
-            storedEnergy -= Math.abs(current * vd);
-        else
-            storedEnergy += Math.abs(current * vd);
-
-        discharging = vd - voltage <= 1 && Math.abs(voltage) > 1;
-
-        extraData.putBoolean("Discharging", discharging);
-        extraData.putDouble("StoredEnergy", storedEnergy);
-        return;
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -39,10 +40,7 @@ public class CutOffSwitchDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
-        if (voltages.size() != lines * 2)
-            return;
-
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
         extraData.remove("Arcing");
         for (int i = 0; i < lines; i++) {
             SwitchState state = SwitchState.values()[extraData.getInt("State_"+i)];
@@ -50,7 +48,7 @@ public class CutOffSwitchDevice extends SimulatedDevice {
             if (closed)
                 state = SwitchState.CLOSED;
             if ((!closed && state == SwitchState.OPENING) || state == SwitchState.ARCING) {
-                if (Math.abs(voltages.get(new Node(i, pos)) - voltages.get(new Node(lines + i, pos))) > (state == SwitchState.ARCING ? 60 : 1000)) {
+                if (Math.abs(results.getVoltageAt(pos, i) - results.getVoltageAt(pos, lines + i)) > (state == SwitchState.ARCING ? 60 : 1000)) {
                     if (state != SwitchState.ARCING)
                         extraData.putInt("Tick", 10);
                     state = SwitchState.ARCING;
@@ -63,10 +61,7 @@ public class CutOffSwitchDevice extends SimulatedDevice {
             if (state == SwitchState.ARCING)
                 extraData.putBoolean("Arcing", true);
             extraData.putInt("State_"+i, state.ordinal());
-
         }
-
-
 
         if (extraData.getBoolean("Arcing"))
             if (level.isLoaded(pos)) {

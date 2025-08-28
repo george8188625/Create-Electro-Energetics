@@ -32,6 +32,7 @@ public class HVSwitchBlockEntity extends SmartBlockEntity {
     float prevProgress = 0f;
     float progress = 0f;
     boolean connected = false;
+    int arcTimer = 0;
 
     @OnlyIn(Dist.CLIENT)
     protected ElectricHumSoundInstance soundInstance;
@@ -44,7 +45,10 @@ public class HVSwitchBlockEntity extends SmartBlockEntity {
     public void tick() {
         prevProgress = progress;
         progress = Mth.clamp(progress + (connected ? 0.01f : -0.01f), 0, 1);
-
+        if (!arcing)
+            arcTimer = 0;
+        else
+            arcTimer++;
         if (!level.isClientSide)
             return;
 
@@ -104,6 +108,7 @@ public class HVSwitchBlockEntity extends SmartBlockEntity {
         progress = tag.getFloat("Progress");
         connected = tag.getBoolean("Connected");
         arcing = tag.getBoolean("Arcing");
+        arcTimer = tag.getInt("ArcTimer");
     }
 
     @Override
@@ -112,6 +117,7 @@ public class HVSwitchBlockEntity extends SmartBlockEntity {
         tag.putFloat("Progress", progress);
         tag.putBoolean("Connected", connected);
         tag.putBoolean("Arcing", arcing);
+        tag.putInt("ArcTimer", arcTimer);
     }
 
     @Override

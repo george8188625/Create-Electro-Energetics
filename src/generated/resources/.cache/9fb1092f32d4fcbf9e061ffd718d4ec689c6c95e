@@ -1,4 +1,4 @@
-// 1.21.1	2025-08-25T18:12:32.1090616	Recipes
+// 1.21.1	2025-08-27T22:10:00.7291159	Recipes
 3aebfa4f38c5a9d6431e63d06c23a7682eb9c06e data/electroenergetics/advancement/recipes/misc/crafting/alternator_brushes.json
 17cb440186b8229ab96e28b4fabfcc6443fd4318 data/electroenergetics/advancement/recipes/misc/crafting/alternator_rotor.json
 2b40210321dd5bc26e17c0c93ae0eedd9b1f87e5 data/electroenergetics/advancement/recipes/misc/crafting/ammeter.json
@@ -27,7 +27,7 @@ f41e8f592ff9f5bc895be6528c68e059de5d502f data/electroenergetics/advancement/reci
 6890916e291f0104ee223b69f71a1e43191dd0e5 data/electroenergetics/advancement/recipes/misc/crafting/transformer.json
 e7a3dfbc9c10192284a14b8fa8a040dbfc6a1c31 data/electroenergetics/advancement/recipes/misc/crafting/triple_connector.json
 69ee77a7633c6d0dd07edbb3ba46dc95b1c05511 data/electroenergetics/advancement/recipes/misc/crafting/tri_polar_energy_meter.json
-e4dbe550ab6173aeb1a25bed8b0f726d1c8e7fe5 data/electroenergetics/advancement/recipes/misc/crafting/voltlage_regulator.json
+9c5d1144a47ce7f6f35cf5d42fe8f8780b87a1b1 data/electroenergetics/advancement/recipes/misc/crafting/voltage_regulator.json
 3365c624ce9f38dbab67c94cc2728cca23a0e44e data/electroenergetics/advancement/recipes/misc/crafting/voltmeter.json
 d965dbd90a9e86b3e4743ac1954ba69662798287 data/electroenergetics/advancement/recipes/misc/crafting/voltmeter_from_ammeter.json
 cdd4ba7313983d9d4ba364e8a99baa7595dce051 data/electroenergetics/advancement/recipes/misc/crafting/wire_spool.json
@@ -59,7 +59,7 @@ de531cc73b76a0f5618351e5b5c8adb93e2e0a3c data/electroenergetics/recipe/crafting/
 fb45180fbc64e32a8566214956ee053af07fbebb data/electroenergetics/recipe/crafting/transformer.json
 a954acdc1a807b0753429c4be3c85dcf10691018 data/electroenergetics/recipe/crafting/triple_connector.json
 0ba73251adc9a9fd9c2f1d6494ddd070dbb8f555 data/electroenergetics/recipe/crafting/tri_polar_energy_meter.json
-3f252a599358070414727d4ac0908f24b7b02bdf data/electroenergetics/recipe/crafting/voltlage_regulator.json
+3f252a599358070414727d4ac0908f24b7b02bdf data/electroenergetics/recipe/crafting/voltage_regulator.json
 81822e18569bba3e70f7f5f0fafb8f4de3e460f8 data/electroenergetics/recipe/crafting/voltmeter.json
 a18deafb87a52f5f13c56ae2f26a24d16b7edf39 data/electroenergetics/recipe/crafting/voltmeter_from_ammeter.json
 4fdea6851fd7b8c82f5751555d993f228e7c4691 data/electroenergetics/recipe/crafting/wire_spool.json

@@ -2,6 +2,8 @@ package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.content.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
@@ -60,7 +62,10 @@ public class EmptySpoolItem extends Item {
                 return InteractionResult.FAIL;
             }
 
-            sd.removeConnection(new NodeConnection(originalNode, hoveredNode));
+            if ((level.getBlockState(hoveredNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock) && (level.getBlockState(originalNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock))
+                sd.removeCatenary(hoveredNode.sourcePos(), originalNode.sourcePos());
+            else
+                sd.removeConnection(new NodeConnection(originalNode, hoveredNode));
 
             AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);
 

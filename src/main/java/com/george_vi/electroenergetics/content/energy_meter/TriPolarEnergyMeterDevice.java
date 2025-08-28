@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -28,13 +29,11 @@ public class TriPolarEnergyMeterDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
-        if (voltages.size() != 6)
-            return;
-        double vd1 = voltages.get(new Node(0, pos)) - voltages.get(new Node(3, pos));
-        double vd2 = voltages.get(new Node(2, pos)) - voltages.get(new Node(5, pos));
-        double v1 = Math.abs(voltages.get(new Node(0, pos)) - voltages.get(new Node(1, pos)));
-        double v2 = Math.abs(voltages.get(new Node(1, pos)) - voltages.get(new Node(2, pos)));
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+        double vd1 = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 3);
+        double vd2 = results.getVoltageAt(pos, 2) - results.getVoltageAt(pos, 5);
+        double v1 = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
+        double v2 = results.getVoltageAt(pos, 1) - results.getVoltageAt(pos, 2);
 
         double amps1 = vd1 / 0.001;
         double amps2 = vd2 / 0.001;

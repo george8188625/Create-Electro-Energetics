@@ -1,0 +1,54 @@
+package com.george_vi.electroenergetics.content.catenary;
+
+import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+
+import java.util.List;
+
+public class PantographBlockEntity extends SmartBlockEntity {
+    public float prevExtensionState = 0;
+    public float currentExtensionState = 0;
+    public float targetExtensionState = 0.75f;
+
+    public PantographBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
+
+    @Override
+    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        prevExtensionState = currentExtensionState;
+        currentExtensionState = Mth.lerp(0.1f, currentExtensionState, targetExtensionState);
+        if (Math.abs(currentExtensionState - targetExtensionState) < 0.01)
+            currentExtensionState = targetExtensionState;
+    }
+
+    @Override
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
+        targetExtensionState = tag.getFloat("ExtensionState");
+    }
+
+    @Override
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
+        tag.putFloat("ExtensionState", targetExtensionState);
+    }
+
+    @Override
+    protected AABB createRenderBoundingBox() {
+        return super.createRenderBoundingBox().inflate(2);
+    }
+}

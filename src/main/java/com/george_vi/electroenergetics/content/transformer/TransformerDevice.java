@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -25,13 +26,12 @@ public class TransformerDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
-        if (voltages.size() < 4) return;
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
 
         Node p1 = new Node(0, pos), p2 = new Node(1, pos);
         Node s1 = new Node(2, pos), s2 = new Node(3, pos);
 
-        double vPrimary = voltages.get(p1) - voltages.get(p2);
+        double vPrimary = results.getVoltageAt(p1) - results.getVoltageAt(p2);
         if (Math.abs(vPrimary) < 0.1)
             vPrimary = 0;
 
@@ -48,11 +48,9 @@ public class TransformerDevice extends SimulatedDevice {
 
         double maxEnergy = 2_000_000;
 
-        double current = 0;
-        for (Double d : sourceAmps.values())
-            current = d;
+        double current = results.getCurrentThrough(s1, s2);
 
-        double load = Math.abs(current * (voltages.get(s1) - voltages.get(s2)));
+        double load = Math.abs(current * (results.getVoltageAt(s1) - results.getVoltageAt(s2)));
         double primaryCurrent = vPrimary / (extraData.getDouble("PrimaryResistance") == 0 ? 10 : extraData.getDouble("PrimaryResistance"));
         double incomingEnergy = primaryCurrent * vPrimary;
 

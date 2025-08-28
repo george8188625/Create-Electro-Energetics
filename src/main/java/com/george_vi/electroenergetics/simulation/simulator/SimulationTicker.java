@@ -2,6 +2,8 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
+import com.george_vi.electroenergetics.events.GameEvents;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
@@ -16,6 +18,8 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -85,9 +89,11 @@ public class SimulationTicker {
                 adjacency.get(node2).add(node1);
             }
 
-            connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0));
-            connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()).invert(), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0));
+            connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0, 0));
+            connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()).invert(), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0, 0));
         }
+
+        NeoForge.EVENT_BUS.post(new AddToElectricGraphEvent(adjacency, connectionProperties, allNodes));
 
         // RESET ALL VOLTAGES
 
@@ -110,67 +116,85 @@ public class SimulationTicker {
         }
 
         Map<BlockPos, Map<Node, Double>> resultsPerBlock = new HashMap<>();
-        Map<BlockPos, Map<NodeConnection, Double>> sourceAmps = new HashMap<>();
+        Map<BlockPos, Map<DirectionSensitiveNodeConnection, Double>> sourceAmps = new HashMap<>();
 
         // SOLVE NETWORKS
 
         for (Set<Node> networkNodes : networks) {
             long networkStart = System.nanoTime();
 
+            boolean foundSource = false;
             Map<Node, Map<Node, ElectricalProperties>> networkConnections = new HashMap<>();
             for (Node node : networkNodes) {
                 Map<Node, ElectricalProperties> nodeConnections = new HashMap<>();
-                for (Node connectedNode : adjacency.get(node))
-                    nodeConnections.put(connectedNode, connectionProperties.get(new DirectionSensitiveNodeConnection(node, connectedNode)));
+                for (Node connectedNode : adjacency.get(node)) {
+                    ElectricalProperties properties = connectionProperties.get(new DirectionSensitiveNodeConnection(node, connectedNode));
+                    nodeConnections.put(connectedNode, properties);
+                    if (properties.currentSource() != 0 || properties.voltageSource() != 0)
+                        foundSource = true;
+                }
                 networkConnections.put(node, nodeConnections);
             }
-
-            Network network = new Network(networkNodes.stream().toList(), networkConnections, sd);
-
-            long optimizationStart = System.nanoTime();
-            int preOptimizationNodes = network.getAllNodes().size();
-            if (CEEConfigs.server().optimizeGraph.get())
-                network.optimize();
-            long optimizationEnd = System.nanoTime();
-            int postOptimizationNodes = network.getAllNodes().size();
-
-            Map<Node, SimulationNode> simulationNodes = network.mapToSimNodes();
-            Pair<Map<Couple<SimulationNode>, Double>, Pair<SparseMatrix<Double>, double[]>> matrices = network.formMatrix(simulationNodes);
-            Map<Couple<SimulationNode>, Double> voltageSources = matrices.getFirst();
-
-            long solveStart = System.nanoTime();
             double[] mnaResults;
-            if (!voltageSources.isEmpty())
+
+            Map<Node, Double> results;
+
+            long optimizationStart = 0;
+            int preOptimizationNodes = 0;
+            long optimizationEnd = 0;
+            int postOptimizationNodes = 0;
+            long solveStart = 0;
+            long solveEnd = 0;
+
+            if (foundSource) {
+                Network network = new Network(networkNodes.stream().toList(), networkConnections, sd);
+
+                optimizationStart = System.nanoTime();
+                preOptimizationNodes = network.getAllNodes().size();
+                if (CEEConfigs.server().optimizeGraph.get())
+                    network.optimize();
+                optimizationEnd = System.nanoTime();
+                postOptimizationNodes = network.getAllNodes().size();
+
+                Map<Node, SimulationNode> simulationNodes = network.mapToSimNodes();
+                Pair<Map<Couple<SimulationNode>, Double>, Pair<SparseMatrix<Double>, double[]>> matrices = network.formMatrix(simulationNodes);
+                Map<Couple<SimulationNode>, Double> voltageSources = matrices.getFirst();
+
+                solveStart = System.nanoTime();
                 mnaResults = LUSolver.solve(matrices.getSecond().getFirst(), matrices.getSecond().getSecond());
-            else
-                mnaResults = new double[matrices.getSecond().getSecond().length];
+                solveEnd = System.nanoTime();
 
-            long solveEnd = System.nanoTime();
+                int i = 0;
+                for (Couple<SimulationNode> con : voltageSources.keySet()) {
+                    double amps = mnaResults[simulationNodes.size() + i];
+                    if (!sourceAmps.containsKey(con.getFirst().correspondingNode.sourcePos()))
+                        sourceAmps.put(con.getFirst().correspondingNode.sourcePos(), new HashMap<>());
+                    sourceAmps.get(con.getFirst().correspondingNode.sourcePos()).put(new DirectionSensitiveNodeConnection(con.getFirst().correspondingNode, con.getSecond().correspondingNode), amps);
+                    i++;
+                }
 
-            int i = 0;
-            for (Couple<SimulationNode> con : voltageSources.keySet()) {
-                double amps = mnaResults[simulationNodes.size() + i];
-                if (!sourceAmps.containsKey(con.getFirst().correspondingNode.sourcePos()))
-                    sourceAmps.put(con.getFirst().correspondingNode.sourcePos(), new HashMap<>());
-                sourceAmps.get(con.getFirst().correspondingNode.sourcePos()).put(new NodeConnection(con.getFirst().correspondingNode, con.getSecond().correspondingNode), amps);
-                i++;
+                results = network.getResults(mnaResults, simulationNodes);
+            } else {
+                results = new HashMap<>(networkNodes.size());
+                for (Node node : networkNodes)
+                    results.put(node, 0d);
             }
-
-            Map<Node, Double> results = network.getResults(mnaResults, simulationNodes);
 
             int minVoltage = 0;
             int maxVoltage = 0;
             for (Map.Entry<Node, Double> e : results.entrySet()) {
                 double voltage = e.getValue();
 
-                if (!resultsPerBlock.containsKey(e.getKey().sourcePos()))
-                    resultsPerBlock.put(e.getKey().sourcePos(), new HashMap<>());
-                resultsPerBlock.get(e.getKey().sourcePos()).put(e.getKey(), voltage);
-
                 minVoltage = (int) Math.min(voltage, minVoltage);
                 maxVoltage = (int) Math.max(voltage, maxVoltage);
 
                 sd.setVoltage(e.getKey(), voltage);
+                if (!e.getKey().isDeviceOwned())
+                    continue;
+
+                if (!resultsPerBlock.containsKey(e.getKey().sourcePos()))
+                    resultsPerBlock.put(e.getKey().sourcePos(), new HashMap<>());
+                resultsPerBlock.get(e.getKey().sourcePos()).put(e.getKey(), voltage);
             }
             long networkEnd = System.nanoTime();
 
@@ -189,7 +213,10 @@ public class SimulationTicker {
 
         resultsPerBlock.forEach((pos, voltages) -> {
             InfrastructureSavedData.SimulatedDeviceInstance device = sd.getDevice(pos);
-            device.simulatedDevice().postTick(pos, level, voltages, sourceAmps.getOrDefault(pos, Collections.emptyMap()), device.extraData());
+            if (device == null)
+                return;
+            SimulationResults results = new SimulationResults(voltages, sourceAmps.getOrDefault(pos, Collections.emptyMap()), adjacency, connectionProperties, sd);
+            device.simulatedDevice().postTick(pos, level, results, device.extraData());
         });
 
         // WIRE BREAKING
@@ -244,6 +271,8 @@ public class SimulationTicker {
         SimulationTicker.performances = performances;
 
         for (Node node : allNodes) {
+            if (!node.isDeviceOwned())
+                return;
             double voltage = sd.getVoltageAt(node);
 
             InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(node.sourcePos());

@@ -1,11 +1,15 @@
 package com.george_vi.electroenergetics.content.wire;
 
+import com.george_vi.electroenergetics.content.catenary.ClearCatenaryPacket;
+import com.george_vi.electroenergetics.content.catenary.SendCatenaryPacket;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.WireData;
+import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
@@ -42,6 +46,11 @@ public class LoadedWireManager {
             }
         }
 
+        List<Couple<BlockPos>> newCatenary = sd.getAllCatenaryConnections().stream().filter(c -> (newChunks.contains(new ChunkPos(c.getFirst())) && !chunks.contains(new ChunkPos(c.getSecond()))) ||
+                (newChunks.contains(new ChunkPos(c.getSecond())) && !chunks.contains(new ChunkPos(c.getFirst())))).toList();
+
+        CatnipServices.NETWORK.sendToClient(player, new SendCatenaryPacket(newCatenary));
+
         chunks.addAll(newChunks);
         List<ChunkPos> chunksToRemove = new ArrayList<>();
         for (int i = 0; i < chunks.size(); i++) {
@@ -64,6 +73,11 @@ public class LoadedWireManager {
         }
 
         CatnipServices.NETWORK.sendToClient(player, new ClearWireConnectionsPacket(connectionsToRemove.stream().map(c -> Pair.of(c.node1(), c.node2())).toList(), false));
+
+        List<Couple<BlockPos>> catenaryToRemove = sd.getAllCatenaryConnections().stream().filter(c -> (chunksToRemove.contains(new ChunkPos(c.getFirst())) && !chunks.contains(new ChunkPos(c.getSecond()))) ||
+                (chunksToRemove.contains(new ChunkPos(c.getSecond())) && !chunks.contains(new ChunkPos(c.getFirst())))).toList();
+
+        CatnipServices.NETWORK.sendToClient(player, new ClearCatenaryPacket(catenaryToRemove, false));
     }
 
     public static void handleWireRemoved(NodeConnection connection, ServerLevel level) {
@@ -90,8 +104,33 @@ public class LoadedWireManager {
         }
     }
 
+    public static void handleCatenaryRemoved(BlockPos pos1, BlockPos pos2, ServerLevel level) {
+        ChunkPos chunk1 = new ChunkPos(pos1);
+        ChunkPos chunk2 = new ChunkPos(pos2);
+        for (ServerPlayer player : level.getPlayers(p -> true)) {
+            for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList()))
+                if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {
+                    CatnipServices.NETWORK.sendToClient(player, ClearCatenaryPacket.clearWire(Couple.create(pos1, pos2)));
+                    break;
+                }
+        }
+    }
+
+    public static void handleCatenaryAdded(BlockPos pos1, BlockPos pos2, ServerLevel level) {
+        ChunkPos chunk1 = new ChunkPos(pos1);
+        ChunkPos chunk2 = new ChunkPos(pos2);
+        for (ServerPlayer player : level.getPlayers(p -> true)) {
+            for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList()))
+                if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {
+                    CatnipServices.NETWORK.sendToClient(player, SendCatenaryPacket.connectWire(Couple.create(pos1, pos2)));
+                    break;
+                }
+        }
+    }
+
     public static void unloadForPlayer(ServerPlayer player) {
         loadedChunks.remove(player.getUUID());
         CatnipServices.NETWORK.sendToClient(player, ClearWireConnectionsPacket.clearAll());
+        CatnipServices.NETWORK.sendToClient(player, ClearCatenaryPacket.clearAll());
     }
 }

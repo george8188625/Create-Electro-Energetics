@@ -1,5 +1,7 @@
 package com.george_vi.electroenergetics;
 
+import com.george_vi.electroenergetics.content.catenary.ClearCatenaryPacket;
+import com.george_vi.electroenergetics.content.catenary.SendCatenaryPacket;
 import com.george_vi.electroenergetics.content.energy_meter.ChangeEnergyMeterStatePacket;
 import com.george_vi.electroenergetics.content.wire.ClearWireConnectionsPacket;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;
@@ -17,6 +19,8 @@ public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     SEND_WIRE_CONNECTIONS(SendWireConnectionsPacket.class, SendWireConnectionsPacket.STREAM_CODEC),
     SEND_VOLTAGE_DATA(SendVoltageDataPacket.class, SendVoltageDataPacket.STREAM_CODEC),
     CLEAR_WIRE_CONNECTIONS(ClearWireConnectionsPacket.class, ClearWireConnectionsPacket.STREAM_CODEC),
+    SEND_CATENARY(SendCatenaryPacket.class, SendCatenaryPacket.STREAM_CODEC),
+    CLEAR_CATENARY(ClearCatenaryPacket.class, ClearCatenaryPacket.STREAM_CODEC),
     INTERACT_WIRE(InteractWirePacket.class, InteractWirePacket.STREAM_CODEC),
     CHANGE_ENERGY_METER_STATE(ChangeEnergyMeterStatePacket.class, ChangeEnergyMeterStatePacket.STREAM_CODEC);
 

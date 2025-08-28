@@ -28,6 +28,8 @@
     "electroenergetics:alternator_rotor",
     "electroenergetics:alternator_brushes",
     "electroenergetics:magnet",
-    "electroenergetics:converter"
+    "electroenergetics:converter",
+    "electroenergetics:catenary_holder",
+    "electroenergetics:pantograph"
   ]
 }

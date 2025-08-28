@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.creative_battery;
 
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -36,14 +37,33 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
                 return new ValueSettingsBoard(label, max, 10, ImmutableList.of(Component.literal("Value")),
-                        new ValueSettingsFormatter(valueSettings -> Component.literal(valueSettings.value() >= 100 ? valueSettings.value() / 100f + "kV" : (valueSettings.value() * 10) + "V")));
+                        new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(indexToVoltage(valueSettings.value())).component()));
             }
         };
-        voltage.between(0, 432);
+        voltage.between(0, 550);
         voltage.value = 24;
-        voltage.withFormatter(v -> v >= 100 ? v / 100f + "kV" : (v * 10) + "V");
+        voltage.withFormatter(v -> indexToVoltage(v) >= 1000 ? indexToVoltage(v) / 1000 + "kV" : indexToVoltage(v) + "V");
         voltage.withCallback(i -> this.updateVoltage());
         behaviours.add(voltage);
+    }
+
+    double indexToVoltage(int i) {
+        if (i < 100)
+            return i / 10d;
+        i -= 100;
+        if (i < 90)
+            return (i + 10);
+        i -= 90;
+        if (i < 90)
+            return (i + 10) * 10d;
+        i -= 90;
+        if (i < 90)
+            return (i + 10) * 100d;
+        i -= 90;
+        if (i < 90)
+            return (i + 10) * 1000d;
+        i -= 90;
+        return (i + 10) * 10000d;
     }
 
     private void updateVoltage() {
@@ -53,7 +73,7 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
         InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null) {
-            deviceInstance.extraData().putFloat("Voltage", voltage.value * 10);
+            deviceInstance.extraData().putDouble("Voltage", indexToVoltage(voltage.value));
         }
     }
 

@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -26,15 +27,11 @@ public class AlternatorBrushesDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, Map<Node, Double> voltages, Map<NodeConnection, Double> sourceAmps, CompoundTag extraData) {
-        if (voltages.size() != 3)
-            return;
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
 
-        double v1 = voltages.get(new Node(0, pos));
-        double v2 = voltages.get(new Node(1, pos));
-        double current = 0;
-        if (!sourceAmps.isEmpty())
-            current = sourceAmps.values().stream().mapToDouble(c -> c).sum();
+        double v1 = results.getVoltageAt(pos, 0);
+        double v2 = results.getVoltageAt(pos, 1);
+        double current = results.getCurrentThrough(pos, 0, 1);
 
         double power = extraData.getFloat("Stress");
 

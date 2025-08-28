@@ -15,13 +15,13 @@ public class BridgeCollector {
         this.nodes = nodes;
     }
 
-    public void bridge(Node node1, Node node2, double resistance, double voltageSource) {
+    public void bridge(Node node1, Node node2, double resistance, double voltageSource, double currentSource) {
         // Don't Bridge a node to itself, Don't accept any NaN values, that can mess up entire grids
         if (node1.equals(node2) || Double.isNaN(resistance) || Double.isNaN(voltageSource))
             return;
         if (resistance == 0)
             throw new IllegalArgumentException("Resistance can't be zero!");
-        bridges.add(new ElectricalNodeConnection(node1, node2, resistance, voltageSource));
+        bridges.add(new ElectricalNodeConnection(node1, node2, resistance, voltageSource, currentSource));
     }
 
     public void addInternalNode(int id, BlockPos pos) {
@@ -44,8 +44,8 @@ public class BridgeCollector {
 
         public Builder voltageSourceWithResistance(int n1, int n2, double resistance, double voltage) {
             collector.addInternalNode(1000 + i, pos);
-            collector.bridge(new Node(n1, pos), new Node(1000 + i, pos), 999999999, voltage);
-            collector.bridge(new Node(1000 + i, pos), new Node(n2, pos), resistance, 0);
+            collector.bridge(new Node(n1, pos), new Node(1000 + i, pos), 999999999, voltage, 0);
+            collector.bridge(new Node(1000 + i, pos), new Node(n2, pos), resistance, 0, 0);
             i++;
             return this;
         }
@@ -61,14 +61,19 @@ public class BridgeCollector {
                 resistance = (voltage * voltage) / (4 * energy);
 
             collector.addInternalNode(1000 + i, pos);
-            collector.bridge(new Node(n1, pos), new Node(1000 + i, pos), 999999999, energy <= 0 ? 0 : voltage);
-            collector.bridge(new Node(1000 + i, pos), new Node(n2, pos), resistance + internalResistance, 0);
+            collector.bridge(new Node(n1, pos), new Node(1000 + i, pos), 999999999, energy <= 0 ? 0 : voltage, 0);
+            collector.bridge(new Node(1000 + i, pos), new Node(n2, pos), resistance + internalResistance, 0, 0);
             i++;
             return this;
         }
 
         public Builder idealVoltageSource(int n1, int n2, double voltage) {
-            collector.bridge(new Node(n1, pos), new Node(n2, pos), 999999999, voltage);
+            collector.bridge(new Node(n1, pos), new Node(n2, pos), 999999999, voltage, 0);
+            return this;
+        }
+
+        public Builder idealCurrentSource(int n1, int n2, double current) {
+            collector.bridge(new Node(n1, pos), new Node(n2, pos), 999999999, 0, current);
             return this;
         }
 
@@ -78,7 +83,7 @@ public class BridgeCollector {
         }
 
         public Builder resistor(int n1, int n2, double resistance) {
-            collector.bridge(new Node(n1, pos), new Node(n2, pos), resistance, 0);
+            collector.bridge(new Node(n1, pos), new Node(n2, pos), resistance, 0, 0);
             return this;
         }
     }

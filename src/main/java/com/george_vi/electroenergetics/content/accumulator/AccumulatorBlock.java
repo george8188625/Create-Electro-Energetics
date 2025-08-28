@@ -1,9 +1,11 @@
 package com.george_vi.electroenergetics.content.accumulator;
 
+import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.AllShapes;
+import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -12,6 +14,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -24,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class AccumulatorBlock extends SimpleDeviceBlock {
+public class AccumulatorBlock extends SimpleDeviceBlock implements IBE<AccumulatorBlockEntity> {
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -74,7 +77,12 @@ public class AccumulatorBlock extends SimpleDeviceBlock {
     }
 
     @Override
-    public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
-        return id == 0 ? Component.translatable("electroenergetics.nodes.negative") : Component.translatable("electroenergetics.nodes.positive");
+    public Class<AccumulatorBlockEntity> getBlockEntityClass() {
+        return AccumulatorBlockEntity.class;
+    }
+
+    @Override
+    public BlockEntityType<? extends AccumulatorBlockEntity> getBlockEntityType() {
+        return CEEBlockEntityTypes.ACCUMULATOR.get();
     }
 }

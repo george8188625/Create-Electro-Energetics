@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "electroenergetics:crafting/voltlage_regulator"
+        "recipe": "electroenergetics:crafting/voltage_regulator"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "electroenergetics:crafting/voltlage_regulator"
+      "electroenergetics:crafting/voltage_regulator"
     ]
   }
 }

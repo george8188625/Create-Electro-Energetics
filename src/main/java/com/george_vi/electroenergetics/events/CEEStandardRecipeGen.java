@@ -317,7 +317,7 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .define('T', CEEBlocks.TRANSFORMER)
                 .define('P', AllItems.PRECISION_MECHANISM)
                 .unlockedBy("has_transformer", has(CEEBlocks.TRANSFORMER))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/voltlage_regulator"));
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/voltage_regulator"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.HV_SWITCH)
                 .pattern(" Sn")
