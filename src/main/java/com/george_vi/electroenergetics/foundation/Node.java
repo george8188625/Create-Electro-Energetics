@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.foundation;
 
+import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.google.common.collect.Multimap;
 import com.mojang.serialization.Codec;
@@ -19,10 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.IntStream;
 
-public record Node(int id, BlockPos sourcePos) implements Comparable<Node> {
+public class Node implements Comparable<Node> {
     public static final Codec<Node> CODEC = Codec.INT_STREAM.comapFlatMap(
-        s -> Util.fixedSize(s, 4).map(a -> new Node(a[0], new BlockPos(a[1], a[2], a[3]))),
-        n -> IntStream.of(n.id(), n.sourcePos().getX(), n.sourcePos().getY(), n.sourcePos().getZ())
+            s -> Util.fixedSize(s, 4).map(a -> new Node(a[0], new BlockPos(a[1], a[2], a[3]))),
+            n -> IntStream.of(n.id(), n.sourcePos().getX(), n.sourcePos().getY(), n.sourcePos().getZ())
     );
 
     public static final StreamCodec<ByteBuf, Node> STREAM_CODEC = StreamCodec.composite(
@@ -32,13 +33,12 @@ public record Node(int id, BlockPos sourcePos) implements Comparable<Node> {
     );
 
     public static final Node ZERO = new Node(0, BlockPos.ZERO);
+    private final int id;
+    private final BlockPos sourcePos;
 
-
-    /**
-     * @return is the node a property of the device, otherwise it's probably an added node by {@link com.george_vi.electroenergetics.events.AddToElectricGraphEvent}
-     */
-    public boolean isDeviceOwned() {
-        return sourcePos.getX() != Integer.MAX_VALUE;
+    public Node(int id, BlockPos sourcePos) {
+        this.id = id;
+        this.sourcePos = sourcePos;
     }
 
     public static Node closestNode(Level level, Vec3 clickedPos, float threshold) {
@@ -89,4 +89,27 @@ public record Node(int id, BlockPos sourcePos) implements Comparable<Node> {
                 ", sourcePos=" + sourcePos +
                 '}';
     }
+
+    public int id() {
+        return id;
+    }
+
+    public BlockPos sourcePos() {
+        return sourcePos;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (Node) obj;
+        return this.id == that.id &&
+                Objects.equals(this.sourcePos, that.sourcePos);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, sourcePos);
+    }
+
 }

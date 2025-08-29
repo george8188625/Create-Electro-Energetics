@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.events;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.commands.CEECommands;
+import com.george_vi.electroenergetics.content.catenary.CatenaryHandler;
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.content.wire.WireEffects;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
@@ -117,7 +118,13 @@ public class GameEvents {
     }
 
     @SubscribeEvent
-    public static void attachToElectricGraph(AddToElectricGraphEvent event) {
-
+    public static void addToElectricGraph(AddToElectricGraphEvent event) {
+        CatenaryHandler.addToGraph(event);
     }
+
+    @SubscribeEvent
+    public static void finishElectricSimulation(FinishElectricSimulationEvent event) {
+        CatenaryHandler.finishSimulation(event);
+    }
+
 }

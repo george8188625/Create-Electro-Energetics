@@ -38,13 +38,17 @@ public class PantographBlockEntity extends SmartBlockEntity {
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-        targetExtensionState = tag.getFloat("ExtensionState");
+        targetExtensionState = tag.getFloat("TargetExtensionState");
+        currentExtensionState = tag.getFloat("ExtensionState");
+        prevExtensionState = tag.getFloat("PrevExtensionState");
     }
 
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-        tag.putFloat("ExtensionState", targetExtensionState);
+        tag.putFloat("TargetExtensionState", targetExtensionState);
+        tag.putFloat("ExtensionState", currentExtensionState);
+        tag.putFloat("PrevExtensionState", prevExtensionState);
     }
 
     @Override

@@ -3,7 +3,8 @@ package com.george_vi.electroenergetics.simulation.simulator;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
-import com.george_vi.electroenergetics.events.GameEvents;
+import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
+import com.george_vi.electroenergetics.foundation.AttachedNode;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
@@ -19,7 +20,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -28,6 +28,7 @@ public class SimulationTicker {
 
     public static List<SimulationPerformance> performances = new ArrayList<>();
     public static int totalTime = 0;
+
     public static void tick(ServerLevel level) {
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
 
@@ -93,7 +94,7 @@ public class SimulationTicker {
             connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()).invert(), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0, 0));
         }
 
-        NeoForge.EVENT_BUS.post(new AddToElectricGraphEvent(adjacency, connectionProperties, allNodes));
+        NeoForge.EVENT_BUS.post(new AddToElectricGraphEvent(adjacency, connectionProperties, allNodes, level, sd));
 
         // RESET ALL VOLTAGES
 
@@ -189,7 +190,7 @@ public class SimulationTicker {
                 maxVoltage = (int) Math.max(voltage, maxVoltage);
 
                 sd.setVoltage(e.getKey(), voltage);
-                if (!e.getKey().isDeviceOwned())
+                if (e.getKey() instanceof AttachedNode)
                     continue;
 
                 if (!resultsPerBlock.containsKey(e.getKey().sourcePos()))
@@ -270,8 +271,15 @@ public class SimulationTicker {
         totalTime = (int) ((System.nanoTime() - start) / 1000);
         SimulationTicker.performances = performances;
 
+        Map<DirectionSensitiveNodeConnection, Double> allSourceAmps = new HashMap<>();
+        for (Map<DirectionSensitiveNodeConnection, Double> v : sourceAmps.values())
+            allSourceAmps.putAll(v);
+
+        NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(new SimulationResults(Collections.emptyMap(), allSourceAmps, adjacency, connectionProperties, sd), level, sd));
+
+
         for (Node node : allNodes) {
-            if (!node.isDeviceOwned())
+            if (node instanceof AttachedNode)
                 return;
             double voltage = sd.getVoltageAt(node);
 
