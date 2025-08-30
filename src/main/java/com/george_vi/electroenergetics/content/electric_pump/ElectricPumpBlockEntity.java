@@ -73,7 +73,7 @@ public class ElectricPumpBlockEntity extends PumpBlockEntity {
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(avgVoltage * avgVoltage / CEEConfigs.server().pumpResistance.get())))
+                .text(LangNumberFormat.format(Math.round(avgVoltage * avgVoltage / CEEConfigs.server().resistanceValues.pumpResistance.get())))
                 .translate("generic.watts")
                 .style(ChatFormatting.AQUA)
                 .space()
@@ -107,6 +107,6 @@ public class ElectricPumpBlockEntity extends PumpBlockEntity {
     }
 
     public double getResistance() {
-        return CEEConfigs.server().pumpResistance.get();
+        return CEEConfigs.server().resistanceValues.pumpResistance.get();
     }
 }

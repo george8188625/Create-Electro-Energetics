@@ -73,7 +73,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
             Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
 
             if (v1 != null && v2 != null)
-                setValue(voltmeter ? Math.abs(v1 - v2) : Math.abs(v1 - v2) / 0.01);
+                setValue(voltmeter ? Math.abs(v1 - v2) : Math.abs(v1 - v2) / 0.1);
 
             prevDialState = dialState;
             dialState += (dialTarget - dialState) * .125f;
@@ -97,9 +97,9 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
                 .translate(voltmeter ? "generic.voltage" : "generic.current")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        float v = Math.round(Math.abs(v1 - v2) / (voltmeter ? 1 : 0.01));
+        float v = Math.round(Math.abs(v1 - v2) / (voltmeter ? 1 : 0.1));
         if (v <= 1)
-            v = (float) (Math.abs(v1 - v2) / (voltmeter ? 1 : 0.01));
+            v = (float) (Math.abs(v1 - v2) / (voltmeter ? 1 : 0.1));
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .text(TooltipHelper.makeProgressBar(3, dialState < 0.01 ? 0 : dialState < 0.33 ? 1 : dialState < 0.66 ? 2 : 3))
                 .space()

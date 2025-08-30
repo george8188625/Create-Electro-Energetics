@@ -21,7 +21,7 @@ public class GaugeDevice extends SimulatedDevice {
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        bridges.builder(pos).resistor(0, 1, voltmeter ? 1_000_000 : 0.01);
+        bridges.builder(pos).resistor(0, 1, voltmeter ? 1_000_000 : 0.1);
     }
 
     @Override

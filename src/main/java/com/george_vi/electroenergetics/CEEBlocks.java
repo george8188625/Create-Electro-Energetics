@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.catenary.PantographBlock;
+import com.george_vi.electroenergetics.content.catenary.PantographMovementBehaviour;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.QuadConnectorBlock;
@@ -26,6 +27,7 @@ import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlock;
+import com.simibubi.create.AllTags;
 import com.simibubi.create.content.kinetics.gauge.GaugeGenerator;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.BlockStateGen;
@@ -42,6 +44,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 
 import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE;
+import static com.simibubi.create.api.behaviour.movement.MovementBehaviour.movementBehaviour;
 import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 
 public class CEEBlocks {
@@ -455,7 +458,9 @@ public class CEEBlocks {
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(BlockStateGen.horizontalBlockProvider(true))
             .transform(pickaxeOnly())
+            .onRegister(movementBehaviour(new PantographMovementBehaviour()))
             .item()
+            .tag(AllTags.AllItemTags.CONTRAPTION_CONTROLLED.tag)
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()
             .register();

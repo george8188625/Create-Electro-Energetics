@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
+import com.george_vi.electroenergetics.foundation.AttachedNode;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
@@ -35,7 +36,7 @@ public class Network {
     public void optimize() {
         List<Node> toDissolve = new ArrayList<>();
         for (Node node : getAllNodes()) {
-            if (adjacency.get(node).size() == 2 && !(sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)) {
+            if (adjacency.get(node).size() == 2 && !((node instanceof AttachedNode an) ? an.grounded : sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)) {
 
                 List<ElectricalProperties> connections = getConnections(node).values().stream().toList();
                 if (connections.get(0).voltageSource() == 0 && connections.get(1).voltageSource() == 0 && connections.get(0).currentSource() == 0 && connections.get(1).currentSource() == 0)
@@ -177,7 +178,7 @@ public class Network {
         Map<Couple<SimulationNode>, Double> currentSources = new HashMap<>();
 
         for (Node node : getAllNodes())
-            if (sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)
+            if ((node instanceof AttachedNode an) ? an.grounded : sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)
                 groundRods.add(node);
 
         for (Map.Entry<Node, SimulationNode> node : simulationNodes.entrySet())

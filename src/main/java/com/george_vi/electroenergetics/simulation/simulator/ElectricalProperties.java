@@ -8,9 +8,15 @@ public class ElectricalProperties {
     private final double currentSource;
 
     public ElectricalProperties(double resistance, double voltageSource, double currentSource) {
+        if (resistance == 0)
+            resistance = 0.01d;
         this.resistance = resistance;
         this.voltageSource = voltageSource;
         this.currentSource = currentSource;
+    }
+
+    public static ElectricalProperties resistor(double resistance) {
+        return new ElectricalProperties(resistance, 0, 0);
     }
 
     public ElectricalProperties invert() {

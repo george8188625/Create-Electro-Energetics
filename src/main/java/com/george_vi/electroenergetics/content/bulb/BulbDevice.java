@@ -26,7 +26,7 @@ public class BulbDevice extends SimulatedDevice {
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
         if (!extraData.getBoolean("Destroyed"))
-            bridges.builder(pos).resistor(0, 1, CEEConfigs.server().bulbResistance.get());
+            bridges.builder(pos).resistor(0, 1, CEEConfigs.server().resistanceValues.bulbResistance.get());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class BulbDevice extends SimulatedDevice {
                     level.setBlockAndUpdate(pos, state.setValue(BulbBlock.LIGHT, light));
             }
         }
-        if (vd / CEEConfigs.server().bulbResistance.get() > CEEConfigs.server().bulbBreakAmperage.get())
+        if (vd / CEEConfigs.server().resistanceValues.bulbResistance.get() > CEEConfigs.server().bulbBreakAmperage.get())
             extraData.putBoolean("Destroyed", true);
     }
 

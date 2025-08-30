@@ -24,7 +24,7 @@ public class ElectricMotorDevice extends SimulatedDevice {
         if (level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ElectricMotorBlockEntity be)
                 bridges.builder(pos)
-                        .resistor(0, 1, Math.min(CEEConfigs.server().motorResistance.get() * 3, CEEConfigs.server().motorResistance.get() / Mth.clamp(be.load, 0.1, 3)));
+                        .resistor(0, 1, Math.min(CEEConfigs.server().resistanceValues.motorResistance.get() * 3, CEEConfigs.server().resistanceValues.motorResistance.get() / Mth.clamp(be.load, 0.1, 3)));
     }
 
     @Override

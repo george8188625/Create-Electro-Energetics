@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.commands.CEECommands;
 import com.george_vi.electroenergetics.content.catenary.CatenaryHandler;
+import com.george_vi.electroenergetics.content.catenary.ElectricTrainSounds;
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.content.wire.WireEffects;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
@@ -40,6 +41,7 @@ public class GameEvents {
         WireApplyingBehaviour.tick();
         WireInteractionHandler.tick();
         WireEffects.tick();
+        ElectricTrainSounds.tick();
     }
 
     @SubscribeEvent

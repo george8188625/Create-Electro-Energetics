@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.simulator.DirectionSensitiveNodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.Event;
 
@@ -27,8 +28,14 @@ public class AddToElectricGraphEvent extends Event {
         this.sd = sd;
     }
 
-    public AttachedNode addNode(String ownerID, int id) {
-        AttachedNode node = new AttachedNode(id, ownerID);
+    public AttachedNode addNode(String ownerID, int id, BlockPos pos) {
+        AttachedNode node = new AttachedNode(id, pos, ownerID, false);
+        allNodes.add(node);
+        return node;
+    }
+
+    public AttachedNode addGroundedNode(String ownerID, int id, BlockPos pos) {
+        AttachedNode node = new AttachedNode(id, pos, ownerID, true);
         allNodes.add(node);
         return node;
     }

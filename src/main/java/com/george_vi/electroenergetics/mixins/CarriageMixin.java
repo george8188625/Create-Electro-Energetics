@@ -53,6 +53,7 @@ public class CarriageMixin implements IPantographList {
             CompoundTag pt = new CompoundTag();
             pt.put("Pos", NbtUtils.writeBlockPos(e.getFirst()));
             pt.putBoolean("Forward", e.getSecond());
+            pantographTag.add(pt);
         }
         tag.put("CEEPantographs", pantographTag);
     }

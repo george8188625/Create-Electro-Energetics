@@ -25,5 +25,14 @@
       }
     ],
     "subtitle": "electroenergetics.subtitle.arcing"
+  },
+  "electric_train": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:electric_train"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
   }
 }

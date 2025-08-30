@@ -100,7 +100,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         float wattage = Math.round(avgVoltage * avgVoltage /
-                Math.min(CEEConfigs.server().motorResistance.get() * 3, CEEConfigs.server().motorResistance.get() / Mth.clamp(load, 0.1, 3)));
+                Math.min(CEEConfigs.server().resistanceValues.motorResistance.get() * 3, CEEConfigs.server().resistanceValues.motorResistance.get() / Mth.clamp(load, 0.1, 3)));
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .add(CEELang.formatPower(wattage))
                 .style(ChatFormatting.AQUA)
@@ -153,7 +153,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public float calculateAddedStressCapacity() {
         float speed = Math.abs(generatedSpeed.getValue());
-        float capacity = speed == 0 ? 0 : (float) ((avgVoltage * avgVoltage) / CEEConfigs.server().motorResistance.get()) / speed;
+        float capacity = speed == 0 ? 0 : (float) ((avgVoltage * avgVoltage) / CEEConfigs.server().resistanceValues.motorResistance.get()) / speed;
         this.lastCapacityProvided = capacity;
         return capacity;
     }

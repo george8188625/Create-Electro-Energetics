@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.content.catenary.PantographBlock;
+import com.george_vi.electroenergetics.content.catenary.PantographBlockEntity;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsBlock;
@@ -38,7 +39,8 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     public void electroEnergetics$assemble(Level level, BlockPos pos, CallbackInfoReturnable<oshi.util.tuples.Pair<StructureTemplate.StructureBlockInfo, BlockEntity>> cir) {
         BlockState state = level.getBlockState(pos);
 
-        if (CEEBlocks.PANTOGRAPH.has(state)) {
+        if (CEEBlocks.PANTOGRAPH.has(state) && level.getBlockEntity(pos) instanceof PantographBlockEntity be) {
+
             Direction facing = state.getValue(PantographBlock.FACING);
             if (facing.getAxis() != this.electroEnergetics$getAssemblyDirection().getAxis())
                 electroEnergetics$sidewaysPantograph = true;

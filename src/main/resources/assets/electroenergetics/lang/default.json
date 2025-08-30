@@ -67,5 +67,6 @@
   "electroenergetics.transformer.ratio": "Ratio",
 
   "electroenergetics.subtitle.hum": "Hum",
-  "electroenergetics.subtitle.arcing": "Arcing"
+  "electroenergetics.subtitle.arcing": "Arcing",
+  "electroenergetics.subtitle.electric_train": "Electric Train Sounds"
 }
