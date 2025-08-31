@@ -1,4 +1,4 @@
-// 1.21.1	2025-08-30T20:32:46.3695072	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-08-31T20:55:14.7925022	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -6,7 +6,7 @@ b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/am
 1911c3199e4e0ab119e658f769631576fe9ded3e assets/electroenergetics/blockstates/broken_bulb.json
 d559c0a9eb0b6946a749be415010fd6ced4191fa assets/electroenergetics/blockstates/broken_fuse.json
 88cd7477826044d6829279e7782aab602f7a4cd6 assets/electroenergetics/blockstates/bulb.json
-c8d4a905c9487868e8c94d812df302416dd4067f assets/electroenergetics/blockstates/catenary_holder.json
+2b66f5c882e7e42a530a8e567b6ec50627583b73 assets/electroenergetics/blockstates/catenary_holder.json
 26aa9925a737df60304f5f5924661aa4a3d62cbb assets/electroenergetics/blockstates/concrete_pole.json
 5fa1a18d5f52d59a000fe78ea429522be1244d5e assets/electroenergetics/blockstates/connector.json
 111f7a1d3d317e469b5f845f8ec43c17156d0ff6 assets/electroenergetics/blockstates/converter.json
@@ -41,7 +41,7 @@ c49ab7eac9e9bc1062c69face97b3675b9eeca79 assets/electroenergetics/models/item/ac
 a3358c4a6fe866385055f633251779df90edb2b0 assets/electroenergetics/models/item/broken_bulb.json
 61799b883f717d7cfa35b749b3f1a0e75b8bc4cf assets/electroenergetics/models/item/broken_fuse.json
 dedba565a1238b6c79882214ab20a4d1c621fad0 assets/electroenergetics/models/item/bulb.json
-e002cc565b58780eaddc8385ccdb98990635d468 assets/electroenergetics/models/item/catenary_holder.json
+6d5ab3bd75c6a69e4392525fb2dd10d2eb095c3a assets/electroenergetics/models/item/catenary_holder.json
 c7d07f24bab67c649ff40b57d6501614ef6cbcee assets/electroenergetics/models/item/clamp_meter.json
 6b76807e00bbbf80767038a7db1f42ce6445a146 assets/electroenergetics/models/item/concrete_pole.json
 4130933f938c9ba17c93b7684fcc71827d9b76c1 assets/electroenergetics/models/item/connector.json

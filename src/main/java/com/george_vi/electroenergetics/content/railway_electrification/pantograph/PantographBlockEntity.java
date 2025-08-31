@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.catenary;
+package com.george_vi.electroenergetics.content.railway_electrification.pantograph;
 
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;

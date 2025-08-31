@@ -14,6 +14,13 @@ public class CEEPartialModels {
     public static final PartialModel PANTOGRAPH_CONNECTING_SURFACE = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/connecting_surface"));
     public static final PartialModel PANTOGRAPH_CONNECTING_ROD = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/connecting_rod"));
     public static final PartialModel PANTOGRAPH_SPRINGS = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/springs"));
+    public static final PartialModel CATENARY_HOLDER_INSULATOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/insulator"));
+    public static final PartialModel CATENARY_HOLDER_LONG_ROD = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/long_rod"));
+    public static final PartialModel CATENARY_HOLDER_SHORT_ROD = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/short_rod"));
+    public static final PartialModel CATENARY_HOLDER_MOUNT_4 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_4"));
+    public static final PartialModel CATENARY_HOLDER_MOUNT_6 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_6"));
+    public static final PartialModel CATENARY_HOLDER_MOUNT_8 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_8"));
+    public static final PartialModel CATENARY_HOLDER_MOUNT_10 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_10"));
 
     public static void register() {
 

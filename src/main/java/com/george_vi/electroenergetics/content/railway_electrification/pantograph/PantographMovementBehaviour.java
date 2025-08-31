@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.catenary;
+package com.george_vi.electroenergetics.content.railway_electrification.pantograph;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
@@ -19,16 +19,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 
@@ -68,7 +63,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
 
         // Look for the connection point, and try to adjust the pantographs extension state to fit that point
 
-        if (context.world.isClientSide) {
+        if (context.world.isClientSide && !context.disabled) {
             Vec3 pantographPos = new Vec3(0, 1, 0);
             pantographPos = context.rotation.apply(pantographPos);
             pantographPos = pantographPos.add(context.position);

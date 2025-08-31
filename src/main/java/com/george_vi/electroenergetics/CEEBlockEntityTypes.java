@@ -1,8 +1,10 @@
 package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
-import com.george_vi.electroenergetics.content.catenary.PantographBlockEntity;
-import com.george_vi.electroenergetics.content.catenary.PantographRenderer;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlockEntity;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderRenderer;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographRenderer;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlockEntity;
 import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlockEntity;
@@ -20,7 +22,6 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.content.kinetics.base.ShaftRenderer;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE;
 
@@ -41,11 +42,6 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<ElectricGaugeBlockEntity> AMMETER = REGISTRATE.blockEntity("ammeter", ElectricGaugeBlockEntity::ammeter)
             .validBlock(CEEBlocks.AMMETER::get)
             .renderer(() -> ElectricGaugeRenderer::ammeter)
-            .register();
-
-    public static final BlockEntityEntry<PantographBlockEntity> PANTOGRAPH = REGISTRATE.blockEntity("pantograph", PantographBlockEntity::new)
-            .validBlock(CEEBlocks.PANTOGRAPH::get)
-            .renderer(() -> PantographRenderer::new)
             .register();
 
     public static final BlockEntityEntry<CreativeBatteryBlockEntity> CREATIVE_BATTERY = REGISTRATE.blockEntity("creative_battery", CreativeBatteryBlockEntity::new)
@@ -88,6 +84,16 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<HVSwitchBlockEntity> HV_SWITCH = REGISTRATE.blockEntity("high_voltage_switch", HVSwitchBlockEntity::new)
             .validBlock(CEEBlocks.HV_SWITCH::get)
             .renderer(()  -> HVSwitchRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<PantographBlockEntity> PANTOGRAPH = REGISTRATE.blockEntity("pantograph", PantographBlockEntity::new)
+            .validBlock(CEEBlocks.PANTOGRAPH::get)
+            .renderer(() -> PantographRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<CatenaryHolderBlockEntity> CATENARY_HOLDER = REGISTRATE.blockEntity("catenary_holder", CatenaryHolderBlockEntity::new)
+            .validBlock(CEEBlocks.CATENARY_HOLDER::get)
+            .renderer(() -> CatenaryHolderRenderer::new)
             .register();
 
 

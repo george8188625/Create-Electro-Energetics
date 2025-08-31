@@ -1,13 +1,10 @@
-package com.george_vi.electroenergetics.content.catenary;
+package com.george_vi.electroenergetics.content.railway_electrification.catenary;
 
 import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.data.Couple;
-import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;

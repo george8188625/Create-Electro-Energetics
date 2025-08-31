@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics;
 
-import com.george_vi.electroenergetics.content.catenary.ClearCatenaryPacket;
-import com.george_vi.electroenergetics.content.catenary.SendCatenaryPacket;
-import com.george_vi.electroenergetics.content.catenary.UpdateElectricTrainSoundPacket;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.ClearCatenaryPacket;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.SendCatenaryPacket;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.content.energy_meter.ChangeEnergyMeterStatePacket;
 import com.george_vi.electroenergetics.content.wire.ClearWireConnectionsPacket;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;

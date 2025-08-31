@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.catenary;
+package com.george_vi.electroenergetics.content.railway_electrification.pantograph;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.mojang.blaze3d.vertex.PoseStack;

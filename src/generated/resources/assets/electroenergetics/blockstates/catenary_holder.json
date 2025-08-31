@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "electroenergetics:block/catenary_holder"
+      "model": "electroenergetics:block/catenary_holder/block"
     }
   }
 }

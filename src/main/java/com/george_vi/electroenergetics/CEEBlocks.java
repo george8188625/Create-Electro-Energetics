@@ -2,9 +2,9 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
-import com.george_vi.electroenergetics.content.catenary.CatenaryHolderBlock;
-import com.george_vi.electroenergetics.content.catenary.PantographBlock;
-import com.george_vi.electroenergetics.content.catenary.PantographMovementBehaviour;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographMovementBehaviour;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.QuadConnectorBlock;
@@ -446,10 +446,10 @@ public class CEEBlocks {
     public static final BlockEntry<CatenaryHolderBlock> CATENARY_HOLDER = REGISTRATE.block("catenary_holder", CatenaryHolderBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate((c, p) -> BlockStateGen.simpleBlock(c, p, s -> AssetLookup.standardModel(c, p)))
+            .blockstate((c, p) -> BlockStateGen.simpleBlock(c, p, s -> AssetLookup.partialBaseModel(c, p)))
             .transform(pickaxeOnly())
             .item()
-            .model((c, p) -> p.blockItem(c::getEntry))
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
             .build()
             .register();
 

@@ -1,14 +1,12 @@
 package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.CEEBlocks;
-import com.george_vi.electroenergetics.content.catenary.PantographBlock;
-import com.george_vi.electroenergetics.content.catenary.PantographBlockEntity;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.actors.trainControls.ControlsBlock;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
 import net.createmod.catnip.data.Pair;
-import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;

@@ -1,13 +1,10 @@
-package com.george_vi.electroenergetics.content.catenary;
+package com.george_vi.electroenergetics.content.railway_electrification.sound_effects;
 
 import com.george_vi.electroenergetics.CEESoundEvents;
-import com.simibubi.create.content.decoration.steamWhistle.WhistleBlock;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 
 public class ElectricTrainSoundInstance extends AbstractTickableSoundInstance {
@@ -40,8 +37,8 @@ public class ElectricTrainSoundInstance extends AbstractTickableSoundInstance {
     @Override
     public void tick() {
         if (active) {
-            volume = Mth.lerp(0.01f, volume, targetVolume);
-            pitch = Mth.lerp(0.01f, pitch, targetPitch);
+            volume = Mth.lerp(0.1f, volume, targetVolume);
+            pitch = Mth.lerp(0.1f, pitch, targetPitch);
             keepAlive--;
             if (keepAlive == 0)
                 fadeOut();

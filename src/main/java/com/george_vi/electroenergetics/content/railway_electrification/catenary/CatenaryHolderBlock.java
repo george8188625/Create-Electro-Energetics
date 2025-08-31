@@ -1,13 +1,16 @@
-package com.george_vi.electroenergetics.content.catenary;
+package com.george_vi.electroenergetics.content.railway_electrification.catenary;
 
+import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllShapes;
+import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -15,7 +18,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class CatenaryHolderBlock extends SimpleDeviceBlock {
+public class CatenaryHolderBlock extends SimpleDeviceBlock implements IBE<CatenaryHolderBlockEntity> {
     public CatenaryHolderBlock(Properties properties) {
         super(properties);
     }
@@ -38,5 +41,15 @@ public class CatenaryHolderBlock extends SimpleDeviceBlock {
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return new Vec3(8/16f, 2/16f, 8/16f);
+    }
+
+    @Override
+    public Class<CatenaryHolderBlockEntity> getBlockEntityClass() {
+        return CatenaryHolderBlockEntity.class;
+    }
+
+    @Override
+    public BlockEntityType<? extends CatenaryHolderBlockEntity> getBlockEntityType() {
+        return CEEBlockEntityTypes.CATENARY_HOLDER.get();
     }
 }

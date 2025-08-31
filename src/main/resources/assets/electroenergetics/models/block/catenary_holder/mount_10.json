@@ -1,0 +1,24 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "electroenergetics:block/catenary_holder",
+		"particle": "electroenergetics:block/catenary_holder"
+	},
+	"elements": [
+		{
+			"from": [-6, 0, -6],
+			"to": [6, 5, 6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-3, 0, -3]},
+			"faces": {
+				"north": {"uv": [5, 12.5, 11, 15], "texture": "#0"},
+				"east": {"uv": [5, 12.5, 11, 15], "texture": "#0"},
+				"south": {"uv": [5, 12.5, 11, 15], "texture": "#0"},
+				"west": {"uv": [5, 12.5, 11, 15], "texture": "#0"},
+				"up": {"uv": [11, 10, 16, 15], "texture": "#0"},
+				"down": {"uv": [11, 10, 16, 15], "texture": "#0"}
+			}
+		}
+	]
+}

@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.wire;
 
-import com.george_vi.electroenergetics.content.catenary.ClearCatenaryPacket;
-import com.george_vi.electroenergetics.content.catenary.SendCatenaryPacket;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.ClearCatenaryPacket;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.SendCatenaryPacket;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;

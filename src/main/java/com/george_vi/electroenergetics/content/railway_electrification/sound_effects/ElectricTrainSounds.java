@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.catenary;
+package com.george_vi.electroenergetics.content.railway_electrification.sound_effects;
 
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.trains.entity.Train;
@@ -14,14 +14,14 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ElectricTrainSounds {
-    static Map<UUID, Pair<Vec3, Couple<Float>>> soundProperties = new HashMap<>();
+    static Map<UUID, ElectricTrainSoundEntry> soundProperties = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     static Map<UUID, ElectricTrainSoundInstance> sounds = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     public static void tick() {
-        for (Map.Entry<UUID, Pair<Vec3, Couple<Float>>> e : soundProperties.entrySet()) {
+        for (Map.Entry<UUID, ElectricTrainSoundEntry> e : soundProperties.entrySet()) {
             UUID trainID = e.getKey();
             Train train = CreateClient.RAILWAYS.trains.get(trainID);
             if (train == null) {
@@ -29,7 +29,7 @@ public class ElectricTrainSounds {
                 soundProperties.remove(trainID);
                 continue;
             }
-            Vec3 pos = e.getValue().getFirst();
+            Vec3 pos = e.getValue().pos();
 
             ElectricTrainSoundInstance instance = sounds.get(trainID);
             if (instance == null || instance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(instance)) {
@@ -39,8 +39,11 @@ public class ElectricTrainSounds {
             }
 
             instance.setPos(pos);
-            instance.targetVolume = e.getValue().getSecond().getFirst();
-            instance.targetPitch = e.getValue().getSecond().getSecond();
+            float trainSpeed = e.getValue().speed();
+            float acceleration = e.getValue().acceleration();
+
+            instance.targetPitch = (float) trainSpeed * 2f + 0.4f;
+            instance.targetVolume = e.getValue().active() && trainSpeed > 0.01 ? Math.max(0, acceleration) * 600 + 0.6f : 0;
             instance.keepAlive();
         }
     }

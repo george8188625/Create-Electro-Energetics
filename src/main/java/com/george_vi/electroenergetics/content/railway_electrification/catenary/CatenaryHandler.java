@@ -1,7 +1,8 @@
-package com.george_vi.electroenergetics.content.catenary;
+package com.george_vi.electroenergetics.content.railway_electrification.catenary;
 
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
 import com.george_vi.electroenergetics.foundation.Node;
@@ -167,11 +168,8 @@ public class CatenaryHandler {
 
             trainSpeeds.put(train, trainSpeed);
 
-            float pitch = (float) ((acceleration * 600) * (trainSpeed + 0.4f) + trainSpeed);
-            float volume = active ? Math.max(0.05f, pitch * 2) : 0;
-
             CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                    40d, new UpdateElectricTrainSoundPacket(train.id, pos, volume, pitch));
+                    40d, new UpdateElectricTrainSoundPacket(train.id, pos, (float) trainSpeed, acceleration, active));
             if (active)
                 if (train.fuelTicks > 0)
                     train.fuelTicks++;
@@ -187,7 +185,7 @@ public class CatenaryHandler {
             Vec3 pos = carriage.getDimensional(event.level).positionAnchor;
 
             CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                    40d, new UpdateElectricTrainSoundPacket(train.id, pos, 0, 0));
+                    40d, new UpdateElectricTrainSoundPacket(train.id, pos, 0, 0, false));
 
             trainSpeeds.remove(train);
         }
