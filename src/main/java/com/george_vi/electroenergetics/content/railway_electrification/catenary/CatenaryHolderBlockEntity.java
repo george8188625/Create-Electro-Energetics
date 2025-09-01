@@ -35,13 +35,13 @@ public class CatenaryHolderBlockEntity extends SmartBlockEntity {
 
     @Override
     public void tick() {
-        if (attachedTo == null || !countsAsPole(attachedTo)) {
+        if (attachedTo == null || attachedTo.getCenter().length() > 7 || !countsAsPole(attachedTo.offset(worldPosition))) {
             BlockPos polePos = null;
             float shortestDistance = 999;
             for (BlockPos.MutableBlockPos offset : offsets) {
-                BlockPos pos = offset.immutable().offset(worldPosition);
-                float distance = (float) pos.distSqr(worldPosition);
-                if (distance < shortestDistance && countsAsPole(pos)) {
+                BlockPos pos = offset.immutable();
+                float distance = (float) pos.getCenter().length();
+                if (distance < shortestDistance && countsAsPole(pos.offset(worldPosition))) {
                     polePos = pos;
                     shortestDistance = distance;
                 }

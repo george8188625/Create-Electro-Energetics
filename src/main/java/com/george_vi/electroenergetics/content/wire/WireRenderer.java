@@ -72,7 +72,7 @@ public class WireRenderer {
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
                                 Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
-                        .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+                        .renderInto(pose, buffer.getBuffer(RenderType.solid()));
             }
 
 
@@ -95,7 +95,7 @@ public class WireRenderer {
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
                                 Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
-                        .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+                        .renderInto(pose, buffer.getBuffer(RenderType.solid()));
 
                 Vec3 closest;
                 Vec3 ab = end.subtract(start);
@@ -117,7 +117,7 @@ public class WireRenderer {
                         .light(BlockPos.containing(point).equals(BlockPos.containing(closest)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(closest).multiply(0.5, 0.5, 0.5))) :
                                 Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(mc.level, BlockPos.containing(closest))))
-                        .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+                        .renderInto(pose, buffer.getBuffer(RenderType.solid()));
             }
         }
 
@@ -178,7 +178,7 @@ public class WireRenderer {
                             .rotateY((float) Math.atan2(nextPoint.x() - pos1.x(), nextPoint.z() - pos1.z()))
                             .rotateX(-(float) Math.atan2(nextPoint.y - pos1.y, Math.hypot(nextPoint.x - pos1.x, nextPoint.z - pos1.z)))
                             .light(LevelRenderer.getLightColor(mc.level, BlockPos.containing(pos1.add(nextPoint).multiply(0.5, 0.5, 0.5))))
-                            .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+                            .renderInto(pose, buffer.getBuffer(RenderType.solid()));
 
                     if (!outerInsulatorJumpers.containsKey(connection.node1()))
                         outerInsulatorJumpers.put(connection.node1(), new ArrayList<>());
@@ -193,7 +193,7 @@ public class WireRenderer {
                             .rotateY((float) Math.atan2(nextPoint.x() - pos2.x(), nextPoint.z() - pos2.z()))
                             .rotateX(-(float) Math.atan2(nextPoint.y - pos2.y, Math.hypot(nextPoint.x - pos2.x, nextPoint.z - pos2.z)))
                             .light(LevelRenderer.getLightColor(mc.level, BlockPos.containing(pos2.add(nextPoint).multiply(0.5, 0.5, 0.5))))
-                            .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+                            .renderInto(pose, buffer.getBuffer(RenderType.solid()));
 
                     if (!outerInsulatorJumpers.containsKey(connection.node2()))
                         outerInsulatorJumpers.put(connection.node2(), new ArrayList<>());
@@ -241,7 +241,7 @@ public class WireRenderer {
                     .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
                             Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                     LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
-                    .renderInto(pose, buffer.getBuffer(RenderType.SOLID));
+                    .renderInto(pose, buffer.getBuffer(RenderType.solid()));
         }
     }
 

@@ -2,6 +2,8 @@ package com.george_vi.electroenergetics.content.converter;
 
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlockEntity;
+import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlockEntity;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -33,16 +35,16 @@ public class ConverterBlockEntity extends SmartBlockEntity {
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        voltage = new ScrollValueBehaviour(Component.translatable("electroenergetics.generic.voltage"), this, new ValueBox()) {
+        voltage = new ScrollValueBehaviour(Component.translatable("electroenergetics.voltage"), this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
                 return new ValueSettingsBoard(label, max, 10, ImmutableList.of(Component.literal("Value")),
-                        new ValueSettingsFormatter(valueSettings -> Component.literal(valueSettings.value() >= 100 ? valueSettings.value() / 100f + "kV" : (valueSettings.value() * 10) + "V")));
+                        new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(valueSettings.value() * 10).component()));
             }
         };
         voltage.between(0, 432);
-        voltage.value = 24;
-        voltage.withFormatter(v -> v >= 100 ? v / 100f + "kV" : (v * 10) + "V");
+        voltage.value = 10;
+        voltage.withFormatter(v -> CEELang.formatVoltage(v * 10).string());
         voltage.withCallback(i -> this.updateVoltage());
         behaviours.add(voltage);
     }
@@ -72,7 +74,7 @@ public class ConverterBlockEntity extends SmartBlockEntity {
 
         @Override
         protected boolean isSideActive(BlockState state, Direction direction) {
-            return direction.getAxis() == state.getValue(ConverterBlock.FACING).getAxis();
+            return direction.getAxis() == state.getValue(ConverterBlock.FACING).getAxis() && state.getValue(ConverterBlock.SOURCE);
         }
     }
 }

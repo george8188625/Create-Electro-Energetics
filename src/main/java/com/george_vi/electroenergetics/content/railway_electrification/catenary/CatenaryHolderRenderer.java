@@ -23,6 +23,8 @@ public class CatenaryHolderRenderer extends SmartBlockEntityRenderer<CatenaryHol
         if (blockEntity.poleWidth == 0 || attachedTo == null)
             return;
 
+        attachedTo = attachedTo.offset(blockEntity.getBlockPos());
+
         SuperByteBuffer grip;
         if (blockEntity.poleWidth == 4)
             grip = CachedBuffers.partial(CEEPartialModels.CATENARY_HOLDER_MOUNT_4, blockEntity.getBlockState());
@@ -132,5 +134,10 @@ public class CatenaryHolderRenderer extends SmartBlockEntityRenderer<CatenaryHol
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
         }
 
+    }
+
+    @Override
+    public int getViewDistance() {
+        return 256;
     }
 }

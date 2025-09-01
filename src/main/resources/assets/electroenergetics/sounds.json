@@ -30,7 +30,18 @@
     "sounds": [
       {
         "type": "file",
+        "attenuation_distance": 48,
         "name": "electroenergetics:electric_train"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "electric_train_background": {
+    "sounds": [
+      {
+        "type": "file",
+        "attenuation_distance": 48,
+        "name": "electroenergetics:electric_train_background"
       }
     ],
     "subtitle": "electroenergetics.subtitle.electric_train"

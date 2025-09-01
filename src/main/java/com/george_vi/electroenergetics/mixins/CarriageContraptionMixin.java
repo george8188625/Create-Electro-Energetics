@@ -10,6 +10,7 @@ import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -40,10 +41,15 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
         if (CEEBlocks.PANTOGRAPH.has(state) && level.getBlockEntity(pos) instanceof PantographBlockEntity be) {
 
             Direction facing = state.getValue(PantographBlock.FACING);
-            if (facing.getAxis() != this.electroEnergetics$getAssemblyDirection().getAxis())
+            Direction assemblyDirection = this.electroEnergetics$getAssemblyDirection();
+            if (facing.getAxis() != assemblyDirection.getAxis())
                 electroEnergetics$sidewaysPantograph = true;
             else {
-                electroEnergetics$pantographs.add(Pair.of(toLocalPos(pos), facing == this.electroEnergetics$getAssemblyDirection()));
+                electroEnergetics$pantographs.add(Pair.of(toLocalPos(pos).rotate(
+                        assemblyDirection == Direction.NORTH ? Rotation.COUNTERCLOCKWISE_90 :
+                        assemblyDirection == Direction.EAST ? Rotation.CLOCKWISE_180 :
+                        assemblyDirection == Direction.SOUTH ? Rotation.CLOCKWISE_90 : Rotation.NONE
+                ), facing == assemblyDirection));
             }
         }
     }

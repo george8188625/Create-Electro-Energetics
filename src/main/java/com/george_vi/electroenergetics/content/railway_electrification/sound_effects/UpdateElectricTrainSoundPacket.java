@@ -24,10 +24,10 @@ public record UpdateElectricTrainSoundPacket(UUID trainUUID, Vec3 pos, float spe
 
     @Override
     public void handle(LocalPlayer player) {
-        if (speed == 0 || acceleration == 0)
+        if (!active)
             ElectricTrainSounds.soundProperties.remove(trainUUID);
         else
-            ElectricTrainSounds.soundProperties.put(trainUUID, new ElectricTrainSoundEntry(pos, speed, acceleration, active));
+            ElectricTrainSounds.soundProperties.put(trainUUID, new ElectricTrainSoundEntry(pos, speed, acceleration, active, 3));
     }
 
     @Override

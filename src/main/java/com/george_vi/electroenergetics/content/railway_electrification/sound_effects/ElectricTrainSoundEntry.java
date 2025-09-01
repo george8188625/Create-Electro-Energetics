@@ -2,5 +2,5 @@ package com.george_vi.electroenergetics.content.railway_electrification.sound_ef
 
 import net.minecraft.world.phys.Vec3;
 
-public record ElectricTrainSoundEntry(Vec3 pos, float speed, float acceleration, boolean active) {
+public record ElectricTrainSoundEntry(Vec3 pos, float speed, float acceleration, boolean active, int ticks) {
 }

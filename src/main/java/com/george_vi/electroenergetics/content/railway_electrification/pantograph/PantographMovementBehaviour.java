@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
+import com.simibubi.create.content.trains.entity.CarriageContraption;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 import net.createmod.catnip.animation.AnimationTickHolder;
@@ -20,6 +21,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
@@ -38,22 +40,27 @@ public class PantographMovementBehaviour implements MovementBehaviour {
              currentExtensionState = targetExtensionState;
 
         if (context.contraption.entity instanceof CarriageContraptionEntity e) {
-
+            Direction assemblyDirection = ((CarriageContraption)context.contraption).getAssemblyDirection();
+            BlockPos rotatedPos = context.localPos.rotate(
+                    assemblyDirection == Direction.NORTH ? Rotation.COUNTERCLOCKWISE_90 :
+                            assemblyDirection == Direction.EAST ? Rotation.CLOCKWISE_180 :
+                                    assemblyDirection == Direction.SOUTH ? Rotation.CLOCKWISE_90 : Rotation.NONE
+            );
             boolean prevDisabled = context.data.getBoolean("Disabled");
             if (context.disabled) {
                 if (!prevDisabled) {
                     List<Pair<BlockPos, Boolean>> list = ((IPantographList) e.getCarriage()).getPantographList();
-                    boolean forward = list.stream().filter(p -> p.getFirst().equals(context.localPos)).findFirst().orElse(Pair.of(BlockPos.ZERO, false)).getSecond();
+                    boolean forward = list.stream().filter(p -> p.getFirst().equals(rotatedPos)).findFirst().orElse(Pair.of(BlockPos.ZERO, false)).getSecond();
                     context.data.putBoolean("Forward", forward);
-                    list.removeIf(p -> p.getFirst().equals(context.localPos));
+                    list.removeIf(p -> p.getFirst().equals(rotatedPos));
                     ((IPantographList) e.getCarriage()).setPantographList(list);
                     targetExtensionState = 0;
                 }
             } else {
                 if (prevDisabled) {
                     List<Pair<BlockPos, Boolean>> list = ((IPantographList) e.getCarriage()).getPantographList();
-                    if (!list.stream().anyMatch(p -> p.getFirst().equals(context.localPos))) {
-                        list.add(Pair.of(context.localPos, context.data.getBoolean("Forward")));
+                    if (!list.stream().anyMatch(p -> p.getFirst().equals(rotatedPos))) {
+                        list.add(Pair.of(rotatedPos, context.data.getBoolean("Forward")));
                         ((IPantographList) e.getCarriage()).setPantographList(list);
                     }
                     targetExtensionState = 0.75f;

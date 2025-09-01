@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.voltage_regulator;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.google.common.collect.ImmutableList;
@@ -157,12 +158,12 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
                 return new ValueSettingsBoard(label, max, 10, ImmutableList.of(Component.literal("Value")),
-                        new ValueSettingsFormatter(valueSettings -> Component.literal(valueSettings.value() >= 100 ? valueSettings.value() / 100f + "kV" : (valueSettings.value() * 10) + "V")));
+                        new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(valueSettings.value() * 10).component()));
             }
         };
         voltage.between(0, 432);
         voltage.value = 10;
-        voltage.withFormatter(v -> v >= 100 ? v / 100f + "kV" : (v * 10) + "V");
+        voltage.withFormatter(v -> CEELang.formatVoltage(v * 10).string());
         voltage.withCallback(i -> this.updateVoltage());
         behaviours.add(voltage);
     }

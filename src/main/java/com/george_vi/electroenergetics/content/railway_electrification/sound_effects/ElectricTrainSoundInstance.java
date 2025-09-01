@@ -12,8 +12,8 @@ public class ElectricTrainSoundInstance extends AbstractTickableSoundInstance {
     private int keepAlive;
     public float targetPitch;
     public float targetVolume;
-    protected ElectricTrainSoundInstance(Vec3 pos) {
-        super(CEESoundEvents.ELECTRIC_TRAIN.get(), SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
+    protected ElectricTrainSoundInstance(Vec3 pos, boolean main) {
+        super(main ? CEESoundEvents.ELECTRIC_TRAIN.get() : CEESoundEvents.ELECTRIC_TRAIN_BACKGROUND.get(), SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
         looping = true;
         active = true;
         volume = 0.05f;

@@ -61,12 +61,13 @@ public class CatenaryHandler {
                 for (Pair<BlockPos, Boolean> pantograph : pantographs) {
 
 
-                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.getFirst()).add(0, 1.5, pantograph.getSecond() ? 0.5 : -0.5);
+                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.getFirst()).add(pantograph.getSecond() ? 0.5 : -0.5, 1.5, 0);
 
-                    pantographPos = VecHelper.rotate(pantographPos, pitch, Direction.Axis.X);
-                    pantographPos = VecHelper.rotate(pantographPos, -yaw - 90, Direction.Axis.Y);
+                    pantographPos = VecHelper.rotate(pantographPos, -pitch, Direction.Axis.Z);
+                    pantographPos = VecHelper.rotate(pantographPos, -yaw + 180, Direction.Axis.Y);
 
                     pantographPos = pivotPosition.add(pantographPos);
+//                    event.level.sendParticles(ParticleTypes.ELECTRIC_SPARK, pantographPos.x, pantographPos.y, pantographPos.z, 3, 0, 0, 0, 0);
                     for (Couple<BlockPos> connection : allCatenaryConnections) {
                         Vec3 start = connection.getFirst().getBottomCenter();
                         Vec3 end = connection.getSecond().getBottomCenter();
@@ -84,11 +85,10 @@ public class CatenaryHandler {
                         Vec3 closest = VecHelper.lerp((float) t, start, end);
 
                         Vec3 distance = pantographPos.subtract(closest);
-                        distance = VecHelper.rotate(distance, yaw + 90, Direction.Axis.Y);
+                        distance = VecHelper.rotate(distance, yaw + 180, Direction.Axis.Y);
                         distance = VecHelper.rotate(distance, -pitch, Direction.Axis.X);
 
-                        if (!(Math.abs(distance.x()) > 2) && !(Math.abs(distance.z()) > 0.5) && !(Math.abs(distance.y()) > 1)) {
-                            event.level.sendParticles(ParticleTypes.ELECTRIC_SPARK, closest.x, closest.y, closest.z, 3, 0, 0, 0, 0);
+                        if (!(Math.abs(distance.z()) > 2) && !(Math.abs(distance.x()) > 0.5) && !(Math.abs(distance.y()) > 1)) {
                             catenaryConnections.computeIfAbsent(train, k -> new ArrayList<>());
                             catenaryConnections.get(train).add(Pair.of((float) t, connection));
                             cutConnections.compute(connection, (k, v) -> v == null ? 1 : v + 1);
@@ -163,13 +163,14 @@ public class CatenaryHandler {
             double trainSpeed = Math.abs(train.speed);
 
             Carriage carriage = train.currentlyBackwards ? train.carriages.getLast() : train.carriages.getFirst();
-            Vec3 pos = carriage.getDimensional(event.level).positionAnchor;
+            Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(event.level);
+            Vec3 pos = train.currentlyBackwards ? dce.leadingAnchor() : dce.trailingAnchor();
             float acceleration = (float) (trainSpeed - trainSpeeds.getOrDefault(train, trainSpeed));
 
             trainSpeeds.put(train, trainSpeed);
 
             CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                    40d, new UpdateElectricTrainSoundPacket(train.id, pos, (float) trainSpeed, acceleration, active));
+                    100, new UpdateElectricTrainSoundPacket(train.id, pos, (float) trainSpeed, acceleration, active));
             if (active)
                 if (train.fuelTicks > 0)
                     train.fuelTicks++;
@@ -185,7 +186,7 @@ public class CatenaryHandler {
             Vec3 pos = carriage.getDimensional(event.level).positionAnchor;
 
             CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                    40d, new UpdateElectricTrainSoundPacket(train.id, pos, 0, 0, false));
+                    100, new UpdateElectricTrainSoundPacket(train.id, pos, 0, 0, false));
 
             trainSpeeds.remove(train);
         }
