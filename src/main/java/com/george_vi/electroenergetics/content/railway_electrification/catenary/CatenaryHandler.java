@@ -172,8 +172,9 @@ public class CatenaryHandler {
             CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
                     100, new UpdateElectricTrainSoundPacket(train.id, pos, (float) trainSpeed, acceleration, active));
             if (active)
-                if (train.fuelTicks > 0)
-                    train.fuelTicks++;
+                if (train.fuelTicks == 0) {
+                    train.fuelTicks = 20;
+                }
 
         }
 
