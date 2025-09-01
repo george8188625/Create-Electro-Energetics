@@ -104,7 +104,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
                 .text(TooltipHelper.makeProgressBar(3, dialState < 0.01 ? 0 : dialState < 0.33 ? 1 : dialState < 0.66 ? 2 : 3))
                 .space()
                 .add(CreateLang.number(v))
-                .add(Component.literal(voltmeter ? "V" : "A"))
+                .add(Component.translatable(voltmeter ? "electroenergetics.generic.volts" : "electroenergetics.generic.amps"))
                 .style(dialState < 0.01 ? ChatFormatting.DARK_GRAY :
                         dialState < 0.33f ? ChatFormatting.GREEN :
                         dialState < 0.66f ? (voltmeter ? ChatFormatting.AQUA : ChatFormatting.GOLD) :

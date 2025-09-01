@@ -33,10 +33,10 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        voltage = new ScrollValueBehaviour(Component.translatable("electroenergetics.generic.voltage"), this, new ValueBox()) {
+        voltage = new ScrollValueBehaviour(Component.translatable("electroenergetics.voltage"), this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(Component.literal("Value")),
+                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(Component.translatable("electroenergetics.value")),
                         new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(indexToVoltage(valueSettings.value())).component()));
             }
         };
