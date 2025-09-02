@@ -161,7 +161,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                 this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 1, ImmutableList.of(Component.literal("Ratio")),
+                return new ValueSettingsBoard(label, max, 1, ImmutableList.of(Component.translatable("electroenergetics.transformer.ratio_alt")),
                         new ValueSettingsFormatter(valueSettings -> Component.literal(Ratios.values()[(valueSettings.value())].string)));
             }
         };
