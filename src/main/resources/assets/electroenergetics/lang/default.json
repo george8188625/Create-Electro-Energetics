@@ -64,9 +64,12 @@
   "electroenergetics.generic.kilowatthours": "kWh",
   "electroenergetics.generic.megawatthours": "MWh",
 
-  "electroenergetics.transformer.ratio": "Ratio",
-
   "electroenergetics.subtitle.hum": "Hum",
   "electroenergetics.subtitle.arcing": "Arcing",
-  "electroenergetics.subtitle.electric_train": "Electric Train Sounds"
+  "electroenergetics.subtitle.electric_train": "Electric Train Sounds",
+
+  "electroenergetics.transformer.ratio_alt": "Ratio",
+  "electroenergetics.transformer.ratio": "Primary to Secondary Ratio",
+  "electroenergetics.value": "⚡",
+  "electroenergetics.voltage": "Targeted Voltage in Volts"
 }

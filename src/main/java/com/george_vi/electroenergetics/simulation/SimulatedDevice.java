@@ -3,9 +3,13 @@ package com.george_vi.electroenergetics.simulation;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
 
@@ -44,4 +48,15 @@ public class SimulatedDevice {
     public int sendVoltagesDistance() {
         return 20;
     }
+
+    protected void showOverheatingParticles(Level level, BlockPos pos) {
+        if (!level.isLoaded(pos))
+            return;
+        Vec3 pPos = pos.getCenter();
+
+        if (level.random.nextFloat() > 0.5f)
+            ((ServerLevel)level).sendParticles(ParticleTypes.SMOKE, pPos.x, pPos.y, pPos.z, 10, 0.2, 0.2, 0.2, 0);
+    }
+
+
 }

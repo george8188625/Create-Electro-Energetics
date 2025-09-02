@@ -6,6 +6,7 @@ import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 
 public class TransformerScenes {
     public static void transformer(SceneBuilder builder, SceneBuildingUtil util) {
@@ -55,7 +56,7 @@ public class TransformerScenes {
         scene.idle(80);
 
         scene.overlay().showText(20)
-                .text("1 / 2")
+                .sharedText("ratio1over2")
                 .pointAt(util.vector().blockSurface(util.grid().at(4, 1, 4), Direction.WEST))
                 .placeNearTarget();
         scene.idle(50);
@@ -77,17 +78,18 @@ public class TransformerScenes {
         scene.idle(20);
 
         scene.overlay().showText(20)
-                .text("300V")
+                .sharedText("voltage300")
                 .pointAt(util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.NORTH))
                 .placeNearTarget();
         scene.idle(50);
 
         scene.overlay().showText(20)
-                .text("600V")
+                .sharedText("voltage600")
                 .pointAt(util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.NORTH))
                 .placeNearTarget();
         scene.idle(50);
     }
+
     public static void losses(SceneBuilder builder, SceneBuildingUtil util) {
         CreateSceneBuilder scene = new CreateSceneBuilder(builder);
         WireConnectionInstructions connections = new WireConnectionInstructions(builder);
@@ -111,13 +113,15 @@ public class TransformerScenes {
                 util.vector().of(4, 1, 4).add(1, 0.5, 0.5));
         ElementLink<WirePonderElement> wire5 =  connections.createConnection(util.vector().of(4, 1, 4).add(1, 0.5, 0.5),
                 util.vector().of(4, 1, 0).add(1, 0.5, 0.5));
+        scene.world().modifyBlockEntityNBT(util.select().position(2, 1, 3), ElectricGaugeBlockEntity.class,
+                nbt -> nbt.putFloat("Value", .5f));
 
         scene.world().setKineticSpeed(util.select().position(4, 1, 8), 256);
 
         scene.idle(20);
 
         scene.overlay().showText(70)
-                .text("Wires cause energy losses.")
+                .text("Wires have some resistance, therefore they cause energy losses.")
                 .pointAt(util.vector().blockSurface(util.grid().at(4, 1, 4), Direction.WEST))
                 .attachKeyFrame()
                 .placeNearTarget();
@@ -125,7 +129,7 @@ public class TransformerScenes {
         scene.idle(100);
 
         scene.overlay().showText(20)
-                .text("300V")
+                .sharedText("voltage300")
                 .pointAt(util.vector().blockSurface(util.grid().at(4, 1, 0), Direction.WEST))
                 .placeNearTarget();
 
@@ -146,19 +150,19 @@ public class TransformerScenes {
         scene.idle(50);
 
         scene.overlay().showText(20)
-                .text("30A")
+                .text("10A")
                 .pointAt(util.vector().blockSurface(util.grid().at(2, 1, 3), Direction.WEST))
                 .placeNearTarget();
 
         scene.idle(50);
 
-        scene.overlay().showText(70)
-                .text("Energy losses are proportional to the square of the amperage.")
+        scene.overlay().showText(130)
+                .text("Energy losses are directly proportional to the square of the amperage, and directly proportional to the resistance.")
                 .pointAt(util.vector().blockSurface(util.grid().at(2, 1, 3), Direction.WEST))
                 .attachKeyFrame()
                 .placeNearTarget();
 
-        scene.idle(80);
+        scene.idle(150);
 
         connections.removeConnection(wire1);
         connections.removeConnection(wire2);
@@ -166,6 +170,9 @@ public class TransformerScenes {
         connections.removeConnection(wire4);
         connections.removeConnection(wire5);
         scene.world().setKineticSpeed(util.select().position(4, 1, 8), 0);
+
+        scene.world().modifyBlockEntityNBT(util.select().position(2, 1, 3), ElectricGaugeBlockEntity.class,
+                nbt -> nbt.putFloat("Value", 0f));
 
         scene.idle(20);
 
@@ -175,32 +182,61 @@ public class TransformerScenes {
         scene.idle(20);
 
         scene.overlay().showText(70)
-                .text("Transformers can be used to increase the voltage and decrease the amperage.")
+                .text("Transformers can be used to increase the voltage, therefore decrease the amperage.")
                 .pointAt(util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.WEST))
                 .attachKeyFrame()
                 .placeNearTarget();
 
         scene.idle(80);
 
-        // CONNECT I DONT WANNA DO THIS PLS
+        connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 0), Direction.WEST),
+                util.vector().of(4 + 5/16f, 30/16f, 2 + 3/16f));
+        connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 0), Direction.EAST),
+                util.vector().of(5 - 5/16f, 30/16f, 2 + 3/16f));
+
+        connections.createConnection(util.vector().blockSurface(util.grid().at(2, 1, 3), Direction.SOUTH),
+                util.vector().of(4 + 5/16f, 30/16f, 3 - 3/16f));
+        connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 4), Direction.WEST),
+                util.vector().blockSurface(util.grid().at(2, 1, 3), Direction.NORTH));
+
+
+        connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 4), Direction.EAST),
+                util.vector().of(5 - 5/16f, 30/16f, 3 - 3/16f));
+
+        connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 4), Direction.WEST),
+                util.vector().of(4 + 5/16f, 30/16f, 6 + 3/16f));
+        connections.createConnection(util.vector().blockSurface(util.grid().at(4, 1, 4), Direction.EAST),
+                util.vector().of(5 - 5/16f, 30/16f, 6 + 3/16f));
+
+        connections.createConnection(util.vector().of(4 + 2/16f, 1.5, 8 + 3/16f),
+                util.vector().of(4 + 5/16f, 30/16f, 7 - 3/16f));
+        connections.createConnection(util.vector().of(5 - 2/16f, 1.5, 8 + 3/16f),
+                util.vector().of(5 - 5/16f, 30/16f, 7 - 3/16f));
 
         scene.world().setKineticSpeed(util.select().position(4, 1, 8), 256);
+
+        scene.world().modifyBlockEntityNBT(util.select().position(2, 1, 3), ElectricGaugeBlockEntity.class,
+                nbt -> nbt.putFloat("Value", .2f));
+
+        scene.world().modifyBlockEntityNBT(util.select().position(4, 1, 4), ElectricGaugeBlockEntity.class,
+                nbt -> nbt.putFloat("Value", .6f));
+
         scene.idle(20);
 
         scene.overlay().showText(20)
-                .text("1 / 3")
+                .sharedText("ratio1over3")
                 .pointAt(util.vector().blockSurface(util.grid().at(4, 1, 2), Direction.WEST))
                 .placeNearTarget();
         scene.idle(50);
 
         scene.overlay().showText(20)
-                .text("3 / 1")
+                .sharedText("ratio3over1")
                 .pointAt(util.vector().blockSurface(util.grid().at(4, 1, 6), Direction.WEST))
                 .placeNearTarget();
         scene.idle(50);
 
         scene.overlay().showText(20)
-                .text("3A")
+                .text("3.3A")
                 .pointAt(util.vector().blockSurface(util.grid().at(2, 1, 3), Direction.WEST))
                 .placeNearTarget();
         scene.idle(70);

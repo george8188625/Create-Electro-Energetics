@@ -36,6 +36,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public final boolean voltmeter;
     public double voltage;
     public AbstractComputerBehaviour computerBehaviour;
+    public int redstoneSignal;
 
     ElectricGaugeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, boolean voltmeter) {
         super(type, pos, state);
@@ -79,7 +80,14 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
             dialState += (dialTarget - dialState) * .125f;
             if (dialState > 1 && level.random.nextFloat() < 1 / 2f)
                 dialState -= (dialState - 1) * level.random.nextFloat();
+        } else {
+            int newRedstoneSignal = Mth.ceil(Mth.clamp(dialTarget * 15, 0, 15));
+            if (newRedstoneSignal != redstoneSignal) {
+                redstoneSignal = newRedstoneSignal;
+                setChanged();
+            }
         }
+
     }
 
     @Override
@@ -88,6 +96,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
                 .forGoggles(tooltip);
         Float v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
         Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+
         if (v1 == null || v2 == null) {
             v1 = 0f;
             v2 = 0f;
@@ -116,7 +125,12 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         behaviours.add(computerBehaviour = CCProxy.behaviour(this));
+    }
 
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        computerBehaviour.removePeripheral();
     }
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {

@@ -10,6 +10,7 @@ public class CServer extends ConfigBase {
     public final ConfigInt maxCatenaryLength = i(64, 8, "catenaryLength", "[in Meters]");
     public final ConfigInt wiresPerSpool = i(4, 1, 8, "wireItemsPerSpool");
     public final ConfigBool wiresBreak = b(true, "wiresBreak", "Wires break when overloaded");
+    public final ConfigBool componentDamage = b(true, "componentDamage", "Components get damaged when overloaded");
     public final ConfigBool optimizeGraph = b(true, "optimizeGraph");
     public final CResistances resistanceValues = nested(1, CResistances::new, "Resistance Values");
 

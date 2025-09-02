@@ -31,8 +31,10 @@ public class GaugeDevice extends SimulatedDevice {
 
         double vd = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
 
-        if (level.getBlockEntity(pos) instanceof ElectricGaugeBlockEntity be)
+        if (level.getBlockEntity(pos) instanceof ElectricGaugeBlockEntity be) {
             be.voltage = vd;
+            be.setValue(voltmeter ? Math.abs(vd) : Math.abs(vd) / 0.1);
+        }
     }
 
     @Override

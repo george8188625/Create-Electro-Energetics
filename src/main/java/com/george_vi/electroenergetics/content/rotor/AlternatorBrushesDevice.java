@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.rotor;
 
+import com.george_vi.electroenergetics.foundation.GeneratingDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
@@ -12,34 +13,24 @@ import net.minecraft.world.level.Level;
 
 import java.util.Map;
 
-public class AlternatorBrushesDevice extends SimulatedDevice {
+public class AlternatorBrushesDevice extends GeneratingDevice {
     public AlternatorBrushesDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        if (!level.isLoaded(pos))
-            return;
-        double voltage = extraData.getFloat("Voltage");
-
-        bridges.builder(pos).energyLimitedSource(0, 1, extraData.getDouble("StoredEnergy"), Math.abs(voltage));
+        if (level.isLoaded(pos))
+            super.preTick(pos, level, bridges, extraData);
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+    protected double getVoltage(BlockPos pos, Level level, CompoundTag extraData) {
+        return extraData.getFloat("Voltage");
+    }
 
-        double v1 = results.getVoltageAt(pos, 0);
-        double v2 = results.getVoltageAt(pos, 1);
-        double current = results.getCurrentThrough(pos, 0, 1);
-
-        double power = extraData.getFloat("Stress");
-
-        double storedEnergy = extraData.getDouble("StoredEnergy");
-        storedEnergy -= Math.abs(current * (v1 - v2));
-
-        storedEnergy = Math.min(storedEnergy + power, power * 10);
-
-        extraData.putDouble("StoredEnergy", storedEnergy);
+    @Override
+    protected double getPower(BlockPos pos, Level level, CompoundTag extraData) {
+        return extraData.getFloat("Stress");
     }
 }

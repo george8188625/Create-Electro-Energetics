@@ -1,14 +1,12 @@
 package com.george_vi.electroenergetics.foundation;
 
-import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.simulation.*;
+import com.george_vi.electroenergetics.simulation.DeviceBlock;
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Containers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;

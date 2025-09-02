@@ -55,7 +55,6 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     public ElectricMotorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        setLazyTickRate(8);
     }
 
     @Override
@@ -119,17 +118,12 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
             avgVoltage = 0;
         else
             avgVoltage = voltages.stream().reduce(Float::sum).orElse(0f) / voltages.size();
-
-        super.tick();
-        tick++;
-    }
-
-    @Override
-    public void lazyTick() {
         if (Math.abs(avgVoltage - voltageBeforeLastChange) > 10) {
             voltageBeforeLastChange = avgVoltage;
             reActivateSource = true;
         }
+        super.tick();
+        tick++;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -173,7 +167,10 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public void updateFromNetwork(float maxStress, float currentStress, int networkSize) {
         super.updateFromNetwork(maxStress, currentStress, networkSize);
-        load = currentStress / maxStress;
+        if (maxStress == 0)
+            load = 0;
+        else
+            load = currentStress / maxStress;
         sendData();
     }
 

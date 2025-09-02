@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import net.createmod.ponder.api.registration.PonderPlugin;
 import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
 import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
+import net.createmod.ponder.api.registration.SharedTextRegistrationHelper;
 import net.minecraft.resources.ResourceLocation;
 
 public class CEEPonderPlugin implements PonderPlugin {
@@ -23,6 +24,15 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.forComponents(CEEBlocks.TRANSFORMER.getId())
                 .addStoryBoard("transformer", TransformerScenes::transformer)
                 .addStoryBoard("transformer_losses", TransformerScenes::losses);
+    }
+
+    @Override
+    public void registerSharedText(SharedTextRegistrationHelper helper) {
+        helper.registerSharedText("voltage300", "300V");
+        helper.registerSharedText("voltage600", "600V");
+        helper.registerSharedText("ratio1over2", "1 / 2");
+        helper.registerSharedText("ratio1over3", "1 / 3");
+        helper.registerSharedText("ratio3over1", "3 / 1");
     }
 
     @Override

@@ -2,23 +2,23 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.wire.SendWireParticlesPacket;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
 import com.george_vi.electroenergetics.foundation.AttachedNode;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
-import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.*;
 import com.george_vi.electroenergetics.simulation.util.LUSolver;
 import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
@@ -223,45 +223,39 @@ public class SimulationTicker {
         // WIRE BREAKING
         if (CEEConfigs.server().wiresBreak.get()) {
             NodeConnection longestWireToBreak = null;
-            for (Pair<WireType, NodeConnection> connection : connections) {
-                double vd = Math.abs(resultsPerBlock.getOrDefault(connection.getSecond().node1().sourcePos(), Collections.emptyMap()).getOrDefault(connection.getSecond().node1(), 0d)
-                        - resultsPerBlock.getOrDefault(connection.getSecond().node2().sourcePos(), Collections.emptyMap()).getOrDefault(connection.getSecond().node2(), 0d));
-                double current = vd / getWireResistance(connection.getSecond().node1(), connection.getSecond().node2(), connection.getFirst());
+            for (Pair<WireType, NodeConnection> e : connections) {
+                WireType wireType = e.getFirst();
+                NodeConnection connection = e.getSecond();
 
-                float temp = sd.getConnectionTemperature(connection.getSecond());
+                double vd = Math.abs(resultsPerBlock.getOrDefault(connection.node1().sourcePos(), Collections.emptyMap()).getOrDefault(connection.node1(), 0d)
+                        - resultsPerBlock.getOrDefault(connection.node2().sourcePos(), Collections.emptyMap()).getOrDefault(connection.node2(), 0d));
+                double current = vd / getWireResistance(connection.node1(), connection.node2(), wireType);
+
+                float temp = sd.getConnectionTemperature(connection);
 
                 float newTemp = (float) (Math.min(current, 500));
                 newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
                 newTemp = Math.max(temp - 33.3f + newTemp, 0);
-                sd.setConnectionTemperature(connection.getSecond(), newTemp);
+                sd.setConnectionTemperature(connection, newTemp);
 
-                if (newTemp > 2000 && level.isLoaded(connection.getSecond().node1().sourcePos())) {
-                    for (Vec3 point : QuadraticWireHelper.cablePoints(Vec3.atCenterOf(connection.getSecond().node1().sourcePos()), Vec3.atCenterOf(connection.getSecond().node2().sourcePos()), 1)) {
-                        if (level.random.nextInt(100) != 0)
-                            continue;
-                        level.sendParticles(new DustParticleOptions(new Vector3f(0f, 0f, 0f), 1),
-                                point.x(), point.y(), point.z(),
-                                0, 0.5, 0.5, 0.5, 0);
-                    }
+                if (newTemp > 2000 && level.isLoaded(connection.node1().sourcePos())) {
+                    // smoke particles
+                    CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, connection.node1().sourcePos().getCenter(), connection.node2().sourcePos().getCenter()),
+                            connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE));
                 }
 
                 if (newTemp > 5000) {
                     if (longestWireToBreak == null)
-                        longestWireToBreak = connection.getSecond();
-                    else if (getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), connection.getFirst()) < getWireResistance(connection.getSecond().node1(), connection.getSecond().node2(), connection.getFirst()))
-                        longestWireToBreak = connection.getSecond();
+                        longestWireToBreak = connection;
+                    else if (getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < getWireResistance(connection.node1(), connection.node2(), wireType))
+                        longestWireToBreak = connection;
                 }
 
             }
             if (longestWireToBreak != null) {
                 sd.removeConnection(longestWireToBreak);
-                for (Vec3 point : QuadraticWireHelper.cablePoints(Vec3.atCenterOf(longestWireToBreak.node1().sourcePos()), Vec3.atCenterOf(longestWireToBreak.node2().sourcePos()), 1)) {
-                    if (level.random.nextInt(3) != 0)
-                        continue;
-                    level.sendParticles(ParticleTypes.BUBBLE_POP,
-                            point.x(), point.y(), point.z(),
-                            10, 0.05, 0.05, 0.05, 0);
-                }
+                CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),
+                        longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.BUBBLE_POP));
             }
         }
 
