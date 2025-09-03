@@ -46,7 +46,7 @@ public class WireApplyingBehaviour {
         LocalPlayer player = mc.player;
         ItemStack heldItem = player.getMainHandItem();
 
-        if (!(CEEItems.WIRE_SPOOL.isIn(heldItem) || CEEItems.EMPTY_SPOOL.isIn(heldItem))) {
+        if (!(heldItem.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(heldItem))) {
             ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
             return;
         }
@@ -88,7 +88,7 @@ public class WireApplyingBehaviour {
             }
 
             if (hoveredNode != null) {
-                ElectricPropertiesOverlay.INSTANCE.setHoveredNode(WireRenderer.getAllVoltages().getOrDefault(hoveredNode, 0f), hoveredNode);
+                ElectricPropertiesOverlay.INSTANCE.setHoveredNode(WireRenderer.getAllVoltages().getOrDefault(hoveredNode, 0d), hoveredNode);
             }
         }
 

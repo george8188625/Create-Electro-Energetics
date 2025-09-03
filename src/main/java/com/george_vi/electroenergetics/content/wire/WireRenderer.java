@@ -2,12 +2,14 @@ package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.WireData;
+import com.george_vi.electroenergetics.simulation.WireType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
@@ -35,7 +37,7 @@ import java.util.Map;
 public class WireRenderer {
     public static List<Pair<NodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
     public static List<Couple<BlockPos>> CATENARY = new ArrayList<>();
-    public static Map<Node, Float> NODE_VOLTAGES = new HashMap<>();
+    public static Map<Node, Double> NODE_VOLTAGES = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     public static void render(LevelRenderer levelRenderer, PoseStack pose, Camera camera) {
@@ -167,7 +169,7 @@ public class WireRenderer {
             }
             mc.getProfiler().popPush("renderWires");
 
-            renderWire(renderedPoints, pos1, pos2, pose, buffer, levelRenderer);
+            renderWire(renderedPoints, pos1, pos2, pose, buffer, levelRenderer, wireData.wireType());
 
             if (points.size() >= 10) {
                 if (state1.getBlock() instanceof DeviceBlock db &&
@@ -212,7 +214,7 @@ public class WireRenderer {
 
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 3);
 
-                renderWire(points, pos1, pos2, pose, buffer, levelRenderer);
+                renderWire(points, pos1, pos2, pose, buffer, levelRenderer, CEEWireTypes.STANDARD.get());
             }
         }
 
@@ -221,7 +223,7 @@ public class WireRenderer {
         mc.level.getProfiler().pop();
     }
 
-    public static void renderWire(List<Vec3> points, Vec3 pos1, Vec3 pos2, PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer) {
+    public static void renderWire(List<Vec3> points, Vec3 pos1, Vec3 pos2, PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireType wireType) {
         Minecraft mc = Minecraft.getInstance();
         double miny = pos1.y;
         for (Vec3 point : points)
@@ -233,7 +235,7 @@ public class WireRenderer {
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
-            CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
+            CachedBuffers.partial(wireType.getModel(), Blocks.ANDESITE.defaultBlockState())
                     .translate(point)
                     .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
@@ -291,13 +293,13 @@ public class WireRenderer {
         }
     }
 
-    public static Map<Node, Float> getAllVoltages() {
+    public static Map<Node, Double> getAllVoltages() {
         synchronized ("get_node_voltages") {
             return Map.copyOf(NODE_VOLTAGES);
         }
     }
 
-    public static void addVoltageData(Node node, float voltage) {
+    public static void addVoltageData(Node node, double voltage) {
         synchronized ("get_node_voltages") {
             if (!NODE_VOLTAGES.containsKey(node))
                 NODE_VOLTAGES.put(node, voltage);

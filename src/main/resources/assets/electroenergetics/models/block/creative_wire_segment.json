@@ -1,0 +1,26 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "electroenergetics:block/wire",
+		"particle": "electroenergetics:block/wire"
+	},
+	"elements": [
+		{
+			"from": [-1, 0, 0],
+			"to": [1, 0, 8],
+			"faces": {
+				"up": {"uv": [8, 4, 0, 6], "rotation": 90, "texture": "#0"},
+				"down": {"uv": [0, 4, 8, 6], "rotation": 90, "texture": "#0"}
+			}
+		},
+		{
+			"from": [0, -1, 0],
+			"to": [0, 1, 8],
+			"faces": {
+				"east": {"uv": [0, 4, 8, 6], "texture": "#0"},
+				"west": {"uv": [8, 4, 0, 6], "texture": "#0"}
+			}
+		}
+	]
+}

@@ -40,29 +40,20 @@ public class PantographMovementBehaviour implements MovementBehaviour {
              currentExtensionState = targetExtensionState;
 
         if (context.contraption.entity instanceof CarriageContraptionEntity e) {
-            Direction assemblyDirection = ((CarriageContraption)context.contraption).getAssemblyDirection();
-            BlockPos rotatedPos = context.localPos.rotate(
-                    assemblyDirection == Direction.NORTH ? Rotation.COUNTERCLOCKWISE_90 :
-                            assemblyDirection == Direction.EAST ? Rotation.CLOCKWISE_180 :
-                                    assemblyDirection == Direction.SOUTH ? Rotation.CLOCKWISE_90 : Rotation.NONE
-            );
             boolean prevDisabled = context.data.getBoolean("Disabled");
+            if (!context.data.contains("Forward")) {
+                TrainPantographEntry pantographState = ((IPantographList) e.getCarriage()).getPantographState(context.localPos);
+                if (pantographState != null)
+                    context.data.putBoolean("Forward", pantographState.facingForward());
+            }
             if (context.disabled) {
                 if (!prevDisabled) {
-                    List<Pair<BlockPos, Boolean>> list = ((IPantographList) e.getCarriage()).getPantographList();
-                    boolean forward = list.stream().filter(p -> p.getFirst().equals(rotatedPos)).findFirst().orElse(Pair.of(BlockPos.ZERO, false)).getSecond();
-                    context.data.putBoolean("Forward", forward);
-                    list.removeIf(p -> p.getFirst().equals(rotatedPos));
-                    ((IPantographList) e.getCarriage()).setPantographList(list);
+                    ((IPantographList) e.getCarriage()).changePantographState(context.localPos, false);
                     targetExtensionState = 0;
                 }
             } else {
                 if (prevDisabled) {
-                    List<Pair<BlockPos, Boolean>> list = ((IPantographList) e.getCarriage()).getPantographList();
-                    if (!list.stream().anyMatch(p -> p.getFirst().equals(rotatedPos))) {
-                        list.add(Pair.of(rotatedPos, context.data.getBoolean("Forward")));
-                        ((IPantographList) e.getCarriage()).setPantographList(list);
-                    }
+                    ((IPantographList) e.getCarriage()).changePantographState(context.localPos, true);
                     targetExtensionState = 0.75f;
                 }
             }

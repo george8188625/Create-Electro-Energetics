@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
@@ -30,15 +31,20 @@ public class FuseDevice extends SimulatedDevice {
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        double vd = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
-        double current = vd / 0.1;
-        float temp = (float) Math.max(extraData.getFloat("Temp") - 80 + Math.min(current, 500), 0);
+        double current = Math.abs(results.getCurrentThrough(pos, 0, 1));
+        float temp = extraData.getFloat("Temp");
+
+        float newTemp = (float) (Math.min(current, 500));
+        newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
+        newTemp = Math.max(temp - 33.3f + newTemp, 0);
+        temp = newTemp;
+
         if (current < 1 || extraData.getBoolean("Broken"))
             temp = 0;
         extraData.putFloat("Temp", temp);
 
 
-        if (temp > 2500) {
+        if (temp > CEEWireTypes.STANDARD.get().getMaxTemperature() * 2/3) {
             extraData.putBoolean("Broken", true);
 
             if (level.isLoaded(pos)) {

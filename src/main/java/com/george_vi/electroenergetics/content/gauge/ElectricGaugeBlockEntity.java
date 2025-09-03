@@ -70,8 +70,8 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
         super.tick();
 
         if (level.isClientSide()) {
-            Float v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-            Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+            Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
+            Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
 
             if (v1 != null && v2 != null)
                 setValue(voltmeter ? Math.abs(v1 - v2) : Math.abs(v1 - v2) / 0.1);
@@ -94,12 +94,12 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         CreateLang.translate("gui.gauge.info_header")
                 .forGoggles(tooltip);
-        Float v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
+        Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
 
         if (v1 == null || v2 == null) {
-            v1 = 0f;
-            v2 = 0f;
+            v1 = 0d;
+            v2 = 0d;
         }
 
         Lang.builder(CreateElecrtoEnergetics.ID)

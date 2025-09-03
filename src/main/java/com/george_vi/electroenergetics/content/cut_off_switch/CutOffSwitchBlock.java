@@ -88,8 +88,8 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
             pPos = pPos.subtract(Vec3.atLowerCornerOf(state.getValue(FACING).getNormal()).multiply(0.25, 0.25, 0.25));
             if (state.getValue(CLOSED)) {
                 for (int l : isDouble ? Iterate.zeroAndOne : new int[]{0}) {
-                    Float v1 = WireRenderer.getAllVoltages().get(new Node(l, pos));
-                    Float v2 = WireRenderer.getAllVoltages().get(new Node((isDouble ? 2 : 1) + l, pos));
+                    Double v1 = WireRenderer.getAllVoltages().get(new Node(l, pos));
+                    Double v2 = WireRenderer.getAllVoltages().get(new Node((isDouble ? 2 : 1) + l, pos));
                     if (v1 != null && v2 != null && Math.abs(v1 - v2) > 0.0003)
                         for (int i = 0; i < (Math.abs(v1 - v2) * 10) + 1; i++)
                             level.addParticle(ParticleTypes.BUBBLE_POP, pPos.offsetRandom(level.random, 0.3f).x, pPos.offsetRandom(level.random, 0.3f).y, pPos.offsetRandom(level.random, 0.3f).z, 0, 0, 0);

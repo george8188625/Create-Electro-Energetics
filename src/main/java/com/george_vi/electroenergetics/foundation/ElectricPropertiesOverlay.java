@@ -7,20 +7,19 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
     public static final ElectricPropertiesOverlay INSTANCE = new ElectricPropertiesOverlay();
     
-    float voltage;
+    double voltage;
     Node node;
     float amperage;
     OverlayMode mode;
     int directionPointerAngle;
 
-    public void setHoveredNode(float voltage, Node node) {
+    public void setHoveredNode(Double voltage, Node node) {
         this.voltage = voltage;
         this.node = node;
         this.mode = OverlayMode.HOVER_NODE;

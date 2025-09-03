@@ -128,10 +128,10 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @OnlyIn(Dist.CLIENT)
     public void tickAudio() {
-        Float v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
+        Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
         if (v1 != null && v2 != null)
-            setVoltage(v1 - v2);
+            setVoltage((float) (v1 - v2));
         if (Math.abs(avgVoltage) > 60) {
             if (soundInstance == null || soundInstance.isStopped()) {
                 Minecraft.getInstance()

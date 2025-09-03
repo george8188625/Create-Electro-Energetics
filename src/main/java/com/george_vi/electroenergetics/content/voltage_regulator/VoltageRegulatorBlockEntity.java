@@ -57,10 +57,10 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        Float vp1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Float vp2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
-        Float vs1 = WireRenderer.getAllVoltages().get(new Node(2, getBlockPos()));
-        Float vs2 = WireRenderer.getAllVoltages().get(new Node(3, getBlockPos()));
+        Double vp1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
+        Double vp2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double vs1 = WireRenderer.getAllVoltages().get(new Node(2, getBlockPos()));
+        Double vs2 = WireRenderer.getAllVoltages().get(new Node(3, getBlockPos()));
         if (vp1 == null || vp2 == null || vs1 == null || vs2 == null)
             return false;
         Lang.builder(CreateElecrtoEnergetics.ID)
@@ -128,10 +128,10 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
         else
             avgVoltage = voltages.stream().reduce(Float::sum).orElse(0f) / voltages.size();
 
-        Float v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
+        Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
         if (v1 != null && v2 != null) {
-            setVoltage(v1 - v2);
+            setVoltage((float) (v1 - v2));
             if (avgVoltage > 10) {
                 if (soundInstance == null || soundInstance.isStopped())
                     Minecraft.getInstance()

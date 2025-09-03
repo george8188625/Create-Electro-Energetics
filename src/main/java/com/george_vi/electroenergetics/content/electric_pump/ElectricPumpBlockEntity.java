@@ -37,11 +37,11 @@ public class ElectricPumpBlockEntity extends PumpBlockEntity {
         super.tick();
 
         if (level.isClientSide) {
-            Float v1 = WireRenderer.NODE_VOLTAGES.get(new Node(0, getBlockPos()));
-            Float v2 = WireRenderer.NODE_VOLTAGES.get(new Node(1, getBlockPos()));
+            Double v1 = WireRenderer.NODE_VOLTAGES.get(new Node(0, getBlockPos()));
+            Double v2 = WireRenderer.NODE_VOLTAGES.get(new Node(1, getBlockPos()));
             if (v1 == null || v2 == null)
                 return;
-            setVoltage(v1 - v2);
+            setVoltage((float) (v1 - v2));
         }
     }
 

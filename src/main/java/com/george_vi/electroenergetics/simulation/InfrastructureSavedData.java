@@ -297,9 +297,11 @@ public class InfrastructureSavedData extends SavedData {
         if (nodes != null)
             for (Node node : nodes) {
                 List<NodeConnection> connections = getConnections(node);
-                connections.forEach(this::removeConnection);
+                for (NodeConnection connection : connections)
+                    Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), ((connections.size()) * CEEConfigs.server().wiresPerSpool.get())));
+
                 List<BlockPos> catenaryConnections = List.copyOf(CATENARY.getOrDefault(pos, new ArrayList<>()));
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack((catenaryConnections.size() + connections.size()) * CEEConfigs.server().wiresPerSpool.get()));
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
                 for (BlockPos connection : catenaryConnections)
                     removeCatenary(pos, connection);
                 NODES.remove(node);
@@ -324,7 +326,7 @@ public class InfrastructureSavedData extends SavedData {
         return connections;
     }
 
-    public void removeConnection(NodeConnection connection) {
+    public WireData removeConnection(NodeConnection connection) {
 
         NODES.get(connection.node1()).remove(connection.node2());
         NODES.get(connection.node2()).remove(connection.node1());
@@ -344,6 +346,7 @@ public class InfrastructureSavedData extends SavedData {
         }
         LoadedWireManager.handleWireRemoved(connection, level);
         setDirty();
+        return connectionData;
     }
 
     public NodeConnection connect(Node node1, Node node2, WireType wireType) {

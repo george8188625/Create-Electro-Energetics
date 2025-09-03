@@ -10,11 +10,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public record SendVoltageDataPacket(BlockPos pos, int id, float voltage) implements ClientboundPacketPayload {
+public record SendVoltageDataPacket(BlockPos pos, int id, double voltage) implements ClientboundPacketPayload {
     public static final StreamCodec<ByteBuf, SendVoltageDataPacket> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, SendVoltageDataPacket::pos,
             ByteBufCodecs.INT, SendVoltageDataPacket::id,
-            ByteBufCodecs.FLOAT, SendVoltageDataPacket::voltage,
+            ByteBufCodecs.DOUBLE, SendVoltageDataPacket::voltage,
             SendVoltageDataPacket::new
     );
     @Override

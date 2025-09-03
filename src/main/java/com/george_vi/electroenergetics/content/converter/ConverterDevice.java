@@ -56,7 +56,7 @@ public class ConverterDevice extends SimulatedDevice {
             return;
         }
 
-        double power = vd * results.getCurrentThrough(pos, 0, 1);
+        double power = Math.abs(vd * results.getCurrentThrough(pos, 0, 1));
 
         storedEnergy += power;
 
@@ -70,6 +70,6 @@ public class ConverterDevice extends SimulatedDevice {
         extraData.putDouble("StoredEnergy", storedEnergy);
 
         if (vd > 1)
-            extraData.putDouble("Resistance", Math.max(5, vd / (Math.max((MAX_ENERGY - storedEnergy), 0.01) / vd)));
+            extraData.putDouble("Resistance", Math.max(20, vd / (Math.max((MAX_ENERGY - storedEnergy), 0.01) / vd)));
     }
 }

@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionB
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.WireData;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -22,13 +23,13 @@ public class EmptySpoolWireInteractionBehaviour extends WireInteractionBehaviour
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
 
-        sd.removeConnection(new NodeConnection(point.node1(), point.node2()));
+        WireData data = sd.removeConnection(new NodeConnection(point.node1(), point.node2()));
 
         AllSoundEvents.WRENCH_REMOVE.playOnServer(level, BlockPos.containing(point.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()))));
 
         if (!player.isCreative()) {
             stack.shrink(1);
-            player.getInventory().placeItemBackInInventory(CEEItems.WIRE_SPOOL.asStack());
+            player.getInventory().placeItemBackInInventory(data.wireType().getSpooledItem().getDefaultInstance());
         }
 
         if (stack.has(CEEDataComponents.SELECTED_NODE))

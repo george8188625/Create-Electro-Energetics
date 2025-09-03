@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.railway_electrification.catenary
 
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
@@ -38,7 +39,7 @@ public class CatenaryHandler {
 
         for (Train train : Create.RAILWAYS.trains.values()) {
             for (Carriage carriage : train.carriages) {
-                List<Pair<BlockPos, Boolean>> pantographs = ((IPantographList)carriage).getPantographList();
+                List<TrainPantographEntry> pantographs = ((IPantographList)carriage).getPantographList();
                 if (carriage.presentInMultipleDimensions() ||
                     !carriage.getPresentDimensions().getFirst().equals(event.level.dimension()))
                     continue;
@@ -58,10 +59,13 @@ public class CatenaryHandler {
 
                 Vec3 pivotPosition = carriage.isOnTwoBogeys() ? positionVec : VecHelper.lerp(0.5f, positionVec, coupledVec);
 
-                for (Pair<BlockPos, Boolean> pantograph : pantographs) {
+                for (TrainPantographEntry pantograph : pantographs) {
+                    if (!pantograph.active())
+                        continue;
 
+                    // Here, all active pantographs are checked if they touch a catenary wire.
 
-                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.getFirst()).add(pantograph.getSecond() ? 0.5 : -0.5, 1.5, 0);
+                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.rotatedPos()).add(pantograph.facingForward() ? 0.5 : -0.5, 1.5, 0);
 
                     pantographPos = VecHelper.rotate(pantographPos, -pitch, Direction.Axis.Z);
                     pantographPos = VecHelper.rotate(pantographPos, -yaw + 180, Direction.Axis.Y);
@@ -98,18 +102,22 @@ public class CatenaryHandler {
                 }
             }
         }
+
         int i = 0;
+        Map<Train, List<Node>> trainPantographs = new HashMap<>();
         for (Couple<BlockPos> connection : allCatenaryConnections) {
             if (cutConnections.containsKey(connection)) {
+
+                // Catenary wires are cut, and a node is inserted, if a pantograph is in the middle, and shipped off to the simulator.
+
                 List<Pair<Float, Train>> connectedTrains = new ArrayList<>();
                 for (Map.Entry<Train, List<Pair<Float, Couple<BlockPos>>>> e : catenaryConnections.entrySet()) {
                     Train train = e.getKey();
                     for (Pair<Float, Couple<BlockPos>> e1 : e.getValue()) {
                         float progress = e1.getFirst();
                         Couple<BlockPos> con = e1.getSecond();
-                        if (connection.equals(con)) {
+                        if (connection.equals(con))
                             connectedTrains.add(Pair.of(progress, train));
-                        }
                     }
                 }
                 Node startNode = new Node(0, connection.getFirst());
@@ -123,18 +131,15 @@ public class CatenaryHandler {
                     float progress = e.getFirst();
                     Train train = e.getSecond();
                     double resistance = totalResistance * (progress - totalProgress);
-                    Node trainNode = event.addNode("CeePantographNode", i, BlockPos.ZERO);
-                    Node groundNode = event.addGroundedNode("CeePantographGroundNode", i, BlockPos.ZERO);
+                    Node pantographNode = event.addNode("CeePantographNode", i, BlockPos.ZERO);
+
+                    if (!trainPantographs.containsKey(train))
+                        trainPantographs.put(train, new ArrayList<>(List.of(pantographNode)));
+                    else
+                        trainPantographs.get(train).add(pantographNode);
                     i++;
-
-                    double trainSpeed = Math.abs(train.speed);
-                    float acceleration = (float) (trainSpeed - trainSpeeds.getOrDefault(train, trainSpeed));
-
-                    event.connect(groundNode, trainNode, ElectricalProperties.resistor(Math.abs(train.speed) > 0.01 ?
-                            acceleration > 0.001 ? CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() : CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get() : 9999));
-                    event.connect(lastNode, trainNode, ElectricalProperties.resistor(resistance));
-                    trains.add(Pair.of(train, Couple.create(trainNode, groundNode)));
-                    lastNode = trainNode;
+                    event.connect(lastNode, pantographNode, ElectricalProperties.resistor(resistance));
+                    lastNode = pantographNode;
                 }
 
                 event.connect(lastNode, endNode, ElectricalProperties.resistor(totalResistance * (1.01 - totalProgress)));
@@ -144,6 +149,21 @@ public class CatenaryHandler {
                 Node node2 = new Node(0, connection.getSecond());
                 event.connect(node1, node2, ElectricalProperties.resistor(SimulationTicker.getWireResistance(node1, node2, CEEWireTypes.STANDARD.get())));
             }
+        }
+
+        // Create train circuit, all pantographs merge into one node, that node is connected to ground through a resistance
+        i = 0;
+        for (Map.Entry<Train, List<Node>> e : trainPantographs.entrySet()) {
+            Train train = e.getKey();
+            double trainSpeed = Math.abs(train.speed);
+            float acceleration = (float) (trainSpeed - trainSpeeds.getOrDefault(train, trainSpeed));
+            Node groundNode = event.addGroundedNode("CeePantographGroundNode", i, BlockPos.ZERO);
+            Node trainNode = event.addNode("CEETrainNode", i, BlockPos.ZERO);
+            event.connect(groundNode, trainNode, ElectricalProperties.resistor(Math.abs(train.speed) > 0.01 ?
+                    acceleration > 0.001 ? CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() : CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get() : 9999));
+            for (Node node : e.getValue())
+                event.connect(node, trainNode, ElectricalProperties.resistor(CEEConfigs.server().resistanceValues.wireResistance.get()));
+            trains.add(Pair.of(train, Couple.create(trainNode, groundNode)));
         }
 
     }

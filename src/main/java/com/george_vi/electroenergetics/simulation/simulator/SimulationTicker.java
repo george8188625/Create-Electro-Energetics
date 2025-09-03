@@ -238,13 +238,13 @@ public class SimulationTicker {
                 newTemp = Math.max(temp - 33.3f + newTemp, 0);
                 sd.setConnectionTemperature(connection, newTemp);
 
-                if (newTemp > 2000 && level.isLoaded(connection.node1().sourcePos())) {
+                if (newTemp > wireType.getMaxTemperature() * 0.6 && level.isLoaded(connection.node1().sourcePos())) {
                     // smoke particles
                     CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, connection.node1().sourcePos().getCenter(), connection.node2().sourcePos().getCenter()),
                             connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE));
                 }
 
-                if (newTemp > 5000) {
+                if (newTemp > wireType.getMaxTemperature()) {
                     if (longestWireToBreak == null)
                         longestWireToBreak = connection;
                     else if (getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < getWireResistance(connection.node1(), connection.node2(), wireType))
@@ -270,18 +270,8 @@ public class SimulationTicker {
             allSourceAmps.putAll(v);
 
         NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(new SimulationResults(Collections.emptyMap(), allSourceAmps, adjacency, connectionProperties, sd), level, sd));
-
-
-        for (Node node : allNodes) {
-            if (node instanceof AttachedNode)
-                return;
-            double voltage = sd.getVoltageAt(node);
-
-            InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(node.sourcePos());
-            if (deviceInstance != null)
-                level.getPlayers(player -> Math.sqrt(player.blockPosition().distSqr(node.sourcePos())) < deviceInstance.simulatedDevice().sendVoltagesDistance()).forEach(
-                        player -> CatnipServices.NETWORK.sendToClient(player, new SendVoltageDataPacket(node.sourcePos(), node.id(), (float) voltage)));
-        }
+        
+        VoltageSync.finishSimulation(sd, level);
     }
 
 

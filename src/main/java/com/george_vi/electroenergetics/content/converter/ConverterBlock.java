@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.converter;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
+import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
@@ -117,33 +118,16 @@ public class ConverterBlock extends SimpleDeviceBlock implements IWrenchable, IB
 
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        if (state.getValue(FACING).getAxis().isVertical())
-            return state.getValue(ROLL) ?
-                    Map.of(0, new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 3/16f), 1, new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 13/16f)) :
-                    Map.of(0, new Vec3(3/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f), 1, new Vec3(13/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f));
-        if (state.getValue(FACING).getAxis() == Direction.Axis.X)
-            return state.getValue(ROLL) ?
-                    Map.of(0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 3/16f, 0.5f), 1, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 13/16f, 0.5f)) :
-                    Map.of(0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 3/16f), 1, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 13/16f));
-        return state.getValue(ROLL) ?
-                Map.of(0, new Vec3(0.5f, 3/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 1, new Vec3(0.5f, 13/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f)) :
-                Map.of(0, new Vec3(3/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f), 1, new Vec3(13/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f));
+        if (state.getValue(ROLL))
+            return CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodes(state.getValue(FACING));
+        return CEENodeConfigurations.DOUBLE_CONNECTOR.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
-        if (state.getValue(FACING).getAxis().isVertical())
-            return state.getValue(ROLL) ?
-                    id == 0 ? new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 3/16f) : new Vec3(0.5f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 13/16f) :
-                    id == 0 ? new Vec3(3/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f) : new Vec3(13/16f, (state.getValue(FACING) == Direction.UP ? 5 : 11)/16f, 0.5f);
-        if (state.getValue(FACING).getAxis() == Direction.Axis.X)
-            return state.getValue(ROLL) ?
-                    id == 0 ? new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 3/16f, 0.5f) : new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 14/16f, 0.5f) :
-                    id == 0  ? new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f, 0.5f, 3/16f) : new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 0.5f, 14/16f);
-        return state.getValue(ROLL) ?
-                id == 0 ?new Vec3(0.5f, 3/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f) : new Vec3(0.5f, 13/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f) :
-                id == 0 ?new Vec3(3/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f) : new Vec3(13/16f, 0.5f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 5 : 11)/16f);
-
+        if (state.getValue(ROLL))
+            return CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodePos(state.getValue(FACING), id);
+        return CEENodeConfigurations.DOUBLE_CONNECTOR.getNodePos(state.getValue(FACING), id);
     }
 
     @Override

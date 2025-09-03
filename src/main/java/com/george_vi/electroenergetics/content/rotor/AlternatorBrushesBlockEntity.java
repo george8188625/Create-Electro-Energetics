@@ -68,8 +68,8 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
             magnets += rotor.magnets;
         }
 
-        Float v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Float v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
+        Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
         if (v1 == null || v2 == null)
             return false;
         Lang.builder(CreateElecrtoEnergetics.ID)

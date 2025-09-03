@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.clamp_meter;
 
+import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
@@ -61,8 +62,8 @@ public class ClampMeterItem extends Item {
                 return;
             }
 
-            Float v1 = WireRenderer.getAllVoltages().get(point.node1());
-            Float v2 = WireRenderer.getAllVoltages().get(point.node2());
+            Double v1 = WireRenderer.getAllVoltages().get(point.node1());
+            Double v2 = WireRenderer.getAllVoltages().get(point.node2());
             Pair<NodeConnection, WireData> wire = null;
             for (Pair<NodeConnection, WireData> connection : WireRenderer.getAllConnections()) {
                 if (connection.getFirst().equals(new NodeConnection(point.node1(), point.node2()))) {
@@ -81,6 +82,7 @@ public class ClampMeterItem extends Item {
 
     @Override
     public void onStopUsing(ItemStack stack, LivingEntity entity, int count) {
+        stack.remove(CEEDataComponents.NODE_CONNECTION);
         CatnipServices.PLATFORM.executeOnClientOnly(() -> this::stopMetering);
     }
 

@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.mixins;
 
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
@@ -27,16 +28,18 @@ import java.util.List;
 @Mixin(Carriage.class)
 public class CarriageMixin implements IPantographList {
     @Unique
-    public List<Pair<BlockPos, Boolean>> electroEnergetics$pantographs = new ArrayList<>();
+    public List<TrainPantographEntry> electroEnergetics$pantographs = new ArrayList<>();
 
     @Inject(method = "read(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/HolderLookup$Provider;Lcom/simibubi/create/content/trains/graph/TrackGraph;Lcom/simibubi/create/content/trains/graph/DimensionPalette;)Lcom/simibubi/create/content/trains/entity/Carriage;", at=@At("RETURN"), remap = false)
     private static void electroEnergetics$read(CompoundTag tag, HolderLookup.Provider registries, TrackGraph graph, DimensionPalette dimensions, CallbackInfoReturnable<Carriage> cir) {
         Carriage carriage = cir.getReturnValue();
-        List<Pair<BlockPos, Boolean>> pantographs = new ArrayList<>();
+        List<TrainPantographEntry> pantographs = new ArrayList<>();
         NBTHelper.iterateCompoundList(tag.getList("CEEPantographs", Tag.TAG_COMPOUND), pt -> {
             BlockPos pos = NBTHelper.readBlockPos(pt, "Pos");
+            BlockPos originalPos = NBTHelper.readBlockPos(pt, "OriginalPos");
             boolean forward = pt.getBoolean("Forward");
-            pantographs.add(Pair.of(pos, forward));
+            boolean active = pt.getBoolean("Active");
+            pantographs.add(new TrainPantographEntry(originalPos, pos, active, forward));
         });
         ((IPantographList)carriage).setPantographList(pantographs);
     }
@@ -49,22 +52,24 @@ public class CarriageMixin implements IPantographList {
     public void electroEnergetics$write(DimensionPalette dimensions, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
         CompoundTag tag = cir.getReturnValue();
         ListTag pantographTag = new ListTag();
-        for (Pair<BlockPos, Boolean> e : List.copyOf(electroEnergetics$pantographs)) {
+        for (TrainPantographEntry e : List.copyOf(electroEnergetics$pantographs)) {
             CompoundTag pt = new CompoundTag();
-            pt.put("Pos", NbtUtils.writeBlockPos(e.getFirst()));
-            pt.putBoolean("Forward", e.getSecond());
+            pt.put("Pos", NbtUtils.writeBlockPos(e.rotatedPos()));
+            pt.put("OriginalPos", NbtUtils.writeBlockPos(e.originalPos()));
+            pt.putBoolean("Forward", e.facingForward());
+            pt.putBoolean("Active", e.active());
             pantographTag.add(pt);
         }
         tag.put("CEEPantographs", pantographTag);
     }
 
     @Override
-    public void setPantographList(List<Pair<BlockPos, Boolean>> newPantographList) {
+    public void setPantographList(List<TrainPantographEntry> newPantographList) {
         electroEnergetics$pantographs = newPantographList;
     }
 
     @Override
-    public List<Pair<BlockPos, Boolean>> getPantographList() {
+    public List<TrainPantographEntry> getPantographList() {
         return electroEnergetics$pantographs;
     }
 }

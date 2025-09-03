@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.mixins;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
@@ -27,7 +28,7 @@ import java.util.List;
 @Mixin(CarriageContraption.class)
 public abstract class CarriageContraptionMixin extends Contraption implements IPantographList {
     @Unique
-    public List<Pair<BlockPos, Boolean>> electroEnergetics$pantographs = new ArrayList<>();
+    public List<TrainPantographEntry> electroEnergetics$pantographs = new ArrayList<>();
     @Unique
     public boolean electroEnergetics$sidewaysPantograph = false;
 
@@ -45,22 +46,22 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
             if (facing.getAxis() != assemblyDirection.getAxis())
                 electroEnergetics$sidewaysPantograph = true;
             else {
-                electroEnergetics$pantographs.add(Pair.of(toLocalPos(pos).rotate(
+                electroEnergetics$pantographs.add(new TrainPantographEntry(toLocalPos(pos), toLocalPos(pos).rotate(
                         assemblyDirection == Direction.NORTH ? Rotation.COUNTERCLOCKWISE_90 :
                         assemblyDirection == Direction.EAST ? Rotation.CLOCKWISE_180 :
                         assemblyDirection == Direction.SOUTH ? Rotation.CLOCKWISE_90 : Rotation.NONE
-                ), facing == assemblyDirection));
+                ), true, facing == assemblyDirection));
             }
         }
     }
 
     @Override
-    public void setPantographList(List<Pair<BlockPos, Boolean>> newPantographList) {
+    public void setPantographList(List<TrainPantographEntry> newPantographList) {
         electroEnergetics$pantographs = newPantographList;
     }
 
     @Override
-    public List<Pair<BlockPos, Boolean>> getPantographList() {
+    public List<TrainPantographEntry> getPantographList() {
         return electroEnergetics$pantographs;
     }
 }
