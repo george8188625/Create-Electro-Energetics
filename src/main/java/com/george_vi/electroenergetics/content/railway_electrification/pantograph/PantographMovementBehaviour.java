@@ -35,7 +35,10 @@ public class PantographMovementBehaviour implements MovementBehaviour {
         float targetExtensionState = context.blockEntityData.getFloat("ExtensionState");
         float currentExtensionState = context.data.getFloat("CurrentExtensionState");
         float prevExtensionState = currentExtensionState;
-        currentExtensionState = Mth.lerp(0.1f, currentExtensionState, targetExtensionState);
+        if (targetExtensionState == 0)
+            currentExtensionState = Mth.lerp(0.1f, currentExtensionState, targetExtensionState);
+        else
+            currentExtensionState = Mth.lerp(0.5f, currentExtensionState, targetExtensionState);
         if (Math.abs(currentExtensionState - targetExtensionState) < 0.01)
              currentExtensionState = targetExtensionState;
 
