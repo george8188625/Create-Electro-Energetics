@@ -29,6 +29,7 @@ import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = CreateElecrtoEnergetics.ID)
 public class GameEvents {
@@ -48,6 +49,11 @@ public class GameEvents {
     public static void tickLevel(LevelTickEvent.Pre event) {
         if (event.getLevel() instanceof ServerLevel level)
             SimulationTicker.tick(level);
+    }
+
+    @SubscribeEvent
+    public static void tickServer(ServerTickEvent.Pre event) {
+        SimulationTicker.profiler.clear();
     }
 
     @OnlyIn(Dist.CLIENT)

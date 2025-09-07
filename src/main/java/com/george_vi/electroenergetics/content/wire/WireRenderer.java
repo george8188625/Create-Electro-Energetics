@@ -214,7 +214,7 @@ public class WireRenderer {
 
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 3);
 
-                renderWire(points, pos1, pos2, pose, buffer, levelRenderer, CEEWireTypes.STANDARD.get());
+                renderWire(points, pos1, pos2, pose, buffer, levelRenderer, CEEWireTypes.IRON.get());
             }
         }
 

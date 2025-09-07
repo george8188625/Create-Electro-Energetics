@@ -23,10 +23,13 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.TRIPLE_CONNECTOR.asStack());
                         output.accept(CEEBlocks.QUAD_CONNECTOR.asStack());
                         output.accept(CEEItems.WIRE_SPOOL.asStack());
+                        output.accept(CEEItems.IRON_WIRE_SPOOL.asStack());
                         output.accept(CEEItems.CREATIVE_WIRE_SPOOL.asStack());
                         output.accept(CEEItems.EMPTY_SPOOL.asStack());
                         output.accept(CEEItems.INSULATED_WIRE.asStack());
                         output.accept(CEEItems.COPPER_WIRE.asStack());
+                        output.accept(CEEItems.IRON_WIRE.asStack());
+                        output.accept(CEEItems.IRON_WIRE_STRAND.asStack());
                         output.accept(CEEItems.CLAMP_METER.asStack());
                         output.accept(CEEBlocks.CREATIVE_BATTERY.asStack());
                         output.accept(CEEBlocks.BULB.asStack());

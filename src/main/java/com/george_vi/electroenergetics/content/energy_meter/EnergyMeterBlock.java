@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.energy_meter;
 
 import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllItems;
@@ -84,7 +85,7 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (AllItems.WRENCH.isIn(stack) || CEEItems.WIRE_SPOOL.isIn(stack) || CEEItems.EMPTY_SPOOL.isIn(stack))
+        if (AllItems.WRENCH.isIn(stack) || stack.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(stack))
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> withBlockEntityDo(level, pos, be -> this.displayScreen(be, player)));
         return ItemInteractionResult.SUCCESS;

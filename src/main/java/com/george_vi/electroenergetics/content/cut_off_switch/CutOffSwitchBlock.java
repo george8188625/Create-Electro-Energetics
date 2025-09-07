@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.Node;
@@ -75,7 +76,7 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (AllItems.WRENCH.isIn(stack) || CEEItems.WIRE_SPOOL.isIn(stack) || CEEItems.EMPTY_SPOOL.isIn(stack))
+        if (AllItems.WRENCH.isIn(stack) || stack.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(stack))
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
@@ -144,8 +145,8 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
                     CEENodeConfigurations.DOUBLE_SWITCH_ROLL.getNodes(state.getValue(FACING)) :
                     CEENodeConfigurations.DOUBLE_SWITCH.getNodes(state.getValue(FACING));
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodes(state.getValue(FACING)) :
-                CEENodeConfigurations.DOUBLE_CONNECTOR.getNodes(state.getValue(FACING));
+                CEENodeConfigurations.BULB_ROLL.getNodes(state.getValue(FACING)) :
+                CEENodeConfigurations.BULB.getNodes(state.getValue(FACING));
     }
 
     @Override
@@ -155,7 +156,7 @@ public class CutOffSwitchBlock extends SimpleDeviceBlock implements IWrenchable 
                     CEENodeConfigurations.DOUBLE_SWITCH_ROLL.getNodePos(state.getValue(FACING), id) :
                     CEENodeConfigurations.DOUBLE_SWITCH.getNodePos(state.getValue(FACING), id);
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodePos(state.getValue(FACING), id) :
-                CEENodeConfigurations.DOUBLE_CONNECTOR.getNodePos(state.getValue(FACING), id);
+                CEENodeConfigurations.BULB_ROLL.getNodePos(state.getValue(FACING), id) :
+                CEENodeConfigurations.BULB.getNodePos(state.getValue(FACING), id);
     }
 }

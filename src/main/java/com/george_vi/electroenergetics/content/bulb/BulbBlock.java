@@ -112,15 +112,15 @@ public class BulbBlock extends SimpleDeviceBlock implements SimpleWaterloggedBlo
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodes(state.getValue(FACING)) :
-                CEENodeConfigurations.DOUBLE_CONNECTOR.getNodes(state.getValue(FACING));
+                CEENodeConfigurations.BULB_ROLL.getNodes(state.getValue(FACING)) :
+                CEENodeConfigurations.BULB.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodePos(state.getValue(FACING), id) :
-                CEENodeConfigurations.DOUBLE_CONNECTOR.getNodePos(state.getValue(FACING), id);
+                CEENodeConfigurations.BULB_ROLL.getNodePos(state.getValue(FACING), id) :
+                CEENodeConfigurations.BULB.getNodePos(state.getValue(FACING), id);
     }
 
     @Override

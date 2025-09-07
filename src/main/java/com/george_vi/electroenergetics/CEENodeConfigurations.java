@@ -6,11 +6,6 @@ import net.minecraft.world.phys.Vec3;
 
 public class CEENodeConfigurations {
 
-    public static final NodeConfigurator DOUBLE_CONNECTOR_ROLL = new NodeConfigurator.Builder()
-            .add(new Vec3(0.5f, 5/16f, 3/16f))
-            .add(new Vec3(0.5f, 5/16f, 13/16f))
-            .simple();
-
     public static final NodeConfigurator SINGLE_MIDDLE_TOP = new NodeConfigurator.Builder()
             .add(new Vec3(0.5f, 14/16f, 0.5f))
             .simple();
@@ -23,6 +18,22 @@ public class CEENodeConfigurations {
             .add(new Vec3(3/16f, 5/16f, 0.5f))
             .add(new Vec3(13/16f, 5/16f, 0.5f))
             .simple();
+
+    public static final NodeConfigurator DOUBLE_CONNECTOR_ROLL = new NodeConfigurator.Builder()
+            .add(new Vec3(0.5f, 5/16f, 3/16f))
+            .add(new Vec3(0.5f, 5/16f, 13/16f))
+            .simple();
+
+    public static final NodeConfigurator BULB = new NodeConfigurator.Builder()
+            .add(new Vec3(2/16f, 3/16f, 0.5f))
+            .add(new Vec3(14/16f, 3/16f, 0.5f))
+            .simple();
+
+    public static final NodeConfigurator BULB_ROLL = new NodeConfigurator.Builder()
+            .add(new Vec3(0.5f, 3/16f, 2/16f))
+            .add(new Vec3(0.5f, 3/16f, 14/16f))
+            .simple();
+
 
     public static final NodeConfigurator TRIPLE_CONNECTOR_ROLL = new NodeConfigurator.Builder()
             .add(new Vec3(0.5f, 5/16f, 3/16f))

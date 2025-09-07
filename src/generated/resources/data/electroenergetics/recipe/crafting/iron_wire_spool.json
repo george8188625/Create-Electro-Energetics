@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "s": {
+      "item": "electroenergetics:empty_spool"
+    },
+    "w": {
+      "item": "electroenergetics:iron_wire_strand"
+    }
+  },
+  "pattern": [
+    " w ",
+    "wsw",
+    " w "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:iron_wire_spool"
+  }
+}

@@ -16,6 +16,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,6 +50,14 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .unlockedBy("has_copper_nugget", has(AllTags.commonItemTag("nuggets/copper")))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/copper_wire"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_WIRE, 1)
+                .pattern("n")
+                .pattern("n")
+                .pattern("n")
+                .define('n', AllTags.commonItemTag("nuggets/iron"))
+                .unlockedBy("has_iron_nugget", has(AllTags.commonItemTag("nuggets/iron")))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_wire"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.INSULATED_WIRE, 8)
                 .pattern("www")
                 .pattern("wkw")
@@ -58,6 +67,14 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .unlockedBy("has_copper_wire", has(AllTags.commonItemTag("wires/copper")))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/insulated_wire"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_WIRE_STRAND)
+                .pattern("www")
+                .pattern("www")
+                .pattern("www")
+                .define('w', CEEItems.IRON_WIRE)
+                .unlockedBy("has_iron_wire", has(AllTags.commonItemTag("wires/iron")))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_wire_strand"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.WIRE_SPOOL)
                 .pattern(" w ")
                 .pattern("wsw")
@@ -66,6 +83,15 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .define('s', CEEItems.EMPTY_SPOOL)
                 .unlockedBy("has_insulated_wire", has(CEEItems.INSULATED_WIRE))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/wire_spool"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_WIRE_SPOOL)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', CEEItems.IRON_WIRE_STRAND)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_iron_wire_strand", has(CEEItems.IRON_WIRE_STRAND))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_wire_spool"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ALTERNATOR_BRUSHES)
                 .pattern(" B ")
@@ -329,6 +355,37 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .define('C', CEEBlocks.CONNECTOR)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/hv_switch"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.CATENARY_HOLDER)
+                .pattern("I")
+                .pattern("N")
+                .pattern("I")
+                .define('N', AllTags.commonItemTag("nuggets/iron"))
+                .define('I', AllTags.commonItemTag("ingots/iron"))
+                .unlockedBy("has_iron_nugget", has(Items.IRON_NUGGET))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/catenary_holder"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.PANTOGRAPH)
+                .pattern(" KK")
+                .pattern("CAS")
+                .pattern("CC ")
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('C', CEEBlocks.CONNECTOR)
+                .define('K', Items.DRIED_KELP)
+                .define('S', AllBlocks.SHAFT)
+                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/pantograph"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.CLAMP_METER)
+                .pattern(" WW")
+                .pattern("SPS")
+                .pattern("A A")
+                .define('P', AllItems.PRECISION_MECHANISM)
+                .define('W', CEEItems.WIRE_SPOOL)
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('S', AllItems.STURDY_SHEET)
+                .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/clamp_meter"));
     }
 }
 

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "K": {
+      "item": "minecraft:dried_kelp"
+    },
+    "S": {
+      "item": "create:shaft"
+    }
+  },
+  "pattern": [
+    " KK",
+    "CAS",
+    "CC "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:pantograph"
+  }
+}

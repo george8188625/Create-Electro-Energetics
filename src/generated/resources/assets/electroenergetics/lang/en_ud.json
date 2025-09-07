@@ -124,6 +124,9 @@
   "item.electroenergetics.creative_wire_spool": "ןoodS ǝɹıM ǝʌıʇɐǝɹƆ",
   "item.electroenergetics.empty_spool": "ןoodS ʎʇdɯƎ",
   "item.electroenergetics.insulated_wire": "ǝɹıM pǝʇɐןnsuI",
+  "item.electroenergetics.iron_wire": "ǝɹıM uoɹI",
+  "item.electroenergetics.iron_wire_spool": "ןoodS ǝɹıM uoɹI",
+  "item.electroenergetics.iron_wire_strand": "puɐɹʇS ǝɹıM uoɹI",
   "item.electroenergetics.wire_spool": "ןoodS ǝɹıM",
   "itemGroup.electroenergetics": "sɔıʇǝbɹǝuƎ oɹʇɔǝןƎ :ǝʇɐǝɹƆ"
 }

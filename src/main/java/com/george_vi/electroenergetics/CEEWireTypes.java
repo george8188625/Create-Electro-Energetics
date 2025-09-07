@@ -13,6 +13,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> STANDARD = WIRE_TYPES.register("standard", () -> new WireType(CEEConfigs.server().resistanceValues.wireResistance::get, CEEPartialModels.WIRE_SEGMENT, CEEItems.INSULATED_WIRE, CEEItems.WIRE_SPOOL::get, () -> 3540));
     public static final DeferredHolder<WireType, WireType> CREATIVE = WIRE_TYPES.register("creative", () -> new WireType(() -> 0.00001d, CEEPartialModels.CREATIVE_WIRE_SEGMENT, () -> Items.AIR, CEEItems.CREATIVE_WIRE_SPOOL::get, () -> 9999999));
+    public static final DeferredHolder<WireType, WireType> IRON = WIRE_TYPES.register("iron", () -> new WireType(CEEConfigs.server().resistanceValues.ironWireResistance::get, CEEPartialModels.IRON_WIRE_SEGMENT, CEEItems.IRON_WIRE_STRAND, CEEItems.IRON_WIRE_SPOOL::get, () -> 6000));
 
     public static void register(IEventBus bus) {
         WIRE_TYPES.register(bus);

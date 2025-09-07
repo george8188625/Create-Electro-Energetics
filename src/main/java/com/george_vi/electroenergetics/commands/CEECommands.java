@@ -2,12 +2,14 @@ package com.george_vi.electroenergetics.commands;
 
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.SimulatorProfiler;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.sun.jdi.connect.Connector;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,12 +19,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.StringUtil;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 public class CEECommands {
     private static final UnaryOperator<Style> white = st -> st.withColor(ChatFormatting.WHITE.getColor());
@@ -61,15 +67,27 @@ public class CEECommands {
     public static int performance(CommandContext<CommandSourceStack> ctx) {
         CommandSourceStack source = ctx.getSource();
         source.sendSuccess(() -> Component.literal("-+------<< Simulation Performance: >>------+-"), false);
-        source.sendSuccess(() -> Component.literal("Networks: " + SimulationTicker.performances.size()).withStyle(blue), false);
-        for (SimulationTicker.SimulationPerformance performance : List.copyOf(SimulationTicker.performances).stream().sorted((Comparator.comparingInt(SimulationTicker.SimulationPerformance::totalTime))).toList()) {
-            if (performance.nodes() == 1)
-                continue;
-            source.sendSuccess(() -> Component.literal("Network of Voltage " + performance.minVoltage() + " - " + performance.maxVoltage() + " N: " + performance.nodes() + " ON: " + performance.optimizedNodes() + " OT: " + performance.optimizationTime() + "μs ST: " + performance.solutionTime() + "μs TT: " + performance.totalTime() + "μs"), false);
-        }
-        source.sendSuccess(() -> Component.literal("Whole simulation: " + SimulationTicker.totalTime + "μs").withStyle(darkBlue), false);
-        source.sendSuccess(() -> Component.literal("-+--------------------------------+-"), false);
+        List<SimulatorProfiler.ResultEntry> results = List.copyOf(SimulationTicker.profiler.getResults());
+        int totalTime = results.stream().mapToInt(SimulatorProfiler.ResultEntry::timeTook).sum();
+        listResults(1, results, source, totalTime == 0 ? 1 : totalTime, totalTime);
+
+        source.sendSuccess(() -> Component.literal("-+------------------------------------+-"), false);
         return 1;
+    }
+
+    private static void listResults(int depth, List<SimulatorProfiler.ResultEntry> entries, CommandSourceStack source, int totalTime, int parentTime) {
+        if (entries == null)
+            return;
+        for (SimulatorProfiler.ResultEntry entry : entries) {
+            float percentage = (float) entry.timeTook() / totalTime;
+            float parentPercentage = (float) entry.timeTook() / parentTime;
+            source.sendSuccess(() -> Component.literal("|  ".repeat(Math.max(0, depth - 1)) + "⊢ ").withStyle(blue)
+                    .append(Component.literal(entry.id().toString() + " ").withStyle(bright))
+                    .append(Component.literal(String.valueOf((entry.timeTook() / 1000))).append(" μs ").append(Component.literal(String.format("%.2f", percentage * 100) + " % ").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - percentage, 3) * 0.32f), 0.6f, 1f).getRGB()))))
+                    .append(Component.literal(String.format("%.2f", parentPercentage * 100) + " %").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - parentPercentage, 3) * 0.32f), 0.6f, 1f).getRGB())))
+                    , false);
+            listResults(depth + 1, entry.children(), source, totalTime, entry.timeTook());
+        }
     }
 
     public static int deviceData(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

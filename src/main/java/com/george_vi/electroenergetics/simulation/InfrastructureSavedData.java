@@ -371,7 +371,7 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public boolean isConnected(Node node1, Node node2) {
-        return NODES.get(node1).contains(node2) || (node1.id() == 0 && node2.id() == 0 && CATENARY.getOrDefault(node1.sourcePos(), Collections.emptyList()).contains(node2.sourcePos()));
+        return NODES.getOrDefault(node1, Collections.emptyList()).contains(node2) || (node1.id() == 0 && node2.id() == 0 && CATENARY.getOrDefault(node1.sourcePos(), Collections.emptyList()).contains(node2.sourcePos()));
     }
 
     public float getConnectionTemperature(NodeConnection connection) {

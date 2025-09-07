@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "N": {
+      "tag": "c:nuggets/iron"
+    }
+  },
+  "pattern": [
+    "I",
+    "N",
+    "I"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:catenary_holder"
+  }
+}

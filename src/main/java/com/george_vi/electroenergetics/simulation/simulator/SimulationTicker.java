@@ -28,14 +28,15 @@ public class SimulationTicker {
 
     public static List<SimulationPerformance> performances = new ArrayList<>();
     public static int totalTime = 0;
+    public static SimulatorProfiler profiler = new SimulatorProfiler();
 
     public static void tick(ServerLevel level) {
+        profiler.push(level.dimension().location().toString());
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
 
-        long start = System.nanoTime();
-        List<SimulationPerformance> performances = new ArrayList<>();
-
         // SETUP
+        profiler.push("setupNodes");
+
         Set<Pair<WireType, NodeConnection>> connections = new HashSet<>();
         Map<Node, List<Node>> adjacency = new HashMap<>();
         Map<DirectionSensitiveNodeConnection, ElectricalProperties> connectionProperties = new HashMap<>();
@@ -44,6 +45,8 @@ public class SimulationTicker {
 
         if (allNodes.isEmpty())
             return;
+
+        profiler.popPush("setupConnections");
 
         for (Node node : allNodes) {
             adjacency.put(node, new ArrayList<>());
@@ -54,9 +57,12 @@ public class SimulationTicker {
             }
         }
 
+        profiler.popPush("preTick");
+
         // PRE-TICK / COLLECT BRIDGES
         for (InfrastructureSavedData.SimulatedDeviceInstance deviceInstance : sd.getDevices()) {
             SimulatedDevice device = deviceInstance.simulatedDevice();
+            profiler.push(device.getID().toString());
 
             List<ElectricalNodeConnection> bridges = new ArrayList<>();
             List<Node> internalNodes = new ArrayList<>();
@@ -79,7 +85,10 @@ public class SimulationTicker {
                 connectionProperties.put(new DirectionSensitiveNodeConnection(bridge.node1(), bridge.node2()), bridge.electricalProperties);
                 connectionProperties.put(new DirectionSensitiveNodeConnection(bridge.node2(), bridge.node1()), bridge.electricalProperties.invert());
             }
+            profiler.pop();
         }
+
+        profiler.popPush("connectWires");
 
         for (Pair<WireType, NodeConnection> connection : connections) {
             Node node1 = connection.getSecond().node1();
@@ -102,6 +111,8 @@ public class SimulationTicker {
             sd.setVoltage(node, 0d);
         }
 
+        profiler.popPush("dfs");
+
         // DFS
         Set<Node> visited = new HashSet<>();
         List<Set<Node>> networks = new ArrayList<>();
@@ -116,14 +127,16 @@ public class SimulationTicker {
             }
         }
 
+        profiler.popPush("solveNetworks");
+
         Map<BlockPos, Map<Node, Double>> resultsPerBlock = new HashMap<>();
         Map<BlockPos, Map<DirectionSensitiveNodeConnection, Double>> sourceAmps = new HashMap<>();
 
         // SOLVE NETWORKS
 
         for (Set<Node> networkNodes : networks) {
-            long networkStart = System.nanoTime();
 
+            profiler.push("lookForSource");
             boolean foundSource = false;
             Map<Node, Map<Node, ElectricalProperties>> networkConnections = new HashMap<>();
             for (Node node : networkNodes) {
@@ -136,34 +149,26 @@ public class SimulationTicker {
                 }
                 networkConnections.put(node, nodeConnections);
             }
+            profiler.pop();
             double[] mnaResults;
 
             Map<Node, Double> results;
 
-            long optimizationStart = 0;
-            int preOptimizationNodes = 0;
-            long optimizationEnd = 0;
-            int postOptimizationNodes = 0;
-            long solveStart = 0;
-            long solveEnd = 0;
-
             if (foundSource) {
                 Network network = new Network(networkNodes.stream().toList(), networkConnections, sd);
 
-                optimizationStart = System.nanoTime();
-                preOptimizationNodes = network.getAllNodes().size();
+                profiler.push("optimize");
                 if (CEEConfigs.server().optimizeGraph.get())
                     network.optimize();
-                optimizationEnd = System.nanoTime();
-                postOptimizationNodes = network.getAllNodes().size();
+                profiler.popPush("solve");
 
                 Map<Node, SimulationNode> simulationNodes = network.mapToSimNodes();
                 Pair<Map<Couple<SimulationNode>, Double>, Pair<SparseMatrix<Double>, double[]>> matrices = network.formMatrix(simulationNodes);
                 Map<Couple<SimulationNode>, Double> voltageSources = matrices.getFirst();
 
-                solveStart = System.nanoTime();
                 mnaResults = LUSolver.solve(matrices.getSecond().getFirst(), matrices.getSecond().getSecond());
-                solveEnd = System.nanoTime();
+
+                profiler.popPush("interpretResults");
 
                 int i = 0;
                 for (Couple<SimulationNode> con : voltageSources.keySet()) {
@@ -175,11 +180,14 @@ public class SimulationTicker {
                 }
 
                 results = network.getResults(mnaResults, simulationNodes);
+                profiler.pop();
             } else {
                 results = new HashMap<>(networkNodes.size());
                 for (Node node : networkNodes)
                     results.put(node, 0d);
             }
+
+            profiler.push("interpretResults");
 
             int minVoltage = 0;
             int maxVoltage = 0;
@@ -197,11 +205,15 @@ public class SimulationTicker {
                     resultsPerBlock.put(e.getKey().sourcePos(), new HashMap<>());
                 resultsPerBlock.get(e.getKey().sourcePos()).put(e.getKey(), voltage);
             }
-            long networkEnd = System.nanoTime();
 
-            performances.add(new SimulationPerformance(preOptimizationNodes, postOptimizationNodes, (int) (networkEnd - networkStart) / 1000, (int) (optimizationEnd - optimizationStart) / 1000, (int) (solveEnd - solveStart) / 1000, minVoltage, maxVoltage));
+            profiler.pop();
         }
+
+        profiler.pop();
+
         for (Node node : allNodes) {
+            if (node instanceof AttachedNode)
+                continue;
             Map<Node, Double> e = resultsPerBlock.get(node.sourcePos());
             if (e == null) {
                 resultsPerBlock.put(node.sourcePos(), new HashMap<>());
@@ -212,13 +224,17 @@ public class SimulationTicker {
 
         }
 
+        profiler.push("postTick");
         resultsPerBlock.forEach((pos, voltages) -> {
             InfrastructureSavedData.SimulatedDeviceInstance device = sd.getDevice(pos);
             if (device == null)
                 return;
+            profiler.push(device.simulatedDevice().getID().toString());
             SimulationResults results = new SimulationResults(voltages, sourceAmps.getOrDefault(pos, Collections.emptyMap()), adjacency, connectionProperties, sd);
             device.simulatedDevice().postTick(pos, level, results, device.extraData());
+            profiler.pop();
         });
+        profiler.popPush("updateWireTemperature");
 
         // WIRE BREAKING
         if (CEEConfigs.server().wiresBreak.get()) {
@@ -258,12 +274,10 @@ public class SimulationTicker {
                         longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.BUBBLE_POP));
             }
         }
+        profiler.popPush("finish");
 
         if (!allNodes.isEmpty())
             sd.setDirty();
-
-        totalTime = (int) ((System.nanoTime() - start) / 1000);
-        SimulationTicker.performances = performances;
 
         Map<DirectionSensitiveNodeConnection, Double> allSourceAmps = new HashMap<>();
         for (Map<DirectionSensitiveNodeConnection, Double> v : sourceAmps.values())
@@ -272,6 +286,9 @@ public class SimulationTicker {
         NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(new SimulationResults(Collections.emptyMap(), allSourceAmps, adjacency, connectionProperties, sd), level, sd));
         
         VoltageSync.finishSimulation(sd, level);
+
+        profiler.pop();
+        profiler.pop();
     }
 
 
