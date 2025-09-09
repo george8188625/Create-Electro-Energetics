@@ -29,6 +29,8 @@ import java.util.List;
 public class CarriageMixin implements IPantographList {
     @Unique
     public List<TrainPantographEntry> electroEnergetics$pantographs = new ArrayList<>();
+    @Unique
+    public boolean electroEnergetics$hasMotor = false;
 
     @Inject(method = "read(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/HolderLookup$Provider;Lcom/simibubi/create/content/trains/graph/TrackGraph;Lcom/simibubi/create/content/trains/graph/DimensionPalette;)Lcom/simibubi/create/content/trains/entity/Carriage;", at=@At("RETURN"), remap = false)
     private static void electroEnergetics$read(CompoundTag tag, HolderLookup.Provider registries, TrackGraph graph, DimensionPalette dimensions, CallbackInfoReturnable<Carriage> cir) {
@@ -42,10 +44,12 @@ public class CarriageMixin implements IPantographList {
             pantographs.add(new TrainPantographEntry(originalPos, pos, active, forward));
         });
         ((IPantographList)carriage).setPantographList(pantographs);
+        ((IPantographList)carriage).setElectricMotor(tag.getBoolean("CEEHasElectricMotor"));
     }
     @Inject(method = "setContraption", at=@At("TAIL"), remap = false)
     public void electroEnergetics$setContraption(Level level, CarriageContraption contraption, CallbackInfo ci) {
         this.electroEnergetics$pantographs = ((IPantographList)contraption).getPantographList();
+        this.electroEnergetics$hasMotor = ((IPantographList)contraption).hasElectricMotor();
     }
 
     @Inject(method = "write(Lcom/simibubi/create/content/trains/graph/DimensionPalette;Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/nbt/CompoundTag;", at=@At("RETURN"), remap = false)
@@ -61,6 +65,7 @@ public class CarriageMixin implements IPantographList {
             pantographTag.add(pt);
         }
         tag.put("CEEPantographs", pantographTag);
+        tag.putBoolean("CEEHasElectricMotor", electroEnergetics$hasMotor);
     }
 
     @Override
@@ -71,5 +76,15 @@ public class CarriageMixin implements IPantographList {
     @Override
     public List<TrainPantographEntry> getPantographList() {
         return electroEnergetics$pantographs;
+    }
+
+    @Override
+    public boolean hasElectricMotor() {
+        return electroEnergetics$hasMotor;
+    }
+
+    @Override
+    public void setElectricMotor(boolean v) {
+        electroEnergetics$hasMotor = v;
     }
 }

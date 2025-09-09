@@ -1,4 +1,4 @@
-// 1.21.1	2025-09-07T20:08:42.3569917	Recipes
+// 1.21.1	2025-09-09T23:01:17.1706696	Recipes
 3aebfa4f38c5a9d6431e63d06c23a7682eb9c06e data/electroenergetics/advancement/recipes/misc/crafting/alternator_brushes.json
 17cb440186b8229ab96e28b4fabfcc6443fd4318 data/electroenergetics/advancement/recipes/misc/crafting/alternator_rotor.json
 2b40210321dd5bc26e17c0c93ae0eedd9b1f87e5 data/electroenergetics/advancement/recipes/misc/crafting/ammeter.json
@@ -42,7 +42,7 @@ cdd4ba7313983d9d4ba364e8a99baa7595dce051 data/electroenergetics/advancement/reci
 e1a3b4eb7dce267aef81eabd8fccc21e5eeb0f47 data/electroenergetics/recipe/crafting/ammeter.json
 d4c6154d2ceae7a1a8079e823af65f21d78d67cd data/electroenergetics/recipe/crafting/ammeter_from_voltmeter.json
 02f7dbd68a73680da275c039625880b8b1d0882a data/electroenergetics/recipe/crafting/bulb.json
-d1989bd5fcb69e46c2dea2c1300f3644e257060e data/electroenergetics/recipe/crafting/catenary_holder.json
+49acef436a0c61d40340e3697f0043e7b3b1c2b7 data/electroenergetics/recipe/crafting/catenary_holder.json
 9deba83475f51b6c6cac36c24432596b716b39b1 data/electroenergetics/recipe/crafting/clamp_meter.json
 ca70ace641b1fcf9b5b7399e4c4c614c67da3e49 data/electroenergetics/recipe/crafting/concrete_pole.json
 23196e58932d6eeb8a7de3a3d35559df64ca180c data/electroenergetics/recipe/crafting/connector.json

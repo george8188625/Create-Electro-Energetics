@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -97,19 +98,19 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             }
 
             if (connectionPoint != null) {
+//                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, connectionPoint.x, connectionPoint.y, connectionPoint.z, 0, 0, 0);
                 float lo = 0;
                 float hi = 1.3f;
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 20; i++) {
                     float m1 = lo + (hi - lo) / 3;
                     float m2 = hi - (hi - lo) / 3;
-                    if (getConnectorPos(m1, context).distanceTo(connectionPoint) < getConnectorPos(m2, context).distanceTo(connectionPoint))
+                    if (Math.abs(getConnectorPos(m1, context).y - connectionPoint.y) < Math.abs(getConnectorPos(m2, context).y - connectionPoint.y))
                         hi = m2;
                     else
                         lo = m1;
                 }
                 targetExtensionState = (lo + hi) / 2;
             }
-//            Vec3 connectorPlatePos = getConnectorPos(currentExtensionState, context);
 
         }
 

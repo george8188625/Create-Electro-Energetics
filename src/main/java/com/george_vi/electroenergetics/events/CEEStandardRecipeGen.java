@@ -356,10 +356,10 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/hv_switch"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.CATENARY_HOLDER)
-                .pattern("I")
-                .pattern("N")
-                .pattern("I")
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.CATENARY_HOLDER, 4)
+                .pattern("III")
+                .pattern(" N ")
+                .pattern("III")
                 .define('N', AllTags.commonItemTag("nuggets/iron"))
                 .define('I', AllTags.commonItemTag("ingots/iron"))
                 .unlockedBy("has_iron_nugget", has(Items.IRON_NUGGET))

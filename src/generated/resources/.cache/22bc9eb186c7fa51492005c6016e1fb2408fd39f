@@ -1,4 +1,4 @@
-// 1.21.1	2025-09-07T19:26:58.9514829	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-09-09T23:01:17.1646733	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -108,4 +108,5 @@ f3eee256afdc2c974db137095ff397fb1d928acc data/electroenergetics/loot_table/block
 96addc83e9bbc364f0c7e792fc5191267603eb9d data/electroenergetics/loot_table/blocks/tri_polar_energy_meter.json
 2c47b9045a3f3a0393378164ab96e5df3a4d96af data/electroenergetics/loot_table/blocks/voltage_regulator.json
 cebbbb548b3077845ff201773a97a64bd08ed537 data/electroenergetics/loot_table/blocks/voltmeter.json
+98bbd0520dae6a99af74617611f47379d90ede27 data/electroenergetics/tags/block/train_electric_motor.json
 91f0e38a58d30acaff9720157e93856ff1ffdf89 data/minecraft/tags/block/mineable/pickaxe.json

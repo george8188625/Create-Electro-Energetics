@@ -26,4 +26,8 @@ public interface IPantographList {
     default TrainPantographEntry getPantographState(BlockPos localPos) {
         return getPantographList().stream().filter(e -> e.originalPos().equals(localPos)).findFirst().orElse(null);
     }
+
+    boolean hasElectricMotor();
+
+    void setElectricMotor(boolean v);
 }

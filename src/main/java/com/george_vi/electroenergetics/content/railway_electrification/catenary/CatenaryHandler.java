@@ -41,7 +41,8 @@ public class CatenaryHandler {
             for (Carriage carriage : train.carriages) {
                 List<TrainPantographEntry> pantographs = ((IPantographList)carriage).getPantographList();
                 if (carriage.presentInMultipleDimensions() ||
-                    !carriage.getPresentDimensions().getFirst().equals(event.level.dimension()))
+                    !carriage.getPresentDimensions().getFirst().equals(event.level.dimension()) ||
+                    !((IPantographList)carriage).hasElectricMotor())
                     continue;
 
                 Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(carriage.getPresentDimensions().getFirst());
@@ -182,9 +183,16 @@ public class CatenaryHandler {
 
             double trainSpeed = Math.abs(train.speed);
 
-            Carriage carriage = train.currentlyBackwards ? train.carriages.getLast() : train.carriages.getFirst();
-            Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(event.level);
-            Vec3 pos = train.currentlyBackwards ? dce.leadingAnchor() : dce.trailingAnchor();
+            Carriage.DimensionalCarriageEntity dce = null;
+            for (Carriage carriage : train.carriages) {
+                if (((IPantographList)carriage).hasElectricMotor()) {
+                    dce = carriage.getDimensional(event.level);
+                    break;
+                }
+            }
+            if (dce == null)
+                dce = train.carriages.getFirst().getDimensional(event.level);
+            Vec3 pos = dce.leadingAnchor().add(dce.trailingAnchor()).scale(0.5);
             float acceleration = (float) (trainSpeed - trainSpeeds.getOrDefault(train, trainSpeed));
 
             trainSpeeds.put(train, trainSpeed);
@@ -193,7 +201,7 @@ public class CatenaryHandler {
                     100, new UpdateElectricTrainSoundPacket(train.id, pos, (float) trainSpeed, acceleration, active));
             if (active)
                 if (train.fuelTicks == 0) {
-                    train.fuelTicks = 20;
+                    train.fuelTicks = 10;
                 }
 
         }

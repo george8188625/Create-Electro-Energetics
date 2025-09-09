@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -53,6 +54,8 @@ public class WireRenderer {
         pose.pushPose();
         pose.translate(-camera.getPosition().x(), -camera.getPosition().y(), -camera.getPosition().z());
 
+        float baseCatenaryWidth = 0.66f;
+
         for (Couple<BlockPos> connection : List.copyOf(CATENARY)) {
             AABB bb = AABB.encapsulatingFullBlocks(connection.getFirst(), connection.getSecond());
             if (!levelRenderer.getFrustum().isVisible(bb))
@@ -66,11 +69,16 @@ public class WireRenderer {
             for (int i = 0; i < lowerWirePoints.size(); i++) {
                 Vec3 point = lowerWirePoints.get(i);
                 Vec3 nextPoint = i == lowerWirePoints.size() - 1 ? end : lowerWirePoints.get(i + 1);
+
+                // the reason for catenaries to have variable width, is that when the player is far away, normal-width catenaries look out of place, and they give off a vibe of something solid or smth??
+
+                float catenaryWidth = (float) Mth.clamp(baseCatenaryWidth / (mc.gameRenderer.getMainCamera().getPosition().distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
+
                 CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
                         .translate(point)
                         .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                         .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                        .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                        .scale(catenaryWidth, catenaryWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
                                 Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
@@ -89,11 +97,16 @@ public class WireRenderer {
             for (int i = 0; i < upperWirePoints.size(); i++) {
                 Vec3 point = upperWirePoints.get(i);
                 Vec3 nextPoint = i == upperWirePoints.size() - 1 ? topEnd : upperWirePoints.get(i + 1);
+
+                // the reason for catenaries to have variable width, is that when the player is far away, normal-width catenaries look out of place, and they give off a vibe of something solid or smth??
+
+                float catenaryWidth = (float) Mth.clamp(baseCatenaryWidth / (mc.gameRenderer.getMainCamera().getPosition().distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
+
                 CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
                         .translate(point)
                         .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                         .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                        .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                        .scale(catenaryWidth, catenaryWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
                                 Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
@@ -115,7 +128,7 @@ public class WireRenderer {
                         .translate(point)
                         .rotateY((float) Math.atan2(closest.x() - point.x(), closest.z() - point.z()))
                         .rotateX(-(float) Math.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
-                        .scaleZ((float) (point.distanceTo(closest) * 2) + 0.02f)
+                        .scale(catenaryWidth, catenaryWidth, (float) (point.distanceTo(closest) * 2) + 0.02f)
                         .light(BlockPos.containing(point).equals(BlockPos.containing(closest)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(closest).multiply(0.5, 0.5, 0.5))) :
                                 Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(mc.level, BlockPos.containing(closest))))

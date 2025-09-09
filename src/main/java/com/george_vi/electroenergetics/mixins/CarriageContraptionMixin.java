@@ -1,15 +1,18 @@
 package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
+import com.simibubi.create.AllTags;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -31,6 +34,8 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     public List<TrainPantographEntry> electroEnergetics$pantographs = new ArrayList<>();
     @Unique
     public boolean electroEnergetics$sidewaysPantograph = false;
+    @Unique
+    public boolean electroEnergetics$hasMotor = false;
 
     @Accessor("assemblyDirection")
     abstract Direction electroEnergetics$getAssemblyDirection();
@@ -53,6 +58,8 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
                 ), true, facing == assemblyDirection));
             }
         }
+        if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_electric_motor"))))
+            electroEnergetics$hasMotor = true;
     }
 
     @Override
@@ -63,5 +70,15 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     @Override
     public List<TrainPantographEntry> getPantographList() {
         return electroEnergetics$pantographs;
+    }
+
+    @Override
+    public boolean hasElectricMotor() {
+        return electroEnergetics$hasMotor;
+    }
+
+    @Override
+    public void setElectricMotor(boolean v) {
+        electroEnergetics$hasMotor = v;
     }
 }
