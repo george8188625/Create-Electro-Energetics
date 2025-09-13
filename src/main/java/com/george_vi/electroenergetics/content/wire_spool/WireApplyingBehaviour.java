@@ -124,7 +124,8 @@ public class WireApplyingBehaviour {
 
         boolean canConnect = true;
 
-        boolean isCatenary = db instanceof CatenaryHolderBlock && (level.getBlockState(hoveredNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock);
+        boolean isCatenary = db instanceof CatenaryHolderBlock && (level.getBlockState(hoveredNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock) &&
+                (heldItem.getItem() instanceof WireSpoolItem wsi) && wsi.wireType.get() == CEEWireTypes.STANDARD.get();
 
         // Wire too long
         if (Math.sqrt(selectedNode.sourcePos().distSqr(pos)) > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() : CEEConfigs.server().maxWireLength.get())) {
@@ -138,12 +139,10 @@ public class WireApplyingBehaviour {
         }
 
         // Don't 'self-connect' a block's nodes
-        // Don't connect catenary with the wrong wire type
 
         if ((canConnect &&
                 hoveredNode.sourcePos().equals(selectedNode.sourcePos()) &&
-                (!db.canSelfConnect(level, pos, state, selectedNode.id(), hoveredNode.id()) || selectedNode.id() == hoveredNode.id())) ||
-                (isCatenary && (heldItem.getItem() instanceof WireSpoolItem wsi) && wsi.wireType.get() != CEEWireTypes.STANDARD.get())) {
+                (!db.canSelfConnect(level, pos, state, selectedNode.id(), hoveredNode.id()) || selectedNode.id() == hoveredNode.id()))) {
             mc.gui.setOverlayMessage(
                     Lang.builder(CreateElecrtoEnergetics.ID)
                             .translate("wire_spool.invalid_connection")

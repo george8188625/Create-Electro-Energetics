@@ -18,12 +18,14 @@ public class CEEPonderPlugin implements PonderPlugin {
     @Override
     public void registerScenes(PonderSceneRegistrationHelper<ResourceLocation> helper) {
 
-        helper.forComponents(CEEBlocks.CONNECTOR.getId(), CEEBlocks.DOUBLE_CONNECTOR.getId(), CEEBlocks.TRIPLE_CONNECTOR.getId(), CEEBlocks.QUAD_CONNECTOR.getId(), CEEItems.WIRE_SPOOL.getId())
+        helper.forComponents(CEEBlocks.CONNECTOR.getId(), CEEBlocks.DOUBLE_CONNECTOR.getId(), CEEBlocks.TRIPLE_CONNECTOR.getId(), CEEBlocks.QUAD_CONNECTOR.getId(), CEEItems.WIRE_SPOOL.getId(), CEEItems.IRON_WIRE_SPOOL.getId(), CEEItems.CREATIVE_WIRE_SPOOL.getId())
                 .addStoryBoard("connectors", ConnectorScenes::connectors)
                 .addStoryBoard("connectors_chunks", ConnectorScenes::chunks);
         helper.forComponents(CEEBlocks.TRANSFORMER.getId())
                 .addStoryBoard("transformer", TransformerScenes::transformer)
                 .addStoryBoard("transformer_losses", TransformerScenes::losses);
+        helper.forComponents(CEEBlocks.PANTOGRAPH.getId(), CEEBlocks.CATENARY_HOLDER.getId())
+                .addStoryBoard("railway_electrification", RailwayElectrificationScenes::setup);
     }
 
     @Override

@@ -79,6 +79,11 @@ public class ConnectorScenes {
         connections.createConnection(util.vector().of(34/16f, 19/16f, 0.5), util.vector().centerOf(1, 1, 2));
         scene.idle(2);
 
+        connections.createCurrentVisualization(util.vector().of(2, 1.5, 4.5), util.vector().centerOf(1, 1, 2), 1, -1, 1);
+        connections.createCurrentVisualization(util.vector().of(46/16f, 19/16f, 0.5), util.vector().centerOf(3, 1, 2), 1, -1, 1);
+        connections.createCurrentVisualization(util.vector().of(3, 1.5, 4.5), util.vector().centerOf(3, 1, 2), 1, 1, 1);
+        connections.createCurrentVisualization(util.vector().of(34/16f, 19/16f, 0.5), util.vector().centerOf(1, 1, 2), 1, 1, 1);
+
         scene.world().modifyBlock(util.grid().at(2, 1, 0), s -> s.setValue(BulbBlock.LIGHT, 2), false);
 
         scene.idle(60);

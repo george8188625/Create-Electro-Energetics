@@ -1,0 +1,168 @@
+package com.george_vi.electroenergetics.ponder;
+
+import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.CEEWireTypes;
+import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
+import net.createmod.catnip.math.Pointing;
+import net.createmod.ponder.api.PonderPalette;
+import net.createmod.ponder.api.element.ElementLink;
+import net.createmod.ponder.api.element.ParrotElement;
+import net.createmod.ponder.api.element.ParrotPose;
+import net.createmod.ponder.api.element.WorldSectionElement;
+import net.createmod.ponder.api.scene.SceneBuilder;
+import net.createmod.ponder.api.scene.SceneBuildingUtil;
+import net.createmod.ponder.api.scene.Selection;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+
+public class RailwayElectrificationScenes {
+
+    public static void setup(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+        scene.title("railway_electrification", "Electrifying Trains");
+        scene.configureBasePlate(0, 0, 15);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+        scene.scaleSceneView(0.75f);
+
+        Selection train = util.select().fromTo(1, 2, 2, 5, 4, 4);
+        Selection tracks = util.select().fromTo(0, 1, 0, 14, 1, 3);
+        Selection poles = util.select().fromTo(1, 1, 6, 13, 6, 6);
+        Selection powerSupply = util.select().fromTo(8, 1, 8, 12, 1, 9);
+        BlockPos holder1 = util.grid().at(1, 6, 3);
+        BlockPos holder2 = util.grid().at(13, 6, 3);
+
+        scene.world().showSection(tracks, Direction.EAST);
+
+        scene.idle(20);
+
+        scene.world().showSection(util.select().fromTo(holder1, holder2), Direction.DOWN);
+        scene.idle(20);
+
+        scene.world().showSection(poles, Direction.DOWN);
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Catenary Holders will automatically connect to nearby pole-like blocks")
+                .colored(PonderPalette.BLUE)
+                .pointAt(holder1.getCenter())
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+
+        scene.overlay().showControls(holder1.getCenter(), Pointing.DOWN, 20)
+                .withItem(CEEItems.WIRE_SPOOL.asStack())
+                .rightClick();
+        scene.idle(40);
+
+        scene.overlay().showControls(holder2.getCenter(), Pointing.DOWN, 20)
+                .withItem(CEEItems.WIRE_SPOOL.asStack())
+                .rightClick();
+        scene.idle(40);
+
+        connections.createCatenaryConnection(holder1.getBottomCenter(), holder2.getBottomCenter(), CEEWireTypes.STANDARD.get(), 1);
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("A catenary system can be used to power trains")
+                .pointAt(holder1.getBottomCenter().add(holder2.getBottomCenter()).scale(0.5))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
+
+        ElementLink<WorldSectionElement> trainElement = scene.world().showIndependentSection(train, Direction.DOWN);
+
+        scene.overlay().showText(100)
+                .text("A train, that uses electricity, must have a pantograph that touches the catenary wires ...")
+                .pointAt(util.vector().topOf(4, 4, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(130);
+
+        scene.overlay().showText(70)
+                .text("and an Electric Motor ...")
+                .pointAt(util.vector().blockSurface(util.grid().at(1, 2, 3), Direction.NORTH))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.rotateCameraY(-90);
+
+        scene.idle(20);
+
+        connections.createConnection(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
+                util.vector().centerOf(12, 6, 6));
+        scene.idle(20);
+
+        scene.world().showSection(powerSupply, Direction.DOWN);
+        scene.idle(20);
+
+        connections.createConnection(util.vector().centerOf(12, 1, 8),
+                util.vector().centerOf(12, 6, 6));
+        scene.idle(2);
+
+        connections.createConnection(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.EAST),
+                util.vector().centerOf(12, 1, 8));
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("To power the Catenary System, connect the overhead lines to the positive terminal")
+                .pointAt(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.EAST))
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+
+        connections.createConnection(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.WEST),
+                util.vector().of(8/16f, 3/16f, 8/16f).add(8, 1, 9));
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Connect the negative to a Ground Rod")
+                .pointAt(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.WEST))
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+
+        scene.overlay().showText(40)
+                .text("2500 V")
+                .pointAt(util.vector().topOf(10, 1, 9))
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(60);
+
+        scene.rotateCameraY(90);
+        scene.idle(60);
+
+        ElementLink<ParrotElement> birb =
+                scene.special().createBirb(util.vector().centerOf(2, 3, 3), ParrotPose.FacePointOfInterestPose::new);
+        scene.idle(20);
+
+        scene.world().moveSection(trainElement, util.vector().of(9, 0, 0), 60);
+        scene.world().animateBogey(util.grid().at(3, 2, 3), -9, 60);
+        scene.special().moveParrot(birb, util.vector().of(9, 0, 0), 60);
+        scene.idle(80);
+
+        connections.createCurrentVisualization(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
+                util.vector().centerOf(12, 6, 6), 1, -1, 1);
+        connections.createCurrentVisualization(util.vector().centerOf(12, 1, 8),
+                util.vector().centerOf(12, 6, 6), 1, 1, 1);
+        connections.createCurrentVisualization(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.EAST),
+                util.vector().centerOf(12, 1, 8), 1, 1, 1);
+        connections.createCurrentVisualization(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.WEST),
+                util.vector().of(8/16f, 3/16f, 8/16f).add(8, 1, 9), 1, -1, 1);
+
+        connections.createCurrentVisualization(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
+                util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, 1);
+        connections.createCurrentVisualization(util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3),
+                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, 1);
+
+        connections.createCurrentVisualization(util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3),
+                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 0, 3), 0, 1, 1);
+
+        scene.idle(60);
+    }
+}

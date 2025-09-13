@@ -25,9 +25,26 @@ public class WireConnectionInstructions {
     }
 
     public ElementLink<WirePonderElement> createConnection(Vec3 pos1, Vec3 pos2, WireType type, int duration) {
-        CreateWireConnectionInstruction instruction = new CreateWireConnectionInstruction(duration, Direction.DOWN, new WirePonderElement(pos1, pos2, type));
+        CreateWireConnectionInstruction instruction = new CreateWireConnectionInstruction(duration, Direction.DOWN, new WirePonderElement(pos1, pos2, type, false));
         builder.addInstruction(instruction);
         return instruction.createLink(builder.getScene());
+    }
+
+    public ElementLink<WirePonderElement> createCatenaryConnection(Vec3 pos1, Vec3 pos2, WireType type, int duration) {
+        CreateWireConnectionInstruction instruction = new CreateWireConnectionInstruction(duration, Direction.DOWN, new WirePonderElement(pos1, pos2, type, true));
+        builder.addInstruction(instruction);
+        return instruction.createLink(builder.getScene());
+    }
+
+    public ElementLink<CurrentVisualizationPonderElement> createCurrentVisualization(Vec3 pos1, Vec3 pos2, float sag, float speed, int duration) {
+        CreateCurrentVisualizationInstruction instruction = new CreateCurrentVisualizationInstruction(duration, Direction.DOWN, new CurrentVisualizationPonderElement(pos1, pos2, speed, sag));
+        builder.addInstruction(instruction);
+        return instruction.createLink(builder.getScene());
+    }
+
+    public void removeCurrentVisualization(ElementLink<CurrentVisualizationPonderElement> elementLink) {
+        builder.addInstruction(new RemoveCurrentVisualizationInstruction(1, Direction.UP, elementLink));
+
     }
 
     public void removeConnection(ElementLink<WirePonderElement> elementLink) {
@@ -51,6 +68,23 @@ public class WireConnectionInstructions {
 
     public static class RemoveWireConnectionInstruction extends FadeOutOfSceneInstruction<WirePonderElement> {
         public RemoveWireConnectionInstruction(int fadeOutTicks, Direction fadeOutTo, ElementLink<WirePonderElement> link) {
+            super(fadeOutTicks, fadeOutTo, link);
+        }
+    }
+
+    public static class CreateCurrentVisualizationInstruction extends FadeIntoSceneInstruction<CurrentVisualizationPonderElement> {
+        public CreateCurrentVisualizationInstruction(int fadeInTicks, Direction fadeInFrom, CurrentVisualizationPonderElement element) {
+            super(fadeInTicks, fadeInFrom, element);
+        }
+
+        @Override
+        protected Class<CurrentVisualizationPonderElement> getElementClass() {
+            return CurrentVisualizationPonderElement.class;
+        }
+    }
+
+    public static class RemoveCurrentVisualizationInstruction extends FadeOutOfSceneInstruction<CurrentVisualizationPonderElement> {
+        public RemoveCurrentVisualizationInstruction(int fadeOutTicks, Direction fadeOutTo, ElementLink<CurrentVisualizationPonderElement> link) {
             super(fadeOutTicks, fadeOutTo, link);
         }
     }

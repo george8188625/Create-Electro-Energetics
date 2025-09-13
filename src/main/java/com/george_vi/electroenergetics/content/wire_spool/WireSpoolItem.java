@@ -79,9 +79,8 @@ public class WireSpoolItem extends Item {
                 return InteractionResult.FAIL;
             }
 
-            if (db instanceof CatenaryHolderBlock && (level.getBlockState(originalNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock)) {
-                if (wireType.get() != CEEWireTypes.STANDARD.get() ||
-                        Math.sqrt(originalNode.sourcePos().distSqr(hoveredNode.sourcePos())) > CEEConfigs.server().maxCatenaryLength.get()) {
+            if (wireType.get() == CEEWireTypes.STANDARD.get() && db instanceof CatenaryHolderBlock && (level.getBlockState(originalNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock)) {
+                if (Math.sqrt(originalNode.sourcePos().distSqr(hoveredNode.sourcePos())) > CEEConfigs.server().maxCatenaryLength.get()) {
                     AllSoundEvents.DENY.playOnServer(level, pos);
                     return InteractionResult.FAIL;
                 }

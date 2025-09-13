@@ -94,4 +94,12 @@ public class CatenaryHolderBlockEntity extends SmartBlockEntity {
     public BlockPos getAttachedTo() {
         return attachedTo;
     }
+
+    public void removeAttachedTo() {
+        attachedTo = null;
+    }
+
+    public void setAttachedTo(BlockPos pos) {
+        attachedTo = pos;
+    }
 }
