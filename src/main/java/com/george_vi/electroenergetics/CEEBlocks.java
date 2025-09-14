@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
+import com.george_vi.electroenergetics.content.electronic_components.DiodeBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographMovementBehaviour;
@@ -464,6 +465,16 @@ public class CEEBlocks {
             .item()
             .tag(AllTags.AllItemTags.CONTRAPTION_CONTROLLED.tag)
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .build()
+            .register();
+
+    public static final BlockEntry<DiodeBlock> DIODE = REGISTRATE.block("diode", DiodeBlock::new)
+            .initialProperties(SharedProperties::netheriteMetal)
+            .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
+            .blockstate((c, p) -> p.horizontalBlock(c.get(), p.models().getExistingFile(p.modLoc("block/electronics/diode"))))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/diode")))
             .build()
             .register();
 

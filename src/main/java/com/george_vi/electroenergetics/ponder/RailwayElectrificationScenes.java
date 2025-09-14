@@ -147,21 +147,21 @@ public class RailwayElectrificationScenes {
         scene.idle(80);
 
         connections.createCurrentVisualization(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
-                util.vector().centerOf(12, 6, 6), 1, -1, 1);
+                util.vector().centerOf(12, 6, 6), 1, -1, true);
         connections.createCurrentVisualization(util.vector().centerOf(12, 1, 8),
-                util.vector().centerOf(12, 6, 6), 1, 1, 1);
+                util.vector().centerOf(12, 6, 6), 1, 1, true);
         connections.createCurrentVisualization(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.EAST),
-                util.vector().centerOf(12, 1, 8), 1, 1, 1);
+                util.vector().centerOf(12, 1, 8), 1, 1, true);
         connections.createCurrentVisualization(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.WEST),
-                util.vector().of(8/16f, 3/16f, 8/16f).add(8, 1, 9), 1, -1, 1);
+                util.vector().of(8/16f, 3/16f, 8/16f).add(8, 1, 9), 1, -1, true);
 
         connections.createCurrentVisualization(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
-                util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, 1);
+                util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, true);
         connections.createCurrentVisualization(util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3),
-                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, 1);
+                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, true);
 
         connections.createCurrentVisualization(util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3),
-                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 0, 3), 0, 1, 1);
+                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 0, 3), 0, 1, true);
 
         scene.idle(60);
     }

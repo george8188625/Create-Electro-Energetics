@@ -62,7 +62,10 @@ public class CEEShapes {
     public static final VoxelShaper POLE_MOUNT_INVERTED = shape(5, 0, 5, 11, 3, 11)
             .add(7, 1, 7, 9, 11, 22).forHorizontal(Direction.SOUTH);
 
-    public static final VoxelShaper PANTOGRAPH = shape(0, 1, -3, 16, 4, 19).add(1, 0, -2, 15, 5, 18).forHorizontal(Direction.EAST);
+    public static final VoxelShaper PANTOGRAPH = shape(0, 1, -3, 16, 4, 19)
+            .add(1, 0, -2, 15, 5, 18).forHorizontal(Direction.EAST);
+
+    public static final VoxelShaper ELECTRONIC_8 = shape(6, 0, 4, 10, 4, 12).forHorizontal(Direction.NORTH);
 
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);

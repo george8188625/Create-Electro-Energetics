@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.bulb;
 
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -31,11 +32,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class BulbBlock extends SimpleDeviceBlock implements SimpleWaterloggedBlock, IWrenchable {
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final BooleanProperty ROLL = BooleanProperty.create("roll");
+public class BulbBlock extends DirectionalRolledDeviceBlock {
     public static final IntegerProperty LIGHT = IntegerProperty.create("light", 0, 2);
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public final boolean broken;
 
     public BulbBlock(Properties properties) {
@@ -45,7 +43,6 @@ public class BulbBlock extends SimpleDeviceBlock implements SimpleWaterloggedBlo
     public BulbBlock(Properties properties, boolean broken) {
         super(properties);
         this.broken = broken;
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
     }
 
     public static BulbBlock broken(Properties properties) {
@@ -59,22 +56,8 @@ public class BulbBlock extends SimpleDeviceBlock implements SimpleWaterloggedBlo
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, ROLL, LIGHT, WATERLOGGED);
-    }
-
-    @Override
-    public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {
-        if (targetedFace.getAxis() == originalState.getValue(FACING).getAxis())
-            return originalState.cycle(ROLL);
-        return IWrenchable.super.getRotatedBlockState(originalState, targetedFace);
-    }
-
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        if (context.getClickedFace().getAxis().isVertical())
-            return super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X);
-        return super.getStateForPlacement(context).setValue(FACING, context.getClickedFace());
+        super.createBlockStateDefinition(builder);
+        builder.add(LIGHT);
     }
 
     @Override
@@ -85,9 +68,6 @@ public class BulbBlock extends SimpleDeviceBlock implements SimpleWaterloggedBlo
     @Override
     protected BlockState updateShape(
             BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        if (state.getValue(WATERLOGGED))
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-
         if (level instanceof ServerLevel sl) {
             InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = InfrastructureSavedData.load(sl).getDevice(pos);
             if (deviceInstance != null)
@@ -95,11 +75,6 @@ public class BulbBlock extends SimpleDeviceBlock implements SimpleWaterloggedBlo
         }
 
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
-    }
-
-    @Override
-    protected FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override

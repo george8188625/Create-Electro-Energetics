@@ -19,12 +19,14 @@ public class CurrentVisualizationPonderElement extends AnimatedSceneElementBase 
     final Vec3 pos1, pos2;
     final float speed;
     final float sag;
+    final boolean valid;
 
-    public CurrentVisualizationPonderElement(Vec3 pos1, Vec3 pos2, float speed, float sag) {
+    public CurrentVisualizationPonderElement(Vec3 pos1, Vec3 pos2, float speed, float sag, boolean valid) {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.speed = speed;
         this.sag = sag;
+        this.valid = valid;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class CurrentVisualizationPonderElement extends AnimatedSceneElementBase 
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
             Vec3 position = VecHelper.lerp(progress, point, nextPoint);
 
-            CachedBuffers.block(Blocks.YELLOW_CONCRETE.defaultBlockState())
+            CachedBuffers.block(valid ? Blocks.YELLOW_CONCRETE.defaultBlockState() : Blocks.RED_CONCRETE.defaultBlockState())
                     .translate(position)
                     .scale(0.125f)
                     .uncenter()

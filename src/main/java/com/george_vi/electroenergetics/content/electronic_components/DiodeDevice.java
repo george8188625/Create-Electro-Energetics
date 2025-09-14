@@ -20,11 +20,15 @@ public class DiodeDevice extends SimulatedDevice {
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
         bridges.builder(pos)
-                .resistor(0, 1, extraData.getBoolean("Forward") ? 9999 : 0.5);
+                .resistor(0, 1, extraData.getBoolean("Forward") ? 999999 : 0.5);
     }
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        extraData.putBoolean("Forward", results.getVoltageAt(pos, 0) > results.getVoltageAt(pos, 1));
+        boolean oldBias = extraData.getBoolean("Forward");
+        boolean bias = results.getVoltageAt(pos, 0) > results.getVoltageAt(pos, 1);
+        if (!oldBias && Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1)) < 0.001)
+            bias = false;
+        extraData.putBoolean("Forward", bias);
     }
 }

@@ -36,8 +36,8 @@ public class WireConnectionInstructions {
         return instruction.createLink(builder.getScene());
     }
 
-    public ElementLink<CurrentVisualizationPonderElement> createCurrentVisualization(Vec3 pos1, Vec3 pos2, float sag, float speed, int duration) {
-        CreateCurrentVisualizationInstruction instruction = new CreateCurrentVisualizationInstruction(duration, Direction.DOWN, new CurrentVisualizationPonderElement(pos1, pos2, speed, sag));
+    public ElementLink<CurrentVisualizationPonderElement> createCurrentVisualization(Vec3 pos1, Vec3 pos2, float sag, float speed, boolean valid) {
+        CreateCurrentVisualizationInstruction instruction = new CreateCurrentVisualizationInstruction(1, Direction.DOWN, new CurrentVisualizationPonderElement(pos1, pos2, speed, sag, valid));
         builder.addInstruction(instruction);
         return instruction.createLink(builder.getScene());
     }

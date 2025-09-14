@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.ponder;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.simibubi.create.infrastructure.ponder.AllCreatePonderTags;
 import net.createmod.ponder.api.registration.PonderPlugin;
 import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
 import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
@@ -26,6 +27,8 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .addStoryBoard("transformer_losses", TransformerScenes::losses);
         helper.forComponents(CEEBlocks.PANTOGRAPH.getId(), CEEBlocks.CATENARY_HOLDER.getId())
                 .addStoryBoard("railway_electrification", RailwayElectrificationScenes::setup);
+        helper.forComponents(CEEBlocks.DIODE.getId())
+                .addStoryBoard("diode", ElectricityBasicsScenes::diode);
     }
 
     @Override
@@ -46,12 +49,23 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .description("Components that use electricity")
                 .register();
 
+        helper.registerTag(CreateElecrtoEnergetics.rl("electricity_basics"))
+                .addToIndex()
+                .item(CEEBlocks.DIODE, true, false)
+                .title("Electricity Basics")
+                .description("How electricity works")
+                .register();
+
         helper.addToTag(CreateElecrtoEnergetics.rl("electrical"))
                 .add(CEEBlocks.CONNECTOR.getId())
                 .add(CEEBlocks.DOUBLE_CONNECTOR.getId())
                 .add(CEEBlocks.TRIPLE_CONNECTOR.getId())
                 .add(CEEBlocks.QUAD_CONNECTOR.getId())
+                .add(CEEItems.WIRE_SPOOL.getId())
+                .add(CEEItems.IRON_WIRE_SPOOL.getId())
+                .add(CEEItems.CREATIVE_WIRE_SPOOL.getId())
                 .add(CEEBlocks.TRANSFORMER.getId())
+                .add(CEEBlocks.VOLTAGE_REGULATOR.getId())
                 .add(CEEBlocks.ELECTRIC_MOTOR.getId())
                 .add(CEEBlocks.ALTERNATOR_ROTOR.getId())
                 .add(CEEBlocks.ALTERNATOR_BRUSHES.getId())
@@ -59,8 +73,22 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.VOLTMETER.getId())
                 .add(CEEBlocks.AMMETER.getId())
                 .add(CEEBlocks.ENERGY_METER.getId())
-                .add(CEEBlocks.CUT_OFF_SWITCH.getId())
+                .add(CEEBlocks.TRI_POLAR_ENERGY_METER.getId())
                 .add(CEEBlocks.BULB.getId())
+                .add(CEEBlocks.CUT_OFF_SWITCH.getId())
+                .add(CEEBlocks.HV_SWITCH.getId())
+                .add(CEEBlocks.DOUBLE_SWITCH.getId())
+                .add(CEEBlocks.PANTOGRAPH.getId())
+                .add(CEEBlocks.CATENARY_HOLDER.getId())
+                .add(CEEBlocks.DIODE.getId())
                 ;
+
+        helper.addToTag(CreateElecrtoEnergetics.rl("electricity_basics"))
+                .add(CEEBlocks.DIODE.getId())
+                ;
+
+        helper.addToTag(AllCreatePonderTags.TRAIN_RELATED)
+                .add(CEEBlocks.PANTOGRAPH.getId())
+                .add(CEEBlocks.CATENARY_HOLDER.getId());
     }
 }

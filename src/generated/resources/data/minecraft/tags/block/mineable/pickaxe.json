@@ -30,6 +30,7 @@
     "electroenergetics:magnet",
     "electroenergetics:converter",
     "electroenergetics:catenary_holder",
-    "electroenergetics:pantograph"
+    "electroenergetics:pantograph",
+    "electroenergetics:diode"
   ]
 }

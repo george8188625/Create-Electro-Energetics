@@ -2,11 +2,10 @@ package com.george_vi.electroenergetics.content.gauge;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.content.kinetics.gauge.GaugeBlock;
-import com.simibubi.create.content.kinetics.gauge.GaugeBlockEntity;
 import com.simibubi.create.foundation.block.IBE;
 import net.createmod.catnip.levelWrappers.WrappedLevel;
 import net.minecraft.core.BlockPos;
@@ -16,7 +15,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -146,5 +146,17 @@ public class ElectricGaugeBlock extends SimpleDeviceBlock implements IBE<Electri
     @Override
     public BlockEntityType<? extends ElectricGaugeBlockEntity> getBlockEntityType() {
         return voltmeter ? CEEBlockEntityTypes.VOLTMETER.get() : CEEBlockEntityTypes.AMMETER.get();
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, Rotation rot) {
+        if (rot.ordinal() % 2 == 1)
+            state = state.cycle(GaugeBlock.AXIS_ALONG_FIRST_COORDINATE);
+        return super.rotate(state, rot);
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+        return state.rotate(mirrorIn.getRotation(state.getValue(FACING)));
     }
 }

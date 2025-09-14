@@ -9,6 +9,7 @@ import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchDevice
 import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchDevice;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorDevice;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpDevice;
+import com.george_vi.electroenergetics.content.electronic_components.DiodeDevice;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterDevice;
 import com.george_vi.electroenergetics.content.energy_meter.TriPolarEnergyMeterDevice;
 import com.george_vi.electroenergetics.content.fuse.FuseDevice;
@@ -49,6 +50,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice REDSTONE_RELAY = register(new RedstoneRelayDevice(CreateElecrtoEnergetics.rl("redstone_relay")));
     public static final SimulatedDevice CONCRETE_POLE = register(new ConcretePoleDevice(CreateElecrtoEnergetics.rl("concrete_pole")));
     public static final SimulatedDevice HV_SWITCH = register(new HVSwitchDevice(CreateElecrtoEnergetics.rl("high_voltage_switch")));
+    public static final SimulatedDevice DIODE = register(new DiodeDevice(CreateElecrtoEnergetics.rl("diode")));
 
     public static SimulatedDevice register(SimulatedDevice device) {
         BY_ID.put(device.getID(), device);
