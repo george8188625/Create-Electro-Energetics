@@ -99,7 +99,7 @@
   "electroenergetics.ponder.diodes.text_6": "...диод воспрепятствует протеканию тока",
   "electroenergetics.ponder.railway_electrification.header": "Электрификацией поездов",
   "electroenergetics.ponder.railway_electrification.text_1": "Для закрепления изолятора контактной сети подойдёт любой блок-опора",
-  "electroenergetics.ponder.railway_electrification.text_2": "Контактная сеть передаёт электроэнергию на электроподвижной электросостав",
+  "electroenergetics.ponder.railway_electrification.text_2": "Контактная сеть передаёт электроэнергию на подвижной состав",
   "electroenergetics.ponder.railway_electrification.text_3": "Разместите пантограф на поезде так, чтобы его контактная поверхность соприкасалась с проводом",
   "electroenergetics.ponder.railway_electrification.text_4": "А также установите электрический двигатель",
   "electroenergetics.ponder.railway_electrification.text_5": "Для подачи питания на сеть подключите контактный провод к положительному контакту источника электроэнергии...",
