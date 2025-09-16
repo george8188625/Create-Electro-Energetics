@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.wire;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
@@ -68,6 +69,10 @@ public class WireRenderer {
 
             for (int i = 0; i < lowerWirePoints.size(); i++) {
                 Vec3 point = lowerWirePoints.get(i);
+
+                if (point.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                    continue;
+
                 Vec3 nextPoint = i == lowerWirePoints.size() - 1 ? end : lowerWirePoints.get(i + 1);
 
                 // the reason for catenaries to have variable width, is that when the player is far away, normal-width catenaries look out of place, and they give off a vibe of something solid or smth??
@@ -96,6 +101,10 @@ public class WireRenderer {
 
             for (int i = 0; i < upperWirePoints.size(); i++) {
                 Vec3 point = upperWirePoints.get(i);
+
+                if (point.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                    continue;
+
                 Vec3 nextPoint = i == upperWirePoints.size() - 1 ? topEnd : upperWirePoints.get(i + 1);
 
                 // the reason for catenaries to have variable width, is that when the player is far away, normal-width catenaries look out of place, and they give off a vibe of something solid or smth??
@@ -160,16 +169,21 @@ public class WireRenderer {
             pos2 = pos2.add(devicePos2.getX(), devicePos2.getY(), devicePos2.getZ());
 
             List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1);
-            List<Vec3> renderedPoints = QuadraticWireHelper.cablePoints(pos1, pos2, 1, mc.gameRenderer.getMainCamera().getPosition());
+            List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, 1, mc.gameRenderer.getMainCamera().getPosition()) :
+                    QuadraticWireHelper.cablePoints(pos1, pos2, 1);
             mc.getProfiler().popPush("renderWireAttachments");
             for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
                 mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachment.getSecond().type).toString());
-                pose.pushPose();
                 Vec3 offset;
                 if (wire.getFirst().node1().compareTo(wire.getFirst().node2()) > 0)
                     offset = QuadraticWireHelper.posAt(pos1, pos2, 1.0f - attachment.getFirst());
                 else
                     offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst());
+
+                if (offset.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                    continue;
+
+                pose.pushPose();
                 PoseTransformStack msr = TransformStack.of(pose);
                 msr.translate(offset);
                 double angleY = Math.toDegrees(Math.atan2(pos2.x - pos1.x, pos2.z - pos1.z)) + 90;
@@ -188,6 +202,8 @@ public class WireRenderer {
                 if (state1.getBlock() instanceof DeviceBlock db &&
                         db.isOuterInsulator(mc.level, connection.node1().sourcePos(), state1, connection.node1().id())) {
                     Vec3 nextPoint = points.get(5);
+                    if (nextPoint.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                        continue;
                     CachedBuffers.partial(CEEPartialModels.INSULATOR, Blocks.ANDESITE.defaultBlockState())
                             .translate(pos1)
                             .rotateY((float) Math.atan2(nextPoint.x() - pos1.x(), nextPoint.z() - pos1.z()))
@@ -203,6 +219,8 @@ public class WireRenderer {
                 if (state2.getBlock() instanceof DeviceBlock db &&
                         db.isOuterInsulator(mc.level, connection.node2().sourcePos(), state2, connection.node2().id())) {
                     Vec3 nextPoint = points.get(points.size() - 6);
+                    if (nextPoint.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                        continue;
                     CachedBuffers.partial(CEEPartialModels.INSULATOR, Blocks.ANDESITE.defaultBlockState())
                             .translate(pos2)
                             .rotateY((float) Math.atan2(nextPoint.x() - pos2.x(), nextPoint.z() - pos2.z()))
@@ -247,6 +265,9 @@ public class WireRenderer {
 
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
+
+            if (point.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                continue;
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
             CachedBuffers.partial(wireType.getModel(), Blocks.ANDESITE.defaultBlockState())
                     .translate(point)

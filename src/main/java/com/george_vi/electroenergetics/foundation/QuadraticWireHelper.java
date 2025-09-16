@@ -25,6 +25,7 @@ public class QuadraticWireHelper {
 
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, Vec3 position) {
         float distance = (float) pos1.distanceTo(pos2);
+        float wireLength = (float) pos1.distanceTo(pos2);
 
         double resolution = (distance * 2);
         float a = (0.05f / distance) * dip;
@@ -36,11 +37,11 @@ public class QuadraticWireHelper {
             shortestDistance = (float) Math.min(shortestDistance, position.distanceTo(point));
         }
         float detail;
-        if (shortestDistance < 10)
+        if (shortestDistance < 10 || wireLength < 10)
             detail = 1;
-        else if (shortestDistance < 20)
+        else if (shortestDistance < 20 || wireLength < 20)
             detail = 2;
-        else if (shortestDistance < 40)
+        else if (shortestDistance < 40 || wireLength < 30)
             detail = 10;
         else
             detail = 20;

@@ -18,9 +18,14 @@ public class CEEConfigs {
     private static final Map<ModConfig.Type, ConfigBase> CONFIGS = new EnumMap<>(ModConfig.Type.class);
 
     private static CServer server;
+    private static CClient client;
 
     public static CServer server() {
         return server;
+    }
+
+    public static CClient client() {
+        return client;
     }
 
     public static ConfigBase byType(ModConfig.Type type) {
@@ -41,6 +46,7 @@ public class CEEConfigs {
     }
 
     public static void register(ModLoadingContext context, ModContainer container) {
+        client = register(CClient::new, ModConfig.Type.CLIENT);
         server = register(CServer::new, ModConfig.Type.SERVER);
 
         for (Map.Entry<ModConfig.Type, ConfigBase> pair : CONFIGS.entrySet())

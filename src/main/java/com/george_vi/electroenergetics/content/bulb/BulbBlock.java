@@ -1,34 +1,32 @@
 package com.george_vi.electroenergetics.content.bulb;
 
-import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.AllTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -75,6 +73,24 @@ public class BulbBlock extends DirectionalRolledDeviceBlock {
         }
 
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!stack.is(AllTags.commonItemTag("wires/copper")) || !broken)
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+
+        if (level instanceof ServerLevel serverLevel) {
+            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
+            if (device != null)
+                device.extraData().putBoolean("Destroyed", false);
+            AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
+        }
+
+        level.setBlockAndUpdate(pos, CEEBlocks.BULB.get().withPropertiesOf(state));
+        if (!player.isCreative())
+            stack.shrink(1);
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override

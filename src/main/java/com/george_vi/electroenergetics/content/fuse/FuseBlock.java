@@ -77,7 +77,8 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
         }
 
         level.setBlockAndUpdate(pos, CEEBlocks.FUSE.get().withPropertiesOf(state));
-        stack.shrink(1);
+        if (!player.isCreative())
+            stack.shrink(1);
         return ItemInteractionResult.SUCCESS;
     }
 

@@ -2,21 +2,18 @@ package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Map;
 
 public class FuseDevice extends SimulatedDevice {
     public FuseDevice(ResourceLocation id) {
@@ -51,7 +48,7 @@ public class FuseDevice extends SimulatedDevice {
                 BlockState state = level.getBlockState(pos);
                 if (state.getBlock() instanceof FuseBlock fb && !fb.broken) {
                     Vec3 pPos = Vec3.atCenterOf(pos);
-                    ((ServerLevel) level).sendParticles(ParticleTypes.BUBBLE_POP, pPos.x, pPos.y, pPos.z, 15, 0.1, 0.1, 0.1, 0);
+                    CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pPos, 40, new SendSparkPacket(pPos, SendSparkPacket.SparkSize.SMALL));
                 }
             }
         }

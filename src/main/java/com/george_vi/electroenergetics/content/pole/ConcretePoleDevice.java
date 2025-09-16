@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.pole;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -22,6 +23,8 @@ public class ConcretePoleDevice extends SimulatedDevice {
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
         if (level.isLoaded(pos)) {
             BlockState state = level.getBlockState(pos);
+            if (!CEEBlocks.CONCRETE_POLE.has(state))
+                return;
             extraData.putBoolean("Top", state.getValue(ConcretePoleBlock.TOP));
             extraData.putBoolean("Bottom", state.getValue(ConcretePoleBlock.BOTTOM));
         }
