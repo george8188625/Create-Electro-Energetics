@@ -14,7 +14,7 @@
   "block.electroenergetics.cut_off_switch": "Аварийный замыкатель электроцепи",
   "block.electroenergetics.diode": "Полупроводниковый диод",
   "block.electroenergetics.double_connector": "Сдвоенный линейный изолятор",
-  "block.electroenergetics.double_switch": "замыкатель электроцепи",
+  "block.electroenergetics.double_switch": "Замыкатель электроцепи",
   "block.electroenergetics.electric_motor": "Электрический двигатель",
   "block.electroenergetics.electric_pump": "Электрическая помпа",
   "block.electroenergetics.energy_meter": "Счётчик электроэнергии",
