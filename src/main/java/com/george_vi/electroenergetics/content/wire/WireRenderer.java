@@ -175,11 +175,14 @@ public class WireRenderer {
             for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
                 mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachment.getSecond().type).toString());
                 Vec3 offset;
-                if (wire.getFirst().node1().compareTo(wire.getFirst().node2()) > 0)
+                float elevation;
+                if (wire.getFirst().node1().compareTo(wire.getFirst().node2()) > 0) {
                     offset = QuadraticWireHelper.posAt(pos1, pos2, 1.0f - attachment.getFirst(), wireData.wireType().getSag());
-                else
+                    elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, 1.0f - attachment.getFirst(), wireData.wireType().getSag());
+                } else {
                     offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
-
+                    elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
+                }
                 if (offset.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
                     continue;
 
@@ -190,7 +193,7 @@ public class WireRenderer {
                 msr.rotateYDegrees((float) angleY);
                 msr.rotateXDegrees(180);
                 int light = LevelRenderer.getLightColor(mc.level, BlockPos.containing(offset));
-                attachment.getSecond().type.render(pose, buffer, levelRenderer, attachment.getSecond(), offset, light, QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst()));
+                attachment.getSecond().type.render(pose, buffer, levelRenderer, attachment.getSecond(), offset, light, elevation);
                 pose.popPose();
                 mc.getProfiler().pop();
             }

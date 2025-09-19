@@ -14,6 +14,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public record SendSparkPacket(Vec3 pos, SparkSize size) implements ClientboundPacketPayload {
     public static final StreamCodec<ByteBuf, SendSparkPacket> STREAM_CODEC = StreamCodec.composite(
@@ -23,6 +25,7 @@ public record SendSparkPacket(Vec3 pos, SparkSize size) implements ClientboundPa
     );
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void handle(LocalPlayer player) {
         Level level = player.level();
         if (size == SparkSize.SMALL) {
