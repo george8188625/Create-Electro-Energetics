@@ -7,11 +7,15 @@ import java.util.List;
 
 public class QuadraticWireHelper {
     public static Vec3 posAt(Vec3 pos1, Vec3 pos2, float point) {
+        return posAt(pos1, pos2, point, 1);
+    }
+
+    public static Vec3 posAt(Vec3 pos1, Vec3 pos2, float point, float dip) {
         float distance = (float) pos1.distanceTo(pos2);
         float resolution = (2 * distance);
         float x = point * resolution;
 
-        float a = (0.05f / distance);
+        float a = (0.05f / distance) * dip;
         float yOffset = a * x * (x - resolution);
 
         Vec3 linear = pos1.add(pos2.subtract(pos1).multiply(point, point, point));
@@ -63,9 +67,9 @@ public class QuadraticWireHelper {
         return points;
     }
 
-    public static float pointElevationInDegrees(Vec3 pos1, Vec3 pos2, float point) {
-        Vec3 pointAt1 = posAt(pos1, pos2, point);
-        Vec3 pointAt2 = posAt(pos1, pos2, point + 0.001f);
+    public static float pointElevationInDegrees(Vec3 pos1, Vec3 pos2, float point, float sag) {
+        Vec3 pointAt1 = posAt(pos1, pos2, point, sag);
+        Vec3 pointAt2 = posAt(pos1, pos2, point + 0.001f, sag);
         Vec3 directionVector = pointAt1.subtract(pointAt2);
 
         double dx = directionVector.x;
@@ -74,5 +78,9 @@ public class QuadraticWireHelper {
 
         double horizontalDistance = Math.sqrt(dx * dx + dz * dz);
         return (float) Math.toDegrees(Math.atan2(dy, horizontalDistance));
+    }
+
+    public static float pointElevationInDegrees(Vec3 pos1, Vec3 pos2, float point) {
+       return pointElevationInDegrees(pos1, pos2, point, 1);
     }
 }

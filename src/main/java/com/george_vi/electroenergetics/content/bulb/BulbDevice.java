@@ -52,6 +52,15 @@ public class BulbDevice extends SimulatedDevice {
                     light = 1;
                 if (blockLight != light)
                     level.setBlockAndUpdate(pos, state.setValue(BulbBlock.LIGHT, light));
+                if (level.getBlockEntity(pos) instanceof BulbBlockEntity be) {
+                    float newLight = (float) (vd / 500);
+                    newLight = 1 - (1 - newLight) * (1 - newLight);
+
+                    if (Math.abs(be.light - newLight) > 0.1) {
+                        be.light = newLight;
+                        be.sendData();
+                    }
+                }
             }
         }
         if (vd / CEEConfigs.server().resistanceValues.bulbResistance.get() > CEEConfigs.server().bulbBreakAmperage.get())

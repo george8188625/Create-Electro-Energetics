@@ -46,7 +46,7 @@ public class WireEffects {
             pos1 = pos1.add(devicePos1.getX(), devicePos1.getY(), devicePos1.getZ());
             pos2 = pos2.add(devicePos2.getX(), devicePos2.getY(), devicePos2.getZ());
 
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1);
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wire.getSecond().wireType().getSag());
 
             spawnDrippingWater(points);
         }

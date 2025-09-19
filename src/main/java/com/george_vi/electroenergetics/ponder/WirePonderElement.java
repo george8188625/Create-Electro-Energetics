@@ -96,7 +96,7 @@ public class WirePonderElement extends AnimatedSceneElementBase {
             return;
         }
 
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1);
+        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, type.getSag());
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);

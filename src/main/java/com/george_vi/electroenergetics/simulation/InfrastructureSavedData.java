@@ -335,9 +335,9 @@ public class InfrastructureSavedData extends SavedData {
             for (Pair<Float, WireAttachment> attachment : connectionData.attachments()) {
                 Vec3 pos;
                 if (connection.node1().compareTo(connection.node2()) > 0)
-                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), 1.0f - attachment.getFirst());
+                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), 1.0f - attachment.getFirst(), connectionData.wireType().getSag());
                 else
-                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), attachment.getFirst());
+                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), attachment.getFirst(), connectionData.wireType().getSag());
 
                 for (ItemStack stack : attachment.getSecond().getDrops(level))
                     Containers.dropItemStack(level, pos.x(), pos.y(), pos.z(), stack);

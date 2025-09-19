@@ -25,7 +25,7 @@ public class EmptySpoolWireInteractionBehaviour extends WireInteractionBehaviour
 
         WireData data = sd.removeConnection(new NodeConnection(point.node1(), point.node2()));
 
-        AllSoundEvents.WRENCH_REMOVE.playOnServer(level, BlockPos.containing(point.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()))));
+        AllSoundEvents.WRENCH_REMOVE.playOnServer(level, BlockPos.containing(point.posAt(point.node1().sourcePos().getCenter(), point.node2().sourcePos().getCenter(), data.wireType().getSag())));
 
         if (!player.isCreative()) {
             stack.shrink(1);

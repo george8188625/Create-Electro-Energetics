@@ -1,6 +1,8 @@
 package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
+import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
+import com.george_vi.electroenergetics.content.bulb.BulbBlockEntityRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
@@ -42,6 +44,11 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<ElectricGaugeBlockEntity> AMMETER = REGISTRATE.blockEntity("ammeter", ElectricGaugeBlockEntity::ammeter)
             .validBlock(CEEBlocks.AMMETER::get)
             .renderer(() -> ElectricGaugeRenderer::ammeter)
+            .register();
+
+    public static final BlockEntityEntry<BulbBlockEntity> BULB = REGISTRATE.blockEntity("bulb", BulbBlockEntity::new)
+            .validBlocks(CEEBlocks.BULB::get, CEEBlocks.BROKEN_BULB::get)
+            .renderer(() -> BulbBlockEntityRenderer::new)
             .register();
 
     public static final BlockEntityEntry<CreativeBatteryBlockEntity> CREATIVE_BATTERY = REGISTRATE.blockEntity("creative_battery", CreativeBatteryBlockEntity::new)

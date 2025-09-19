@@ -7,9 +7,8 @@
     }
   },
   "pattern": [
-    "www",
-    "www",
-    "www"
+    "ww",
+    "ww"
   ],
   "result": {
     "count": 1,

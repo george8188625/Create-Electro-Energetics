@@ -194,9 +194,7 @@ public class CEEBlocks {
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
                     ConfiguredModel.builder()
-                            .modelFile(!state.getValue(BulbBlock.ROLL) ?
-                                    state.getValue(BulbBlock.LIGHT) == 0 ? AssetLookup.partialBaseModel(c, p) : state.getValue(BulbBlock.LIGHT) == 1 ? AssetLookup.partialBaseModel(c, p, "dim") : AssetLookup.partialBaseModel(c, p, "bright") :
-                                    state.getValue(BulbBlock.LIGHT) == 0 ? AssetLookup.partialBaseModel(c, p, "roll") : state.getValue(BulbBlock.LIGHT) == 1 ? AssetLookup.partialBaseModel(c, p, "dim_roll") : AssetLookup.partialBaseModel(c, p, "bright_roll"))
+                            .modelFile(!state.getValue(BulbBlock.ROLL) ? AssetLookup.partialBaseModel(c, p) : AssetLookup.partialBaseModel(c, p, "roll"))
                             .rotationX(state.getValue(BulbBlock.FACING) == Direction.DOWN ? 180 : state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
                             .rotationY(state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(BulbBlock.FACING).toYRot() : 0)
                             .build()
@@ -212,16 +210,14 @@ public class CEEBlocks {
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
                     ConfiguredModel.builder()
-                            .modelFile(!state.getValue(BulbBlock.ROLL) ?
-                                    AssetLookup.partialBaseModel(c, p) :
-                                    AssetLookup.partialBaseModel(c, p, "roll"))
+                            .modelFile(p.models().getExistingFile(p.modLoc(!state.getValue(BulbBlock.ROLL) ? "block/bulb/block" : "block/bulb/block_roll")))
                             .rotationX(state.getValue(BulbBlock.FACING) == Direction.DOWN ? 180 : state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
                             .rotationY(state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(BulbBlock.FACING).toYRot() : 0)
                             .build()
             )))
             .transform(pickaxeOnly())
             .item()
-            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/bulb/block")))
             .build()
             .register();
 

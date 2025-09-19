@@ -10,17 +10,19 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public record SendWireParticlesPacket(Node node1, Node node2, ParticleOptions options) implements ClientboundPacketPayload {
+public record SendWireParticlesPacket(Node node1, Node node2, ParticleOptions options, Float sag) implements ClientboundPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, SendWireParticlesPacket> STREAM_CODEC = StreamCodec.composite(
             Node.STREAM_CODEC, SendWireParticlesPacket::node1,
             Node.STREAM_CODEC, SendWireParticlesPacket::node2,
             ParticleTypes.STREAM_CODEC, SendWireParticlesPacket::options,
+            ByteBufCodecs.FLOAT, SendWireParticlesPacket::sag,
             SendWireParticlesPacket::new
     );
 
@@ -40,7 +42,7 @@ public record SendWireParticlesPacket(Node node1, Node node2, ParticleOptions op
         else
             pos2 = node2.sourcePos().getCenter();
 
-        List<Vec3> cablePoints = QuadraticWireHelper.cablePoints(pos1, pos2, 1);
+        List<Vec3> cablePoints = QuadraticWireHelper.cablePoints(pos1, pos2, sag);
 
         for (int i = 0; i < cablePoints.size() - 1; i++) {
             Vec3 point = cablePoints.get(i);

@@ -68,9 +68,8 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/insulated_wire"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_WIRE_STRAND)
-                .pattern("www")
-                .pattern("www")
-                .pattern("www")
+                .pattern("ww")
+                .pattern("ww")
                 .define('w', CEEItems.IRON_WIRE)
                 .unlockedBy("has_iron_wire", has(AllTags.commonItemTag("wires/iron")))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_wire_strand"));
@@ -92,6 +91,15 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .define('s', CEEItems.EMPTY_SPOOL)
                 .unlockedBy("has_iron_wire_strand", has(CEEItems.IRON_WIRE_STRAND))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_wire_spool"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_BUS_SPOOL)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', Items.IRON_INGOT)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_bus_spool"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ALTERNATOR_BRUSHES)
                 .pattern(" B ")

@@ -74,7 +74,7 @@ public class WireSpoolItem extends Item {
             if ((hoveredNode == null || originalNode == null) ||
                     (hoveredNode.sourcePos().equals(originalNode.sourcePos()) && !db.canSelfConnect(level, pos, state, hoveredNode.id(), originalNode.id())) ||
                     (sd.isConnected(hoveredNode, originalNode)) ||
-                    Math.sqrt(originalNode.sourcePos().distSqr(hoveredNode.sourcePos())) > CEEConfigs.server().maxWireLength.get()) {
+                    Math.sqrt(originalNode.sourcePos().distSqr(hoveredNode.sourcePos())) > wireType.get().getMaxLength()) {
                 AllSoundEvents.DENY.playOnServer(level, pos);
                 return InteractionResult.FAIL;
             }

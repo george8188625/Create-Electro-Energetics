@@ -168,17 +168,17 @@ public class WireRenderer {
             pos1 = pos1.add(devicePos1.getX(), devicePos1.getY(), devicePos1.getZ());
             pos2 = pos2.add(devicePos2.getX(), devicePos2.getY(), devicePos2.getZ());
 
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1);
-            List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, 1, mc.gameRenderer.getMainCamera().getPosition()) :
-                    QuadraticWireHelper.cablePoints(pos1, pos2, 1);
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag());
+            List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag(), mc.gameRenderer.getMainCamera().getPosition()) :
+                    QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag());
             mc.getProfiler().popPush("renderWireAttachments");
             for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
                 mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachment.getSecond().type).toString());
                 Vec3 offset;
                 if (wire.getFirst().node1().compareTo(wire.getFirst().node2()) > 0)
-                    offset = QuadraticWireHelper.posAt(pos1, pos2, 1.0f - attachment.getFirst());
+                    offset = QuadraticWireHelper.posAt(pos1, pos2, 1.0f - attachment.getFirst(), wireData.wireType().getSag());
                 else
-                    offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst());
+                    offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
 
                 if (offset.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
                     continue;

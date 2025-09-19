@@ -7,6 +7,7 @@ public class CServer extends ConfigBase {
 
     public final ConfigFloat bulbBreakAmperage = f(0.5f, 0.0f, "bulbBreakAmperage", "[in Amps]");
     public final ConfigInt maxWireLength = i(128, 8, "wireLength", "[in Meters]");
+    public final ConfigInt maxBusWireLength = i(8, 1, "busWireLength", "[in Meters]");
     public final ConfigInt maxCatenaryLength = i(64, 8, "catenaryLength", "[in Meters]");
     public final ConfigInt wiresPerSpool = i(4, 1, 8, "wireItemsPerSpool");
     public final ConfigBool wiresBreak = b(true, "wiresBreak", "Wires break when overloaded");

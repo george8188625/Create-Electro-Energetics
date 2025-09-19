@@ -1,14 +1,12 @@
 package com.george_vi.electroenergetics.content.bulb;
 
-import com.george_vi.electroenergetics.CEEBlocks;
-import com.george_vi.electroenergetics.CEENodeConfigurations;
-import com.george_vi.electroenergetics.CEEShapes;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags;
+import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -20,6 +18,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -30,7 +29,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class BulbBlock extends DirectionalRolledDeviceBlock {
+public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbBlockEntity> {
     public static final IntegerProperty LIGHT = IntegerProperty.create("light", 0, 2);
     public final boolean broken;
 
@@ -117,5 +116,15 @@ public class BulbBlock extends DirectionalRolledDeviceBlock {
     @Override
     protected boolean shouldReplaceDeviceFor(BlockState thisState, BlockState newState) {
         return thisState.getBlock().getClass() != newState.getBlock().getClass();
+    }
+
+    @Override
+    public Class<BulbBlockEntity> getBlockEntityClass() {
+        return BulbBlockEntity.class;
+    }
+
+    @Override
+    public BlockEntityType<? extends BulbBlockEntity> getBlockEntityType() {
+        return CEEBlockEntityTypes.BULB.get();
     }
 }

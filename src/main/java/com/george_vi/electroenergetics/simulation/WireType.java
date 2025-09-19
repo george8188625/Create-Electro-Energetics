@@ -4,6 +4,7 @@ import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.minecraft.world.item.Item;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 public class WireType {
@@ -29,13 +30,17 @@ public class WireType {
      * 0     -> I <= 33.3A
      */
     final DoubleSupplier maxTemperature;
+    final float sag;
+    final IntSupplier maxLength;
 
-    public WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, DoubleSupplier maxTemperature) {
+    public WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength) {
         this.resistance = resistance;
         this.model = model;
         this.droppedItem = droppedItem;
         this.spoolItem = spoolItem;
         this.maxTemperature = maxTemperature;
+        this.sag = sag;
+        this.maxLength = maxLength;
     }
 
     public Item getDrops() {
@@ -56,5 +61,13 @@ public class WireType {
 
     public PartialModel getModel() {
         return model;
+    }
+
+    public float getSag() {
+        return sag;
+    }
+
+    public float getMaxLength() {
+        return maxLength.getAsInt();
     }
 }

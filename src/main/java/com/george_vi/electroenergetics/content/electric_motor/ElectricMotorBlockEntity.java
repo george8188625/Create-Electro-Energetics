@@ -99,7 +99,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         float wattage = Math.round(avgVoltage * avgVoltage /
-                Math.min(CEEConfigs.server().resistanceValues.motorResistance.get() * 3, CEEConfigs.server().resistanceValues.motorResistance.get() / Mth.clamp(load, 0.1, 3)));
+                (0.8 * Math.min(CEEConfigs.server().resistanceValues.motorResistance.get() * 3, CEEConfigs.server().resistanceValues.motorResistance.get() / Mth.clamp(load, 0.1, 3))));
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .add(CEELang.formatPower(wattage))
                 .style(ChatFormatting.AQUA)

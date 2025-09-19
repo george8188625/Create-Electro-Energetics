@@ -7,6 +7,7 @@ import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.WireData;
+import com.george_vi.electroenergetics.simulation.WireType;
 import com.simibubi.create.foundation.utility.RaycastHelper;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
@@ -55,6 +56,7 @@ public class WireInteractionHandler {
         NodeConnection bestConnection = null;
         float bestProgress = 0;
         Vec3 bestPosition = null;
+        WireType bestWireType = null;
 
         for (Pair<NodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
             NodeConnection connection = wire.getFirst();
@@ -76,13 +78,13 @@ public class WireInteractionHandler {
             pos1 = connection.node1().toGlobalPos(pos1);
             pos2 = connection.node2().toGlobalPos(pos2);
 
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1, 1f);
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wire.getSecond().wireType().getSag(), 1f);
 
             double miny = pos1.y;
             for (Vec3 point : points)
                 miny = Math.min(miny, point.y());
 
-            AABB wireBB = new AABB(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z).setMinY(miny);
+            AABB wireBB = new AABB(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z).setMinY(miny).inflate(0.1);
             if (!wireBB.contains(from) && wireBB.clip(from, to).isEmpty())
                 continue;
 
@@ -109,7 +111,7 @@ public class WireInteractionHandler {
 
                 bestProgress = (float) Mth.lerp(t, i - 1, i + 1) / (points.size() - 1);
                 bestPosition = VecHelper.lerp((float) t, prevPoint, nextPoint);
-
+                bestWireType = wire.getSecond().wireType();
             }
         }
 
@@ -145,7 +147,7 @@ public class WireInteractionHandler {
             pos1 = targetedPoint.node1().toGlobalPos(pos1);
             pos2 = targetedPoint.node2().toGlobalPos(pos2);
 
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 1, 1f);
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, bestWireType.getSag(), 1f);
             points.add(pos2);
 
             for (int i = 0; i < points.size() - 1; i++) {

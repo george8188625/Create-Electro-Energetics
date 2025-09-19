@@ -1,4 +1,4 @@
-// 1.21.1	2025-09-09T23:01:17.1706696	Recipes
+// 1.21.1	2025-09-19T21:51:42.2578203	Recipes
 3aebfa4f38c5a9d6431e63d06c23a7682eb9c06e data/electroenergetics/advancement/recipes/misc/crafting/alternator_brushes.json
 17cb440186b8229ab96e28b4fabfcc6443fd4318 data/electroenergetics/advancement/recipes/misc/crafting/alternator_rotor.json
 2b40210321dd5bc26e17c0c93ae0eedd9b1f87e5 data/electroenergetics/advancement/recipes/misc/crafting/ammeter.json
@@ -21,6 +21,7 @@ da36d5357f3bca1b1bfaf1415e7473235decf9a6 data/electroenergetics/advancement/reci
 3b0eb2e425247677c97bf2f2d5a1dbadf9400163 data/electroenergetics/advancement/recipes/misc/crafting/ground_rod.json
 babdf5fc3cdc6ce6fd59ca06277f5774a1e33113 data/electroenergetics/advancement/recipes/misc/crafting/hv_switch.json
 c306175636fc6d01ac5fbdb49a1dd77542f62853 data/electroenergetics/advancement/recipes/misc/crafting/insulated_wire.json
+429642077877ffc66cc86190c5f3aa684dcb95c2 data/electroenergetics/advancement/recipes/misc/crafting/iron_bus_spool.json
 4bc804c4319804748e2f32bd56e7d396cabf862f data/electroenergetics/advancement/recipes/misc/crafting/iron_wire.json
 c09b186a9a6be775ee12bdbe2a37ab1a38698668 data/electroenergetics/advancement/recipes/misc/crafting/iron_wire_spool.json
 57dc11557a45deae092e33fee1a2f46a3553c77a data/electroenergetics/advancement/recipes/misc/crafting/iron_wire_strand.json
@@ -59,9 +60,10 @@ baa0fdbb2102c6b209eb385649922df5e01ca610 data/electroenergetics/recipe/crafting/
 e29829f1256fce5fba6be1ac0e1caef5d4627a0a data/electroenergetics/recipe/crafting/ground_rod.json
 3a1cc0f929077f01eda48514a62e2f8be81df3f1 data/electroenergetics/recipe/crafting/hv_switch.json
 01a607602d1a7f9442cb8f57263cba75eeedf789 data/electroenergetics/recipe/crafting/insulated_wire.json
+d576f3998695f52edc4d2738d713b67e78d3231b data/electroenergetics/recipe/crafting/iron_bus_spool.json
 7b8b384be74c65aeb6e15fcad30e8c4cc7090029 data/electroenergetics/recipe/crafting/iron_wire.json
 c4086c3c915cd4b15094b38ba26decb329c662f9 data/electroenergetics/recipe/crafting/iron_wire_spool.json
-7376e75426d4d194a3c01a6a69e9eb064ac26d34 data/electroenergetics/recipe/crafting/iron_wire_strand.json
+709bae65bcf7d7e5f53ab2f3fd12d4cc8229bd33 data/electroenergetics/recipe/crafting/iron_wire_strand.json
 aec2fe44c55e4325101d39ddff948a04ac687b8a data/electroenergetics/recipe/crafting/magnet_block.json
 5b0bb4074bf368958633114cf4976b2b5888192a data/electroenergetics/recipe/crafting/pantograph.json
 63ee99c66d7c83e0bfd86fccd1bdb52bc7e3887c data/electroenergetics/recipe/crafting/pole_mount.json

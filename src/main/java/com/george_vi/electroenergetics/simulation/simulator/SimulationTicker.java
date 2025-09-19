@@ -239,6 +239,7 @@ public class SimulationTicker {
         // WIRE BREAKING
         if (CEEConfigs.server().wiresBreak.get()) {
             NodeConnection longestWireToBreak = null;
+            WireType longestWireTypeToBreak = null;
             for (Pair<WireType, NodeConnection> e : connections) {
                 WireType wireType = e.getFirst();
                 NodeConnection connection = e.getSecond();
@@ -257,21 +258,26 @@ public class SimulationTicker {
                 if (newTemp > wireType.getMaxTemperature() * 0.6 && level.isLoaded(connection.node1().sourcePos())) {
                     // smoke particles
                     CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, connection.node1().sourcePos().getCenter(), connection.node2().sourcePos().getCenter()),
-                            connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE));
+                            connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE, wireType.getSag()));
                 }
 
                 if (newTemp > wireType.getMaxTemperature()) {
-                    if (longestWireToBreak == null)
+                    if (longestWireToBreak == null) {
                         longestWireToBreak = connection;
-                    else if (getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < getWireResistance(connection.node1(), connection.node2(), wireType))
+                        longestWireTypeToBreak = wireType;
+
+                    }
+                    else if (getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < getWireResistance(connection.node1(), connection.node2(), wireType)) {
                         longestWireToBreak = connection;
+                        longestWireTypeToBreak = wireType;
+                    }
                 }
 
             }
             if (longestWireToBreak != null) {
                 sd.removeConnection(longestWireToBreak);
                 CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),
-                        longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.BUBBLE_POP));
+                        longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.BUBBLE_POP, longestWireTypeToBreak.getSag()));
             }
         }
         profiler.popPush("finish");

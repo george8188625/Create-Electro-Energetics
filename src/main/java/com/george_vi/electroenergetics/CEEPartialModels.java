@@ -6,6 +6,7 @@ public class CEEPartialModels {
     public static final PartialModel WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/wire_segment"));
     public static final PartialModel CREATIVE_WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/creative_wire_segment"));
     public static final PartialModel IRON_WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/iron_wire_segment"));
+    public static final PartialModel IRON_BUS_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/iron_bus_segment"));
     public static final PartialModel ROTOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/alternator_rotor/block"));
     public static final PartialModel INSULATOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/connector/insulator"));
     public static final PartialModel ATTACHMENT_CHAIN = PartialModel.of(CreateElecrtoEnergetics.rl("block/wire_attachments/attachment_chain"));
@@ -23,6 +24,8 @@ public class CEEPartialModels {
     public static final PartialModel CATENARY_HOLDER_MOUNT_6 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_6"));
     public static final PartialModel CATENARY_HOLDER_MOUNT_8 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_8"));
     public static final PartialModel CATENARY_HOLDER_MOUNT_10 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_10"));
+    public static final PartialModel BULB_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament"));
+    public static final PartialModel BULB_BROKEN_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament_broken"));
 
     public static void register() {
 

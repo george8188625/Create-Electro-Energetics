@@ -14,7 +14,11 @@ public record NodeConnectionPoint(Node node1, Node node2, float point) {
     );
 
     public Vec3 posAt(Vec3 pos1, Vec3 pos2) {
-        return QuadraticWireHelper.posAt(pos1, pos2, point);
+        return posAt(pos1, pos2, 1);
+    }
+
+    public Vec3 posAt(Vec3 pos1, Vec3 pos2, float sag) {
+        return QuadraticWireHelper.posAt(pos1, pos2, point, sag);
     }
 
     public NodeConnectionPoint reverse() {

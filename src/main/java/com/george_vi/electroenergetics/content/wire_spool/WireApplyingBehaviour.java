@@ -128,7 +128,8 @@ public class WireApplyingBehaviour {
                 (heldItem.getItem() instanceof WireSpoolItem wsi) && wsi.wireType.get() == CEEWireTypes.STANDARD.get();
 
         // Wire too long
-        if (Math.sqrt(selectedNode.sourcePos().distSqr(pos)) > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() : CEEConfigs.server().maxWireLength.get())) {
+        if (Math.sqrt(selectedNode.sourcePos().distSqr(pos)) > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() :
+                (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getMaxLength() : CEEConfigs.server().maxWireLength.get()))) {
             mc.gui.setOverlayMessage(
                     Lang.builder(CreateElecrtoEnergetics.ID)
                             .translate("wire_spool.too_far_away")
@@ -164,7 +165,7 @@ public class WireApplyingBehaviour {
                 .withFaceTexture(AllSpecialTextures.SELECTION);
 
         if (!toRemove && !mc.isPaused()) {
-            for (Vec3 point : QuadraticWireHelper.cablePoints(selectedPos, hoveredPos, isCatenary ? 0 : 1)) {
+            for (Vec3 point : QuadraticWireHelper.cablePoints(selectedPos, hoveredPos, isCatenary ? 0 : (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getSag() : 1))) {
                 if (level.random.nextInt(7) != 0)
                     continue;
                 level.addParticle(new DustParticleOptions(new Vector3f(canConnect ? .3f : .9f, canConnect ? .9f : .3f, .5f), 1),
