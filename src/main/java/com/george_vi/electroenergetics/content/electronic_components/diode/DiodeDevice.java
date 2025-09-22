@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.electronic_components;
+package com.george_vi.electroenergetics.content.electronic_components.diode;
 
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;

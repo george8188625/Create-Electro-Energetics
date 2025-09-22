@@ -37,12 +37,12 @@ public class CEELang extends Lang {
     }
 
     public static LangBuilder formatEnergy(double energy) {
-        if (Math.abs(energy) > 1000000)
+        if (Math.abs(energy) >= 1000000)
             return builder()
                     .text(String.format("%.1f", energy / 1000000))
                     .translate("generic.megawatthours");
 
-        if (Math.abs(energy) > 1000)
+        if (Math.abs(energy) >= 1000)
             return builder()
                     .text(String.format("%.1f", energy / 1000))
                     .translate("generic.kilowatthours");
@@ -50,6 +50,31 @@ public class CEELang extends Lang {
         return builder()
                 .text(String.format("%.1f", energy))
                 .translate("generic.watthours");
+    }
+
+    public static LangBuilder formatResistance(double resistance) {
+        if (Math.abs(resistance) >= 1000000)
+            return builder()
+                    .text(String.format("%.1f", resistance / 1000000))
+                    .translate("generic.megaohms");
+
+        if (Math.abs(resistance) >= 1000)
+            return builder()
+                    .text(String.format("%.1f", resistance / 1000))
+                    .translate("generic.kiloohms");
+
+        if (Math.abs(resistance) >= 1)
+            return builder()
+                    .text(String.format("%.1f", resistance))
+                    .translate("generic.ohms");
+
+        return builder()
+                .text(String.format("%.1f", resistance * 1000))
+                .translate("generic.milliohms");
+    }
+
+    public static LangBuilder translate(String langKey, Object... args) {
+        return builder().translate(langKey, args);
     }
 
     public static MutableComponent nodeLabel(String key, Object... args) {

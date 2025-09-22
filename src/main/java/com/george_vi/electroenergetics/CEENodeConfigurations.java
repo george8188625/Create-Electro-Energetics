@@ -150,9 +150,20 @@ public class CEENodeConfigurations {
             .add(new Vec3(8/16f, 14/16f, 11/16f))
             .simple(Direction.NORTH);
 
-    public static final NodeConfigurator ELECTRONIC_8 = new NodeConfigurator.Builder()
+    public static final NodeConfigurator ELECTRONIC_8_HORIZONTAL = new NodeConfigurator.Builder()
             .add(new Vec3(8/16f, 2/16f, 3/16f))
             .add(new Vec3(8/16f, 2/16f, 13/16f))
             .simple(Direction.NORTH);
+
+    public static final NodeConfigurator ELECTRONIC_10 = new NodeConfigurator.Builder()
+            .add(new Vec3(2/16f, 2/16f, 8/16f))
+            .add(new Vec3(14/16f, 2/16f, 8/16f))
+            .simple(Direction.UP);
+
+    public static final NodeConfigurator ELECTRONIC_10_ROLL = new NodeConfigurator.Builder()
+            .add(new Vec3(8/16f, 2/16f, 2/16f))
+            .add(new Vec3(8/16f, 2/16f, 14/16f))
+            .simple(Direction.UP);
+
 
 }

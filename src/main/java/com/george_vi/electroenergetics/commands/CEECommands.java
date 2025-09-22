@@ -70,6 +70,7 @@ public class CEECommands {
         List<SimulatorProfiler.ResultEntry> results = List.copyOf(SimulationTicker.profiler.getResults());
         int totalTime = results.stream().mapToInt(SimulatorProfiler.ResultEntry::timeTook).sum();
         listResults(1, results, source, totalTime == 0 ? 1 : totalTime, totalTime);
+        source.sendSuccess(() -> Component.literal("profiler: " + SimulationTicker.profiler.getProfilerTime() / 1000 + " μs").withStyle(blue), false);
 
         source.sendSuccess(() -> Component.literal("-+------------------------------------+-"), false);
         return 1;

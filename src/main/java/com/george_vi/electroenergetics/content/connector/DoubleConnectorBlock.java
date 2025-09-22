@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.connector;
 
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
@@ -27,39 +28,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class DoubleConnectorBlock extends SimpleDeviceBlock implements IWrenchable, ProperWaterloggedBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final BooleanProperty ROLL = BooleanProperty.create("roll");
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-
+public class DoubleConnectorBlock extends DirectionalRolledDeviceBlock implements IWrenchable {
     public DoubleConnectorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
     }
 
     @Override
     protected SimulatedDevice getDevice() {
         return CEESimulatedDevices.CONNECTOR;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED, ROLL);
-    }
-
-    @Override
-    public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {
-        if (targetedFace.getAxis() == originalState.getValue(FACING).getAxis())
-            return originalState.cycle(ROLL);
-        return IWrenchable.super.getRotatedBlockState(originalState, targetedFace);
-    }
-
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        if (context.getClickedFace().getAxis().isVertical())
-            return withWater(super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X), context);
-        return withWater(super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()), context);
     }
 
     @Override

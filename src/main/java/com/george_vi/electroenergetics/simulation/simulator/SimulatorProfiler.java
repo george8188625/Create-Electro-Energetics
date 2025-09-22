@@ -9,6 +9,8 @@ public class SimulatorProfiler {
     List<ResultEntry> results = new ArrayList<>();
     Stack<Long> startTimes = new Stack<>();
     Stack<String> ids = new Stack<>();
+    int profilerTime = 0;
+
 
     public void push(String id) {
         startTimes.push(System.nanoTime());
@@ -16,6 +18,7 @@ public class SimulatorProfiler {
     }
 
     public void pop() {
+        long popStart = System.nanoTime();
         long startTime = startTimes.pop();
         int diff = (int) (System.nanoTime() - startTime);
         List<ResultEntry> children = results;
@@ -38,6 +41,7 @@ public class SimulatorProfiler {
             children.remove(oc.get());
             children.add(new ResultEntry(ids.pop(), oc.get().children, oc.get().timeTook + diff));
         }
+        profilerTime += (int) (System.nanoTime() - popStart);
     }
 
     public void popPush(String id) {
@@ -49,10 +53,15 @@ public class SimulatorProfiler {
         results.clear();
         startTimes.clear();
         ids.clear();
+        profilerTime = 0;
     }
 
     public List<ResultEntry> getResults() {
         return results;
+    }
+
+    public int getProfilerTime() {
+        return profilerTime;
     }
 
     public record ResultEntry(String id, List<ResultEntry> children, Integer timeTook) {

@@ -127,12 +127,16 @@ public class GameEvents {
 
     @SubscribeEvent
     public static void addToElectricGraph(AddToElectricGraphEvent event) {
+        SimulationTicker.profiler.push("catenaryStuff");
         CatenaryHandler.addToGraph(event);
+        SimulationTicker.profiler.pop();
     }
 
     @SubscribeEvent
     public static void finishElectricSimulation(FinishElectricSimulationEvent event) {
+        SimulationTicker.profiler.push("catenaryStuff");
         CatenaryHandler.finishSimulation(event);
+        SimulationTicker.profiler.pop();
     }
 
 }

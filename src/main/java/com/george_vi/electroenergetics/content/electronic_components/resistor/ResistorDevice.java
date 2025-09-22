@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.electronic_components;
+package com.george_vi.electroenergetics.content.electronic_components.resistor;
 
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;

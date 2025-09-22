@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.transformer;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.google.common.collect.ImmutableList;
@@ -157,11 +158,11 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
 
-        ratio = new ScrollValueBehaviour(Component.translatable("electroenergetics.transformer.ratio"),
+        ratio = new ScrollValueBehaviour(CEELang.translate("transformer.ratio").component(),
                 this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 1, ImmutableList.of(Component.translatable("electroenergetics.transformer.ratio_alt")),
+                return new ValueSettingsBoard(label, max, 1, ImmutableList.of(CEELang.translate("transformer.ratio_symbol").component()),
                         new ValueSettingsFormatter(valueSettings -> Component.literal(Ratios.values()[(valueSettings.value())].string)));
             }
         };

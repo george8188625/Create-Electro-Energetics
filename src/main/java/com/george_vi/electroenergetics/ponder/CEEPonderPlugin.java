@@ -82,10 +82,12 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.PANTOGRAPH.getId())
                 .add(CEEBlocks.CATENARY_HOLDER.getId())
                 .add(CEEBlocks.DIODE.getId())
+                .add(CEEBlocks.RESISTOR.getId())
                 ;
 
         helper.addToTag(CreateElecrtoEnergetics.rl("electricity_basics"))
                 .add(CEEBlocks.DIODE.getId())
+                .add(CEEBlocks.RESISTOR.getId())
                 ;
 
         helper.addToTag(AllCreatePonderTags.TRAIN_RELATED)

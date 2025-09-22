@@ -2,7 +2,8 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
-import com.george_vi.electroenergetics.content.electronic_components.DiodeBlock;
+import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
+import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographMovementBehaviour;
@@ -28,6 +29,7 @@ import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlock;
+import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.kinetics.gauge.GaugeGenerator;
 import com.simibubi.create.foundation.data.AssetLookup;
@@ -95,15 +97,7 @@ public class CEEBlocks {
     public static final BlockEntry<DoubleConnectorBlock> DOUBLE_CONNECTOR = REGISTRATE.block("double_connector", DoubleConnectorBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
-                    ConfiguredModel.builder()
-                            .modelFile(!state.getValue(DoubleConnectorBlock.ROLL) ?
-                                    AssetLookup.partialBaseModel(c, p) :
-                                    AssetLookup.partialBaseModel(c, p, "roll"))
-                            .rotationX(state.getValue(DoubleConnectorBlock.FACING) == Direction.DOWN ? 180 : state.getValue(DoubleConnectorBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
-                            .rotationY(state.getValue(DoubleConnectorBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(DoubleConnectorBlock.FACING).toYRot() : 0)
-                            .build()
-            )))
+            .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -113,15 +107,7 @@ public class CEEBlocks {
     public static final BlockEntry<TripleConnectorBlock> TRIPLE_CONNECTOR = REGISTRATE.block("triple_connector", TripleConnectorBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
-                    ConfiguredModel.builder()
-                            .modelFile(!state.getValue(TripleConnectorBlock.ROLL) ?
-                                    AssetLookup.partialBaseModel(c, p) :
-                                    AssetLookup.partialBaseModel(c, p, "roll"))
-                            .rotationX(state.getValue(TripleConnectorBlock.FACING) == Direction.DOWN ? 180 : state.getValue(TripleConnectorBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
-                            .rotationY(state.getValue(TripleConnectorBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(TripleConnectorBlock.FACING).toYRot() : 0)
-                            .build()
-            )))
+            .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -192,13 +178,7 @@ public class CEEBlocks {
     public static final BlockEntry<BulbBlock> BULB = REGISTRATE.block("bulb", BulbBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
-                    ConfiguredModel.builder()
-                            .modelFile(!state.getValue(BulbBlock.ROLL) ? AssetLookup.partialBaseModel(c, p) : AssetLookup.partialBaseModel(c, p, "roll"))
-                            .rotationX(state.getValue(BulbBlock.FACING) == Direction.DOWN ? 180 : state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
-                            .rotationY(state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(BulbBlock.FACING).toYRot() : 0)
-                            .build()
-                )))
+            .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -208,13 +188,7 @@ public class CEEBlocks {
     public static final BlockEntry<BulbBlock> BROKEN_BULB = REGISTRATE.block("broken_bulb", BulbBlock::broken)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
-                    ConfiguredModel.builder()
-                            .modelFile(p.models().getExistingFile(p.modLoc(!state.getValue(BulbBlock.ROLL) ? "block/bulb/block" : "block/bulb/block_roll")))
-                            .rotationX(state.getValue(BulbBlock.FACING) == Direction.DOWN ? 180 : state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
-                            .rotationY(state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(BulbBlock.FACING).toYRot() : 0)
-                            .build()
-            )))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/bulb/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/bulb/block")))
@@ -224,15 +198,7 @@ public class CEEBlocks {
     public static final BlockEntry<CutOffSwitchBlock> CUT_OFF_SWITCH = REGISTRATE.block("cut_off_switch", properties -> new CutOffSwitchBlock(properties, false))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
-                    ConfiguredModel.builder()
-                            .modelFile(!state.getValue(CutOffSwitchBlock.ROLL) ?
-                                    state.getValue(CutOffSwitchBlock.CLOSED) ? AssetLookup.partialBaseModel(c, p, "closed") : AssetLookup.partialBaseModel(c, p) :
-                                    state.getValue(CutOffSwitchBlock.CLOSED) ? AssetLookup.partialBaseModel(c, p, "closed_roll") : AssetLookup.partialBaseModel(c, p, "roll"))
-                            .rotationX(state.getValue(CutOffSwitchBlock.FACING) == Direction.DOWN ? 180 : state.getValue(CutOffSwitchBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
-                            .rotationY(state.getValue(CutOffSwitchBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(CutOffSwitchBlock.FACING).toYRot() : 0)
-                            .build()
-            )))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(CutOffSwitchBlock.CLOSED) ? p.modLoc("block/cut_off_switch/block_closed") : p.modLoc("block/cut_off_switch/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -242,15 +208,7 @@ public class CEEBlocks {
     public static final BlockEntry<CutOffSwitchBlock> DOUBLE_SWITCH = REGISTRATE.block("double_switch", properties -> new CutOffSwitchBlock(properties, true))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
-                    ConfiguredModel.builder()
-                            .modelFile(!state.getValue(CutOffSwitchBlock.ROLL) ?
-                                    state.getValue(CutOffSwitchBlock.CLOSED) ? AssetLookup.partialBaseModel(c, p, "closed") : AssetLookup.partialBaseModel(c, p) :
-                                    state.getValue(CutOffSwitchBlock.CLOSED) ? AssetLookup.partialBaseModel(c, p, "closed_roll") : AssetLookup.partialBaseModel(c, p, "roll"))
-                            .rotationX(state.getValue(CutOffSwitchBlock.FACING) == Direction.DOWN ? 180 : state.getValue(CutOffSwitchBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
-                            .rotationY(state.getValue(CutOffSwitchBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(CutOffSwitchBlock.FACING).toYRot() : 0)
-                            .build()
-            )))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(CutOffSwitchBlock.CLOSED) ? p.modLoc("block/double_switch/block_closed") : p.modLoc("block/double_switch/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -260,15 +218,7 @@ public class CEEBlocks {
     public static final BlockEntry<RedstoneRelayBlock> REDSTONE_RELAY = REGISTRATE.block("redstone_relay", RedstoneRelayBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
-                    ConfiguredModel.builder()
-                            .modelFile(!state.getValue(RedstoneRelayBlock.ROLL) ?
-                                    state.getValue(RedstoneRelayBlock.POWERED) ? AssetLookup.partialBaseModel(c, p, "powered") : AssetLookup.partialBaseModel(c, p) :
-                                    state.getValue(RedstoneRelayBlock.POWERED) ? AssetLookup.partialBaseModel(c, p, "powered_roll") : AssetLookup.partialBaseModel(c, p, "roll"))
-                            .rotationX(state.getValue(RedstoneRelayBlock.FACING) == Direction.DOWN ? 180 : state.getValue(RedstoneRelayBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
-                            .rotationY(state.getValue(RedstoneRelayBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(RedstoneRelayBlock.FACING).toYRot() : 0)
-                            .build()
-            )))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(RedstoneRelayBlock.POWERED) ? p.modLoc("block/redstone_relay/block_powered") : p.modLoc("block/redstone_relay/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -427,15 +377,7 @@ public class CEEBlocks {
     public static final BlockEntry<ConverterBlock> CONVERTER = REGISTRATE.block("converter", ConverterBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
-                    ConfiguredModel.builder()
-                            .modelFile(!state.getValue(ConverterBlock.ROLL) ?
-                                    state.getValue(ConverterBlock.SOURCE) ? AssetLookup.partialBaseModel(c, p, "source") : AssetLookup.partialBaseModel(c, p) :
-                                    state.getValue(ConverterBlock.SOURCE) ? AssetLookup.partialBaseModel(c, p, "source_roll") : AssetLookup.partialBaseModel(c, p, "roll"))
-                            .rotationX(state.getValue(ConverterBlock.FACING) == Direction.DOWN ? 180 : state.getValue(ConverterBlock.FACING).getAxis().isHorizontal() ? 270 : 0)
-                            .rotationY(state.getValue(ConverterBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(ConverterBlock.FACING).toYRot() : 0)
-                            .build()
-            )))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(ConverterBlock.SOURCE) ? p.modLoc("block/converter/block_source") : p.modLoc("block/converter/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -471,6 +413,16 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/diode")))
+            .build()
+            .register();
+
+    public static final BlockEntry<ResistorBlock> RESISTOR = REGISTRATE.block("resistor", ResistorBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/resistor")))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/resistor")))
             .build()
             .register();
 

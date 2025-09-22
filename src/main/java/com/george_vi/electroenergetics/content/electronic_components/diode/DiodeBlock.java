@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.electronic_components;
+package com.george_vi.electroenergetics.content.electronic_components.diode;
 
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
@@ -50,7 +50,7 @@ public class DiodeBlock extends SimpleDeviceBlock implements IWrenchable, Proper
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return CEEShapes.ELECTRONIC_8.get(state.getValue(FACING));
+        return CEEShapes.ELECTRONIC_8_HORIZONTAL.get(state.getValue(FACING));
     }
 
     @Override
@@ -60,12 +60,12 @@ public class DiodeBlock extends SimpleDeviceBlock implements IWrenchable, Proper
 
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        return CEENodeConfigurations.ELECTRONIC_8.getNodes(state.getValue(FACING));
+        return CEENodeConfigurations.ELECTRONIC_8_HORIZONTAL.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
-        return CEENodeConfigurations.ELECTRONIC_8.getNodePos(state.getValue(FACING), id);
+        return CEENodeConfigurations.ELECTRONIC_8_HORIZONTAL.getNodePos(state.getValue(FACING), id);
     }
 
     @Override

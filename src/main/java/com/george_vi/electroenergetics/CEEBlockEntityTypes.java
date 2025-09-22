@@ -3,6 +3,8 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntityRenderer;
+import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
+import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
@@ -101,6 +103,11 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<CatenaryHolderBlockEntity> CATENARY_HOLDER = REGISTRATE.blockEntity("catenary_holder", CatenaryHolderBlockEntity::new)
             .validBlock(CEEBlocks.CATENARY_HOLDER::get)
             .renderer(() -> CatenaryHolderRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<ResistorBlockEntity> RESISTOR = REGISTRATE.blockEntity("resistor", ResistorBlockEntity::new)
+            .validBlock(CEEBlocks.RESISTOR::get)
+            .renderer(() -> ResistorRenderer::new)
             .register();
 
 

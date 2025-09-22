@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.converter;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -36,24 +37,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class ConverterBlock extends SimpleDeviceBlock implements IWrenchable, IBE<ConverterBlockEntity> {
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final BooleanProperty ROLL = BooleanProperty.create("roll");
+public class ConverterBlock extends DirectionalRolledDeviceBlock implements IWrenchable, IBE<ConverterBlockEntity> {
     public static final BooleanProperty SOURCE = BooleanProperty.create("source");
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public ConverterBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false).setValue(SOURCE, false));
+        registerDefaultState(defaultBlockState().setValue(SOURCE, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, ROLL, SOURCE, WATERLOGGED);
+        super.createBlockStateDefinition(builder);
+        builder.add(SOURCE);
     }
 
     @Override
-    protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Source", state.getValue(SOURCE));
         return tag;
@@ -65,17 +64,11 @@ public class ConverterBlock extends SimpleDeviceBlock implements IWrenchable, IB
         return CEESimulatedDevices.CONVERTER;
     }
 
-    @Override
-    public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {
-        if (targetedFace.getAxis() == originalState.getValue(FACING).getAxis())
-            return originalState.cycle(ROLL);
-        return IWrenchable.super.getRotatedBlockState(originalState, targetedFace);
-    }
 
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         if (context.getClickedFace().getAxis() == state.getValue(FACING).getAxis())
-            return IWrenchable.super.onWrenched(state, context);
+            return super.onWrenched(state, context);
 
         if (context.getLevel() instanceof ServerLevel serverLevel) {
             InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
@@ -91,29 +84,12 @@ public class ConverterBlock extends SimpleDeviceBlock implements IWrenchable, IB
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        if (context.getClickedFace().getAxis().isVertical())
-            return defaultBlockState().setValue(FACING, context.getClickedFace()).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X).setValue(SOURCE, context.getPlayer() != null && context.getPlayer().isShiftKeyDown());
-        return defaultBlockState().setValue(FACING, context.getClickedFace()).setValue(SOURCE, context.getPlayer() != null && context.getPlayer().isShiftKeyDown());
+        return defaultBlockState().setValue(SOURCE, context.getPlayer() != null && context.getPlayer().isShiftKeyDown());
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return CEEShapes.CONVERTER.get(state.getValue(FACING));
-    }
-
-    @Override
-    protected BlockState updateShape(
-            BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-        }
-
-        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
-    }
-
-    @Override
-    protected FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override

@@ -96,7 +96,7 @@ public class TransformerBlock extends SimpleDeviceBlock implements ProperWaterlo
     }
 
     @Override
-    protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         tag.putFloat("Ratio", 1);
         return tag;

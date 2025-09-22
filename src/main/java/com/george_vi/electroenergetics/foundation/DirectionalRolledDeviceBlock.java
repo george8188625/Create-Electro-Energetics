@@ -1,9 +1,14 @@
 package com.george_vi.electroenergetics.foundation;
 
+import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import com.simibubi.create.foundation.data.AssetLookup;
+import com.tterrag.registrate.providers.DataGenContext;
+import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -15,7 +20,11 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 public abstract class DirectionalRolledDeviceBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock, IWrenchable {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
@@ -70,5 +79,23 @@ public abstract class DirectionalRolledDeviceBlock extends SimpleDeviceBlock imp
     @Override
     protected BlockState mirror(BlockState state, Mirror mirror) {
         return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
+    }
+
+    public static <T extends Block> void generateBlockState(DataGenContext<Block, T> c, RegistrateBlockstateProvider p, Function<BlockState, ResourceLocation> modelFunc) {
+        p.getVariantBuilder(c.getEntry()).forAllStates((state ->
+                ConfiguredModel.builder()
+                        .modelFile(!state.getValue(ROLL) ? p.models().getExistingFile(modelFunc.apply(state)) : p.models().getExistingFile(modelFunc.apply(state).withSuffix("_roll")))
+                        .rotationX(state.getValue(FACING) == Direction.DOWN ? 180 : state.getValue(FACING).getAxis().isHorizontal() ? 270 : 0)
+                        .rotationY(state.getValue(FACING).getAxis().isHorizontal() ? (int) state.getValue(FACING).toYRot() : 0)
+                        .build()));
+    }
+
+    public static <T extends Block> void generateBlockState(DataGenContext<Block, T> c, RegistrateBlockstateProvider p) {
+        p.getVariantBuilder(c.getEntry()).forAllStates((state ->
+                ConfiguredModel.builder()
+                        .modelFile(!state.getValue(ROLL) ? AssetLookup.partialBaseModel(c, p) : AssetLookup.partialBaseModel(c, p, "roll"))
+                        .rotationX(state.getValue(FACING) == Direction.DOWN ? 180 : state.getValue(FACING).getAxis().isHorizontal() ? 270 : 0)
+                        .rotationY(state.getValue(FACING).getAxis().isHorizontal() ? (int) state.getValue(FACING).toYRot() : 0)
+                        .build()));
     }
 }

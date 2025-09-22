@@ -63,13 +63,21 @@
   "electroenergetics.generic.watthours": "Wh",
   "electroenergetics.generic.kilowatthours": "kWh",
   "electroenergetics.generic.megawatthours": "MWh",
+  "electroenergetics.generic.milliohms": "mΩ",
+  "electroenergetics.generic.ohms": "Ω",
+  "electroenergetics.generic.kiloohms": "kΩ",
+  "electroenergetics.generic.megaohms": "MΩ",
 
   "electroenergetics.subtitle.hum": "Hum",
   "electroenergetics.subtitle.arcing": "Arcing",
   "electroenergetics.subtitle.electric_train": "Electric Train Sounds",
 
-  "electroenergetics.transformer.ratio_alt": "Ratio",
   "electroenergetics.transformer.ratio": "Primary to Secondary Ratio",
-  "electroenergetics.value": "⚡",
-  "electroenergetics.voltage": "Targeted Voltage in Volts"
+  "electroenergetics.transformer.ratio_symbol": "÷",
+  "electroenergetics.voltage_regulator.voltage": "Targeted Voltage in Volts",
+  "electroenergetics.voltage_regulator.voltage_symbol": "⚡",
+  "electroenergetics.creative_battery.voltage": "Generated Voltage in Volts",
+  "electroenergetics.creative_battery.voltage_symbol": "⚡",
+  "electroenergetics.resistor.resistance": "Resistance in Ohms",
+  "electroenergetics.resistor.resistance_symbol": "Ω"
 }

@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.foundation.AttachedNode;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -37,9 +38,9 @@ public class VoltageSync {
             if (node instanceof AttachedNode || deviceInstance == null)
                 continue;
 
-
             CatnipServices.NETWORK.sendToClients(level.getPlayers(p -> p.position().distanceTo(node.sourcePos().getCenter()) <= deviceInstance.simulatedDevice().sendVoltagesDistance() || (clampMeteringPlayers.containsKey(p) && clampMeteringPlayers.get(p).isAny(node))),
                     new SendVoltageDataPacket(node.sourcePos(), node.id(), voltage));
         }
+
     }
 }

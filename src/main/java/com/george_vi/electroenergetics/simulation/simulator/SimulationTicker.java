@@ -290,9 +290,10 @@ public class SimulationTicker {
             allSourceAmps.putAll(v);
 
         NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(new SimulationResults(Collections.emptyMap(), allSourceAmps, adjacency, connectionProperties, sd), level, sd));
-        
+        profiler.push("syncVoltages");
         VoltageSync.finishSimulation(sd, level);
 
+        profiler.pop();
         profiler.pop();
         profiler.pop();
     }

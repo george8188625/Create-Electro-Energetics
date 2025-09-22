@@ -58,6 +58,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.CATENARY_HOLDER.asStack());
                         output.accept(CEEBlocks.PANTOGRAPH.asStack());
                         output.accept(CEEBlocks.DIODE.asStack());
+                        output.accept(CEEBlocks.RESISTOR.asStack());
                     }))
                     .build());
 

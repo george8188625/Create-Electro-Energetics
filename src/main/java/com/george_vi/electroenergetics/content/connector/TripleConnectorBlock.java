@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.connector;
 
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
@@ -28,14 +29,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class TripleConnectorBlock extends SimpleDeviceBlock implements IWrenchable, SimpleWaterloggedBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final BooleanProperty ROLL = BooleanProperty.create("roll");
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+public class TripleConnectorBlock extends DirectionalRolledDeviceBlock implements IWrenchable {
 
     public TripleConnectorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
     }
 
     @Override
@@ -44,43 +41,8 @@ public class TripleConnectorBlock extends SimpleDeviceBlock implements IWrenchab
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED, ROLL);
-    }
-
-    @Override
-    public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {
-        if (targetedFace.getAxis() == originalState.getValue(FACING).getAxis())
-            return originalState.cycle(ROLL);
-        return IWrenchable.super.getRotatedBlockState(originalState, targetedFace);
-    }
-
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        if (context.getClickedFace().getAxis().isVertical())
-            return super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X);
-        return super.getStateForPlacement(context).setValue(FACING, context.getClickedFace());
-    }
-
-    @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return (state.getValue(ROLL) ? CEEShapes.DOUBLE_CONNECTOR_ROLL : CEEShapes.DOUBLE_CONNECTOR).get(state.getValue(FACING));
-    }
-
-    @Override
-    protected BlockState updateShape(
-            BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-        }
-
-        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
-    }
-
-    @Override
-    protected FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override

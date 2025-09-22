@@ -60,7 +60,7 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
     }
 
     @Override
-    protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Closed", state.getValue(CLOSED));
         return tag;

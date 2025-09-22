@@ -31,6 +31,7 @@
     "electroenergetics:converter",
     "electroenergetics:catenary_holder",
     "electroenergetics:pantograph",
-    "electroenergetics:diode"
+    "electroenergetics:diode",
+    "electroenergetics:resistor"
   ]
 }

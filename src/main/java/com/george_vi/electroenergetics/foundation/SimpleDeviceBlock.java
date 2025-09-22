@@ -22,7 +22,7 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock {
 
     protected abstract SimulatedDevice getDevice();
 
-    protected CompoundTag getExtraData(Level level, BlockState state, BlockPos pos) {return new CompoundTag();}
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {return new CompoundTag();}
 
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
@@ -38,7 +38,7 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock {
         List<Integer> nodes = new ArrayList<>(getNodePositions(level, pos, state).keySet());
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        sd.addDevice(pos, getDevice(), getExtraData(level, state, pos), nodes);
+        sd.addDevice(pos, getDevice(), getExtraDeviceData(level, state, pos), nodes);
         super.tick(state, level, pos, random);
     }
 

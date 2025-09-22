@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.redstone_relay;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -30,15 +31,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class RedstoneRelayBlock extends SimpleDeviceBlock implements IWrenchable, ProperWaterloggedBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final BooleanProperty ROLL = BooleanProperty.create("roll");
+public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements IWrenchable {
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public RedstoneRelayBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false).setValue(POWERED, false));
+        registerDefaultState(defaultBlockState().setValue(POWERED, false));
     }
 
     @Override
@@ -73,41 +71,19 @@ public class RedstoneRelayBlock extends SimpleDeviceBlock implements IWrenchable
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED, ROLL, POWERED);
-    }
-
-    @Override
-    public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {
-        if (targetedFace.getAxis() == originalState.getValue(FACING).getAxis())
-            return originalState.cycle(ROLL);
-        return IWrenchable.super.getRotatedBlockState(originalState, targetedFace);
+        super.createBlockStateDefinition(builder);
+        builder.add(POWERED);
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        if (context.getClickedFace().getAxis().isVertical())
-            return withWater(super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X), context).setValue(POWERED,
-                    context.getLevel().hasNeighborSignal(context.getClickedPos()));
-        return withWater(super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()), context).setValue(POWERED,
-                context.getLevel().hasNeighborSignal(context.getClickedPos()));
+        return super.getStateForPlacement(context).setValue(POWERED, context.getLevel().hasNeighborSignal(context.getClickedPos()));
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return CEEShapes.REDSTONE_RELAY.get(state.getValue(FACING));
-    }
-
-    @Override
-    protected BlockState updateShape(
-            BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        updateWater(level, state, pos);
-        return state;
-    }
-
-    @Override
-    protected FluidState getFluidState(BlockState state) {
-        return fluidState(state);
     }
 
     @Override

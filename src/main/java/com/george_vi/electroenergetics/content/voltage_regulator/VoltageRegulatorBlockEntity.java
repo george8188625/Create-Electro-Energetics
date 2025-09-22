@@ -154,10 +154,10 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
 
-        voltage = new ScrollValueBehaviour(Component.translatable("electroenergetics.voltage"), this, new ValueBox()) {
+        voltage = new ScrollValueBehaviour(CEELang.translate("voltage_regulator.voltage").component(), this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(Component.translatable("electroenergetics.value")),
+                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(CEELang.translate("voltage_regulator.voltage_symbol").component()),
                         new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(valueSettings.value() * 10).component()));
             }
         };
