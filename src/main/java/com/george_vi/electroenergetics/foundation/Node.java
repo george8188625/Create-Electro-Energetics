@@ -71,6 +71,13 @@ public class Node implements Comparable<Node> {
                 .orElse(null);
     }
 
+    public Vec3 getPosition(Level level) {
+        BlockState state = level.getBlockState(sourcePos);
+        if (!(state.getBlock() instanceof DeviceBlock db))
+            return Vec3.ZERO;
+        return db.getNodePosition(level, sourcePos, state, id);
+    }
+
     public Vec3 toGlobalPos(Vec3 pos) {
         return pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
     }

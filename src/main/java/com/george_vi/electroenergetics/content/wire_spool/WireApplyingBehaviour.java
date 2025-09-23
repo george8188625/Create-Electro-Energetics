@@ -68,8 +68,6 @@ public class WireApplyingBehaviour {
                     .withFaceTexture(AllSpecialTextures.SELECTION);
         }
 
-        //
-
         Node hoveredNode = Node.closestNode(level, mc.hitResult.getLocation(), 1f);
         Vec3 hoveredPos = null;
 

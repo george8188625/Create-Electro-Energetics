@@ -28,19 +28,8 @@ public record SendWireParticlesPacket(Node node1, Node node2, ParticleOptions op
 
     @Override
     public void handle(LocalPlayer player) {
-        BlockState state1 = player.level().getBlockState(node1.sourcePos());
-        BlockState state2 = player.level().getBlockState(node2.sourcePos());
-        Vec3 pos1;
-        if (state1.getBlock() instanceof DeviceBlock db)
-            pos1 = node1.toGlobalPos(db.getNodePosition(player.level(), node1.sourcePos(), state1, node1.id()));
-        else
-            pos1 = node1.sourcePos().getCenter();
-
-        Vec3 pos2;
-        if (state2.getBlock() instanceof DeviceBlock db)
-            pos2 = node2.toGlobalPos(db.getNodePosition(player.level(), node2.sourcePos(), state2, node2.id()));
-        else
-            pos2 = node2.sourcePos().getCenter();
+        Vec3 pos1 = node1.getPosition(player.level());
+        Vec3 pos2 = node2.getPosition(player.level());
 
         List<Vec3> cablePoints = QuadraticWireHelper.cablePoints(pos1, pos2, sag);
 

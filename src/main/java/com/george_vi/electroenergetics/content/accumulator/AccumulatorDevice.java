@@ -29,17 +29,19 @@ public class AccumulatorDevice extends SimulatedDevice {
         double conductance = capacitance / timeStep;
         double historyCurrent = conductance * lastVoltage;
 
-        bridges.bridge(new Node(0, pos), new Node(1, pos), 1 / conductance, 0, -historyCurrent);
+        bridges.builder(pos)
+                .node(2)
+                .resistor(2, 1, 7);
+        bridges.bridge(new Node(0, pos), new Node(2, pos), 1 / conductance, 0, -historyCurrent);
     }
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        extraData.putDouble("LastVoltage", results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
-        double v = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
+        extraData.putDouble("LastVoltage", results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 2));
+        double v = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 2));
         if (level.isLoaded(pos)) {
             if (level.getBlockEntity(pos) instanceof AccumulatorBlockEntity be) {
                 be.energy = (float) ((capacitance / 2) * (v*v)) / 3600;
-
             }
         }
     }

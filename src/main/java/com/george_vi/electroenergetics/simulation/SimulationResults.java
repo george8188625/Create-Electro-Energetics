@@ -59,6 +59,9 @@ public class SimulationResults {
     public double getCurrentThrough(BlockPos pos, int id1, int id2) {
         return getCurrentThrough(new Node(id1, pos), new Node(id2, pos));
     }
+    public double getHeatLoss(BlockPos pos, int id1, int id2) {
+        return getHeatLoss(new Node(id1, pos), new Node(id2, pos));
+    }
 
     public double getHeatLoss(Node node1, Node node2) {
         double current = getCurrentThrough(node1, node2);
