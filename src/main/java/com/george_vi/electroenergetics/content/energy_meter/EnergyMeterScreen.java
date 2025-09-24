@@ -66,7 +66,7 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
         int stringWidth = font.width(title);
         graphics.drawString(font, title, x - stringWidth / 2 + windowWidth / 2, y + 4, 0xFFFFEE);
 
-        double totalEnergy = Mth.lerp((float) ((AnimationTickHolder.getTicks() + AnimationTickHolder.getPartialTicks()) - be.thisPacketTick) /(be.thisPacketTick-be.lastPacketTick), be.oldTotalEnergy, be.totalEnergy);
+        double totalEnergy = Mth.lerp(((AnimationTickHolder.getTicks() + AnimationTickHolder.getPartialTicks()) - be.thisPacketTick) /(be.thisPacketTick-be.lastPacketTick), be.oldTotalEnergy, be.totalEnergy);
 
         if (totalEnergy < 0)
             totalEnergy = 10000000 + totalEnergy;
@@ -82,16 +82,16 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
         float number8 = (float) (totalEnergy / 1000000 % 1);
         float number9 = (float) (totalEnergy / 10000000 % 1);
 
+//        number2 = Math.round(number2 * 10) / 10f;
 //        number0 = Math.round(number0 * 10) / 10f;
 //        number1 = Math.round(number1 * 10) / 10f;
-//        number2 = Math.round(number2 * 10) / 10f;
-//        number3 = Math.round(number3 * 10) / 10f;
-//        number4 = Math.round(number4 * 10) / 10f;
-//        number5 = Math.round(number5 * 10) / 10f;
-//        number6 = Math.round(number6 * 10) / 10f;
-//        number7 = Math.round(number7 * 10) / 10f;
-//        number8 = Math.round(number8 * 10) / 10f;
-//        number9 = Math.round(number9 * 10) / 10f;
+        number3 = (float) (Math.floor(number3 * 10) / 10f);
+        number4 = (float) (Math.floor(number4 * 10) / 10f);
+        number5 = (float) (Math.floor(number5 * 10) / 10f);
+        number6 = (float) (Math.floor(number6 * 10) / 10f);
+        number7 = (float) (Math.floor(number7 * 10) / 10f);
+        number8 = (float) (Math.floor(number8 * 10) / 10f);
+        number9 = (float) (Math.floor(number9 * 10) / 10f);
 
 
         graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 185, y + 27, 0, 243, 210 - (number0 * 210) + 6, 13, 30, 256, 256);

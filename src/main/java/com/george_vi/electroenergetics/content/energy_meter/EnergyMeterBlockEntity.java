@@ -38,6 +38,14 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (level.isClientSide && AnimationTickHolder.getTicks() % 8 == 0) {
+            oldTotalEnergy = totalEnergy;
+        }
+    }
+
+    @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
 

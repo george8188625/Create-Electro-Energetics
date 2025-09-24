@@ -70,25 +70,31 @@ public class HVSwitchDevice extends SimulatedDevice {
         double airResistance = extraData.getDouble("AirResistance");
         double v1 = results.getVoltageAt(pos, 0);
         double v2 = results.getVoltageAt(instance.pos(), 0);
-        double current = results.getCurrentThrough(new Node(0, pos), new Node(0, instance.pos()));
+        double current = Math.abs(results.getCurrentThrough(new Node(0, pos), new Node(0, instance.pos())));
 
-        if (progress > 0.8)
+        if (progress > 0.9)
             state = SwitchState.CONNECTED;
-        else if (progress > 0.5 && connecting && state == SwitchState.DISCONNECTED) {
+        else if (state == SwitchState.MOVING && progress >= 0.6) {
+            if (Math.abs(v1 - v2) > Mth.lerp((progress - 0.6) * 2.5, 50000, 1)) {
+                state = SwitchState.ARCING;
+                airResistance = Mth.lerp(progress, 200000, 100);
+            }
+        } else if (progress > 0.6 && connecting)
             state = SwitchState.MOVING;
-        } else if (state == SwitchState.MOVING) {
-            if (Math.abs((v1 - v2) * current) > 100)
+        else if (state == SwitchState.CONNECTED && progress < 0.8 && !connecting) {
+            if (current > 0.05) {
                 state = SwitchState.ARCING;
+                airResistance = Mth.lerp(progress, 200000, 100);
+            } else
+                state = SwitchState.DISCONNECTED;
         } else if (state == SwitchState.ARCING) {
-            if (Math.abs((v1 - v2) * current) < Mth.lerp(progress * progress, 700000, 2000))
-                state = connecting ? SwitchState.MOVING : SwitchState.DISCONNECTED;
-            else if (progress < 0.05 && level.random.nextFloat() > 0.95)
-                state = SwitchState.DISCONNECTED;
-        } else if (progress < 0.8 && !connecting) {
-            if (Math.abs(current) > 0.001)
-                state = SwitchState.ARCING;
-            else
-                state = SwitchState.DISCONNECTED;
+            if (!connecting) {
+                if (Math.abs(v1 - v2) < Mth.lerp(progress, 3000, 1) ||
+                        (progress < 0.1 && level.random.nextFloat() > 0.98)) {
+                    state = SwitchState.DISCONNECTED;
+                }
+            }
+            airResistance = Mth.lerp(progress, 200000, 100);
         }
 
         if (state == SwitchState.MOVING)

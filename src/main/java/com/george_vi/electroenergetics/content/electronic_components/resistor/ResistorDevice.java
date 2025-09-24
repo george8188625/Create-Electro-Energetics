@@ -8,12 +8,12 @@ import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 
 public class ResistorDevice extends SimulatedDevice {
     public ResistorDevice(ResourceLocation id) {
@@ -29,15 +29,17 @@ public class ResistorDevice extends SimulatedDevice {
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
         float loss = (float) results.getHeatLoss(pos, 0, 1);
-        float temp = updateTemp(extraData.getFloat("Temp"), loss);
+        float temp = updateTemp(extraData.getFloat("Temp"), Math.min(loss, 10000));
         extraData.putFloat("Temp", temp);
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
 
         if (temp > 40000) {
-            if (level.isLoaded(pos))
+            if (level.isLoaded(pos)) {
                 CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.SMALL));
+                ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0,0, 0);
+            }
             InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
             sd.removeDevice(pos);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());

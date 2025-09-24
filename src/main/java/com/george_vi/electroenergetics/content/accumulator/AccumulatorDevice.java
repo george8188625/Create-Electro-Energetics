@@ -1,18 +1,20 @@
 package com.george_vi.electroenergetics.content.accumulator;
 
-import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlockEntity;
-import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchDevice;
-import com.george_vi.electroenergetics.simulation.BridgeCollector;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.simulation.BridgeCollector;
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-
-import java.util.Map;
+import net.minecraft.world.level.block.Blocks;
 
 public class AccumulatorDevice extends SimulatedDevice {
     public AccumulatorDevice(ResourceLocation id) {
@@ -44,5 +46,23 @@ public class AccumulatorDevice extends SimulatedDevice {
                 be.energy = (float) ((capacitance / 2) * (v*v)) / 3600;
             }
         }
+
+        float loss = (float) results.getHeatLoss(pos, 1, 2);
+        float temp = updateTemp(extraData.getFloat("Temp"), Math.min(loss, 10000));
+        extraData.putFloat("Temp", temp);
+
+        if (!CEEConfigs.server().componentDamage.get())
+            return;
+
+        if (temp > 200000) {
+            if (level.isLoaded(pos)) {
+                CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.SMALL));
+                ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0,0, 0);
+            }
+            InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
+            sd.removeDevice(pos);
+            level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
+        } else if (temp > 170000)
+            showOverheatingParticles(level, pos);
     }
 }
