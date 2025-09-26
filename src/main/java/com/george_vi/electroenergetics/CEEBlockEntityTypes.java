@@ -5,6 +5,8 @@ import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntityRenderer;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorRenderer;
+import com.george_vi.electroenergetics.content.fuse.FuseHolderBlockEntity;
+import com.george_vi.electroenergetics.content.fuse.FuseHolderRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
@@ -108,6 +110,11 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<ResistorBlockEntity> RESISTOR = REGISTRATE.blockEntity("resistor", ResistorBlockEntity::new)
             .validBlock(CEEBlocks.RESISTOR::get)
             .renderer(() -> ResistorRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<FuseHolderBlockEntity> FUSE_HOLDER = REGISTRATE.blockEntity("fuse_holder", FuseHolderBlockEntity::new)
+            .validBlock(CEEBlocks.FUSE_HOLDER::get)
+            .renderer(() -> FuseHolderRenderer::new)
             .register();
 
 

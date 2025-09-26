@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalNodeConnection;
+import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import net.minecraft.core.BlockPos;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class BridgeCollector {
     }
 
     public static class Builder {
-        final BridgeCollector collector;
+        public final BridgeCollector collector;
         final BlockPos pos;
         int i = 0;
 
@@ -84,6 +85,11 @@ public class BridgeCollector {
 
         public Builder resistor(int n1, int n2, double resistance) {
             collector.bridge(new Node(n1, pos), new Node(n2, pos), resistance, 0, 0);
+            return this;
+        }
+
+        public Builder connect(int n1, int n2, ElectricalProperties properties) {
+            collector.bridge(new Node(n1, pos), new Node(n2, pos), properties.resistance(), properties.voltageSource(), properties.currentSource());
             return this;
         }
     }

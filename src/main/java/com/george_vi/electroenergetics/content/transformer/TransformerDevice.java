@@ -7,9 +7,13 @@ import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class TransformerDevice extends SimulatedDevice {
@@ -27,62 +31,70 @@ public class TransformerDevice extends SimulatedDevice {
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-
-        Node p1 = new Node(0, pos), p2 = new Node(1, pos);
-        Node s1 = new Node(2, pos), s2 = new Node(3, pos);
-
-        double vPrimary = results.getVoltageAt(p1) - results.getVoltageAt(p2);
-        if (Math.abs(vPrimary) < 0.1)
-            vPrimary = 0;
-
-
         double storedEnergy = extraData.getDouble("StoredEnergy");
         float ratio = extraData.getFloat("Ratio");
         if (ratio == 0)
             ratio = 1;
-        double vLastTickHighestPrimary = vPrimary > 0 ?
-                Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary)) :
-                - Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary));
 
-//        double maxEnergy = 1_20 * Math.abs(vLastTickHighestPrimary / ratio) + 1;
+        double primaryVoltage = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
+        double secondaryVoltage = results.getVoltageAt(pos, 3) - results.getVoltageAt(pos, 2);
+        if (Math.abs(primaryVoltage) < 0.1)
+            primaryVoltage = 0;
 
-        double maxEnergy = 2_000_000;
+        // incoming energy and load
 
-        double current = results.getCurrentThrough(s1, s2);
+        double secondaryCurrent = results.getCurrentThrough(pos, 2, 3);
+        double load = secondaryCurrent * secondaryVoltage;
+        if (load < -0.1)
+            load = 0;
+        else if (load < 100)
+            load = 100;
 
-        double load = Math.abs(current * (results.getVoltageAt(s1) - results.getVoltageAt(s2)));
-        double primaryCurrent = vPrimary / (extraData.getDouble("PrimaryResistance") == 0 ? 10 : extraData.getDouble("PrimaryResistance"));
-        double incomingEnergy = primaryCurrent * vPrimary;
-
-        if (level.isLoaded(pos))
-            if (level.getBlockEntity(pos) instanceof TransformerBlockEntity be)
-                be.power = load;
-
-        storedEnergy += incomingEnergy;
-        if (load < 100 && storedEnergy > 100)
-            load += 100;
+        double primaryCurrent = results.getCurrentThrough(pos, 0, 1);
+        double incomingEnergy = primaryCurrent * primaryVoltage;
 
         storedEnergy -= load;
-        if ((storedEnergy - load) > maxEnergy)
-            storedEnergy = Math.max(maxEnergy, storedEnergy / 1.5);
+        storedEnergy += incomingEnergy;
+        if (storedEnergy < 0)
+            storedEnergy = 0;
+
+        // calculate the average primary voltage
+
+        double[] prevVoltages = extraData.getList("PrevVoltages", Tag.TAG_DOUBLE).stream().mapToDouble(t -> ((DoubleTag)t).getAsDouble()).toArray();
+        ListTag tag = new ListTag();
+        tag.add(DoubleTag.valueOf(primaryVoltage));
+        for (int i = 0; i < Math.min(9, prevVoltages.length); i++) {
+            tag.add(DoubleTag.valueOf(prevVoltages[i]));
+        }
+        extraData.put("PrevVoltages", tag);
+
+        double averageVoltage = Arrays.stream(prevVoltages).average().orElse(0);
+//        double maxEnergy = Math.min(8000000 * Math.log10(averageVoltage + 40000) - 36_800_000, 2_000_000);
+        double maxEnergy = 2_000_000;
+        // calculate primary resistance
 
         double resistance;
-
         if ((storedEnergy - load) < maxEnergy) {
             double availableEnergy = maxEnergy - storedEnergy;
             double divisor = (availableEnergy > 1000 ? availableEnergy / 100 : availableEnergy) + load;
-            resistance = Math.abs(vLastTickHighestPrimary / (divisor / vLastTickHighestPrimary));
+            resistance = Math.abs(averageVoltage / (divisor / averageVoltage));
         } else if (load > 10) {
-            double divisor = (storedEnergy > maxEnergy ? load / 2.0 : load * 2);
-            resistance = Math.abs(vLastTickHighestPrimary / (divisor / vLastTickHighestPrimary));
+            double divisor = (storedEnergy > maxEnergy ? load : load * 2);
+            resistance = Math.abs(averageVoltage / (divisor / averageVoltage));
         } else {
             resistance = 999999;
         }
 
-        extraData.putDouble("PrimaryResistance", storedEnergy / maxEnergy < 0.75 ? resistance / 10 : resistance);
-        extraData.putDouble("StoredEnergy", storedEnergy);
-        extraData.putDouble("SecondaryVoltage", storedEnergy > 100 ? vLastTickHighestPrimary / ratio : 0);
-        extraData.putDouble("LastPrimaryVoltage", vPrimary);
+        double primaryResistance = storedEnergy / maxEnergy < 0.75 ? resistance / 10 : resistance;
+        if (primaryResistance < 0.1)
+            primaryResistance = 0.1;
 
+        extraData.putDouble("PrimaryResistance", primaryResistance);
+        extraData.putDouble("StoredEnergy", storedEnergy);
+        extraData.putDouble("SecondaryVoltage", averageVoltage / ratio);
+
+        if (level.isLoaded(pos))
+            if (level.getBlockEntity(pos) instanceof TransformerBlockEntity be)
+                be.power = load;
     }
 }

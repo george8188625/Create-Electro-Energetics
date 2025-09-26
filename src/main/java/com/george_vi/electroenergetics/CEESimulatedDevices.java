@@ -14,6 +14,7 @@ import com.george_vi.electroenergetics.content.electronic_components.resistor.Re
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterDevice;
 import com.george_vi.electroenergetics.content.energy_meter.TriPolarEnergyMeterDevice;
 import com.george_vi.electroenergetics.content.fuse.FuseDevice;
+import com.george_vi.electroenergetics.content.fuse.FuseHolderDevice;
 import com.george_vi.electroenergetics.content.gauge.GaugeDevice;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleDevice;
@@ -53,6 +54,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice HV_SWITCH = register(new HVSwitchDevice(CreateElecrtoEnergetics.rl("high_voltage_switch")));
     public static final SimulatedDevice DIODE = register(new DiodeDevice(CreateElecrtoEnergetics.rl("diode")));
     public static final SimulatedDevice RESISTOR = register(new ResistorDevice(CreateElecrtoEnergetics.rl("resistor")));
+    public static final SimulatedDevice FUSE_HOLDER = register(new FuseHolderDevice(CreateElecrtoEnergetics.rl("fuse_holder")));
 
     public static SimulatedDevice register(SimulatedDevice device) {
         BY_ID.put(device.getID(), device);

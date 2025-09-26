@@ -19,6 +19,7 @@
   "block.electroenergetics.electric_pump": "Electric Pump",
   "block.electroenergetics.energy_meter": "Energy Meter",
   "block.electroenergetics.fuse": "Fuse",
+  "block.electroenergetics.fuse_holder": "Fuse Holder",
   "block.electroenergetics.ground_rod": "Ground Rod",
   "block.electroenergetics.high_voltage_switch": "High Voltage Switch",
   "block.electroenergetics.magnet": "Magnet",

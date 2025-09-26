@@ -40,10 +40,10 @@ public class TriPolarEnergyMeterDevice extends SimulatedDevice {
         double totalEnergy = extraData.getDouble("TotalEnergy");
 
         if (Math.abs(amps1) > 0.01 && extraData.getBoolean("Closed"))
-            totalEnergy -= (amps1 * v1 / 72000) / 1000;
+            totalEnergy += (amps1 * v1 / 72000) / 1000;
 
         if (Math.abs(amps2) > 0.01 && extraData.getBoolean("Closed"))
-            totalEnergy += (amps2 * v2 / 72000) / 1000;
+            totalEnergy -= (amps2 * v2 / 72000) / 1000;
 
         extraData.putDouble("TotalEnergy", totalEnergy);
 

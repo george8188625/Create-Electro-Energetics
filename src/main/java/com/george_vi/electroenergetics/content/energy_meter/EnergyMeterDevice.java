@@ -29,7 +29,7 @@ public class EnergyMeterDevice extends SimulatedDevice {
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
         double vd = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 2);
-        double v = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
+        double v = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
         double amps = vd / 0.001;
         double totalEnergy = extraData.getDouble("TotalEnergy");
 

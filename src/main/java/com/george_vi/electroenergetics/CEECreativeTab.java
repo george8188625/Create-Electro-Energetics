@@ -43,6 +43,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.AMMETER.asStack());
                         output.accept(CEEBlocks.VOLTMETER.asStack());
                         output.accept(CEEBlocks.FUSE.asStack());
+                        output.accept(CEEBlocks.FUSE_HOLDER.asStack());
                         output.accept(CEEBlocks.GROUND_ROD.asStack());
                         output.accept(CEEBlocks.TRANSFORMER.asStack());
                         output.accept(CEEBlocks.VOLTAGE_REGULATOR.asStack());

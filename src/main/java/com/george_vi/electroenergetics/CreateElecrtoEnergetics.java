@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.fuse.FuseHoldables;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.providers.RegistrateDataProvider;
@@ -39,6 +40,8 @@ public class CreateElecrtoEnergetics
         CEEWireAttachments.register(modEventBus);
         CEEWireInteractionBehaviours.register(modEventBus);
         CEEConfigs.register(modLoadingContext, modContainer);
+
+        FuseHoldables.register();
 
         CCProxy.register();
     }

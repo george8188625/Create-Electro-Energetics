@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
+import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographMovementBehaviour;
@@ -425,6 +426,17 @@ public class CEEBlocks {
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/resistor")))
             .build()
             .register();
+
+    public static final BlockEntry<FuseHolderBlock> FUSE_HOLDER = REGISTRATE.block("fuse_holder", FuseHolderBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
 
     public static void register() {
 

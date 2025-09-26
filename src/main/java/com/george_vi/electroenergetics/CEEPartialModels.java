@@ -27,6 +27,9 @@ public class CEEPartialModels {
     public static final PartialModel BULB_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament"));
     public static final PartialModel BULB_BROKEN_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament_broken"));
     public static final PartialModel RESISTOR_STRIP = PartialModel.of(CreateElecrtoEnergetics.rl("block/electronics/resistor_strip"));
+    public static final PartialModel FUSE_HOLDER_COPPER_CONDUCTOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/copper_conductor"));
+    public static final PartialModel FUSE_HOLDER_FUSE = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/fuse"));
+    public static final PartialModel FUSE_HOLDER_BROKEN_FUSE = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/broken_fuse"));
 
     public static void register() {
 

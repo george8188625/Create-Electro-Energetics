@@ -154,10 +154,10 @@ public class EnergyMeterBlock extends SimpleDeviceBlock implements IWrenchable, 
     @Override
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
         if (triPolar)
-            return id == 0 ? Component.translatable("electroenergetics.nodes.feed_negative") :
-                   id == 2 ? Component.translatable("electroenergetics.nodes.feed_positive") :
-                   id == 3 ? Component.translatable("electroenergetics.nodes.load_negative") :
-                   id == 5 ? Component.translatable("electroenergetics.nodes.load_positive") :
+            return id == 0 ? Component.translatable("electroenergetics.nodes.feed") :
+                   id == 2 ? Component.translatable("electroenergetics.nodes.feed") :
+                   id == 3 ? Component.translatable("electroenergetics.nodes.load") :
+                   id == 5 ? Component.translatable("electroenergetics.nodes.load") :
                             Component.translatable("electroenergetics.nodes.neutral");
         return id == 0 ? Component.translatable("electroenergetics.nodes.feed") :
                 id == 2 ? Component.translatable("electroenergetics.nodes.load") :
