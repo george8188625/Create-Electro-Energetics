@@ -6,13 +6,21 @@ public class ElectricalProperties {
     private final double resistance;
     private final double voltageSource;
     private final double currentSource;
+    private final boolean isForcedVoltageSource;
+    private final boolean isForcedCurrentSource;
 
     public ElectricalProperties(double resistance, double voltageSource, double currentSource) {
+        this(resistance, voltageSource, currentSource, false, false);
+    }
+
+    public ElectricalProperties(double resistance, double voltageSource, double currentSource, boolean isForcedVoltageSource, boolean isForcedCurrentSource) {
         if (resistance == 0)
             resistance = 0.01d;
         this.resistance = resistance;
         this.voltageSource = voltageSource;
         this.currentSource = currentSource;
+        this.isForcedVoltageSource = isForcedVoltageSource;
+        this.isForcedCurrentSource = isForcedCurrentSource;
     }
 
     public static ElectricalProperties resistor(double resistance) {
@@ -20,7 +28,7 @@ public class ElectricalProperties {
     }
 
     public ElectricalProperties invert() {
-        return new ElectricalProperties(resistance, -voltageSource, -currentSource);
+        return new ElectricalProperties(resistance, -voltageSource, -currentSource, isForcedVoltageSource, isForcedCurrentSource);
     }
 
     @Override
@@ -29,6 +37,8 @@ public class ElectricalProperties {
                 "resistance=" + resistance +
                 ", voltageSource=" + voltageSource +
                 ", currentSource=" + currentSource +
+                ", forceVoltageSource=" + isForcedVoltageSource +
+                ", forceCurrentSource=" + isForcedCurrentSource +
                 '}';
     }
 
@@ -40,8 +50,16 @@ public class ElectricalProperties {
         return voltageSource;
     }
 
+    public boolean isVoltageSource() {
+        return voltageSource != 0 || isForcedVoltageSource;
+    }
+
     public double currentSource() {
         return currentSource;
+    }
+
+    public boolean isCurrentSource() {
+        return currentSource != 0 || isForcedCurrentSource;
     }
 
     @Override
@@ -51,12 +69,13 @@ public class ElectricalProperties {
         var that = (ElectricalProperties) obj;
         return Double.doubleToLongBits(this.resistance) == Double.doubleToLongBits(that.resistance) &&
                 Double.doubleToLongBits(this.voltageSource) == Double.doubleToLongBits(that.voltageSource) &&
-                Double.doubleToLongBits(this.currentSource) == Double.doubleToLongBits(that.currentSource);
+                Double.doubleToLongBits(this.currentSource) == Double.doubleToLongBits(that.currentSource) &&
+                this.isForcedCurrentSource == that.isForcedCurrentSource && this.isForcedVoltageSource == that.isForcedVoltageSource;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(resistance, voltageSource, currentSource);
+        return Objects.hash(resistance, voltageSource, currentSource, isForcedCurrentSource, isForcedVoltageSource);
     }
 
 

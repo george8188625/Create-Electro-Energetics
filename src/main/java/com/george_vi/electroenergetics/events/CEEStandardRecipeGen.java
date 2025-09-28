@@ -83,6 +83,15 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .unlockedBy("has_insulated_wire", has(CEEItems.INSULATED_WIRE))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/wire_spool"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.COPPER_WIRE_SPOOL)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', CEEItems.COPPER_WIRE)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_copper_wire", has(CEEItems.COPPER_WIRE))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/copper_wire_spool"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_WIRE_SPOOL)
                 .pattern(" w ")
                 .pattern("wsw")

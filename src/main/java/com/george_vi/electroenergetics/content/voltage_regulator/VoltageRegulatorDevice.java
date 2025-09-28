@@ -1,18 +1,18 @@
 package com.george_vi.electroenergetics.content.voltage_regulator;
 
-import com.george_vi.electroenergetics.content.transformer.TransformerBlockEntity;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
-import java.util.Map;
+import java.util.Arrays;
 
 public class VoltageRegulatorDevice extends SimulatedDevice {
     public VoltageRegulatorDevice(ResourceLocation id) {
@@ -28,57 +28,51 @@ public class VoltageRegulatorDevice extends SimulatedDevice {
     }
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        Node p1 = new Node(0, pos), p2 = new Node(1, pos);
-        Node s1 = new Node(2, pos), s2 = new Node(3, pos);
+        double storedEnergy = extraData.contains("StoredEnergy") ? extraData.getDouble("StoredEnergy") : 2_000_000;
+        float ratio = extraData.getFloat("Ratio");
+        if (ratio == 0)
+            ratio = 1;
 
-        double vPrimary = results.getVoltageAt(p1) - results.getVoltageAt(p2);
-        if (Math.abs(vPrimary) < 1)
-            vPrimary = 0;
+        double primaryVoltage = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
+        double secondaryVoltage = results.getVoltageAt(pos, 3) - results.getVoltageAt(pos, 2);
+        if (Math.abs(primaryVoltage) < 0.1)
+            primaryVoltage = 0;
 
+        // incoming energy and load
 
-        double storedEnergy = extraData.getDouble("StoredEnergy");
+        double secondaryCurrent = results.getCurrentThrough(pos, 2, 3);
+        double load = secondaryCurrent * secondaryVoltage;
+        if (load < 0)
+            load = 0;
 
-        double vLastTickHighestPrimary = vPrimary > 0 ?
-                Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary)) :
-                - Math.max(Math.abs(extraData.getDouble("LastPrimaryVoltage")), Math.abs(vPrimary));
-
-        double maxEnergy = 2_000_000;
-
-        double current = results.getCurrentThrough(s1, s2);
-
-        double load = Math.abs(current * (results.getVoltageAt(s1) - results.getVoltageAt(s2)));
-        double primaryCurrent = vPrimary / (extraData.getDouble("PrimaryResistance") == 0 ? 10 : extraData.getDouble("PrimaryResistance"));
-        double incomingEnergy = primaryCurrent * vPrimary;
-
-        if (level.isLoaded(pos))
-            if (level.getBlockEntity(pos) instanceof VoltageRegulatorBlockEntity be)
-                be.power = load;
-
-        storedEnergy += incomingEnergy;
-        if (load < 100 && storedEnergy > 100)
-            load += 100;
+        double primaryCurrent = results.getCurrentThrough(pos, 0, 1);
+        double incomingEnergy = primaryCurrent * primaryVoltage;
 
         storedEnergy -= load;
-        if ((storedEnergy - load) > maxEnergy)
-            storedEnergy = Math.max(maxEnergy, storedEnergy / 1.5);
+        storedEnergy += incomingEnergy;
+        if (storedEnergy < 0)
+            storedEnergy = 0;
 
-        double resistance;
+        // calculate the average primary voltage
 
-        if ((storedEnergy - load) < maxEnergy) {
-            double availableEnergy = maxEnergy - storedEnergy;
-            double divisor = (availableEnergy > 1000 ? availableEnergy / 100 : availableEnergy) + load;
-            resistance = Math.abs(vLastTickHighestPrimary / (divisor / vLastTickHighestPrimary));
-        } else if (load > 10) {
-            double divisor = (storedEnergy > maxEnergy ? load / 2.0 : load * 2);
-            resistance = Math.abs(vLastTickHighestPrimary / (divisor / vLastTickHighestPrimary));
-        } else {
-            resistance = 999999;
+        double[] prevVoltages = extraData.getList("PrevVoltages", Tag.TAG_DOUBLE).stream().mapToDouble(t -> ((DoubleTag)t).getAsDouble()).toArray();
+        ListTag tag = new ListTag();
+        tag.add(DoubleTag.valueOf(primaryVoltage));
+        for (int i = 0; i < Math.min(12, prevVoltages.length); i++) {
+            tag.add(DoubleTag.valueOf(prevVoltages[i]));
         }
+        extraData.put("PrevVoltages", tag);
+
+        double averageVoltage = (Arrays.stream(prevVoltages).sum() + primaryVoltage) / (prevVoltages.length + 1);
+
+        double primaryResistance = (averageVoltage / ((load + 100) / averageVoltage));
+        if (primaryResistance < 0.1)
+            primaryResistance = 0.1;
 
         float targetedVoltage = extraData.getFloat("Voltage");
-        targetedVoltage = (float) Mth.clamp(targetedVoltage, Math.abs(vLastTickHighestPrimary) / 1.2, Math.abs(vLastTickHighestPrimary) * 1.2);
+        targetedVoltage = (float) Mth.clamp(targetedVoltage, Math.abs(averageVoltage) / 1.2, Math.abs(averageVoltage) * 1.2);
 
-        double resultingVoltage = Math.abs(results.getVoltageAt(s1) - results.getVoltageAt(s2));
+        double resultingVoltage = Math.abs(secondaryVoltage);
         double potentialVoltage = Math.abs(extraData.getFloat("Voltage"));
 
         if (resultingVoltage - potentialVoltage < -potentialVoltage / 500) {
@@ -89,10 +83,12 @@ public class VoltageRegulatorDevice extends SimulatedDevice {
 
         targetedVoltage *= 1 + (extraData.getInt("AdditionalSteps") / 300f);
 
-
-        extraData.putDouble("PrimaryResistance", storedEnergy / maxEnergy < 0.75 ? resistance / 10 : resistance);
+        extraData.putDouble("PrimaryResistance", primaryResistance);
         extraData.putDouble("StoredEnergy", storedEnergy);
-        extraData.putDouble("SecondaryVoltage", storedEnergy > 100 ? targetedVoltage : 0);
-        extraData.putDouble("LastPrimaryVoltage", vPrimary);
+        extraData.putDouble("SecondaryVoltage", targetedVoltage);
+
+        if (level.isLoaded(pos))
+            if (level.getBlockEntity(pos) instanceof VoltageRegulatorBlockEntity be)
+                be.power = load;
     }
 }

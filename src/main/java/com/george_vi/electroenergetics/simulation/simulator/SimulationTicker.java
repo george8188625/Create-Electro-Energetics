@@ -16,11 +16,9 @@ import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.common.NeoForge;
-import org.joml.Vector3f;
 
 import java.util.*;
 
@@ -144,7 +142,7 @@ public class SimulationTicker {
                 for (Node connectedNode : adjacency.get(node)) {
                     ElectricalProperties properties = connectionProperties.get(new DirectionSensitiveNodeConnection(node, connectedNode));
                     nodeConnections.put(connectedNode, properties);
-                    if (properties.currentSource() != 0 || properties.voltageSource() != 0)
+                    if (properties.isCurrentSource() || properties.isVoltageSource())
                         foundSource = true;
                 }
                 networkConnections.put(node, nodeConnections);
@@ -258,7 +256,7 @@ public class SimulationTicker {
                 if (newTemp > wireType.getMaxTemperature() * 0.6 && level.isLoaded(connection.node1().sourcePos())) {
                     // smoke particles
                     CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, connection.node1().sourcePos().getCenter(), connection.node2().sourcePos().getCenter()),
-                            connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE, wireType.getSag()));
+                            connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE, wireType.getSag(), 0.2f));
                 }
 
                 if (newTemp > wireType.getMaxTemperature()) {
@@ -275,9 +273,17 @@ public class SimulationTicker {
 
             }
             if (longestWireToBreak != null) {
-                sd.removeConnection(longestWireToBreak);
-                CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),
-                        longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.BUBBLE_POP, longestWireTypeToBreak.getSag()));
+                WireType replaceWith = longestWireTypeToBreak.replaceOverheatedWith();
+                if (replaceWith == null) {
+                    sd.removeConnection(longestWireToBreak);
+                    CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),
+                            longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.BUBBLE_POP, longestWireTypeToBreak.getSag(), 4));
+                } else {
+                    WireData wireConnectionData = sd.getConnectionData(longestWireToBreak);
+                    sd.setConnectionData(longestWireToBreak, new WireData(replaceWith, wireConnectionData.temperature(), wireConnectionData.attachments()));
+                    CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),
+                            longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.LARGE_SMOKE, longestWireTypeToBreak.getSag(), 4));
+                }
             }
         }
         profiler.popPush("finish");

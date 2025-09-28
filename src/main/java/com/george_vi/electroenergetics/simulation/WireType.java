@@ -13,6 +13,8 @@ public class WireType {
     final PartialModel model;
     final Supplier<Item> droppedItem;
     final Supplier<Item> spoolItem;
+    final boolean insulated;
+    final Supplier<WireType> onOverheated;
 
     /**
      * This is the temperature at which the wire burns. It is in abstract units.
@@ -33,11 +35,13 @@ public class WireType {
     final float sag;
     final IntSupplier maxLength;
 
-    public WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength) {
+    public WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, boolean insulated, Supplier<WireType> onOverheated, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength) {
         this.resistance = resistance;
         this.model = model;
         this.droppedItem = droppedItem;
         this.spoolItem = spoolItem;
+        this.insulated = insulated;
+        this.onOverheated = onOverheated;
         this.maxTemperature = maxTemperature;
         this.sag = sag;
         this.maxLength = maxLength;
@@ -55,9 +59,17 @@ public class WireType {
         return maxTemperature.getAsDouble();
     }
 
+    public WireType replaceOverheatedWith() {
+        return onOverheated.get();
+    }
+
     public double getResistance() {
         return resistance.getAsDouble();
     }
+
+    public boolean insulated() {
+        return insulated;
+    };
 
     public PartialModel getModel() {
         return model;

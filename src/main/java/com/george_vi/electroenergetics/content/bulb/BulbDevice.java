@@ -4,14 +4,17 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
@@ -53,7 +56,7 @@ public class BulbDevice extends SimulatedDevice {
                 if (blockLight != light)
                     level.setBlockAndUpdate(pos, state.setValue(BulbBlock.LIGHT, light));
                 if (level.getBlockEntity(pos) instanceof BulbBlockEntity be) {
-                    float newLight = (float) (vd / 500);
+                    float newLight = (float) Math.min(1, vd / 500);
                     newLight = 1 - (1 - newLight) * (1 - newLight);
 
                     if (Math.abs(be.light - newLight) > 0.1) {
@@ -63,8 +66,17 @@ public class BulbDevice extends SimulatedDevice {
                 }
             }
         }
-        if (vd / CEEConfigs.server().resistanceValues.bulbResistance.get() > CEEConfigs.server().bulbBreakAmperage.get())
+        float loss = (float) results.getHeatLoss(pos, 0, 1);
+        float temp = updateTemp(extraData.getFloat("Temp"), Math.min(loss, 10000));
+        extraData.putFloat("Temp", temp);
+
+        if (!CEEConfigs.server().componentDamage.get())
+            return;
+
+        if (temp > 10000) {
             extraData.putBoolean("Destroyed", true);
+            extraData.putFloat("Temp", 0);
+        }
     }
 
     private int getLightLevel(double vd) {

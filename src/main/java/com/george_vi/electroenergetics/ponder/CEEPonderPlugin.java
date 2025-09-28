@@ -19,7 +19,7 @@ public class CEEPonderPlugin implements PonderPlugin {
     @Override
     public void registerScenes(PonderSceneRegistrationHelper<ResourceLocation> helper) {
 
-        helper.forComponents(CEEBlocks.CONNECTOR.getId(), CEEBlocks.DOUBLE_CONNECTOR.getId(), CEEBlocks.TRIPLE_CONNECTOR.getId(), CEEBlocks.QUAD_CONNECTOR.getId(), CEEItems.WIRE_SPOOL.getId(), CEEItems.IRON_WIRE_SPOOL.getId(), CEEItems.IRON_BUS_SPOOL.getId(), CEEItems.CREATIVE_WIRE_SPOOL.getId())
+        helper.forComponents(CEEBlocks.CONNECTOR.getId(), CEEBlocks.DOUBLE_CONNECTOR.getId(), CEEBlocks.TRIPLE_CONNECTOR.getId(), CEEBlocks.QUAD_CONNECTOR.getId(), CEEItems.WIRE_SPOOL.getId(), CEEItems.COPPER_WIRE_SPOOL.getId(), CEEItems.IRON_WIRE_SPOOL.getId(), CEEItems.IRON_BUS_SPOOL.getId(), CEEItems.CREATIVE_WIRE_SPOOL.getId())
                 .addStoryBoard("connectors", ConnectorScenes::connectors)
                 .addStoryBoard("connectors_chunks", ConnectorScenes::chunks);
         helper.forComponents(CEEBlocks.TRANSFORMER.getId())
@@ -62,6 +62,7 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.TRIPLE_CONNECTOR.getId())
                 .add(CEEBlocks.QUAD_CONNECTOR.getId())
                 .add(CEEItems.WIRE_SPOOL.getId())
+                .add(CEEItems.COPPER_WIRE_SPOOL.getId())
                 .add(CEEItems.IRON_WIRE_SPOOL.getId())
                 .add(CEEItems.IRON_BUS_SPOOL.getId())
                 .add(CEEItems.CREATIVE_WIRE_SPOOL.getId())

@@ -1,8 +1,6 @@
 package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
@@ -14,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 import java.util.Arrays;
-import java.util.Map;
 
 public class TransformerDevice extends SimulatedDevice {
     public TransformerDevice(ResourceLocation id) {
@@ -31,7 +28,7 @@ public class TransformerDevice extends SimulatedDevice {
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        double storedEnergy = extraData.getDouble("StoredEnergy");
+        double storedEnergy = extraData.contains("StoredEnergy") ? extraData.getDouble("StoredEnergy") : 2_000_000;
         float ratio = extraData.getFloat("Ratio");
         if (ratio == 0)
             ratio = 1;
@@ -45,10 +42,8 @@ public class TransformerDevice extends SimulatedDevice {
 
         double secondaryCurrent = results.getCurrentThrough(pos, 2, 3);
         double load = secondaryCurrent * secondaryVoltage;
-        if (load < -0.1)
+        if (load < 0)
             load = 0;
-        else if (load < 100)
-            load = 100;
 
         double primaryCurrent = results.getCurrentThrough(pos, 0, 1);
         double incomingEnergy = primaryCurrent * primaryVoltage;
@@ -63,29 +58,14 @@ public class TransformerDevice extends SimulatedDevice {
         double[] prevVoltages = extraData.getList("PrevVoltages", Tag.TAG_DOUBLE).stream().mapToDouble(t -> ((DoubleTag)t).getAsDouble()).toArray();
         ListTag tag = new ListTag();
         tag.add(DoubleTag.valueOf(primaryVoltage));
-        for (int i = 0; i < Math.min(9, prevVoltages.length); i++) {
+        for (int i = 0; i < Math.min(12, prevVoltages.length); i++) {
             tag.add(DoubleTag.valueOf(prevVoltages[i]));
         }
         extraData.put("PrevVoltages", tag);
 
-        double averageVoltage = Arrays.stream(prevVoltages).average().orElse(0);
-//        double maxEnergy = Math.min(8000000 * Math.log10(averageVoltage + 40000) - 36_800_000, 2_000_000);
-        double maxEnergy = 2_000_000;
-        // calculate primary resistance
+        double averageVoltage = (Arrays.stream(prevVoltages).sum() + primaryVoltage) / (prevVoltages.length + 1);
 
-        double resistance;
-        if ((storedEnergy - load) < maxEnergy) {
-            double availableEnergy = maxEnergy - storedEnergy;
-            double divisor = (availableEnergy > 1000 ? availableEnergy / 100 : availableEnergy) + load;
-            resistance = Math.abs(averageVoltage / (divisor / averageVoltage));
-        } else if (load > 10) {
-            double divisor = (storedEnergy > maxEnergy ? load : load * 2);
-            resistance = Math.abs(averageVoltage / (divisor / averageVoltage));
-        } else {
-            resistance = 999999;
-        }
-
-        double primaryResistance = storedEnergy / maxEnergy < 0.75 ? resistance / 10 : resistance;
+        double primaryResistance = (averageVoltage / ((load + 100) / averageVoltage));
         if (primaryResistance < 0.1)
             primaryResistance = 0.1;
 
@@ -98,3 +78,4 @@ public class TransformerDevice extends SimulatedDevice {
                 be.power = load;
     }
 }
+

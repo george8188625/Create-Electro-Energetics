@@ -7,7 +7,11 @@ public class ElectricalNodeConnection extends NodeConnection {
     public final ElectricalProperties electricalProperties;
 
     public ElectricalNodeConnection(Node node1, Node node2, double resistance, double voltageSource, double currentSource) {
+        this(node1, node2, new ElectricalProperties(resistance, voltageSource, currentSource));
+    }
+
+    public ElectricalNodeConnection(Node node1, Node node2, ElectricalProperties properties) {
         super(node1, node2);
-        electricalProperties = new ElectricalProperties(resistance, voltageSource, currentSource);
+        electricalProperties = properties;
     }
 }

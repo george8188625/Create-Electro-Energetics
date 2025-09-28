@@ -1,4 +1,4 @@
-// 1.21.1	2025-09-19T21:51:42.2578203	Recipes
+// 1.21.1	2025-09-28T14:45:20.4330989	Recipes
 3aebfa4f38c5a9d6431e63d06c23a7682eb9c06e data/electroenergetics/advancement/recipes/misc/crafting/alternator_brushes.json
 17cb440186b8229ab96e28b4fabfcc6443fd4318 data/electroenergetics/advancement/recipes/misc/crafting/alternator_rotor.json
 2b40210321dd5bc26e17c0c93ae0eedd9b1f87e5 data/electroenergetics/advancement/recipes/misc/crafting/ammeter.json
@@ -10,6 +10,7 @@ f72346bd00e7f0d8156b4c407156afc007f4e80d data/electroenergetics/advancement/reci
 e03529bb629b7b9968504297b9f2bf14d3aa4f17 data/electroenergetics/advancement/recipes/misc/crafting/connector.json
 1acc5408e2491662b05862470e285240e40a8631 data/electroenergetics/advancement/recipes/misc/crafting/converter.json
 e3800aecc8b8f296b2bb1ae2efc4c28fc7ccbb87 data/electroenergetics/advancement/recipes/misc/crafting/copper_wire.json
+e554326a037ee2f363bb65d5d889c428f4bf1347 data/electroenergetics/advancement/recipes/misc/crafting/copper_wire_spool.json
 123facba5d578ce514dedbc8b58cd32c9f85d8e7 data/electroenergetics/advancement/recipes/misc/crafting/cut_off_switch.json
 2288546a13f6c8783affa065c1768d000855d146 data/electroenergetics/advancement/recipes/misc/crafting/double_connector.json
 3fb30b7a29ad541e48a1f14caeedb366d964052f data/electroenergetics/advancement/recipes/misc/crafting/double_switch.json
@@ -49,6 +50,7 @@ ca70ace641b1fcf9b5b7399e4c4c614c67da3e49 data/electroenergetics/recipe/crafting/
 23196e58932d6eeb8a7de3a3d35559df64ca180c data/electroenergetics/recipe/crafting/connector.json
 dc182bb400b5846e43250d149d52ee20129042df data/electroenergetics/recipe/crafting/converter.json
 b203cdb11ff84ae71f67fd2ba8b6d61b2b2efe44 data/electroenergetics/recipe/crafting/copper_wire.json
+5b50a9161ddf4d7ceccd00a7faab29cd0fd567c2 data/electroenergetics/recipe/crafting/copper_wire_spool.json
 2c4cf1942880cda8a295d80aef43398deca8dca1 data/electroenergetics/recipe/crafting/cut_off_switch.json
 6480af37c8df9d4fe6732860b296da6aac59367c data/electroenergetics/recipe/crafting/double_connector.json
 2f3b289f9fdf48379f586ae58aff8150d020ce50 data/electroenergetics/recipe/crafting/double_switch.json

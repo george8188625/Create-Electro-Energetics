@@ -14,7 +14,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatter;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
-import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.gui.AllIcons;
 import net.createmod.catnip.lang.Lang;
@@ -53,7 +52,8 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
     protected double power;
     protected double lastSentPower = -1;
 
-    List<Float> voltages = new ArrayList<>();
+    List<Float> primaryVoltages = new ArrayList<>();
+    List<Float> secondaryVoltages = new ArrayList<>();
     float avgVoltage = 0;
 
     @OnlyIn(Dist.CLIENT)
@@ -125,17 +125,22 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
         sendData();
     }
 
+
+
     @OnlyIn(Dist.CLIENT)
     protected void tickAudio() {
-        if (voltages.isEmpty())
+        if (primaryVoltages.isEmpty())
             avgVoltage = 0;
         else
-            avgVoltage = voltages.stream().reduce(Float::sum).orElse(0f) / voltages.size();
+            avgVoltage = primaryVoltages.stream().reduce(Float::sum).orElse(0f) / primaryVoltages.size();
 
-        Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
-        if (v1 != null && v2 != null) {
-            setVoltage((float) (v1 - v2));
+        Double vp1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
+        Double vp2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double vs1 = WireRenderer.getAllVoltages().get(new Node(2, getBlockPos()));
+        Double vs2 = WireRenderer.getAllVoltages().get(new Node(3, getBlockPos()));
+        if (vp1 != null && vp2 != null && vs1 != null && vs2 != null) {
+            setPrimaryVoltage((float) Math.abs(vp1 - vp2));
+            setSecondaryVoltage((float) Math.abs(vs1 - vs2));
             if (avgVoltage > 10) {
                 if (soundInstance == null || soundInstance.isStopped())
                     Minecraft.getInstance()
@@ -149,10 +154,16 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
         }
     }
 
-    private void setVoltage(float voltage) {
-        if (voltages.size() >= 3)
-            voltages.remove(0);
-        voltages.add(voltage);
+    private void setPrimaryVoltage(float voltage) {
+        if (primaryVoltages.size() >= 28)
+            primaryVoltages.remove(0);
+        primaryVoltages.add(voltage);
+    }
+
+    private void setSecondaryVoltage(float voltage) {
+        if (secondaryVoltages.size() >= 28)
+            secondaryVoltages.remove(0);
+        secondaryVoltages.add(voltage);
     }
 
     @Override

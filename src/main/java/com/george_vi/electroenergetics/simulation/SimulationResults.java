@@ -95,4 +95,11 @@ public class SimulationResults {
         return new DirectionSensitiveNodeConnection(node1, node2);
     }
 
+    public double getVoltageAt(BlockPos pos, int n1, int n2) {
+        return getVoltageAt(new Node(n1, pos), new Node(n2, pos));
+    }
+
+    public double getVoltageAt(Node n1, Node n2) {
+        return getVoltageAt(n1) - getVoltageAt(n2);
+    }
 }

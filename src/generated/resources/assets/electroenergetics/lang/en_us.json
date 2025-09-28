@@ -149,6 +149,7 @@
   "electroenergetics.wire_spool.too_far_away": "Too far away!",
   "item.electroenergetics.clamp_meter": "Clamp Meter",
   "item.electroenergetics.copper_wire": "Copper Wire",
+  "item.electroenergetics.copper_wire_spool": "Copper Wire Spool",
   "item.electroenergetics.creative_wire_spool": "Creative Wire Spool",
   "item.electroenergetics.empty_spool": "Empty Spool",
   "item.electroenergetics.insulated_wire": "Insulated Wire",

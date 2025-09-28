@@ -17,12 +17,13 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public record SendWireParticlesPacket(Node node1, Node node2, ParticleOptions options, Float sag) implements ClientboundPacketPayload {
+public record SendWireParticlesPacket(Node node1, Node node2, ParticleOptions options, Float sag, float chance) implements ClientboundPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, SendWireParticlesPacket> STREAM_CODEC = StreamCodec.composite(
             Node.STREAM_CODEC, SendWireParticlesPacket::node1,
             Node.STREAM_CODEC, SendWireParticlesPacket::node2,
             ParticleTypes.STREAM_CODEC, SendWireParticlesPacket::options,
             ByteBufCodecs.FLOAT, SendWireParticlesPacket::sag,
+            ByteBufCodecs.FLOAT, SendWireParticlesPacket::chance,
             SendWireParticlesPacket::new
     );
 
@@ -32,13 +33,15 @@ public record SendWireParticlesPacket(Node node1, Node node2, ParticleOptions op
         Vec3 pos2 = node2.getPosition(player.level());
 
         List<Vec3> cablePoints = QuadraticWireHelper.cablePoints(pos1, pos2, sag);
-
+        cablePoints.add(pos2);
         for (int i = 0; i < cablePoints.size() - 1; i++) {
             Vec3 point = cablePoints.get(i);
             Vec3 nextPoint = cablePoints.get(i + 1);
-            if (player.level().random.nextFloat() > 0.8) {
-                point = VecHelper.lerp(player.level().random.nextFloat(), point, nextPoint);
-                player.level().addParticle(options, point.x, point.y, point.z, 0, 0, 0);
+            for (int j = 0; j < chance; j++) {
+                if (player.level().random.nextFloat() > 1 - chance) {
+                    point = VecHelper.lerp(player.level().random.nextFloat(), point, nextPoint);
+                    player.level().addParticle(options, point.x, point.y, point.z, 0, 0, 0);
+                }
             }
         }
     }

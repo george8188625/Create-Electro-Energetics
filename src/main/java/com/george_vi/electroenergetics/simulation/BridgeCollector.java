@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalNodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import net.minecraft.core.BlockPos;
@@ -17,12 +18,16 @@ public class BridgeCollector {
     }
 
     public void bridge(Node node1, Node node2, double resistance, double voltageSource, double currentSource) {
+        bridge(node1, node2, new ElectricalProperties(resistance, voltageSource, currentSource));
+    }
+
+    public void bridge(Node node1, Node node2, ElectricalProperties electricalProperties) {
         // Don't Bridge a node to itself, Don't accept any NaN values, that can mess up entire grids
-        if (node1.equals(node2) || Double.isNaN(resistance) || Double.isNaN(voltageSource))
+        if (node1.equals(node2) || Double.isNaN(electricalProperties.resistance()) || Double.isNaN(electricalProperties.voltageSource()) || Double.isNaN(electricalProperties.currentSource()))
             return;
-        if (resistance == 0)
+        if (electricalProperties.resistance() == 0)
             throw new IllegalArgumentException("Resistance can't be zero!");
-        bridges.add(new ElectricalNodeConnection(node1, node2, resistance, voltageSource, currentSource));
+        bridges.add(new ElectricalNodeConnection(node1, node2, electricalProperties));
     }
 
     public void addInternalNode(int id, BlockPos pos) {
@@ -54,6 +59,7 @@ public class BridgeCollector {
         public Builder energyLimitedSource(int n1, int n2, double energy, double voltage) {
             return energyLimitedSource(n1, n2, energy, voltage, 0);
         }
+
         public Builder energyLimitedSource(int n1, int n2, double energy, double voltage, double internalResistance) {
             double resistance;
             if (voltage == 0 || energy <= 0)
@@ -69,12 +75,12 @@ public class BridgeCollector {
         }
 
         public Builder idealVoltageSource(int n1, int n2, double voltage) {
-            collector.bridge(new Node(n1, pos), new Node(n2, pos), 999999999, voltage, 0);
+            collector.bridge(new Node(n1, pos), new Node(n2, pos), new ElectricalProperties(999999999, voltage, 0, true, false));
             return this;
         }
 
         public Builder idealCurrentSource(int n1, int n2, double current) {
-            collector.bridge(new Node(n1, pos), new Node(n2, pos), 999999999, 0, current);
+            collector.bridge(new Node(n1, pos), new Node(n2, pos), new ElectricalProperties(999999999, 0, current, false, true));
             return this;
         }
 
@@ -89,7 +95,7 @@ public class BridgeCollector {
         }
 
         public Builder connect(int n1, int n2, ElectricalProperties properties) {
-            collector.bridge(new Node(n1, pos), new Node(n2, pos), properties.resistance(), properties.voltageSource(), properties.currentSource());
+            collector.bridge(new Node(n1, pos), new Node(n2, pos), properties);
             return this;
         }
     }

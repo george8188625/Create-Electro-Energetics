@@ -39,7 +39,7 @@ public class Network {
             if (adjacency.get(node).size() == 2 && !((node instanceof AttachedNode an) ? an.grounded : sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)) {
 
                 List<ElectricalProperties> connections = getConnections(node).values().stream().toList();
-                if (connections.get(0).voltageSource() == 0 && connections.get(1).voltageSource() == 0 && connections.get(0).currentSource() == 0 && connections.get(1).currentSource() == 0)
+                if (!connections.get(0).isVoltageSource() && !connections.get(1).isVoltageSource() && !connections.get(0).isCurrentSource() && !connections.get(1).isCurrentSource())
                     toDissolve.add(node);
             }
         }
@@ -194,9 +194,9 @@ public class Network {
             for (SimulationNode adjacentNode : node.getNextNodes()) {
                 double R = node.getConnectionProperties(adjacentNode).resistance();
                 totalConductance += 1 / node.getConnectionProperties(adjacentNode).resistance();
-                if (node.getConnectionProperties(adjacentNode).voltageSource() != 0 && !voltageSources.containsKey(Couple.create(adjacentNode, node)))
+                if (node.getConnectionProperties(adjacentNode).isVoltageSource() && !voltageSources.containsKey(Couple.create(adjacentNode, node)))
                     voltageSources.put(Couple.create(node, adjacentNode), node.getConnectionProperties(adjacentNode).voltageSource());
-                if (node.getConnectionProperties(adjacentNode).currentSource() != 0 && !currentSources.containsKey(Couple.create(adjacentNode, node)))
+                if (node.getConnectionProperties(adjacentNode).isCurrentSource() && !currentSources.containsKey(Couple.create(adjacentNode, node)))
                     currentSources.put(Couple.create(node, adjacentNode), node.getConnectionProperties(adjacentNode).currentSource());
                 if ((groundRods.isEmpty() && !groundSet) && (node.getConnectionProperties(adjacentNode).voltageSource() > 0 || node.getConnectionProperties(adjacentNode).currentSource() > 0)) {
                     groundSet = true;

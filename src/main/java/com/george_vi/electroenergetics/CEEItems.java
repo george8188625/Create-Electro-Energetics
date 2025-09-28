@@ -19,6 +19,8 @@ public class CEEItems {
 
     public static final ItemEntry<WireSpoolItem> WIRE_SPOOL = REGISTRATE.item("wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.STANDARD))
             .register();
+    public static final ItemEntry<WireSpoolItem> COPPER_WIRE_SPOOL = REGISTRATE.item("copper_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.COPPER))
+            .register();
     public static final ItemEntry<WireSpoolItem> IRON_WIRE_SPOOL = REGISTRATE.item("iron_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.IRON))
             .register();
     public static final ItemEntry<WireSpoolItem> IRON_BUS_SPOOL = REGISTRATE.item("iron_bus_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.IRON_BUS))
