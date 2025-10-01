@@ -5,10 +5,8 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 
 public class ElectricHumSoundInstance extends AbstractTickableSoundInstance {
@@ -56,5 +54,13 @@ public class ElectricHumSoundInstance extends AbstractTickableSoundInstance {
         volume = Math.max(0, volume - .125f);
         if (volume == 0)
             stop();
+    }
+
+    public void setPitch(float v) {
+        pitch = v;
+    }
+
+    public void setVolumeImmediately(float volume) {
+        this.volume = volume;
     }
 }

@@ -39,6 +39,8 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.DOUBLE_SWITCH.asStack());
                         output.accept(CEEBlocks.HV_SWITCH.asStack());
                         output.accept(CEEBlocks.REDSTONE_RELAY.asStack());
+                        output.accept(CEEBlocks.RELAY.asStack());
+                        output.accept(CEEBlocks.BUZZER.asStack());
                         output.accept(CEEBlocks.ENERGY_METER.asStack());
                         output.accept(CEEBlocks.TRI_POLAR_ENERGY_METER.asStack());
                         output.accept(CEEBlocks.AMMETER.asStack());

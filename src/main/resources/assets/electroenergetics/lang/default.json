@@ -29,6 +29,7 @@
   "electroenergetics.nodes.node": "Node",
   "electroenergetics.nodes.feed": "Feed",
   "electroenergetics.nodes.load": "Load",
+  "electroenergetics.nodes.coil": "Coil",
   "electroenergetics.nodes.neutral": "Neutral",
   "electroenergetics.nodes.positive": "Positive",
   "electroenergetics.nodes.negative": "Negative",

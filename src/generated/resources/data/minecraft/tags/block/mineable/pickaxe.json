@@ -33,6 +33,8 @@
     "electroenergetics:pantograph",
     "electroenergetics:diode",
     "electroenergetics:resistor",
-    "electroenergetics:fuse_holder"
+    "electroenergetics:fuse_holder",
+    "electroenergetics:buzzer",
+    "electroenergetics:relay"
   ]
 }

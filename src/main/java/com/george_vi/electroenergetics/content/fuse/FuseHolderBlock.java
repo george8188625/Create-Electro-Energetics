@@ -39,7 +39,6 @@ public class FuseHolderBlock extends DirectionalRolledDeviceBlock implements IBE
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-//        boolean isLookingAtFuse = isLookingAtFuse(hitResult.getLocation(), state, pos);
         boolean firstSlot = false;
         Vec3 position = hitResult.getLocation().subtract(Vec3.atLowerCornerOf(pos));
         boolean roll = state.getValue(ROLL);
@@ -98,11 +97,6 @@ public class FuseHolderBlock extends DirectionalRolledDeviceBlock implements IBE
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
-
-    boolean isLookingAtFuse(Vec3 position, BlockState state, BlockPos pos) {
-        return true;
-    }
-
 
 
     @Override

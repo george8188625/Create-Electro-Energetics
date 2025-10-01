@@ -18,7 +18,7 @@ public class CEELang extends Lang {
         if (Math.abs(voltage) < 0.01)
             voltage = 0;
         return builder()
-                .text(String.format(Math.abs(voltage) >= 1000 ? "%.2f" : "%.0f", Math.abs(voltage) >= 1000 ? voltage / 1000 : voltage))
+                .text(String.format(Math.abs(voltage) >= 1000 || Math.abs(voltage) < 1  ? "%.2f" : "%.1f", Math.abs(voltage) >= 1000 ? voltage / 1000 : voltage))
                 .translate(Math.abs(voltage) >= 1000 ? "generic.kilovolts" : "generic.volts");
     }
 

@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
+import com.george_vi.electroenergetics.content.buzzer.BuzzerBlock;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
@@ -26,6 +27,7 @@ import com.george_vi.electroenergetics.content.ground_rod.GroundRodBlock;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleBlock;
 import com.george_vi.electroenergetics.content.pole.PoleMountBlock;
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayBlock;
+import com.george_vi.electroenergetics.content.relay.RelayBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
@@ -431,6 +433,26 @@ public class CEEBlocks {
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<BuzzerBlock> BUZZER = REGISTRATE.block("buzzer", BuzzerBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<RelayBlock> RELAY = REGISTRATE.block("relay", RelayBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(RelayBlock.INVERTED) ? p.modLoc("block/relay/block_inverted") : p.modLoc("block/relay/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))

@@ -70,6 +70,10 @@ public class CEEShapes {
 
     public static final VoxelShaper ELECTRONIC_10_ROLL = shape(6, 0, 3, 10, 4, 13).forDirectional();
 
+    public static final VoxelShaper BUZZER = shape(5, 0, 5, 11, 4, 11).forDirectional();
+
+    public static final VoxelShaper BUZZER_ROLL = shape(5, 0, 5, 11, 4, 11).forDirectional();
+
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);
     }

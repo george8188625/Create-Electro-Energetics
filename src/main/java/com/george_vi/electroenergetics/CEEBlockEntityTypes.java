@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntityRenderer;
+import com.george_vi.electroenergetics.content.buzzer.BuzzerBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorRenderer;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlockEntity;
@@ -115,6 +116,10 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<FuseHolderBlockEntity> FUSE_HOLDER = REGISTRATE.blockEntity("fuse_holder", FuseHolderBlockEntity::new)
             .validBlock(CEEBlocks.FUSE_HOLDER::get)
             .renderer(() -> FuseHolderRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<BuzzerBlockEntity> BUZZER = REGISTRATE.blockEntity("buzzer", BuzzerBlockEntity::new)
+            .validBlock(CEEBlocks.BUZZER::get)
             .register();
 
 

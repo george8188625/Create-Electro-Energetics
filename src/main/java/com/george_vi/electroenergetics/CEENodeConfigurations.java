@@ -34,7 +34,6 @@ public class CEENodeConfigurations {
             .add(new Vec3(0.5f, 3/16f, 14/16f))
             .simple();
 
-
     public static final NodeConfigurator TRIPLE_CONNECTOR_ROLL = new NodeConfigurator.Builder()
             .add(new Vec3(0.5f, 5/16f, 3/16f))
             .add(new Vec3(0.5f, 5/16f, 0.5f))
@@ -165,5 +164,27 @@ public class CEENodeConfigurations {
             .add(new Vec3(8/16f, 2/16f, 14/16f))
             .simple(Direction.UP);
 
+    public static final NodeConfigurator ELECTRONIC_4 = new NodeConfigurator.Builder()
+            .add(new Vec3(5/16f, 3/16f, 0.5f))
+            .add(new Vec3(11/16f, 3/16f, 0.5f))
+            .simple();
 
+    public static final NodeConfigurator ELECTRONIC_4_ROLL = new NodeConfigurator.Builder()
+            .add(new Vec3(0.5f, 3/16f, 5/16f))
+            .add(new Vec3(0.5f, 3/16f, 11/16f))
+            .simple();
+
+    public static final NodeConfigurator RELAY = new NodeConfigurator.Builder()
+            .add(new Vec3(8/16f, 2/16f, 4/16f))
+            .add(new Vec3(8/16f, 2/16f, 12/16f))
+            .add(new Vec3(2/16f, 2/16f, 8/16f))
+            .add(new Vec3(14/16f, 2/16f, 8/16f))
+            .simple(Direction.UP);
+
+    public static final NodeConfigurator RELAY_ROLL = new NodeConfigurator.Builder()
+            .add(new Vec3(4/16f, 2/16f, 8/16f))
+            .add(new Vec3(12/16f, 2/16f, 8/16f))
+            .add(new Vec3(8/16f, 2/16f, 2/16f))
+            .add(new Vec3(8/16f, 2/16f, 14/16f))
+            .simple(Direction.UP);
 }

@@ -94,10 +94,10 @@ public class ElectricPumpBlockEntity extends PumpBlockEntity {
             voltages.remove(0);
         voltages.add(voltage);
         avgVoltage = voltages.stream().reduce(Float::sum).orElse(0f) / voltages.size();
-        this.voltage = voltage;
 
-        if (Math.abs(voltage) == Math.abs(voltage))
+        if (Math.abs(voltage) == Math.abs(this.voltage))
             return;
+        this.voltage = voltage;
         if (speed != 0)
             award(AllAdvancements.PUMP);
         if (level.isClientSide && !isVirtual())

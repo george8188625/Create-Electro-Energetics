@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorDevice;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
+import com.george_vi.electroenergetics.content.buzzer.BuzzerDevice;
 import com.george_vi.electroenergetics.content.connector.ConnectorDevice;
 import com.george_vi.electroenergetics.content.converter.ConverterDevice;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
@@ -19,6 +20,7 @@ import com.george_vi.electroenergetics.content.gauge.GaugeDevice;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleDevice;
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayDevice;
+import com.george_vi.electroenergetics.content.relay.RelayDevice;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesDevice;
 import com.george_vi.electroenergetics.content.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorDevice;
@@ -55,6 +57,8 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice DIODE = register(new DiodeDevice(CreateElecrtoEnergetics.rl("diode")));
     public static final SimulatedDevice RESISTOR = register(new ResistorDevice(CreateElecrtoEnergetics.rl("resistor")));
     public static final SimulatedDevice FUSE_HOLDER = register(new FuseHolderDevice(CreateElecrtoEnergetics.rl("fuse_holder")));
+    public static final SimulatedDevice BUZZER = register(new BuzzerDevice(CreateElecrtoEnergetics.rl("buzzer")));
+    public static final SimulatedDevice RELAY = register(new RelayDevice(CreateElecrtoEnergetics.rl("relay")));
 
     public static SimulatedDevice register(SimulatedDevice device) {
         BY_ID.put(device.getID(), device);

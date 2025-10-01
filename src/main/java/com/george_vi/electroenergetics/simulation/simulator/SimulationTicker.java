@@ -24,7 +24,6 @@ import java.util.*;
 
 public class SimulationTicker {
 
-    public static List<SimulationPerformance> performances = new ArrayList<>();
     public static int totalTime = 0;
     public static SimulatorProfiler profiler = new SimulatorProfiler();
 
@@ -320,6 +319,4 @@ public class SimulationTicker {
             }
         }
     }
-
-    public record SimulationPerformance(int nodes, int optimizedNodes, int totalTime, int optimizationTime, int solutionTime, int minVoltage, int maxVoltage) { }
 }
