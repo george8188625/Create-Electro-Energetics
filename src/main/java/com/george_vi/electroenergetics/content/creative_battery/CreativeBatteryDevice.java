@@ -19,7 +19,7 @@ public class CreativeBatteryDevice extends SimulatedDevice {
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        double voltage = extraData.contains("Voltage") ? extraData.getDouble("Voltage") : 2.4;
+        double voltage = extraData.contains("Voltage") ? extraData.getDouble("Voltage") : 12;
 
         // AC experiment
         // voltage = Math.sin(AnimationTickHolder.getTicks() / 5d) * voltage;

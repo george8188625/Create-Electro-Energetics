@@ -15,6 +15,7 @@ public class CEESoundEvents {
     public static final Supplier<SoundEvent> ARC = SOUND_EVENTS.register("arc", () -> SoundEvent.createVariableRangeEvent(CreateElecrtoEnergetics.rl("arc")));
     public static final Supplier<SoundEvent> ELECTRIC_TRAIN = SOUND_EVENTS.register("electric_train", () -> SoundEvent.createVariableRangeEvent(CreateElecrtoEnergetics.rl("electric_train")));
     public static final Supplier<SoundEvent> ELECTRIC_TRAIN_BACKGROUND = SOUND_EVENTS.register("electric_train_background", () -> SoundEvent.createVariableRangeEvent(CreateElecrtoEnergetics.rl("electric_train_background")));
+    public static final Supplier<SoundEvent> BUZZER = SOUND_EVENTS.register("buzzer", () -> SoundEvent.createVariableRangeEvent(CreateElecrtoEnergetics.rl("buzzer")));
 
     public static void register(IEventBus bus) {
         SOUND_EVENTS.register(bus);

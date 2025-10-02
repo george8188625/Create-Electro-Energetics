@@ -35,7 +35,7 @@ public class SimulationTicker {
         profiler.push("setupNodes");
 
         Set<Pair<WireType, NodeConnection>> connections = new HashSet<>();
-        Map<Node, List<Node>> adjacency = new HashMap<>();
+        Map<Node, List<Node>> adjacency = new TreeMap<>();
         Map<DirectionSensitiveNodeConnection, ElectricalProperties> connectionProperties = new HashMap<>();
         List<Node> allNodes = new ArrayList<>();
         allNodes.addAll(sd.getNodes());

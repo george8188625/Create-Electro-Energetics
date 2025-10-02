@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import java.util.*;
 
 public class InfrastructureSavedData extends SavedData {
-    Map<BlockPos, SimulatedDeviceInstance> DEVICES = new HashMap<>();
+    Map<BlockPos, SimulatedDeviceInstance> DEVICES = new TreeMap<>();
     Map<Node, List<Node>> NODES = new HashMap<>();
     Map<BlockPos, List<Node>> NODES_BY_POS = new HashMap<>();
     Map<BlockPos, CableType> CABLES = new HashMap<>();

@@ -45,5 +45,14 @@
       }
     ],
     "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "buzzer": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:buzzer"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.buzzer"
   }
 }

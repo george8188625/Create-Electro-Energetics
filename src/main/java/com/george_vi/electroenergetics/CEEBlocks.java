@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerBlock;
+import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorBlock;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
@@ -459,6 +460,15 @@ public class CEEBlocks {
             .build()
             .register();
 
+    public static final BlockEntry<CapacitorBlock> CAPACITOR = REGISTRATE.block("capacitor", CapacitorBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/capacitor")))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/capacitor")))
+            .build()
+            .register();
 
     public static void register() {
 

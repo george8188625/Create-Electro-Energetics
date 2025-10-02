@@ -74,6 +74,8 @@ public class CEEShapes {
 
     public static final VoxelShaper BUZZER_ROLL = shape(5, 0, 5, 11, 4, 11).forDirectional();
 
+    public static final VoxelShaper CAPACITOR = shape(4, 0, 4, 12, 10, 12).forDirectional();
+
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);
     }

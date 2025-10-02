@@ -68,10 +68,14 @@
   "electroenergetics.generic.ohms": "Ω",
   "electroenergetics.generic.kiloohms": "kΩ",
   "electroenergetics.generic.megaohms": "MΩ",
+  "electroenergetics.generic.farads": "F",
+  "electroenergetics.generic.millifarads": "mF",
+  "electroenergetics.generic.microfarads": "μF",
 
   "electroenergetics.subtitle.hum": "Hum",
   "electroenergetics.subtitle.arcing": "Arcing",
   "electroenergetics.subtitle.electric_train": "Electric Train Sounds",
+  "electroenergetics.subtitle.buzzer": "Buzzer Buzzes",
 
   "electroenergetics.transformer.ratio": "Primary to Secondary Ratio",
   "electroenergetics.transformer.ratio_symbol": "÷",
@@ -80,5 +84,7 @@
   "electroenergetics.creative_battery.voltage": "Generated Voltage in Volts",
   "electroenergetics.creative_battery.voltage_symbol": "⚡",
   "electroenergetics.resistor.resistance": "Resistance in Ohms",
-  "electroenergetics.resistor.resistance_symbol": "Ω"
+  "electroenergetics.resistor.resistance_symbol": "Ω",
+  "electroenergetics.capacitor.capacitance": "Capacitor Capacitance in Farads",
+  "electroenergetics.capacitor.capacitance_symbol": "C"
 }

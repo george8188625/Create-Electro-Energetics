@@ -52,12 +52,12 @@ public class RailwayElectrificationScenes {
         scene.idle(100);
 
         scene.overlay().showControls(holder1.getCenter(), Pointing.DOWN, 20)
-                .withItem(CEEItems.WIRE_SPOOL.asStack())
+                .withItem(CEEItems.COPPER_WIRE_SPOOL.asStack())
                 .rightClick();
         scene.idle(40);
 
         scene.overlay().showControls(holder2.getCenter(), Pointing.DOWN, 20)
-                .withItem(CEEItems.WIRE_SPOOL.asStack())
+                .withItem(CEEItems.COPPER_WIRE_SPOOL.asStack())
                 .rightClick();
         scene.idle(40);
 

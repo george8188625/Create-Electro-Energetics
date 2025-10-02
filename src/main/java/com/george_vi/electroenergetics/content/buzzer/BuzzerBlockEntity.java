@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.buzzer;
 
+import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -36,9 +37,9 @@ public class BuzzerBlockEntity extends SmartBlockEntity {
     void tickAudio() {
         if (soundInstance == null || soundInstance.isStopped()) {
             Minecraft.getInstance().getSoundManager()
-                    .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
+                    .play(soundInstance = new ElectricHumSoundInstance(CEESoundEvents.BUZZER.get(), worldPosition));
         }
-        soundInstance.setPitch(3f);
+        soundInstance.setPitch(1f);
         soundInstance.keepAlive();
         soundInstance.setVolumeImmediately((float) Mth.clamp(Mth.lerp(voltage / 100f, -0.04f, 1.4f), 0f, 1.4f));
     }

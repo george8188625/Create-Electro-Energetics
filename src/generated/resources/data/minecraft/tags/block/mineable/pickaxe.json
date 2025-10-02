@@ -35,6 +35,7 @@
     "electroenergetics:resistor",
     "electroenergetics:fuse_holder",
     "electroenergetics:buzzer",
-    "electroenergetics:relay"
+    "electroenergetics:relay",
+    "electroenergetics:capacitor"
   ]
 }

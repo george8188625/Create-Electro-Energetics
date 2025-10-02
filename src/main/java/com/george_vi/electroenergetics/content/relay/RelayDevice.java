@@ -39,7 +39,7 @@ public class RelayDevice extends SimulatedDevice {
         boolean oldClosed = extraData.getBoolean("Closed");
         if (oldClosed != (voltage > 4)) {
             if (level.isLoaded(pos))
-                level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 1, 1);
+                level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
             extraData.putBoolean("Closed", voltage > 4);
         }
 

@@ -2,11 +2,12 @@ package com.george_vi.electroenergetics.content.creative_battery;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -37,6 +38,14 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
+    }
+
+    @Override
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        if (level.getBlockEntity(pos) instanceof CreativeBatteryBlockEntity be)
+            tag.putDouble("Voltage", be.indexToVoltage(be.voltage.value));
+        return tag;
     }
 
     @Nullable

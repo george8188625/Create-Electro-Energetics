@@ -1,5 +1,6 @@
-package com.george_vi.electroenergetics.content.creative_battery;
+package com.george_vi.electroenergetics.content.electronic_components.capacitor;
 
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.google.common.collect.ImmutableList;
@@ -12,7 +13,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollVa
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
@@ -23,65 +23,52 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public class CreativeBatteryBlockEntity extends SmartBlockEntity {
-
-    public CreativeBatteryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+public class CapacitorBlockEntity extends SmartBlockEntity {
+    public CapacitorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
-    protected ScrollValueBehaviour voltage;
+    protected ScrollValueBehaviour capacitance;
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        voltage = new ScrollValueBehaviour(CEELang.translate("creative_battery.voltage").component(), this, new ValueBox()) {
+        capacitance = new ScrollValueBehaviour(CEELang.translate("capacitor.capacitance").component(), this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(CEELang.translate("creative_battery.voltage_symbol").component()),
-                        new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(indexToVoltage(valueSettings.value())).component()));
+                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(CEELang.translate("capacitor.capacitance_symbol").component()),
+                        new ValueSettingsFormatter(valueSettings -> CEELang.formatCapacitance(indexToCapacitance(valueSettings.value())).component()));
             }
         };
-        voltage.between(0, 550);
-        voltage.value = 102;
-        voltage.withFormatter(v -> indexToVoltage(v) >= 1000 ? indexToVoltage(v) / 1000 + "kV" : indexToVoltage(v) + "V");
-        voltage.withCallback(i -> this.updateVoltage());
-        behaviours.add(voltage);
+        capacitance.between(0, 190);
+        capacitance.value = 1;
+        capacitance.withFormatter(v -> CEELang.formatCapacitance(indexToCapacitance(v)).string());
+        capacitance.withCallback(i -> this.updateCapacitance());
+        behaviours.add(capacitance);
     }
 
-    double indexToVoltage(int i) {
-        if (i < 100)
-            return i / 10d;
-        i -= 100;
-        if (i < 90)
-            return (i + 10);
-        i -= 90;
-        if (i < 90)
-            return (i + 10) * 10d;
-        i -= 90;
-        if (i < 90)
-            return (i + 10) * 100d;
-        i -= 90;
-        if (i < 90)
-            return (i + 10) * 1000d;
-        i -= 90;
-        return (i + 10) * 10000d;
-    }
-
-    private void updateVoltage() {
+    private void updateCapacitance() {
         if (!(level instanceof ServerLevel sl))
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
         InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null) {
-            deviceInstance.extraData().putDouble("Voltage", indexToVoltage(voltage.value));
+            deviceInstance.extraData().putDouble("Capacitance", indexToCapacitance(capacitance.value));
         }
+    }
+
+    double indexToCapacitance(int i) {
+        if (i < 100)
+            return i / 100000d;
+        i -= 100;
+        return (i + 10) / 10000d;
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {
 
         @Override
         protected Vec3 getSouthLocation() {
-            return VecHelper.voxelSpace(8, 8, 16);
+            return VecHelper.voxelSpace(8, 8, 10);
         }
 
         @Override
@@ -91,7 +78,7 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
 
         @Override
         protected boolean isSideActive(BlockState state, Direction direction) {
-            return state.getValue(CreativeBatteryBlock.FACING).getAxis().isHorizontal() ? (direction.getAxis().isHorizontal() && direction.getAxis() != state.getValue(CreativeBatteryBlock.FACING).getAxis()) : direction.getAxis() == Direction.Axis.X;
+            return state.getValue(CreativeBatteryBlock.FACING).equals(direction);
         }
     }
 }

@@ -10,6 +10,7 @@ import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchDevice
 import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchDevice;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorDevice;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpDevice;
+import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorDevice;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeDevice;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorDevice;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterDevice;
@@ -59,6 +60,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice FUSE_HOLDER = register(new FuseHolderDevice(CreateElecrtoEnergetics.rl("fuse_holder")));
     public static final SimulatedDevice BUZZER = register(new BuzzerDevice(CreateElecrtoEnergetics.rl("buzzer")));
     public static final SimulatedDevice RELAY = register(new RelayDevice(CreateElecrtoEnergetics.rl("relay")));
+    public static final SimulatedDevice CAPACITOR = register(new CapacitorDevice(CreateElecrtoEnergetics.rl("capacitor")));
 
     public static SimulatedDevice register(SimulatedDevice device) {
         BY_ID.put(device.getID(), device);

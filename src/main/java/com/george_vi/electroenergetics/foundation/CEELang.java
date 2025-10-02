@@ -73,6 +73,22 @@ public class CEELang extends Lang {
                 .translate("generic.milliohms");
     }
 
+    public static LangBuilder formatCapacitance(double capacitance) {
+        if (Math.abs(capacitance) >= 1)
+            return builder()
+                    .text(String.format("%.1f", capacitance))
+                    .translate("generic.farads");
+
+        if (Math.abs(capacitance) >= 0.001)
+            return builder()
+                    .text(String.format("%.2f", capacitance * 1000))
+                    .translate("generic.millifarads");
+
+        return builder()
+                .text(String.format("%.1f", capacitance * 1000000))
+                .translate("generic.microfarads");
+    }
+
     public static LangBuilder translate(String langKey, Object... args) {
         return builder().translate(langKey, args);
     }
