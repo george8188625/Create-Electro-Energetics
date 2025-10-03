@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.content.converter.ConverterDevice;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchDevice;
 import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchDevice;
+import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchDevice;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorDevice;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpDevice;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorDevice;
@@ -61,6 +62,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice BUZZER = register(new BuzzerDevice(CreateElecrtoEnergetics.rl("buzzer")));
     public static final SimulatedDevice RELAY = register(new RelayDevice(CreateElecrtoEnergetics.rl("relay")));
     public static final SimulatedDevice CAPACITOR = register(new CapacitorDevice(CreateElecrtoEnergetics.rl("capacitor")));
+    public static final SimulatedDevice MOMENTARY_SWITCH = register(new MomentarySwitchDevice(CreateElecrtoEnergetics.rl("momentary_switch")));
 
     public static SimulatedDevice register(SimulatedDevice device) {
         BY_ID.put(device.getID(), device);

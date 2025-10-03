@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "S": {
+      "tag": "c:plates/iron"
+    },
+    "Z": {
+      "tag": "c:ingots/zinc"
+    },
+    "c": {
+      "tag": "c:plates/copper"
+    }
+  },
+  "pattern": [
+    "ScS",
+    "SZS",
+    "C C"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:capacitor"
+  }
+}

@@ -2,10 +2,14 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.WireType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CEEWireTypes {
     private static final DeferredRegister<WireType> WIRE_TYPES =
@@ -25,7 +29,7 @@ public class CEEWireTypes {
             CEEPartialModels.WIRE_SEGMENT,
             CEEItems.INSULATED_WIRE, CEEItems.WIRE_SPOOL::get,
             true,
-            COPPER::get,
+            COPPER,
             () -> 3540,
             1f,
             CEEConfigs.server().maxWireLength::get));
@@ -56,6 +60,22 @@ public class CEEWireTypes {
             () -> null, () -> 10000,
             0f,
             CEEConfigs.server().maxBusWireLength::get));
+
+    public static final Map<DyeColor, DeferredHolder<WireType, WireType>> COLORED_WIRES = new HashMap<>();
+
+    static {
+        for (DyeColor color : DyeColor.values()) {
+            COLORED_WIRES.put(color, WIRE_TYPES.register("colored_" + color.getName(), () -> new WireType(
+                        CEEConfigs.server().resistanceValues.wireResistance::get,
+                        CEEPartialModels.COLORED_WIRE_SEGMENTS.get(color),
+                        CEEItems.INSULATED_WIRE, CEEItems.WIRE_SPOOL::get,
+                        true,
+                        COPPER,
+                        () -> 3540,
+                        1f,
+                        CEEConfigs.server().maxWireLength::get)));
+        }
+    }
 
     public static void register(IEventBus bus) {
         WIRE_TYPES.register(bus);

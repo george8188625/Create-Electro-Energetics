@@ -15,7 +15,7 @@ public class Network {
     final Map<Node, Map<Node, ElectricalProperties>> adjacency;
     final InfrastructureSavedData sd;
 
-    public Network(List<Node> allNodes, Map<Node, Map<Node, ElectricalProperties>> adjacency, InfrastructureSavedData sd) {
+    public Network(Set<Node> allNodes, Map<Node, Map<Node, ElectricalProperties>> adjacency, InfrastructureSavedData sd) {
         this.allNodes = new ArrayList<>(allNodes);
         this.adjacency = new HashMap<>(adjacency);
         this.sd = sd;
@@ -34,7 +34,7 @@ public class Network {
     }
 
     public void optimize() {
-        List<Node> toDissolve = new ArrayList<>();
+        List<Node> toDissolve = new LinkedList<>();
         for (Node node : getAllNodes()) {
             if (adjacency.get(node).size() == 2 && !((node instanceof AttachedNode an) ? an.grounded : sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)) {
 

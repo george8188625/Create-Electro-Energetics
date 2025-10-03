@@ -5,11 +5,14 @@ import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.catnip.math.Pointing;
+import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Items;
 
 public class ConnectorScenes {
     public static void connectors(SceneBuilder builder, SceneBuildingUtil util) {
@@ -70,8 +73,28 @@ public class ConnectorScenes {
 
         scene.idle(40);
 
-        connections.createConnection(util.vector().of(2, 1.5, 4.5), util.vector().centerOf(1, 1, 2));
-        scene.idle(2);
+        ElementLink<WirePonderElement> coloredWire = connections.createConnection(util.vector().of(2, 1.5, 4.5), util.vector().centerOf(1, 1, 2));
+        scene.idle(20);
+
+        scene.overlay().showText(40)
+                .text("Insulated wires can be dyed.")
+                .pointAt(util.vector().of(1.65, 1.5, 3.5))
+                .colored(PonderPalette.BLUE)
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(60);
+
+        scene.overlay().showControls(util.vector().of(1.65, 1.5, 3.5), Pointing.DOWN, 20)
+                .withItem(Items.LIGHT_BLUE_DYE.getDefaultInstance())
+                .rightClick();
+        scene.idle(40);
+
+        connections.removeConnection(coloredWire);
+        connections.createConnection(util.vector().of(2, 1.5, 4.5), util.vector().centerOf(1, 1, 2), CEEWireTypes.COLORED_WIRES.get(DyeColor.LIGHT_BLUE).get());
+
+        scene.idle(40);
+
         connections.createConnection(util.vector().of(46/16f, 19/16f, 0.5), util.vector().centerOf(3, 1, 2));
         scene.idle(2);
         connections.createConnection(util.vector().of(3, 1.5, 4.5), util.vector().centerOf(3, 1, 2));
@@ -85,8 +108,6 @@ public class ConnectorScenes {
         connections.createCurrentVisualization(util.vector().of(34/16f, 19/16f, 0.5), util.vector().centerOf(1, 1, 2), 1, 1, true);
 
         scene.world().modifyBlock(util.grid().at(2, 1, 0), s -> s.setValue(BulbBlock.LIGHT, 2), false);
-
-        scene.idle(60);
     }
 
     public static void chunks(SceneBuilder builder, SceneBuildingUtil util) {

@@ -16,6 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +27,12 @@ public abstract class WireInteractionBehaviour {
 
     public abstract boolean isActiveFor(ItemStack stack);
 
+    @OnlyIn(Dist.CLIENT)
     public DisplayType getWireDisplayType(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
         return DisplayType.DOT;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public int getWireDisplayColor(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
         return 0xFFFFFFFF;
     }

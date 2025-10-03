@@ -102,8 +102,10 @@ public class GameEvents {
         if (behaviour == null)
             return;
 
-        if (behaviour.tryUseOnWire(event.getLevel(), event.getEntity(), event.getHand()))
+        if (behaviour.tryUseOnWire(event.getLevel(), event.getEntity(), event.getHand())) {
             event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
@@ -116,8 +118,10 @@ public class GameEvents {
         if (behaviour == null)
             return;
 
-        if (behaviour.tryUseOnWire(event.getLevel(), event.getEntity(), event.getHand()))
+        if (behaviour.tryUseOnWire(event.getLevel(), event.getEntity(), event.getHand())) {
             event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent

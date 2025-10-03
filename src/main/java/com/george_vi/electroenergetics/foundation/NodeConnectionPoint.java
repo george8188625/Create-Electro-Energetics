@@ -24,4 +24,8 @@ public record NodeConnectionPoint(Node node1, Node node2, float point) {
     public NodeConnectionPoint reverse() {
         return new NodeConnectionPoint(node2, node1, 1.0f - point);
     }
+
+    public NodeConnection connection () {
+        return new NodeConnection(node1, node2);
+    }
 }

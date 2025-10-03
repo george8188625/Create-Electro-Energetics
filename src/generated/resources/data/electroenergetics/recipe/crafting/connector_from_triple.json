@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "electroenergetics:triple_connector"
+    }
+  },
+  "pattern": [
+    "C"
+  ],
+  "result": {
+    "count": 3,
+    "id": "electroenergetics:connector"
+  }
+}

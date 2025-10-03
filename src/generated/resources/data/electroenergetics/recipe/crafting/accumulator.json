@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "Z": {
+      "tag": "c:ingots/zinc"
+    },
+    "c": {
+      "tag": "c:plates/copper"
+    }
+  },
+  "pattern": [
+    "CAC",
+    "ZAc",
+    "ZAc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:accumulator"
+  }
+}

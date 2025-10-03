@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterWireInterac
 import com.george_vi.electroenergetics.content.wire.attachments.BannerWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.attachments.BuntingWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
+import com.george_vi.electroenergetics.content.wire_spool.DyeWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolWireInteractionBehaviour;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -17,6 +18,7 @@ public class CEEWireInteractionBehaviours {
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> BUNTING = WIRE_INTERACTION_BEHAVIOURS.register("bunting", BuntingWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> EMPTY_SPOOL = WIRE_INTERACTION_BEHAVIOURS.register("empty_spool", EmptySpoolWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> CLAMP_METER = WIRE_INTERACTION_BEHAVIOURS.register("clamp_meter", ClampMeterWireInteractionBehaviour::new);
+    public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> DYE = WIRE_INTERACTION_BEHAVIOURS.register("dye", DyeWireInteractionBehaviour::new);
     public static void register(IEventBus bus) {
         WIRE_INTERACTION_BEHAVIOURS.register(bus);
     }

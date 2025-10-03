@@ -36,6 +36,7 @@
     "electroenergetics:fuse_holder",
     "electroenergetics:buzzer",
     "electroenergetics:relay",
-    "electroenergetics:capacitor"
+    "electroenergetics:capacitor",
+    "electroenergetics:momentary_switch"
   ]
 }

@@ -76,6 +76,10 @@ public class CEEShapes {
 
     public static final VoxelShaper CAPACITOR = shape(4, 0, 4, 12, 10, 12).forDirectional();
 
+    public static final VoxelShaper MOMENTARY_SWITCH = shape(1,0, 6,15,4,10).forDirectional();
+
+    public static final VoxelShaper MOMENTARY_SWITCH_ROLL = shape(6,0, 1,10,4,15).forDirectional();
+
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);
     }

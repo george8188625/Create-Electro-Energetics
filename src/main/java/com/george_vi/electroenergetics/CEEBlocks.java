@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerBlock;
+import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchBlock;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorBlock;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
@@ -467,6 +468,16 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/capacitor")))
+            .build()
+            .register();
+
+    public static final BlockEntry<MomentarySwitchBlock> MOMENTARY_SWITCH = REGISTRATE.block("momentary_switch", MomentarySwitchBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(MomentarySwitchBlock.CLOSED) ? p.modLoc("block/momentary_switch/block_closed") : p.modLoc("block/momentary_switch/block")))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
             .build()
             .register();
 

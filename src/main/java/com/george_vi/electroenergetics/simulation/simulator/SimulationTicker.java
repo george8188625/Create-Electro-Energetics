@@ -40,8 +40,11 @@ public class SimulationTicker {
         List<Node> allNodes = new ArrayList<>();
         allNodes.addAll(sd.getNodes());
 
-        if (allNodes.isEmpty())
+        if (allNodes.isEmpty()) {
+            profiler.pop();
+            profiler.pop();
             return;
+        }
 
         profiler.popPush("setupConnections");
 
@@ -133,11 +136,11 @@ public class SimulationTicker {
 
         for (Set<Node> networkNodes : networks) {
 
-            profiler.push("lookForSource");
+            profiler.push("divideConnections");
             boolean foundSource = false;
-            Map<Node, Map<Node, ElectricalProperties>> networkConnections = new HashMap<>();
+            Map<Node, Map<Node, ElectricalProperties>> networkConnections = new HashMap<>(networkNodes.size());
             for (Node node : networkNodes) {
-                Map<Node, ElectricalProperties> nodeConnections = new HashMap<>();
+                Map<Node, ElectricalProperties> nodeConnections = new HashMap<>(3);
                 for (Node connectedNode : adjacency.get(node)) {
                     ElectricalProperties properties = connectionProperties.get(new DirectionSensitiveNodeConnection(node, connectedNode));
                     nodeConnections.put(connectedNode, properties);
@@ -152,7 +155,7 @@ public class SimulationTicker {
             Map<Node, Double> results;
 
             if (foundSource) {
-                Network network = new Network(networkNodes.stream().toList(), networkConnections, sd);
+                Network network = new Network(networkNodes, networkConnections, sd);
 
                 profiler.push("optimize");
                 if (CEEConfigs.server().optimizeGraph.get())
@@ -170,9 +173,8 @@ public class SimulationTicker {
                 int i = 0;
                 for (Couple<SimulationNode> con : voltageSources.keySet()) {
                     double amps = mnaResults[simulationNodes.size() + i];
-                    if (!sourceAmps.containsKey(con.getFirst().correspondingNode.sourcePos()))
-                        sourceAmps.put(con.getFirst().correspondingNode.sourcePos(), new HashMap<>());
-                    sourceAmps.get(con.getFirst().correspondingNode.sourcePos()).put(new DirectionSensitiveNodeConnection(con.getFirst().correspondingNode, con.getSecond().correspondingNode), amps);
+                    sourceAmps.computeIfAbsent(con.getFirst().correspondingNode.sourcePos(), p -> new HashMap<>())
+                            .put(new DirectionSensitiveNodeConnection(con.getFirst().correspondingNode, con.getSecond().correspondingNode), amps);
                     i++;
                 }
 
@@ -198,9 +200,7 @@ public class SimulationTicker {
                 if (e.getKey() instanceof AttachedNode)
                     continue;
 
-                if (!resultsPerBlock.containsKey(e.getKey().sourcePos()))
-                    resultsPerBlock.put(e.getKey().sourcePos(), new HashMap<>());
-                resultsPerBlock.get(e.getKey().sourcePos()).put(e.getKey(), voltage);
+                resultsPerBlock.computeIfAbsent(e.getKey().sourcePos(), p -> new HashMap<>()).put(e.getKey(), voltage);
             }
 
             profiler.pop();

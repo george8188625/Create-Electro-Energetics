@@ -60,7 +60,6 @@ public class ElectricPumpBlockEntity extends PumpBlockEntity {
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         voltage = tag.getFloat("Voltage");
-        avgVoltage = tag.getFloat("AvgVoltage");
         voltages = NBTHelper.readCompoundList(tag.getList("Voltages", Tag.TAG_COMPOUND), t -> t.getFloat("V"));
     }
 

@@ -1,6 +1,10 @@
 package com.george_vi.electroenergetics;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
+import net.minecraft.world.item.DyeColor;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CEEPartialModels {
     public static final PartialModel WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/wire_segment"));
@@ -31,6 +35,14 @@ public class CEEPartialModels {
     public static final PartialModel FUSE_HOLDER_COPPER_CONDUCTOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/copper_conductor"));
     public static final PartialModel FUSE_HOLDER_FUSE = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/fuse"));
     public static final PartialModel FUSE_HOLDER_BROKEN_FUSE = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/broken_fuse"));
+
+    public static final Map<DyeColor, PartialModel> COLORED_WIRE_SEGMENTS = new HashMap<>();
+    static {
+        for (DyeColor color : DyeColor.values()) {
+            COLORED_WIRE_SEGMENTS.put(color,
+                    PartialModel.of(CreateElecrtoEnergetics.rl("block/colored_wire/" + color.getName())));
+        }
+    }
 
     public static void register() {
 

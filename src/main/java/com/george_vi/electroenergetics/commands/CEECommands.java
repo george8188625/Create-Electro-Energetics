@@ -25,6 +25,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -68,26 +69,26 @@ public class CEECommands {
         CommandSourceStack source = ctx.getSource();
         source.sendSuccess(() -> Component.literal("-+------<< Simulation Performance: >>------+-"), false);
         List<SimulatorProfiler.ResultEntry> results = List.copyOf(SimulationTicker.profiler.getResults());
-        int totalTime = results.stream().mapToInt(SimulatorProfiler.ResultEntry::timeTook).sum();
+        long totalTime = results.stream().mapToLong(re -> re.timeTookNanos).sum();
         listResults(1, results, source, totalTime == 0 ? 1 : totalTime, totalTime);
-        source.sendSuccess(() -> Component.literal("profiler: " + SimulationTicker.profiler.getProfilerTime() / 1000 + " μs").withStyle(blue), false);
+                source.sendSuccess(() -> Component.literal("profiler: " + SimulationTicker.profiler.getProfilerOverheadNanos() / 1000 + " μs").withStyle(blue), false);
 
         source.sendSuccess(() -> Component.literal("-+------------------------------------+-"), false);
         return 1;
     }
 
-    private static void listResults(int depth, List<SimulatorProfiler.ResultEntry> entries, CommandSourceStack source, int totalTime, int parentTime) {
+    private static void listResults(int depth, List<SimulatorProfiler.ResultEntry> entries, CommandSourceStack source, long totalTime, long parentTime) {
         if (entries == null)
             return;
         for (SimulatorProfiler.ResultEntry entry : entries) {
-            float percentage = (float) entry.timeTook() / totalTime;
-            float parentPercentage = (float) entry.timeTook() / parentTime;
+            float percentage = (float) entry.timeTookNanos / totalTime;
+            float parentPercentage = (float) entry.timeTookNanos / parentTime;
             source.sendSuccess(() -> Component.literal("|  ".repeat(Math.max(0, depth - 1)) + "⊢ ").withStyle(blue)
-                    .append(Component.literal(entry.id().toString() + " ").withStyle(bright))
-                    .append(Component.literal(String.valueOf((entry.timeTook() / 1000))).append(" μs ").append(Component.literal(String.format("%.2f", percentage * 100) + " % ").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - percentage, 3) * 0.32f), 0.6f, 1f).getRGB()))))
+                    .append(Component.literal(entry.id.toString() + " ").withStyle(bright))
+                    .append(Component.literal(String.valueOf((entry.timeTookNanos / 1000))).append(" μs ").append(Component.literal(String.format("%.2f", percentage * 100) + " % ").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - percentage, 3) * 0.32f), 0.6f, 1f).getRGB()))))
                     .append(Component.literal(String.format("%.2f", parentPercentage * 100) + " %").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - parentPercentage, 3) * 0.32f), 0.6f, 1f).getRGB())))
                     , false);
-            listResults(depth + 1, entry.children(), source, totalTime, entry.timeTook());
+            listResults(depth + 1, entry.children, source, totalTime, entry.timeTookNanos);
         }
     }
 
