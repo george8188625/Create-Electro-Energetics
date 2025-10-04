@@ -1,21 +1,19 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
 import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.simulation.*;
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -23,23 +21,16 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -90,7 +81,7 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
                     Double v1 = WireRenderer.getAllVoltages().get(new Node(l, pos));
                     Double v2 = WireRenderer.getAllVoltages().get(new Node((isDouble ? 2 : 1) + l, pos));
                     if (v1 != null && v2 != null && Math.abs(v1 - v2) > 0.0003)
-                        for (int i = 0; i < (Math.abs(v1 - v2) * 10) + 1; i++)
+                        for (int i = 0; i < Math.min(30, Math.abs(v1 - v2) * 10) + 1; i++)
                             level.addParticle(ParticleTypes.BUBBLE_POP, pPos.offsetRandom(level.random, 0.3f).x, pPos.offsetRandom(level.random, 0.3f).y, pPos.offsetRandom(level.random, 0.3f).z, 0, 0, 0);
                 }
             }

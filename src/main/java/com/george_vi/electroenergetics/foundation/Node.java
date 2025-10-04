@@ -1,19 +1,15 @@
 package com.george_vi.electroenergetics.foundation;
 
-import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.google.common.collect.Multimap;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,9 +80,23 @@ public class Node implements Comparable<Node> {
 
     @Override
     public int compareTo(@NotNull Node other) {
-        if (id() == other.id())
-            return sourcePos().compareTo(other.sourcePos());
-        return id - other.id();
+        if (this.getClass() != other.getClass()) {
+            return this instanceof AttachedNode ? 1 : -1;
+        }
+        if (!(this instanceof AttachedNode a)) {
+            if (id != other.id) return id - other.id;
+            return sourcePos.compareTo(other.sourcePos);
+        }
+
+        AttachedNode b = (AttachedNode) other;
+        if (a.id() != b.id()) return a.id() - b.id();
+
+        int cmpOwner = a.ownerID.compareTo(b.ownerID);
+        if (cmpOwner != 0) return cmpOwner;
+
+        if (a.grounded != b.grounded) return a.grounded ? 1 : -1;
+
+        return a.sourcePos().compareTo(b.sourcePos());
     }
 
     @Override
