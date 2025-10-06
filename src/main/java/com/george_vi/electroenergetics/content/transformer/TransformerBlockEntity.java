@@ -16,6 +16,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.gui.AllIcons;
+import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.createmod.catnip.math.VecHelper;
@@ -173,15 +174,39 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                 this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 1, ImmutableList.of(CEELang.translate("transformer.ratio_symbol").component()),
-                        new ValueSettingsFormatter(valueSettings -> Component.literal(Ratios.values()[(valueSettings.value())].string)));
+                return new ValueSettingsBoard(label, max, ratios.length / 11, ImmutableList.of(CEELang.translate("transformer.ratio_symbol").component()),
+                        new ValueSettingsFormatter(valueSettings -> Component.literal(indexToRatioString(valueSettings.value()))));
             }
         };
-        ratio.between(0, Ratios.values().length - 1);
-        ratio.value = 0;
-        ratio.withFormatter(i -> Ratios.values()[i].string);
+        ratio.between(0, ratios.length * 2);
+        ratio.value = ratios.length;
+        ratio.withFormatter(TransformerBlockEntity::indexToRatioString);
         ratio.withCallback(i -> this.updateRatio());
         behaviours.add(ratio);
+    }
+
+    static String indexToRatioString(int i) {
+        if (i == ratios.length)
+            return "1 / 1";
+        if (i > ratios.length) {
+            i -= ratios.length + 1;
+            return ratios[i].getFirst() + " / " + ratios[i].getSecond();
+        } else {
+            i = ratios.length - i - 1;
+            return ratios[i].getSecond() + " / " + ratios[i].getFirst();
+        }
+    }
+
+    static double indexToRatio(int i) {
+        if (i == ratios.length)
+            return 1;
+        if (i > ratios.length) {
+            i -= ratios.length + 1;
+            return (double) ratios[i].getFirst() / ratios[i].getSecond();
+        } else {
+            i = ratios.length - i - 1;
+            return (double) ratios[i].getSecond() / ratios[i].getFirst();
+        }
     }
 
     private void updateRatio() {
@@ -191,8 +216,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
         InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null) {
-            int i = ratio.value;
-            deviceInstance.extraData().putFloat("Ratio", (float) Ratios.values()[i].value);
+            deviceInstance.extraData().putDouble("Ratio", indexToRatio(ratio.value));
         }
     }
 
@@ -228,87 +252,49 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
         }
     }
 
-    public enum Ratios implements INamedIconOptions {
-        ONE_OVER_ONE(1, 1),
+    static Couple<Integer>[] ratios = new Couple[]{
+            Couple.create(9, 10),
+            Couple.create(8, 9),
+            Couple.create(7, 8),
+            Couple.create(6, 7),
+            Couple.create(5, 6),
+            Couple.create(4, 5),
+            Couple.create(7, 9),
+            Couple.create(3, 4),
+            Couple.create(5, 7),
+            Couple.create(2, 3),
+            Couple.create(3, 5),
+            Couple.create(4, 7),
+            Couple.create(1, 2),
+            Couple.create(3, 7),
+            Couple.create(2, 5),
+            Couple.create(3, 8),
+            Couple.create(1, 3),
+            Couple.create(2, 7),
+            Couple.create(1, 4),
+            Couple.create(2, 9),
+            Couple.create(1, 5),
+            Couple.create(2, 11),
+            Couple.create(1, 6),
+            Couple.create(1, 7),
+            Couple.create(1, 8),
+            Couple.create(1, 9),
+            Couple.create(1, 10),
+            Couple.create(1, 12),
+            Couple.create(1, 14),
+            Couple.create(1, 16),
+            Couple.create(1, 18),
+            Couple.create(1, 20),
+            Couple.create(1, 22),
+            Couple.create(1, 25),
+            Couple.create(1, 28),
+            Couple.create(1, 30),
+            Couple.create(1, 33),
+            Couple.create(1, 36),
+            Couple.create(1, 40),
+            Couple.create(1, 43),
+            Couple.create(1, 46),
+            Couple.create(1, 50)
+    };
 
-        ONE_OVER_TWO(1, 2),
-        TWO_OVER_ONE(2, 1),
-
-        ONE_OVER_THREE(1, 3),
-        THREE_OVER_ONE(3, 1),
-        TWO_OVER_THREE(2, 3),
-        THREE_OVER_TWO(3, 2),
-
-        ONE_OVER_FOUR(1, 4),
-        FOUR_OVER_ONE(4, 1),
-        THREE_OVER_FOUR(3, 4),
-        FOUR_OVER_THREE(4, 3),
-
-        ONE_OVER_FIVE(1, 5),
-        FIVE_OVER_ONE(5, 1),
-        TWO_OVER_FIVE(2, 5),
-        FIVE_OVER_TWO(5, 2),
-        THREE_OVER_FIVE(3, 5),
-        FIVE_OVER_THREE(5, 3),
-        FOUR_OVER_FIVE(4, 5),
-        FIVE_OVER_FOUR(5, 4),
-
-        ONE_OVER_SIX(1, 6),
-        SIX_OVER_ONE(6, 1),
-        FIVE_OVER_SIX(5, 6),
-        SIX_OVER_FIVE(6, 5),
-
-        ONE_OVER_SEVEN(1, 7),
-        SEVEN_OVER_ONE(7, 1),
-        TWO_OVER_SEVEN(2, 7),
-        SEVEN_OVER_TWO(7, 2),
-        THREE_OVER_SEVEN(3, 7),
-        SEVEN_OVER_THREE(7, 3),
-        FOUR_OVER_SEVEN(4, 7),
-        SEVEN_OVER_FOUR(7, 4),
-        FIVE_OVER_SEVEN(5, 7),
-        SEVEN_OVER_FIVE(7, 5),
-        SIX_OVER_SEVEN(6, 7),
-        SEVEN_OVER_SIX(7, 6),
-
-        ONE_OVER_EIGHT(1, 8),
-        EIGHT_OVER_ONE(8, 1),
-        THREE_OVER_EIGHT(3, 8),
-        EIGHT_OVER_THREE(8, 3),
-        FIVE_OVER_EIGHT(5, 8),
-        EIGHT_OVER_FIVE(8, 5),
-        SEVEN_OVER_EIGHT(7, 8),
-        EIGHT_OVER_SEVEN(8, 7),
-
-        ONE_OVER_TEN(1, 10),
-        TEN_OVER_ONE(10, 1),
-
-        ONE_OVER_FIFTEEN(1, 15),
-        FIFTEEN_OVER_ONE(15, 1),
-
-        ONE_OVER_TWENTY(1, 20),
-        TWENTY_OVER_ONE(20, 1),
-
-        ONE_OVER_FIFTY(1, 50),
-        FIFTY_OVER_ONE(50, 1),
-        ;
-
-
-        public final double value;
-        public final String string;
-        Ratios(int numerator, int denominator) {
-            value = (double) numerator / denominator;
-            string = numerator + " / " + denominator;
-        }
-
-        @Override
-        public AllIcons getIcon() {
-            return null;
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return null;
-        }
-    }
 }

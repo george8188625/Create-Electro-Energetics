@@ -46,6 +46,12 @@ public class ElectricalProperties {
         return resistance;
     }
 
+    public double conductance() {
+        if (resistance > 1e+10d)
+            return 0;
+        return 1 / resistance;
+    }
+
     public double voltageSource() {
         return voltageSource;
     }

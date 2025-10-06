@@ -88,10 +88,10 @@ public class WireInteractionHandler {
             if (!wireBB.contains(from) && wireBB.clip(from, to).isEmpty())
                 continue;
 
-            for (int i = 1; i < points.size() - 1; i++) {
-                Vec3 prevPoint = points.get(i - 1);
+            for (int i = 0; i < points.size(); i++) {
+                Vec3 prevPoint = i == 0 ? pos1 : points.get(i - 1);
                 Vec3 point = points.get(i);
-                Vec3 nextPoint = points.get(i + 1);
+                Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
 
                 double distance = point.distanceTo(from);
                 if (distance >= bestDist)

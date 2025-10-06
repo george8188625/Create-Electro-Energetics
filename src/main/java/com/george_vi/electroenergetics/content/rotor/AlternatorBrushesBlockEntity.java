@@ -55,7 +55,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
             return;
 
         deviceInstance.extraData().putDouble("Stress", totalStress);
-        deviceInstance.extraData().putDouble("Voltage", rotors.isEmpty() ? 0 : (double) magnets / rotors.size() * 50);
+        deviceInstance.extraData().putDouble("Voltage", totalStress / 100);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .text(LangNumberFormat.format(Math.round(Math.abs(v1 - v2))))
                 .translate("generic.volts")
-                .text(" / " + LangNumberFormat.format(Math.round(Math.abs(rotors.isEmpty() ? 0 : (double) magnets / rotors.size() * 50))))
+                .text(" / " + LangNumberFormat.format(Math.round(totalStress / 100)))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);

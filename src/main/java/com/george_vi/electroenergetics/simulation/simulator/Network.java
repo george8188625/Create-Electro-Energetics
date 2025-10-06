@@ -192,8 +192,7 @@ public class Network {
         for (SimulationNode node : simulationNodes.values()) {
             double totalConductance = 0;
             for (SimulationNode adjacentNode : node.getNextNodes()) {
-                double R = node.getConnectionProperties(adjacentNode).resistance();
-                totalConductance += 1 / node.getConnectionProperties(adjacentNode).resistance();
+                totalConductance += node.getConnectionProperties(adjacentNode).conductance();
                 if (node.getConnectionProperties(adjacentNode).isVoltageSource() && !voltageSources.containsKey(Couple.create(adjacentNode, node)))
                     voltageSources.put(Couple.create(node, adjacentNode), node.getConnectionProperties(adjacentNode).voltageSource());
                 if (node.getConnectionProperties(adjacentNode).isCurrentSource() && !currentSources.containsKey(Couple.create(adjacentNode, node)))
@@ -213,8 +212,9 @@ public class Network {
         id = 0;
         for (SimulationNode node : simulationNodes.values()) {
             for (SimulationNode adjacentNode : node.getNextNodes()) {
-                conductanceMatrix.set(node.id, adjacentNode.id, -1 / node.getConnectionProperties(adjacentNode).resistance());
-                conductanceMatrix.set(adjacentNode.id, node.id, -1 / node.getConnectionProperties(adjacentNode).resistance());
+                double conductance = node.getConnectionProperties(adjacentNode).conductance();
+                conductanceMatrix.set(node.id, adjacentNode.id, -conductance);
+                conductanceMatrix.set(adjacentNode.id, node.id, -conductance);
             }
         }
 
@@ -234,7 +234,6 @@ public class Network {
             conductanceMatrix.set(simulationNodes.size() + i, source.getSecond().id, -1d);
             conductanceMatrix.set(source.getFirst().id, simulationNodes.size() + i, 1d);
             conductanceMatrix.set(source.getSecond().id, simulationNodes.size() + i, -1d);
-//                conductanceMatrix.set(simulationNodes.size() + i, simulationNodes.size() + i, 0d);
             d[simulationNodes.size() + i] =  - voltageSources.get(source);
             i++;
         }

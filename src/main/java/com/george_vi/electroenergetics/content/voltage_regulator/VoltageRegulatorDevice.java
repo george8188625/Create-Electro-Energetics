@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.voltage_regulator;
 
+import com.george_vi.electroenergetics.content.transformer.TransformerBlockEntity;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -21,74 +22,101 @@ public class VoltageRegulatorDevice extends SimulatedDevice {
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-
-        bridges.builder(pos)
-                .resistor(0, 1, extraData.getDouble("PrimaryResistance") == 0 ? 9999999 : extraData.getDouble("PrimaryResistance"))
-                .energyLimitedSource(3, 2, extraData.getDouble("StoredEnergy"), extraData.getDouble("SecondaryVoltage"));
-    }
-    @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        double storedEnergy = extraData.contains("StoredEnergy") ? extraData.getDouble("StoredEnergy") : 2_000_000;
-        float ratio = extraData.getFloat("Ratio");
+        boolean backwards = extraData.getBoolean("Backwards");
+        double ratio = extraData.getDouble("Ratio");
         if (ratio == 0)
             ratio = 1;
 
-        double primaryVoltage = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
-        double secondaryVoltage = results.getVoltageAt(pos, 3) - results.getVoltageAt(pos, 2);
-        if (Math.abs(primaryVoltage) < 0.1)
-            primaryVoltage = 0;
+        double rawLoad = extraData.getDouble("Load");
+        double rawFeed = -extraData.getDouble("Feed");
 
-        // incoming energy and load
+        double lastPrimaryVoltage = extraData.getDouble("LastPrimaryVoltage");
+        double lastSecondaryVoltage = extraData.getDouble("LastSecondaryVoltage");
+        double averagePrimaryVoltage = extraData.getDouble("AveragePrimaryVoltage");
+        double averageSecondaryVoltage = extraData.getDouble("AverageSecondaryVoltage");
 
-        double secondaryCurrent = results.getCurrentThrough(pos, 2, 3);
-        double load = secondaryCurrent * secondaryVoltage;
-        if (load < 0)
-            load = 0;
+        if (backwards) {
+            double load = Math.max(0, rawFeed);
 
-        double primaryCurrent = results.getCurrentThrough(pos, 0, 1);
-        double incomingEnergy = primaryCurrent * primaryVoltage;
+            bridges.builder(pos)
+                    .node(4)
+                    .node(5)
+                    .resistor(0, 4, 0.001)
+                    .resistor(2, 5, Math.abs(averageSecondaryVoltage) < 1e-6d || Math.abs(load) < 1e-6d ? 1e+6d : (averageSecondaryVoltage / (load / averageSecondaryVoltage)))
+                    .energyLimitedSource(4, 1, 2000_000, -averageSecondaryVoltage * ratio)
+                    .resistor(0, 1, 10000000)
+                    .resistor(5, 3, 0.1);
 
-        storedEnergy -= load;
-        storedEnergy += incomingEnergy;
-        if (storedEnergy < 0)
-            storedEnergy = 0;
+            if (Math.abs(lastPrimaryVoltage / ratio) > Math.abs(lastSecondaryVoltage) && load < 0.0001)
+                extraData.remove("Backwards");
+        } else {
+            double load = Math.max(0, rawLoad);
 
-        // calculate the average primary voltage
-
-        double[] prevVoltages = extraData.getList("PrevVoltages", Tag.TAG_DOUBLE).stream().mapToDouble(t -> ((DoubleTag)t).getAsDouble()).toArray();
-        ListTag tag = new ListTag();
-        tag.add(DoubleTag.valueOf(primaryVoltage));
-        for (int i = 0; i < Math.min(12, prevVoltages.length); i++) {
-            tag.add(DoubleTag.valueOf(prevVoltages[i]));
+            bridges.builder(pos)
+                    .node(4)
+                    .node(5)
+                    .resistor(0, 4, 0.1)
+                    .resistor(4, 1, Math.abs(averagePrimaryVoltage) < 1e-6d || Math.abs(load) < 1e-6d ? 1e+6d : (averagePrimaryVoltage / (load / averagePrimaryVoltage)))
+                    .energyLimitedSource(2, 5, 2000_000, -averagePrimaryVoltage / ratio)
+                    .resistor(2, 3, 10000000)
+                    .resistor(5, 3, 0.001);
+            if (Math.abs(lastPrimaryVoltage / ratio) < Math.abs(lastSecondaryVoltage) && load < 0.0001)
+                extraData.putBoolean("Backwards", true);
         }
-        extraData.put("PrevVoltages", tag);
+    }
 
-        double averageVoltage = (Arrays.stream(prevVoltages).sum() + primaryVoltage) / (prevVoltages.length + 1);
-
-        double primaryResistance = (averageVoltage / ((load + 100) / averageVoltage));
-        if (primaryResistance < 0.1)
-            primaryResistance = 0.1;
-
-        float targetedVoltage = extraData.getFloat("Voltage");
-        targetedVoltage = (float) Mth.clamp(targetedVoltage, Math.abs(averageVoltage) / 1.2, Math.abs(averageVoltage) * 1.2);
-
-        double resultingVoltage = Math.abs(secondaryVoltage);
-        double potentialVoltage = Math.abs(extraData.getFloat("Voltage"));
-
-        if (resultingVoltage - potentialVoltage < -potentialVoltage / 500) {
-            extraData.putInt("AdditionalSteps", Math.clamp(extraData.getInt("AdditionalSteps") + 1, -30, 30));
-        } else if (resultingVoltage - potentialVoltage > potentialVoltage / 500) {
-            extraData.putInt("AdditionalSteps", Math.clamp(extraData.getInt("AdditionalSteps") - 1, -30, 30));
-        }
-
-        targetedVoltage *= 1 + (extraData.getInt("AdditionalSteps") / 300f);
-
-        extraData.putDouble("PrimaryResistance", primaryResistance);
-        extraData.putDouble("StoredEnergy", storedEnergy);
-        extraData.putDouble("SecondaryVoltage", targetedVoltage);
+    @Override
+    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+        double primaryVoltage = results.getVoltageAt(pos, 0, 1);
+        extraData.putDouble("LastPrimaryVoltage", primaryVoltage);
+        double secondaryVoltage = results.getVoltageAt(pos, 2, 3);
+        double secondaryCurrent = results.getCurrentThrough(pos, 5, 3);
+        extraData.putDouble("LastSecondaryVoltage", secondaryVoltage);
+        double load = -secondaryCurrent * secondaryVoltage;
+        extraData.putDouble("Load", load);
+        double primaryCurrent = results.getCurrentThrough(pos, 0, 4);
+        double feed = primaryCurrent * primaryVoltage;
+        extraData.putDouble("Feed", feed);
 
         if (level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof VoltageRegulatorBlockEntity be)
-                be.power = load;
+                be.power = extraData.getBoolean("Backwards") ? -feed : load;
+
+        // calculate the average voltages
+
+        double[] prevPrimaryVoltages = extraData.getList("LastPrimaryVoltages", Tag.TAG_DOUBLE).stream().mapToDouble(t -> ((DoubleTag)t).getAsDouble()).toArray();
+        ListTag pTag = new ListTag();
+        pTag.add(DoubleTag.valueOf(primaryVoltage));
+        for (int i = 0; i < Math.min(22, prevPrimaryVoltages.length); i++) {
+            pTag.add(DoubleTag.valueOf(prevPrimaryVoltages[i]));
+        }
+        extraData.put("LastPrimaryVoltages", pTag);
+
+        double averagePrimaryVoltage = (Arrays.stream(prevPrimaryVoltages).sum() + primaryVoltage) / (prevPrimaryVoltages.length + 1);
+
+
+        double[] prevSecondaryVoltages = extraData.getList("LastSecondaryVoltages", Tag.TAG_DOUBLE).stream().mapToDouble(t -> ((DoubleTag)t).getAsDouble()).toArray();
+        ListTag sTag = new ListTag();
+        sTag.add(DoubleTag.valueOf(secondaryVoltage));
+        for (int i = 0; i < Math.min(22, prevSecondaryVoltages.length); i++) {
+            sTag.add(DoubleTag.valueOf(prevSecondaryVoltages[i]));
+        }
+        extraData.put("LastSecondaryVoltages", sTag);
+
+        double averageSecondaryVoltage = (Arrays.stream(prevSecondaryVoltages).sum() + secondaryVoltage) / (prevSecondaryVoltages.length + 1);
+
+        extraData.putDouble("AveragePrimaryVoltage", averagePrimaryVoltage);
+        extraData.putDouble("AverageSecondaryVoltage", averageSecondaryVoltage);
+
+        float targetedVoltage = extraData.getFloat("Voltage");
+        double resultingVoltage = Math.abs(secondaryVoltage);
+
+        if (resultingVoltage - targetedVoltage < -targetedVoltage / 500) {
+            extraData.putInt("Steps", Math.clamp(extraData.getInt("Steps") + 1, -30, 30));
+        } else if (resultingVoltage - targetedVoltage > targetedVoltage / 500) {
+            extraData.putInt("Steps", Math.clamp(extraData.getInt("Steps") - 1, -30, 30));
+        }
+
+        extraData.putDouble("Ratio", 1 - (extraData.getInt("Steps") / 300f));
     }
 }

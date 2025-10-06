@@ -39,6 +39,8 @@ public abstract class GeneratingDevice extends SimulatedDevice {
         storedEnergy -= Math.abs(current * (v1 - v2));
 
         storedEnergy = Math.min(storedEnergy + power, power * 10);
+        if (storedEnergy < 0)
+            storedEnergy = 0;
 
         extraData.putDouble("StoredEnergy", storedEnergy);
     }
