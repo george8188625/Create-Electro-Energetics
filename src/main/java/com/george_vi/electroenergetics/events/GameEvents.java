@@ -3,20 +3,23 @@ package com.george_vi.electroenergetics.events;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.commands.CEECommands;
+import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHandler;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.content.wire.WireEffects;
-import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
-import com.george_vi.electroenergetics.content.wire_spool.*;
+import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
+import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -26,6 +29,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -141,6 +145,16 @@ public class GameEvents {
         SimulationTicker.profiler.push("catenaryStuff");
         CatenaryHandler.finishSimulation(event);
         SimulationTicker.profiler.pop();
+    }
+
+    @SubscribeEvent
+    public static void spawnMob(MobSpawnEvent.SpawnPlacementCheck event) {
+        if (event.getSpawnType() != MobSpawnType.NATURAL || event.getResult() == MobSpawnEvent.SpawnPlacementCheck.Result.FAIL)
+            return;
+        InfrastructureSavedData sd = InfrastructureSavedData.load(event.getLevel().getLevel());
+        boolean foundBulb = sd.getDevices().stream().filter(d -> d.simulatedDevice() instanceof BulbDevice && d.pos().getCenter().distanceTo(event.getPos().getCenter()) <= 20).anyMatch(d -> true);
+        if (foundBulb)
+            event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
     }
 
 }

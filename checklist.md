@@ -4,6 +4,7 @@
 - [ ] train sounds out of multiple carriages
 - [ ] train lights
 - [ ] train sound selection
+- [ ] electric train signals
 - [ ] accumulators on trains
 - [ ] colored bulbs
 - [ ] variacs
@@ -11,7 +12,8 @@
 - [ ] variable buzzer pitch
 - [ ] multi-block transformers
 - [ ] floodlights
-- [ ] lights prevent mob spawning even when they are off
+- [ ] more light types
+- [x] lights prevent mob spawning even when they are off
 - [ ] energy meters on trains
 - [ ] resistance / voltage tooltips
 - [ ] DC motors (~12V, direction depends on voltage, useful for controlling fluid valves, variacs, etc)

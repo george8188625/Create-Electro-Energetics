@@ -1,14 +1,15 @@
 package com.george_vi.electroenergetics.simulation;
 
-import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
-import com.george_vi.electroenergetics.content.wire.WireAttachmentType;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.jcraft.jorbis.Block;
 import com.mojang.logging.LogUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
@@ -29,6 +30,7 @@ import java.util.*;
 public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, SimulatedDeviceInstance> DEVICES = new TreeMap<>();
     Map<Node, List<Node>> NODES = new HashMap<>();
+    Map<Node, Vec3> NODE_POSITIONS = new HashMap<>();
     Map<BlockPos, List<Node>> NODES_BY_POS = new HashMap<>();
     Map<BlockPos, CableType> CABLES = new HashMap<>();
     Map<NodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
@@ -71,6 +73,14 @@ public class InfrastructureSavedData extends SavedData {
             nodeTag.put("Pos", NbtUtils.writeBlockPos(e.getKey().sourcePos()));
             nodeTag.putInt("ID", e.getKey().id());
 
+            Vec3 lastKnownPos = getNodePosition(e.getKey());
+            if (lastKnownPos != null) {
+                CompoundTag lastKnownPosTag = new CompoundTag();
+                lastKnownPosTag.putDouble("X", lastKnownPos.x);
+                lastKnownPosTag.putDouble("Y", lastKnownPos.y);
+                lastKnownPosTag.putDouble("Z", lastKnownPos.z);
+                nodeTag.put("LastKnownPos", lastKnownPosTag);
+            }
             ListTag connectedNodesList = new ListTag();
             for (Node node : e.getValue()) {
                 CompoundTag subNodeTag = new CompoundTag();
@@ -140,6 +150,8 @@ public class InfrastructureSavedData extends SavedData {
         NBTHelper.iterateCompoundList(compoundTag.getList("Nodes", Tag.TAG_COMPOUND), tag -> {
             BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
             int id = tag.getInt("ID");
+            CompoundTag lastKnownPosTag = tag.getCompound("LastKnownPos");
+            Vec3 lastKnownPos = tag.contains("LastKnownPos") ? new Vec3(lastKnownPosTag.getDouble("X"), lastKnownPosTag.getDouble("Y"), lastKnownPosTag.getDouble("Z")) : null;
             List<Node> connectedNodes = new ArrayList<>();
             Node node = new Node(id, pos);
             NBTHelper.iterateCompoundList(tag.getList("ConnectedNodes", Tag.TAG_COMPOUND), connectionTag -> {
@@ -168,6 +180,7 @@ public class InfrastructureSavedData extends SavedData {
                 sd.CONNECTION_DATA.computeIfAbsent(new NodeConnection(new Node(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")),
                         new Node(id, pos)), c -> new WireData(finalWireType, connectionTag.getFloat("Temperature"), attachments));
             });
+            sd.NODE_POSITIONS.put(node, lastKnownPos);
             sd.NODES.put(node, connectedNodes);
             sd.VOLTAGES.put(node, 0d);
             sd.NODES_BY_POS.computeIfAbsent(pos, ((p) -> new ArrayList<>()));
@@ -253,19 +266,25 @@ public class InfrastructureSavedData extends SavedData {
                 List<Node> oldNodes = NODES_BY_POS.get(pos);
                 List<Node> nodes = nodeIDs.stream().map(id -> new Node(id, pos)).toList();
 
-                if (oldNodes != null && oldNodes.stream().map(Node::id).sorted().toList().equals(nodeIDs.stream().sorted().toList()))
+                if (oldNodes != null && oldNodes.stream().map(Node::id).sorted().toList().equals(nodeIDs.stream().sorted().toList())) {
+                    for (Node node : oldNodes)
+                        NODE_POSITIONS.replace(node, node.getPosition(level));
                     return;
+                }
 
                 if (oldNodes != null)
                     for (Node node : oldNodes) {
                         getConnections(node).forEach(this::removeConnection);
                         NODES.remove(node);
+                        NODE_POSITIONS.remove(node);
                     }
 
                 NODES_BY_POS.replace(pos, nodes);
 
-                for (Node node : nodes)
+                for (Node node : nodes) {
                     NODES.put(node, new ArrayList<>());
+                    NODE_POSITIONS.put(node, node.getPosition(level));
+                }
 
                 return;
             } else
@@ -279,8 +298,10 @@ public class InfrastructureSavedData extends SavedData {
 
         DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, extraData, nodes));
 
-        for (Node node : nodes)
+        for (Node node : nodes) {
             NODES.put(node, new ArrayList<>());
+            NODE_POSITIONS.put(node, node.getPosition(level));
+        }
         NODES_BY_POS.put(pos, nodes);
 
         setDirty();
@@ -305,6 +326,7 @@ public class InfrastructureSavedData extends SavedData {
                 for (BlockPos connection : catenaryConnections)
                     removeCatenary(pos, connection);
                 NODES.remove(node);
+                NODE_POSITIONS.remove(node);
             }
         NODES_BY_POS.remove(pos);
         setDirty();
@@ -408,6 +430,14 @@ public class InfrastructureSavedData extends SavedData {
 
     public List<Node> getNodes(){
         return NODES.keySet().stream().toList();
+    }
+
+    public Vec3 getNodePosition(Node node) {
+        Vec3 pos = NODE_POSITIONS.get(node);
+        if (pos == null) {
+            NODE_POSITIONS.replace(node, pos = node.getPosition(level));
+        }
+        return pos;
     }
 
     public double getVoltageAt(Node node) {
