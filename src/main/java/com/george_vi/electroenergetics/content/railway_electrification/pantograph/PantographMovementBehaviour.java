@@ -91,7 +91,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                 Vec3 distance = pantographPos.subtract(closest);
                 context.rotation.apply(distance).multiply(0, 0, 0);
 
-                if (!(Math.abs(distance.z()) > 1.5) && !(Math.abs(distance.x()) > 0.5) && !(Math.abs(distance.y()) > 1)) {
+                if (!(Math.abs(distance.z()) > 1.5) && !(Math.abs(distance.x()) > 0.5) && !(Math.abs(distance.y()) > 1.75)) {
                     connectionPoint = closest;
                     break;
                 }
@@ -100,7 +100,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             if (connectionPoint != null) {
 //                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, connectionPoint.x, connectionPoint.y, connectionPoint.z, 0, 0, 0);
                 float lo = 0;
-                float hi = 1.3f;
+                float hi = 2f;
                 for (int i = 0; i < 20; i++) {
                     float m1 = lo + (hi - lo) / 3;
                     float m2 = hi - (hi - lo) / 3;

@@ -93,7 +93,7 @@ public class CatenaryHandler {
                         distance = VecHelper.rotate(distance, yaw + 180, Direction.Axis.Y);
                         distance = VecHelper.rotate(distance, -pitch, Direction.Axis.X);
 
-                        if (!(Math.abs(distance.z()) > 2) && !(Math.abs(distance.x()) > 0.5) && !(Math.abs(distance.y()) > 1)) {
+                        if (!(Math.abs(distance.z()) > 2) && !(Math.abs(distance.x()) > 0.5) && !(Math.abs(distance.y()) > 1.75)) {
                             catenaryConnections.computeIfAbsent(train, k -> new ArrayList<>());
                             catenaryConnections.get(train).add(Pair.of((float) t, connection));
                             cutConnections.compute(connection, (k, v) -> v == null ? 1 : v + 1);
