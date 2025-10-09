@@ -124,7 +124,7 @@ public class CatenaryHandler {
                 Node startNode = new Node(0, connection.getFirst());
                 Node endNode = new Node(0, connection.getSecond());
                 float totalProgress = 0.01f;
-                double totalResistance = SimulationTicker.getWireResistance(startNode, endNode, CEEWireTypes.STANDARD.get());
+                double totalResistance = SimulationTicker.getWireResistance(startNode, endNode, CEEWireTypes.COPPER.get());
                 Node lastNode = startNode;
 
 
@@ -148,7 +148,7 @@ public class CatenaryHandler {
             } else {
                 Node node1 = new Node(0, connection.getFirst());
                 Node node2 = new Node(0, connection.getSecond());
-                event.connect(node1, node2, ElectricalProperties.resistor(SimulationTicker.getWireResistance(node1, node2, CEEWireTypes.STANDARD.get())));
+                event.connect(node1, node2, ElectricalProperties.resistor(SimulationTicker.getWireResistance(node1, node2, CEEWireTypes.COPPER.get())));
             }
         }
 
