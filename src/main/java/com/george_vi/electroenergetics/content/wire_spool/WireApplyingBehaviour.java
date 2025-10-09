@@ -123,7 +123,7 @@ public class WireApplyingBehaviour {
         boolean canConnect = true;
 
         boolean isCatenary = db instanceof CatenaryHolderBlock && (level.getBlockState(hoveredNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock) &&
-                (heldItem.getItem() instanceof WireSpoolItem wsi) && wsi.wireType.get() == CEEWireTypes.STANDARD.get();
+                (heldItem.getItem() instanceof WireSpoolItem wsi) && wsi.wireType.get() == CEEWireTypes.COPPER.get();
 
         // Wire too long
         if (Math.sqrt(selectedNode.sourcePos().distSqr(pos)) > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() :

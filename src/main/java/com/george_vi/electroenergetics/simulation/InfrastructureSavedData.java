@@ -322,7 +322,7 @@ public class InfrastructureSavedData extends SavedData {
                     Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), ((connections.size()) * CEEConfigs.server().wiresPerSpool.get())));
 
                 List<BlockPos> catenaryConnections = List.copyOf(CATENARY.getOrDefault(pos, new ArrayList<>()));
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.INSULATED_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.COPPER_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
                 for (BlockPos connection : catenaryConnections)
                     removeCatenary(pos, connection);
                 NODES.remove(node);
