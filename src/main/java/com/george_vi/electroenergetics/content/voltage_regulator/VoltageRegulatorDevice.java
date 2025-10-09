@@ -112,9 +112,9 @@ public class VoltageRegulatorDevice extends SimulatedDevice {
         double resultingVoltage = Math.abs(secondaryVoltage);
 
         if (resultingVoltage - targetedVoltage < -targetedVoltage / 500) {
-            extraData.putInt("Steps", Math.clamp(extraData.getInt("Steps") + 1, -30, 30));
+            extraData.putInt("Steps", Math.clamp(extraData.getInt("Steps") + 1, -60, 60));
         } else if (resultingVoltage - targetedVoltage > targetedVoltage / 500) {
-            extraData.putInt("Steps", Math.clamp(extraData.getInt("Steps") - 1, -30, 30));
+            extraData.putInt("Steps", Math.clamp(extraData.getInt("Steps") - 1, -60, 60));
         }
 
         extraData.putDouble("Ratio", 1 - (extraData.getInt("Steps") / 300f));

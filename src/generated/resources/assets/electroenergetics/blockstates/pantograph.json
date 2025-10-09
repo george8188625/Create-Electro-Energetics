@@ -1,18 +1,33 @@
 {
   "variants": {
-    "facing=east": {
+    "double=false,facing=east": {
       "model": "electroenergetics:block/pantograph/block",
       "y": 90
     },
-    "facing=north": {
+    "double=false,facing=north": {
       "model": "electroenergetics:block/pantograph/block"
     },
-    "facing=south": {
+    "double=false,facing=south": {
       "model": "electroenergetics:block/pantograph/block",
       "y": 180
     },
-    "facing=west": {
+    "double=false,facing=west": {
       "model": "electroenergetics:block/pantograph/block",
+      "y": 270
+    },
+    "double=true,facing=east": {
+      "model": "electroenergetics:block/pantograph/block_double",
+      "y": 90
+    },
+    "double=true,facing=north": {
+      "model": "electroenergetics:block/pantograph/block_double"
+    },
+    "double=true,facing=south": {
+      "model": "electroenergetics:block/pantograph/block_double",
+      "y": 180
+    },
+    "double=true,facing=west": {
+      "model": "electroenergetics:block/pantograph/block_double",
       "y": 270
     }
   }

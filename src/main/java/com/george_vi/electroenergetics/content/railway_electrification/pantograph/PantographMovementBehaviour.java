@@ -153,56 +153,103 @@ public class PantographMovementBehaviour implements MovementBehaviour {
 
         int light = LevelRenderer.getLightColor(renderWorld, context.localPos);
 
-        CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_LOWER_ARM, state)
-                .transform(matrices.getModel())
-                .center().rotateYDegrees(yRot).uncenter()
-                .translate(0, 0.375, 0.8125)
-                .rotateXDegrees(-75+extensionState*30)
-                .light(light)
-                .useLevelLight(context.world, matrices.getWorld())
-                .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        if (state.getValue(PantographBlock.DOUBLE)) {
+            float rotationFactor = 27;
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_LOWER_ARMS_DOUBLE, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(0, 0.375, 0.5)
+                    .rotateXDegrees(-90 + extensionState * rotationFactor)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
-        double armHingePosY = Math.cos((-75+extensionState*30)*Math.PI/180)*1.5;
-        double armHingePosX = Math.sin((-75+extensionState*30)*Math.PI/180)*1.5;
+            double armHingePosY = Math.cos((-90 + extensionState * rotationFactor) * Math.PI / 180) * 1.5;
+            double armHingePosX = Math.sin((-90 + extensionState * rotationFactor) * Math.PI / 180) * 1.5;
 
-        CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM, state)
-                .transform(matrices.getModel())
-                .center().rotateYDegrees(yRot).uncenter()
-                .translate(0, 0.375, 0.8125)
-                .translate(0, armHingePosY, armHingePosX)
-                .rotateXDegrees(-1-extensionState*30)
-                .light(light)
-                .useLevelLight(context.world, matrices.getWorld())
-                .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARMS_DOUBLE, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(0, 0.375, 0.5)
+                    .translate(0, armHingePosY, armHingePosX)
+                    .rotateXDegrees(83 - extensionState * rotationFactor * 0.8f)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
-        CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_SURFACE, state)
-                .transform(matrices.getModel())
-                .center().rotateYDegrees(yRot).uncenter()
-                .translate(0, 0.375, 0.8125)
-                .translate(0, armHingePosY, armHingePosX)
-                .translate(0, Math.cos((89-extensionState*30)*Math.PI/180)*1.5, Math.sin((89-extensionState*30)*Math.PI/180)*1.5)
-                .light(light)
-                .useLevelLight(context.world, matrices.getWorld())
-                .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_SURFACE_DOUBLE, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(0, 0.375, 1)
+                    .translate(0, Math.cos((-75 + extensionState * 30) * Math.PI / 180) * 1.5 + Math.cos((89 - extensionState * 30) * Math.PI / 180) * 1.5, 0)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
-        CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_SPRINGS, state)
-                .transform(matrices.getModel())
-                .center().rotateYDegrees(yRot).uncenter()
-                .translate(0, 0.375, 0.25)
-                .rotateXDegrees(-22+extensionState*-20)
-                .scale(1, 1, 1+extensionState/2)
-                .light(light)
-                .useLevelLight(context.world, matrices.getWorld())
-                .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_SPRINGS_DOUBLE, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(0, 0.6, 0.6)
+                    .translate(0, armHingePosY * 0.2f, armHingePosX * 0.3f)
+                    .scaleZ((float) (1.0 - (0.7f + armHingePosX * 0.3f)) * 1.4f)
+                    .rotateXDegrees(0)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
-        CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_ROD, state)
-                .transform(matrices.getModel())
-                .center().rotateYDegrees(yRot).uncenter()
-                .translate(0, 0.375, 0.1875)
-                .rotateXDegrees(-77+extensionState*43)
-                .light(light)
-                .useLevelLight(context.world, matrices.getWorld())
-                .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+        } else {
+
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_LOWER_ARM, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(0, 0.375, 0.8125)
+                    .rotateXDegrees(-75 + extensionState * 30)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+
+            double armHingePosY = Math.cos((-75 + extensionState * 30) * Math.PI / 180) * 1.5;
+            double armHingePosX = Math.sin((-75 + extensionState * 30) * Math.PI / 180) * 1.5;
+
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(0, 0.375, 0.8125)
+                    .translate(0, armHingePosY, armHingePosX)
+                    .rotateXDegrees(-1 - extensionState * 30)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_SURFACE, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(0, 0.375, 0.8125)
+                    .translate(0, armHingePosY, armHingePosX)
+                    .translate(0, Math.cos((89 - extensionState * 30) * Math.PI / 180) * 1.5, Math.sin((89 - extensionState * 30) * Math.PI / 180) * 1.5)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_SPRINGS, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(0, 0.375, 0.25)
+                    .rotateXDegrees(-22 + extensionState * -20)
+                    .scale(1, 1, 1 + extensionState / 2)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_ROD, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(0, 0.375, 0.1875)
+                    .rotateXDegrees(-77 + extensionState * 43)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+        }
     }
 
     @Override

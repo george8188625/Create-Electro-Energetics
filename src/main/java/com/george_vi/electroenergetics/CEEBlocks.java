@@ -402,7 +402,7 @@ public class CEEBlocks {
     public static final BlockEntry<PantographBlock> PANTOGRAPH = REGISTRATE.block("pantograph", PantographBlock::new)
             .initialProperties(SharedProperties::netheriteMetal)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .blockstate((c, p) -> p.horizontalBlock(c.get(), bs -> bs.getValue(PantographBlock.DOUBLE) ? AssetLookup.partialBaseModel(c, p, "double") : AssetLookup.partialBaseModel(c, p)))
             .transform(pickaxeOnly())
             .onRegister(movementBehaviour(new PantographMovementBehaviour()))
             .item()
