@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.SendWireParticlesPacket;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
-import com.george_vi.electroenergetics.foundation.AttachedNode;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.*;
@@ -35,12 +35,11 @@ public class SimulationTicker {
         profiler.push("setupNodes");
 
         Set<Pair<WireType, NodeConnection>> connections = new HashSet<>();
-        Map<Node, List<Node>> adjacency = new HashMap<>();
-        Map<DirectionSensitiveNodeConnection, ElectricalProperties> connectionProperties = new HashMap<>();
-        List<Node> allNodes = new ArrayList<>();
-        allNodes.addAll(sd.getNodes());
 
-        if (allNodes.isEmpty()) {
+        List<InWorldNode> inWorldNodes = sd.getNodes();
+        CircuitBuilder circuitBuilder = new CircuitBuilder(inWorldNodes);
+
+        if (circuitBuilder.getAllNodes().isEmpty()) {
             profiler.pop();
             profiler.pop();
             return;
@@ -48,8 +47,7 @@ public class SimulationTicker {
 
         profiler.popPush("setupConnections");
 
-        for (Node node : allNodes) {
-            adjacency.put(node, new ArrayList<>());
+        for (InWorldNode node : inWorldNodes) {
             for (NodeConnection connection : sd.getConnections(node)) {
                 WireData connectionData = sd.getConnectionData(connection);
                 WireType wireType = connectionData == null ? CEEWireTypes.STANDARD.get() : connectionData.wireType();
@@ -65,73 +63,47 @@ public class SimulationTicker {
             profiler.push(device.getID().toString());
 
             List<ElectricalNodeConnection> bridges = new ArrayList<>();
-            List<Node> internalNodes = new ArrayList<>();
+            List<InWorldNode> internalNodes = new ArrayList<>();
+            Map<Node, Double> groundConductance = new HashMap<>();
+            Map<Node, Integer> defaultZeroPotentials = new HashMap<>();
 
-            device.preTick(deviceInstance.pos(), level, new BridgeCollector(bridges, internalNodes), deviceInstance.extraData());
+            device.preTick(deviceInstance.pos(), level, new BridgeCollector(bridges, internalNodes, groundConductance, defaultZeroPotentials), deviceInstance.extraData());
 
+            for (ElectricalNodeConnection bridge : bridges)
+                circuitBuilder.connect(bridge.node1(), bridge.node2(), bridge.electricalProperties);
+            for (Map.Entry<Node, Double> e : groundConductance.entrySet())
+                circuitBuilder.ground(e.getKey(), e.getValue());
 
-            for (Node internalNode : internalNodes) {
-                adjacency.put(internalNode, new ArrayList<>());
-                allNodes.add(internalNode);
-            }
-            for (ElectricalNodeConnection bridge : bridges) {
-                try {
-                    adjacency.get(bridge.node1()).add(bridge.node2());
-                } catch (NullPointerException e) { adjacency.put(bridge.node1(), new ArrayList<>()); adjacency.get(bridge.node1()).add(bridge.node2()); allNodes.add(bridge.node1()); }
-                try {
-                    adjacency.get(bridge.node2()).add(bridge.node1());
-                } catch (NullPointerException e) { adjacency.put(bridge.node2(), new ArrayList<>()); adjacency.get(bridge.node2()).add(bridge.node1()); allNodes.add(bridge.node2()); }
-
-                connectionProperties.put(new DirectionSensitiveNodeConnection(bridge.node1(), bridge.node2()), bridge.electricalProperties);
-                connectionProperties.put(new DirectionSensitiveNodeConnection(bridge.node2(), bridge.node1()), bridge.electricalProperties.invert());
-            }
+            for (Map.Entry<Node, Integer> e : defaultZeroPotentials.entrySet())
+                circuitBuilder.defaultZeroPotential(e.getKey(), e.getValue());
             profiler.pop();
         }
 
         profiler.popPush("connectWires");
 
         for (Pair<WireType, NodeConnection> connection : connections) {
-            Node node1 = connection.getSecond().node1();
-            Node node2 = connection.getSecond().node2();
-
-            if (adjacency.containsKey(node1) && adjacency.containsKey(node2)) {
-                adjacency.get(node1).add(node2);
-                adjacency.get(node2).add(node1);
-            }
-
-            connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0, 0));
-            connectionProperties.put(new DirectionSensitiveNodeConnection(connection.getSecond()).invert(), new ElectricalProperties(getWireResistance(node1, node2, connection.getFirst()), 0, 0));
+            InWorldNode node1 = connection.getSecond().node1();
+            InWorldNode node2 = connection.getSecond().node2();
+            circuitBuilder.connect(node1, node2, ElectricalProperties.resistor(getWireResistance(node1, node2, connection.getFirst())));
         }
 
-        NeoForge.EVENT_BUS.post(new AddToElectricGraphEvent(adjacency, connectionProperties, allNodes, level, sd));
+        NeoForge.EVENT_BUS.post(new AddToElectricGraphEvent(circuitBuilder, level, sd));
 
         // RESET ALL VOLTAGES
 
-        for (Node node : allNodes) {
+        for (InWorldNode node : inWorldNodes)
             sd.setVoltage(node, 0d);
-        }
 
         profiler.popPush("dfs");
 
         // DFS
-        Set<Node> visited = new HashSet<>();
-        List<Set<Node>> networks = new ArrayList<>();
-
-        for (Node node : allNodes) {
-            if (adjacency.get(node).isEmpty())
-                continue;
-            if (!visited.contains(node)) {
-                Set<Node> component = new HashSet<>();
-                dfs(node, adjacency, visited, component);
-                networks.add(component);
-            }
-        }
+        List<Set<Node>> networks = circuitBuilder.dfs();
 
         profiler.popPush("solveNetworks");
 
         Map<BlockPos, Map<Node, Double>> resultsPerBlock = new HashMap<>();
-        Map<BlockPos, Map<DirectionSensitiveNodeConnection, Double>> sourceAmps = new HashMap<>();
-
+        Map<BlockPos, Map<DirectionalNodeConnection, Double>> sourceAmps = new HashMap<>();
+        Map<Node, Double> allVoltages = new HashMap<>(circuitBuilder.getAllNodes().size());
         // SOLVE NETWORKS
 
         for (Set<Node> networkNodes : networks) {
@@ -141,8 +113,10 @@ public class SimulationTicker {
             Map<Node, Map<Node, ElectricalProperties>> networkConnections = new HashMap<>(networkNodes.size());
             for (Node node : networkNodes) {
                 Map<Node, ElectricalProperties> nodeConnections = new HashMap<>(3);
-                for (Node connectedNode : adjacency.get(node)) {
-                    ElectricalProperties properties = connectionProperties.get(new DirectionSensitiveNodeConnection(node, connectedNode));
+                for (Map.Entry<Node, ElectricalProperties> e : circuitBuilder.getAdjacentNodes(node).entrySet()) {
+                    Node connectedNode = e.getKey();
+                    ElectricalProperties properties = e.getValue();
+
                     nodeConnections.put(connectedNode, properties);
                     if (properties.isCurrentSource() || properties.isVoltageSource())
                         foundSource = true;
@@ -155,15 +129,17 @@ public class SimulationTicker {
             Map<Node, Double> results;
 
             if (foundSource) {
-                Network network = new Network(networkNodes, networkConnections, sd);
+                Network network = new Network(networkNodes, networkConnections, circuitBuilder, sd);
 
                 profiler.push("optimize");
                 if (CEEConfigs.server().optimizeGraph.get())
                     network.optimize();
-                profiler.popPush("solve");
+                profiler.popPush("matrixify");
 
                 Map<Node, SimulationNode> simulationNodes = network.mapToSimNodes();
-                Pair<Map<Couple<SimulationNode>, Double>, Pair<SparseMatrix<Double>, double[]>> matrices = network.formMatrix(simulationNodes);
+                Pair<Map<Couple<SimulationNode>, Double>, Pair<double[][], double[]>> matrices = network.formMatrix(simulationNodes);
+                profiler.popPush("solve");
+
                 Map<Couple<SimulationNode>, Double> voltageSources = matrices.getFirst();
 
                 mnaResults = LUSolver.solve(matrices.getSecond().getFirst(), matrices.getSecond().getSecond());
@@ -173,8 +149,9 @@ public class SimulationTicker {
                 int i = 0;
                 for (Couple<SimulationNode> con : voltageSources.keySet()) {
                     double amps = mnaResults[simulationNodes.size() + i];
-                    sourceAmps.computeIfAbsent(con.getFirst().correspondingNode.sourcePos(), p -> new HashMap<>())
-                            .put(new DirectionSensitiveNodeConnection(con.getFirst().correspondingNode, con.getSecond().correspondingNode), amps);
+                    if (con.getFirst().correspondingNode instanceof InWorldNode iwn1 && con.getSecond().correspondingNode instanceof InWorldNode iwn2)
+                        sourceAmps.computeIfAbsent(iwn1.sourcePos(), p -> new HashMap<>())
+                                .put(new DirectionalNodeConnection(iwn1, iwn2), amps);
                     i++;
                 }
 
@@ -188,49 +165,29 @@ public class SimulationTicker {
 
             profiler.push("interpretResults");
 
-            int minVoltage = 0;
-            int maxVoltage = 0;
             for (Map.Entry<Node, Double> e : results.entrySet()) {
                 double voltage = e.getValue();
-
-                minVoltage = (int) Math.min(voltage, minVoltage);
-                maxVoltage = (int) Math.max(voltage, maxVoltage);
-
-                sd.setVoltage(e.getKey(), voltage);
-                if (e.getKey() instanceof AttachedNode)
-                    continue;
-
-                resultsPerBlock.computeIfAbsent(e.getKey().sourcePos(), p -> new HashMap<>()).put(e.getKey(), voltage);
+                Node node = e.getKey();
+                if (node instanceof InWorldNode iwn)
+                    sd.setVoltage(iwn, voltage);
             }
+            allVoltages.putAll(results);
 
             profiler.pop();
         }
 
         profiler.pop();
 
-        for (Node node : allNodes) {
-            if (node instanceof AttachedNode)
-                continue;
-            Map<Node, Double> e = resultsPerBlock.get(node.sourcePos());
-            if (e == null) {
-                resultsPerBlock.put(node.sourcePos(), new HashMap<>());
-                e = new HashMap<>();
-            }
-            if (!e.containsKey(node))
-                resultsPerBlock.get(node.sourcePos()).put(node, 0d);
-
-        }
+        for (InWorldNode node : inWorldNodes)
+            allVoltages.putIfAbsent(node, 0d);
 
         profiler.push("postTick");
-        resultsPerBlock.forEach((pos, voltages) -> {
-            InfrastructureSavedData.SimulatedDeviceInstance device = sd.getDevice(pos);
-            if (device == null)
-                return;
+        for (InfrastructureSavedData.SimulatedDeviceInstance device : sd.getDevices()) {
             profiler.push(device.simulatedDevice().getID().toString());
-            SimulationResults results = new SimulationResults(voltages, sourceAmps.getOrDefault(pos, Collections.emptyMap()), adjacency, connectionProperties, sd);
-            device.simulatedDevice().postTick(pos, level, results, device.extraData());
+            SimulationResults results = new SimulationResults(allVoltages, sourceAmps.getOrDefault(device.pos(), Collections.emptyMap()), circuitBuilder, sd);
+            device.simulatedDevice().postTick(device.pos(), level, results, device.extraData());
             profiler.pop();
-        });
+        }
         profiler.popPush("updateWireTemperature");
 
         // WIRE BREAKING
@@ -287,14 +244,14 @@ public class SimulationTicker {
         }
         profiler.popPush("finish");
 
-        if (!allNodes.isEmpty())
+        if (!circuitBuilder.getAllNodes().isEmpty())
             sd.setDirty();
 
-        Map<DirectionSensitiveNodeConnection, Double> allSourceAmps = new HashMap<>();
-        for (Map<DirectionSensitiveNodeConnection, Double> v : sourceAmps.values())
+        Map<DirectionalNodeConnection, Double> allSourceAmps = new HashMap<>();
+        for (Map<DirectionalNodeConnection, Double> v : sourceAmps.values())
             allSourceAmps.putAll(v);
 
-        NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(new SimulationResults(Collections.emptyMap(), allSourceAmps, adjacency, connectionProperties, sd), level, sd));
+        NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(new SimulationResults(allVoltages, allSourceAmps, circuitBuilder, sd), level, sd));
         profiler.push("syncVoltages");
         VoltageSync.finishSimulation(sd, level);
 
@@ -305,18 +262,8 @@ public class SimulationTicker {
 
 
 
-    public static double getWireResistance(Node node1, Node node2, WireType wireType) {
+    public static double getWireResistance(InWorldNode node1, InWorldNode node2, WireType wireType) {
         double res = Math.sqrt(node1.sourcePos().distSqr(node2.sourcePos())) * wireType.getResistance();
         return res == 0 ? wireType.getResistance() : res;
-    }
-
-    static void dfs(Node current, Map<Node, List<Node>> adjacency, Set<Node> visited, Set<Node> component) {
-        visited.add(current);
-        component.add(current);
-        for (Node neighbor : adjacency.get(current)) {
-            if (!visited.contains(neighbor)) {
-                dfs(neighbor, adjacency, visited, component);
-            }
-        }
     }
 }

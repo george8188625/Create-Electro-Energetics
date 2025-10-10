@@ -54,7 +54,7 @@ public class WireApplyingBehaviour {
         boolean toRemove = CEEItems.EMPTY_SPOOL.isIn(heldItem);
 
         Vec3 selectedPos = null;
-        Node selectedNode = null;
+        InWorldNode selectedNode = null;
         if (heldItem.has(CEEDataComponents.SELECTED_NODE)) {
             selectedNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
             BlockState selectedState = level.getBlockState(selectedNode.sourcePos());
@@ -68,7 +68,7 @@ public class WireApplyingBehaviour {
                     .withFaceTexture(AllSpecialTextures.SELECTION);
         }
 
-        Node hoveredNode = Node.closestNode(level, mc.hitResult.getLocation(), 1f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, mc.hitResult.getLocation(), 1f);
         Vec3 hoveredPos = null;
 
         // Display all nodes of block

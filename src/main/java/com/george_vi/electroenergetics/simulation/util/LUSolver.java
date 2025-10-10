@@ -1,14 +1,13 @@
 package com.george_vi.electroenergetics.simulation.util;
 
-import java.util.Map;
-
 public class LUSolver {
 
-    // thank you, chat gpt
+    // thank you, ChatGPT
+    // believe it or not, ChatGPT wrote this
+    // I have no idea what this all even is, but it works and that's important
 
-    public static double[] solve(SparseMatrix<Double> A, double[] b) {
+    public static double[] solve(double[][] denseA, double[] b) {
         int n = b.length;
-        double[][] denseA = toDense(A, n);
 
         int[] pivot = new int[n];
         for (int i = 0; i < n; i++) pivot[i] = i;
@@ -63,20 +62,5 @@ public class LUSolver {
         }
 
         return x;
-    }
-
-    private static double[][] toDense(SparseMatrix<Double> sparse, int n) {
-        double[][] dense = new double[n][n];
-        for (int i = 0; i < n; i++) {
-            Map<Integer, Double> row = sparse.getRow(i);
-            if (row == null) continue;
-            for (Map.Entry<Integer, Double> e : row.entrySet()) {
-                int j = e.getKey();
-                if (j >= 0 && j < n) {
-                    dense[i][j] = e.getValue();
-                }
-            }
-        }
-        return dense;
     }
 }

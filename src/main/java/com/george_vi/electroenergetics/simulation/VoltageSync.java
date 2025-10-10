@@ -2,10 +2,8 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.foundation.AttachedNode;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
-import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
@@ -20,9 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 public class VoltageSync {
-    static Map<Node, Double> oldVoltages = new HashMap<>();
+    static Map<InWorldNode, Double> oldVoltages = new HashMap<>();
     public static void finishSimulation(InfrastructureSavedData sd, ServerLevel level) {
-        Map<Node, Double> voltages = Map.copyOf(sd.VOLTAGES);
+        Map<InWorldNode, Double> voltages = Map.copyOf(sd.VOLTAGES);
         Map<Player, NodeConnection> clampMeteringPlayers = new HashMap<>();
         for (Player player : level.getPlayers(p -> true)) {
             if (player.isUsingItem()) {
@@ -34,14 +32,13 @@ public class VoltageSync {
                 }
             }
         }
-        Map<Player, List<Pair<Node, Double>>> nodesPerPlayer = new HashMap<>();
-        for (Map.Entry<Node, Double> e : voltages.entrySet()) {
-            Node node = e.getKey();
+        Map<Player, List<Pair<InWorldNode, Double>>> nodesPerPlayer = new HashMap<>();
+        for (Map.Entry<InWorldNode, Double> e : voltages.entrySet()) {
+            InWorldNode node = e.getKey();
             Double voltage = e.getValue();
             InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(node.sourcePos());
-            if (node instanceof AttachedNode || deviceInstance == null)
+            if (deviceInstance == null)
                 continue;
-
 
             for (Player player : level.getPlayers(p -> p.position().distanceTo(node.sourcePos().getCenter()) <= deviceInstance.simulatedDevice().sendVoltagesDistance() || (clampMeteringPlayers.containsKey(p) && clampMeteringPlayers.get(p).isAny(node)))) {
                 nodesPerPlayer.compute(player, (k, v) -> {
@@ -53,9 +50,9 @@ public class VoltageSync {
             }
         }
 
-        for (Map.Entry<Player, List<Pair<Node, Double>>> e : nodesPerPlayer.entrySet()) {
+        for (Map.Entry<Player, List<Pair<InWorldNode, Double>>> e : nodesPerPlayer.entrySet()) {
             Player player = e.getKey();
-            List<Pair<Node, Double>> nodes = e.getValue();
+            List<Pair<InWorldNode, Double>> nodes = e.getValue();
             CatnipServices.NETWORK.sendToClient((ServerPlayer) player, new SendVoltageDataPacket(nodes));
         }
 

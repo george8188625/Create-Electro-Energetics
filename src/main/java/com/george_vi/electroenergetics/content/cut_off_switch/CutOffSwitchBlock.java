@@ -7,7 +7,7 @@ import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllItems;
@@ -78,8 +78,8 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
             pPos = pPos.subtract(Vec3.atLowerCornerOf(state.getValue(FACING).getNormal()).multiply(0.25, 0.25, 0.25));
             if (state.getValue(CLOSED)) {
                 for (int l : isDouble ? Iterate.zeroAndOne : new int[]{0}) {
-                    Double v1 = WireRenderer.getAllVoltages().get(new Node(l, pos));
-                    Double v2 = WireRenderer.getAllVoltages().get(new Node((isDouble ? 2 : 1) + l, pos));
+                    Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(l, pos));
+                    Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode((isDouble ? 2 : 1) + l, pos));
                     if (v1 != null && v2 != null && Math.abs(v1 - v2) > 0.0003)
                         for (int i = 0; i < Math.min(30, Math.abs(v1 - v2) * 10) + 1; i++)
                             level.addParticle(ParticleTypes.BUBBLE_POP, pPos.offsetRandom(level.random, 0.3f).x, pPos.offsetRandom(level.random, 0.3f).y, pPos.offsetRandom(level.random, 0.3f).z, 0, 0, 0);

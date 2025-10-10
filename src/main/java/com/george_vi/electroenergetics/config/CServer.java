@@ -12,6 +12,7 @@ public class CServer extends ConfigBase {
     public final ConfigBool wiresBreak = b(true, "wiresBreak", "Wires break when overloaded");
     public final ConfigBool componentDamage = b(true, "componentDamage", "Components get damaged when overloaded");
     public final ConfigBool optimizeGraph = b(true, "optimizeGraph");
+    public final ConfigInt trainMinVoltage = i(1900, 0, "trainMinVoltage");
     public final CResistances resistanceValues = nested(1, CResistances::new, "Resistance Values");
 
     @Override

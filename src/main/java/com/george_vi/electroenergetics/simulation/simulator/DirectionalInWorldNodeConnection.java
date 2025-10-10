@@ -1,29 +1,29 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.Objects;
 
-public class DirectionSensitiveNodeConnection extends NodeConnection {
-    public static StreamCodec<ByteBuf, DirectionSensitiveNodeConnection> STREAM_CODEC = StreamCodec.composite(
-            Node.STREAM_CODEC, DirectionSensitiveNodeConnection::node1,
-            Node.STREAM_CODEC, DirectionSensitiveNodeConnection::node2,
-            DirectionSensitiveNodeConnection::new
+public class DirectionalInWorldNodeConnection extends NodeConnection {
+    public static StreamCodec<ByteBuf, DirectionalInWorldNodeConnection> STREAM_CODEC = StreamCodec.composite(
+            InWorldNode.STREAM_CODEC, DirectionalInWorldNodeConnection::node1,
+            InWorldNode.STREAM_CODEC, DirectionalInWorldNodeConnection::node2,
+            DirectionalInWorldNodeConnection::new
     );
 
-    public DirectionSensitiveNodeConnection(Node node1, Node node2) {
+    public DirectionalInWorldNodeConnection(InWorldNode node1, InWorldNode node2) {
         super(node1, node2);
     }
 
-    public DirectionSensitiveNodeConnection(NodeConnection con) {
+    public DirectionalInWorldNodeConnection(NodeConnection con) {
         this(con.node1(), con.node2());
     }
 
-    public DirectionSensitiveNodeConnection invert() {
-        return new DirectionSensitiveNodeConnection(node2(), node1());
+    public DirectionalInWorldNodeConnection invert() {
+        return new DirectionalInWorldNodeConnection(node2(), node1());
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.mojang.logging.LogUtils;
@@ -29,9 +29,9 @@ import java.util.*;
 
 public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, SimulatedDeviceInstance> DEVICES = new TreeMap<>();
-    Map<Node, List<Node>> NODES = new HashMap<>();
-    Map<Node, Vec3> NODE_POSITIONS = new HashMap<>();
-    Map<BlockPos, List<Node>> NODES_BY_POS = new HashMap<>();
+    Map<InWorldNode, List<InWorldNode>> NODES = new HashMap<>();
+    Map<InWorldNode, Vec3> NODE_POSITIONS = new HashMap<>();
+    Map<BlockPos, List<InWorldNode>> NODES_BY_POS = new HashMap<>();
     Map<BlockPos, CableType> CABLES = new HashMap<>();
     Map<NodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
 
@@ -39,7 +39,7 @@ public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, List<BlockPos>> CATENARY = new HashMap<>();
 
     // NOT PERSISTENT
-    Map<Node, Double> VOLTAGES = new HashMap<>();
+    Map<InWorldNode, Double> VOLTAGES = new HashMap<>();
     ServerLevel level;
     public static final Logger LOGGER = LogUtils.getLogger();
 
@@ -67,7 +67,7 @@ public class InfrastructureSavedData extends SavedData {
         // Save Nodes / Node Connections
 
         ListTag nodeList = new ListTag();
-        for (Map.Entry<Node, List<Node>> e : NODES.entrySet()) {
+        for (Map.Entry<InWorldNode, List<InWorldNode>> e : NODES.entrySet()) {
             CompoundTag nodeTag = new CompoundTag();
 
             nodeTag.put("Pos", NbtUtils.writeBlockPos(e.getKey().sourcePos()));
@@ -82,7 +82,7 @@ public class InfrastructureSavedData extends SavedData {
                 nodeTag.put("LastKnownPos", lastKnownPosTag);
             }
             ListTag connectedNodesList = new ListTag();
-            for (Node node : e.getValue()) {
+            for (InWorldNode node : e.getValue()) {
                 CompoundTag subNodeTag = new CompoundTag();
 
                 subNodeTag.put("Pos", NbtUtils.writeBlockPos(node.sourcePos()));
@@ -152,10 +152,10 @@ public class InfrastructureSavedData extends SavedData {
             int id = tag.getInt("ID");
             CompoundTag lastKnownPosTag = tag.getCompound("LastKnownPos");
             Vec3 lastKnownPos = tag.contains("LastKnownPos") ? new Vec3(lastKnownPosTag.getDouble("X"), lastKnownPosTag.getDouble("Y"), lastKnownPosTag.getDouble("Z")) : null;
-            List<Node> connectedNodes = new ArrayList<>();
-            Node node = new Node(id, pos);
+            List<InWorldNode> connectedNodes = new ArrayList<>();
+            InWorldNode node = new InWorldNode(id, pos);
             NBTHelper.iterateCompoundList(tag.getList("ConnectedNodes", Tag.TAG_COMPOUND), connectionTag -> {
-                Node connectedNode = new Node(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos"));
+                InWorldNode connectedNode = new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos"));
                 connectedNodes.add(connectedNode);
                 WireType wireType;
 
@@ -177,8 +177,8 @@ public class InfrastructureSavedData extends SavedData {
 
 
                 WireType finalWireType = wireType;
-                sd.CONNECTION_DATA.computeIfAbsent(new NodeConnection(new Node(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")),
-                        new Node(id, pos)), c -> new WireData(finalWireType, connectionTag.getFloat("Temperature"), attachments));
+                sd.CONNECTION_DATA.computeIfAbsent(new NodeConnection(new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")),
+                        new InWorldNode(id, pos)), c -> new WireData(finalWireType, connectionTag.getFloat("Temperature"), attachments));
             });
             sd.NODE_POSITIONS.put(node, lastKnownPos);
             sd.NODES.put(node, connectedNodes);
@@ -196,8 +196,8 @@ public class InfrastructureSavedData extends SavedData {
             BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
             SimulatedDevice device = CEESimulatedDevices.get(ResourceLocation.parse(tag.getString("ID")));
             if (device == null) {
-                List<Node> nodes = sd.NODES_BY_POS.get(pos);
-                for (Node node : nodes) {
+                List<InWorldNode> nodes = sd.NODES_BY_POS.get(pos);
+                for (InWorldNode node : nodes) {
                     for (NodeConnection connection : sd.getConnections(node))
                         sd.removeConnection(connection);
                     sd.NODES.remove(node);
@@ -263,17 +263,17 @@ public class InfrastructureSavedData extends SavedData {
         if (DEVICES.containsKey(pos)) {
             SimulatedDeviceInstance di = DEVICES.get(pos);
             if (di.simulatedDevice == device) {
-                List<Node> oldNodes = NODES_BY_POS.get(pos);
-                List<Node> nodes = nodeIDs.stream().map(id -> new Node(id, pos)).toList();
+                List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
+                List<InWorldNode> nodes = nodeIDs.stream().map(id -> new InWorldNode(id, pos)).toList();
 
-                if (oldNodes != null && oldNodes.stream().map(Node::id).sorted().toList().equals(nodeIDs.stream().sorted().toList())) {
-                    for (Node node : oldNodes)
+                if (oldNodes != null && oldNodes.stream().map(InWorldNode::id).sorted().toList().equals(nodeIDs.stream().sorted().toList())) {
+                    for (InWorldNode node : oldNodes)
                         NODE_POSITIONS.replace(node, node.getPosition(level));
                     return;
                 }
 
                 if (oldNodes != null)
-                    for (Node node : oldNodes) {
+                    for (InWorldNode node : oldNodes) {
                         getConnections(node).forEach(this::removeConnection);
                         NODES.remove(node);
                         NODE_POSITIONS.remove(node);
@@ -281,7 +281,7 @@ public class InfrastructureSavedData extends SavedData {
 
                 NODES_BY_POS.replace(pos, nodes);
 
-                for (Node node : nodes) {
+                for (InWorldNode node : nodes) {
                     NODES.put(node, new ArrayList<>());
                     NODE_POSITIONS.put(node, node.getPosition(level));
                 }
@@ -291,14 +291,14 @@ public class InfrastructureSavedData extends SavedData {
                 removeDevice(pos);
         }
 
-        List<Node> nodes = new ArrayList<>();
+        List<InWorldNode> nodes = new ArrayList<>();
         for (int id : nodeIDs)
-            nodes.add(new Node(id, pos));
+            nodes.add(new InWorldNode(id, pos));
 
 
         DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, extraData, nodes));
 
-        for (Node node : nodes) {
+        for (InWorldNode node : nodes) {
             NODES.put(node, new ArrayList<>());
             NODE_POSITIONS.put(node, node.getPosition(level));
         }
@@ -314,9 +314,9 @@ public class InfrastructureSavedData extends SavedData {
 
     public void removeDevice(BlockPos pos) {
         DEVICES.remove(pos);
-        List<Node> nodes = NODES_BY_POS.get(pos);
+        List<InWorldNode> nodes = NODES_BY_POS.get(pos);
         if (nodes != null)
-            for (Node node : nodes) {
+            for (InWorldNode node : nodes) {
                 List<NodeConnection> connections = getConnections(node);
                 for (NodeConnection connection : connections)
                     Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), ((connections.size()) * CEEConfigs.server().wiresPerSpool.get())));
@@ -340,10 +340,10 @@ public class InfrastructureSavedData extends SavedData {
         return DEVICES.get(pos);
     }
 
-    public List<NodeConnection> getConnections(Node node) {
+    public List<NodeConnection> getConnections(InWorldNode node) {
         List<NodeConnection> connections = new ArrayList<>();
-        List<Node> connectedNodes = NODES.get(node);
-        for (Node connectedNode : connectedNodes)
+        List<InWorldNode> connectedNodes = NODES.get(node);
+        for (InWorldNode connectedNode : connectedNodes)
             connections.add(new NodeConnection(node, connectedNode));
         return connections;
     }
@@ -371,7 +371,7 @@ public class InfrastructureSavedData extends SavedData {
         return connectionData;
     }
 
-    public NodeConnection connect(Node node1, Node node2, WireType wireType) {
+    public NodeConnection connect(InWorldNode node1, InWorldNode node2, WireType wireType) {
 
         if (!(NODES.containsKey(node1) && NODES.containsKey(node2)))
             throw new IllegalArgumentException("Node: " + (NODES.containsKey(node2) ? node1.toString() : node1) + "doesn't exist.");
@@ -392,7 +392,7 @@ public class InfrastructureSavedData extends SavedData {
         return connection;
     }
 
-    public boolean isConnected(Node node1, Node node2) {
+    public boolean isConnected(InWorldNode node1, InWorldNode node2) {
         return NODES.getOrDefault(node1, Collections.emptyList()).contains(node2) || (node1.id() == 0 && node2.id() == 0 && CATENARY.getOrDefault(node1.sourcePos(), Collections.emptyList()).contains(node2.sourcePos()));
     }
 
@@ -414,25 +414,25 @@ public class InfrastructureSavedData extends SavedData {
         CONNECTION_DATA.put(connection, data);
     }
 
-    public List<Node> getNodesAt(BlockPos pos) {
+    public List<InWorldNode> getNodesAt(BlockPos pos) {
         return NODES_BY_POS.getOrDefault(pos, new ArrayList<>());
     }
 
-    public Node getNode(BlockPos pos, int id) {
+    public InWorldNode getNode(BlockPos pos, int id) {
         if (!NODES_BY_POS.containsKey(pos))
             return null;
-        List<Node> nodes = NODES_BY_POS.get(pos);
-        for (Node node : nodes)
+        List<InWorldNode> nodes = NODES_BY_POS.get(pos);
+        for (InWorldNode node : nodes)
             if (node.id() == id)
                 return node;
         return null;
     }
 
-    public List<Node> getNodes(){
+    public List<InWorldNode> getNodes(){
         return NODES.keySet().stream().toList();
     }
 
-    public Vec3 getNodePosition(Node node) {
+    public Vec3 getNodePosition(InWorldNode node) {
         Vec3 pos = NODE_POSITIONS.get(node);
         if (pos == null) {
             NODE_POSITIONS.replace(node, pos = node.getPosition(level));
@@ -440,11 +440,11 @@ public class InfrastructureSavedData extends SavedData {
         return pos;
     }
 
-    public double getVoltageAt(Node node) {
+    public double getVoltageAt(InWorldNode node) {
         return VOLTAGES.getOrDefault(node, 0d);
     }
 
-    public void setVoltage(Node node, double v) {
+    public void setVoltage(InWorldNode node, double v) {
         VOLTAGES.put(node, v);
     }
 
@@ -473,5 +473,5 @@ public class InfrastructureSavedData extends SavedData {
     }
 
 
-    public record SimulatedDeviceInstance(SimulatedDevice simulatedDevice, BlockPos pos, CompoundTag extraData, List<Node> nodes) { }
+    public record SimulatedDeviceInstance(SimulatedDevice simulatedDevice, BlockPos pos, CompoundTag extraData, List<InWorldNode> nodes) { }
 }

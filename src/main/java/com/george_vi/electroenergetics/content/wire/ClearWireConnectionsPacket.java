@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public record ClearWireConnectionsPacket(List<Pair<Node, Node>> connections, boolean all) implements ClientboundPacketPayload {
+public record ClearWireConnectionsPacket(List<Pair<InWorldNode, InWorldNode>> connections, boolean all) implements ClientboundPacketPayload {
 
     public static final StreamCodec<ByteBuf, ClearWireConnectionsPacket> STREAM_CODEC = StreamCodec.composite(
-            CatnipStreamCodecBuilders.list(Pair.streamCodec(Node.STREAM_CODEC, Node.STREAM_CODEC)), ClearWireConnectionsPacket::connections,
+            CatnipStreamCodecBuilders.list(Pair.streamCodec(InWorldNode.STREAM_CODEC, InWorldNode.STREAM_CODEC)), ClearWireConnectionsPacket::connections,
             ByteBufCodecs.BOOL, ClearWireConnectionsPacket::all,
             ClearWireConnectionsPacket::new
     );
@@ -28,7 +28,7 @@ public record ClearWireConnectionsPacket(List<Pair<Node, Node>> connections, boo
         return new ClearWireConnectionsPacket(Collections.emptyList(), true);
     }
 
-    public static ClearWireConnectionsPacket clearWire(Node node1, Node node2) {
+    public static ClearWireConnectionsPacket clearWire(InWorldNode node1, InWorldNode node2) {
         return new ClearWireConnectionsPacket(List.of(Pair.of(node1, node2)), false);
     }
 
@@ -43,7 +43,7 @@ public record ClearWireConnectionsPacket(List<Pair<Node, Node>> connections, boo
             return;
         }
 
-        for (Pair<Node, Node> connection : connections()) {
+        for (Pair<InWorldNode, InWorldNode> connection : connections()) {
             WireRenderer.removeConnections(new NodeConnection(connection.getFirst(), connection.getSecond()));
         }
     }

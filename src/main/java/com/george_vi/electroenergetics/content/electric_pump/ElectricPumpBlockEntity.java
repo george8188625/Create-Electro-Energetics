@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.electric_pump;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.simibubi.create.content.fluids.pump.PumpBlockEntity;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import net.createmod.catnip.lang.Lang;
@@ -37,8 +37,8 @@ public class ElectricPumpBlockEntity extends PumpBlockEntity {
         super.tick();
 
         if (level.isClientSide) {
-            Double v1 = WireRenderer.NODE_VOLTAGES.get(new Node(0, getBlockPos()));
-            Double v2 = WireRenderer.NODE_VOLTAGES.get(new Node(1, getBlockPos()));
+            Double v1 = WireRenderer.NODE_VOLTAGES.get(new InWorldNode(0, getBlockPos()));
+            Double v2 = WireRenderer.NODE_VOLTAGES.get(new InWorldNode(1, getBlockPos()));
             if (v1 == null || v2 == null)
                 return;
             setVoltage((float) (v1 - v2));

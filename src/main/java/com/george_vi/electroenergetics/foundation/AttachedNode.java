@@ -6,12 +6,11 @@ import java.util.Objects;
 
 public class AttachedNode extends Node {
     public final String ownerID;
-    public final boolean grounded;
+    public final int id;
 
-    public AttachedNode(int id, BlockPos pos, String ownerID, boolean grounded) {
-        super(id, pos);
+    public AttachedNode(int id, String ownerID) {
         this.ownerID = ownerID;
-        this.grounded = grounded;
+        this.id = id;
     }
 
     @Override
@@ -20,11 +19,11 @@ public class AttachedNode extends Node {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         AttachedNode that = (AttachedNode) o;
-        return Objects.equals(ownerID, that.ownerID) && Objects.equals(grounded, that.grounded);
+        return Objects.equals(ownerID, that.ownerID) && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), ownerID, grounded);
+        return Objects.hash(ownerID, id);
     }
 }

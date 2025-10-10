@@ -2,16 +2,10 @@ package com.george_vi.electroenergetics.content.rotor;
 
 import com.george_vi.electroenergetics.foundation.GeneratingDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-
-import java.util.Map;
 
 public class AlternatorBrushesDevice extends GeneratingDevice {
     public AlternatorBrushesDevice(ResourceLocation id) {

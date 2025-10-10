@@ -5,10 +5,10 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.Vec3;
 
-public record NodeConnectionPoint(Node node1, Node node2, float point) {
+public record NodeConnectionPoint(InWorldNode node1, InWorldNode node2, float point) {
     public static final StreamCodec<ByteBuf, NodeConnectionPoint> STREAM_CODEC = StreamCodec.composite(
-            Node.STREAM_CODEC, NodeConnectionPoint::node1,
-            Node.STREAM_CODEC, NodeConnectionPoint::node2,
+            InWorldNode.STREAM_CODEC, NodeConnectionPoint::node1,
+            InWorldNode.STREAM_CODEC, NodeConnectionPoint::node2,
             ByteBufCodecs.FLOAT, NodeConnectionPoint::point,
             NodeConnectionPoint::new
     );

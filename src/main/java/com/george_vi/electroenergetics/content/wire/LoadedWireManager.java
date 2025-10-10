@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.wire;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.ClearCatenaryPacket;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.SendCatenaryPacket;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.WireData;
 import net.createmod.catnip.data.Couple;
@@ -36,9 +36,9 @@ public class LoadedWireManager {
             }
         }
 
-        List<Node> newNodes = new ArrayList<>(sd.getNodes().stream().filter(n -> newChunks.contains(new ChunkPos(n.sourcePos()))).toList());
+        List<InWorldNode> newNodes = new ArrayList<>(sd.getNodes().stream().filter(n -> newChunks.contains(new ChunkPos(n.sourcePos()))).toList());
 
-        for (Node node : newNodes) {
+        for (InWorldNode node : newNodes) {
             for (NodeConnection connection : sd.getConnections(node)) {
                 if (chunks.contains(new ChunkPos(connection.node2().sourcePos())))
                     continue;
@@ -62,9 +62,9 @@ public class LoadedWireManager {
         for (ChunkPos chunkPos : chunksToRemove)
             chunks.remove(chunkPos);
 
-        List<Node> nodesToRemove = new ArrayList<>(sd.getNodes().stream().filter(n -> chunksToRemove.contains(new ChunkPos(n.sourcePos()))).toList());
+        List<InWorldNode> nodesToRemove = new ArrayList<>(sd.getNodes().stream().filter(n -> chunksToRemove.contains(new ChunkPos(n.sourcePos()))).toList());
         List<NodeConnection> connectionsToRemove = new ArrayList<>();
-        for (Node node : nodesToRemove) {
+        for (InWorldNode node : nodesToRemove) {
             for (NodeConnection connection : sd.getConnections(node)) {
                 if (chunks.contains(new ChunkPos(connection.node2().sourcePos())))
                     continue;

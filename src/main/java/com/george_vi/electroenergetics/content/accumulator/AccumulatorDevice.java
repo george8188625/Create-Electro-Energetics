@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.accumulator;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
@@ -36,7 +36,7 @@ public class AccumulatorDevice extends SimulatedDevice {
         bridges.builder(pos)
                 .node(2)
                 .resistor(2, 1, lastTotalVoltage == 0 ? 100 : (diff / 50) + 0.01);
-        bridges.bridge(new Node(0, pos), new Node(2, pos), 1 / conductance, 0, -historyCurrent);
+        bridges.bridge(new InWorldNode(0, pos), new InWorldNode(2, pos), 1 / conductance, 0, -historyCurrent);
     }
 
     @Override

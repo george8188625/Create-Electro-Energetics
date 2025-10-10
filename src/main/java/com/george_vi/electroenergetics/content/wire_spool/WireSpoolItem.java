@@ -7,7 +7,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
@@ -61,7 +61,7 @@ public class WireSpoolItem extends Item {
         if (!(state.getBlock() instanceof DeviceBlock db))
             return InteractionResult.PASS;
 
-        Node hoveredNode = Node.closestNode(level, context.getClickLocation(), 1f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1f);
 
 
         if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
@@ -69,7 +69,7 @@ public class WireSpoolItem extends Item {
                 return InteractionResult.SUCCESS;
 
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            Node originalNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
+            InWorldNode originalNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
 
             if ((hoveredNode == null || originalNode == null) ||
                     (hoveredNode.sourcePos().equals(originalNode.sourcePos()) && !db.canSelfConnect(level, pos, state, hoveredNode.id(), originalNode.id())) ||

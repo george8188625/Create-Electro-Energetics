@@ -5,19 +5,16 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.deployer.DeployerBlock;
-import com.simibubi.create.content.kinetics.motor.CreativeMotorBlock;
 import com.simibubi.create.content.kinetics.motor.KineticScrollValueBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
-import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.lang.Lang;
-import net.createmod.catnip.lang.LangNumberFormat;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.nbt.NBTHelper;
@@ -128,8 +125,8 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @OnlyIn(Dist.CLIENT)
     public void tickAudio() {
-        Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
+        Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
         if (v1 != null && v2 != null)
             setVoltage((float) (v1 - v2));
         if (Math.abs(avgVoltage) > 60) {

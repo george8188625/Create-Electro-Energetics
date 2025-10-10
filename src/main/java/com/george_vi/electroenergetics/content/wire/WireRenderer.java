@@ -8,7 +8,7 @@ import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -39,7 +39,7 @@ import java.util.Map;
 public class WireRenderer {
     public static List<Pair<NodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
     public static List<Couple<BlockPos>> CATENARY = new ArrayList<>();
-    public static Map<Node, Double> NODE_VOLTAGES = new HashMap<>();
+    public static Map<InWorldNode, Double> NODE_VOLTAGES = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     public static void render(LevelRenderer levelRenderer, PoseStack pose, Camera camera) {
@@ -50,7 +50,7 @@ public class WireRenderer {
 
         MultiBufferSource buffer = acc.electroEnergetics$getRenderBuffers().bufferSource();
 
-        Map<Node, List<Vec3>> outerInsulatorJumpers = new HashMap<>();
+        Map<InWorldNode, List<Vec3>> outerInsulatorJumpers = new HashMap<>();
 
         pose.pushPose();
         pose.translate(-camera.getPosition().x(), -camera.getPosition().y(), -camera.getPosition().z());
@@ -238,8 +238,8 @@ public class WireRenderer {
             }
         }
 
-        for (Map.Entry<Node, List<Vec3>> e : outerInsulatorJumpers.entrySet()) {
-            Node node = e.getKey();
+        for (Map.Entry<InWorldNode, List<Vec3>> e : outerInsulatorJumpers.entrySet()) {
+            InWorldNode node = e.getKey();
             List<Vec3> positionsToConnect = e.getValue();
 
             for (int i = 0; i < positionsToConnect.size() - 1; i++) {
@@ -324,19 +324,19 @@ public class WireRenderer {
         CATENARY.removeIf(c -> c.equals(connection));
     }
 
-    public static void removeVoltageData(Node node) {
+    public static void removeVoltageData(InWorldNode node) {
         synchronized ("get_node_voltages") {
             NODE_VOLTAGES.remove(node);
         }
     }
 
-    public static Map<Node, Double> getAllVoltages() {
+    public static Map<InWorldNode, Double> getAllVoltages() {
         synchronized ("get_node_voltages") {
             return Map.copyOf(NODE_VOLTAGES);
         }
     }
 
-    public static void addVoltageData(Node node, double voltage) {
+    public static void addVoltageData(InWorldNode node, double voltage) {
         synchronized ("get_node_voltages") {
             if (!NODE_VOLTAGES.containsKey(node))
                 NODE_VOLTAGES.put(node, voltage);

@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -13,9 +13,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatter;
-import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
-import com.simibubi.create.foundation.gui.AllIcons;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
@@ -62,10 +60,10 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        Double vp1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Double vp2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
-        Double vs1 = WireRenderer.getAllVoltages().get(new Node(2, getBlockPos()));
-        Double vs2 = WireRenderer.getAllVoltages().get(new Node(3, getBlockPos()));
+        Double vp1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
+        Double vp2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
+        Double vs1 = WireRenderer.getAllVoltages().get(new InWorldNode(2, getBlockPos()));
+        Double vs2 = WireRenderer.getAllVoltages().get(new InWorldNode(3, getBlockPos()));
         if (vp1 == null || vp2 == null || vs1 == null || vs2 == null)
             return false;
         Lang.builder(CreateElecrtoEnergetics.ID)
@@ -135,10 +133,10 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
         else
             avgVoltage = primaryVoltages.stream().reduce(Float::sum).orElse(0f) / primaryVoltages.size();
 
-        Double vp1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Double vp2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
-        Double vs1 = WireRenderer.getAllVoltages().get(new Node(2, getBlockPos()));
-        Double vs2 = WireRenderer.getAllVoltages().get(new Node(3, getBlockPos()));
+        Double vp1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
+        Double vp2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
+        Double vs1 = WireRenderer.getAllVoltages().get(new InWorldNode(2, getBlockPos()));
+        Double vs2 = WireRenderer.getAllVoltages().get(new InWorldNode(3, getBlockPos()));
         if (vp1 != null && vp2 != null && vs1 != null && vs2 != null) {
             setPrimaryVoltage((float) Math.abs(vp1 - vp2));
             setSecondaryVoltage((float) Math.abs(vs1 - vs2));

@@ -65,6 +65,11 @@ jobs:
         name: Auto Release ${{ github.run_number }}
         body: |
           These builds are auto generated on every commit. There is no guarantee these will be stable.
+          
+          **changelog:**
+          **${{ github.event.head_commit.message }}**
+          
+          ${{ steps.commit_info.outputs.body }}
         draft: false
         prerelease: true
         files: build/libs/*.jar

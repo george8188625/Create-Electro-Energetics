@@ -1,9 +1,7 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.CEESoundEvents;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -13,12 +11,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-
-import java.util.Map;
 
 public class HVSwitchDevice extends SimulatedDevice {
     public HVSwitchDevice(ResourceLocation id) {
@@ -42,11 +36,11 @@ public class HVSwitchDevice extends SimulatedDevice {
         double airResistance = extraData.getDouble("AirResistance");
 
         if (state == SwitchState.ARCING)
-            bridges.bridge(new Node(0, pos), new Node(0, instance.pos()), 500, 0, 0);
+            bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, instance.pos()), 500, 0, 0);
         else if (state == SwitchState.MOVING)
-            bridges.bridge(new Node(0, pos), new Node(0, instance.pos()), airResistance < 1000 ? 1000 : airResistance, 0, 0);
+            bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, instance.pos()), airResistance < 1000 ? 1000 : airResistance, 0, 0);
         else if (state == SwitchState.CONNECTED)
-            bridges.bridge(new Node(0, pos), new Node(0, instance.pos()), 0.01, 0, 0);
+            bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, instance.pos()), 0.01, 0, 0);
 
     }
 
@@ -70,7 +64,7 @@ public class HVSwitchDevice extends SimulatedDevice {
         double airResistance = extraData.getDouble("AirResistance");
         double v1 = results.getVoltageAt(pos, 0);
         double v2 = results.getVoltageAt(instance.pos(), 0);
-        double current = Math.abs(results.getCurrentThrough(new Node(0, pos), new Node(0, instance.pos())));
+        double current = Math.abs(results.getCurrentThrough(new InWorldNode(0, pos), new InWorldNode(0, instance.pos())));
 
         if (progress > 0.9)
             state = SwitchState.CONNECTED;

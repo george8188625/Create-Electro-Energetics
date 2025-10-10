@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
 import com.george_vi.electroenergetics.foundation.AttachedNode;
+import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
@@ -11,13 +12,17 @@ import net.createmod.catnip.data.Pair;
 import java.util.*;
 
 public class Network {
-    final List<Node> allNodes;
+    final Set<Node> allNodes;
+    final CircuitBuilder builder;
     final Map<Node, Map<Node, ElectricalProperties>> adjacency;
     final InfrastructureSavedData sd;
+    final Map<Couple<SimulationNode>, Double> voltageSources = new HashMap<>();
+    final Map<Couple<SimulationNode>, Double> currentSources = new HashMap<>();
 
-    public Network(Set<Node> allNodes, Map<Node, Map<Node, ElectricalProperties>> adjacency, InfrastructureSavedData sd) {
-        this.allNodes = new ArrayList<>(allNodes);
-        this.adjacency = new HashMap<>(adjacency);
+    public Network(Set<Node> allNodes, Map<Node, Map<Node, ElectricalProperties>> adjacency, CircuitBuilder builder, InfrastructureSavedData sd) {
+        this.allNodes = new HashSet<>(allNodes);
+        this.builder = builder;
+        this.adjacency = adjacency;
         this.sd = sd;
     }
 
@@ -27,144 +32,118 @@ public class Network {
         for (Node node : getAllNodes())
             simulationNodes.put(node, new SimulationNode(node));
 
-        for (Map.Entry<Node, SimulationNode> node : simulationNodes.entrySet())
-            for (Map.Entry<Node, ElectricalProperties> e : adjacency.get(node.getKey()).entrySet())
-                node.getValue().addAdjacentNode(simulationNodes.get(e.getKey()), e.getValue());
+        for (Map.Entry<Node, SimulationNode> e : simulationNodes.entrySet()) {
+            Node node = e.getKey();
+            SimulationNode simulationNode = e.getValue();
+            for (Map.Entry<Node, ElectricalProperties> e2 : adjacency.get(node).entrySet()) {
+                ElectricalProperties connectionProperties = e2.getValue();
+                Node adjacentNode = e2.getKey();
+                SimulationNode adjacentSimulationNode = simulationNodes.get(adjacentNode);
+                if (connectionProperties.isVoltageSource() && !voltageSources.containsKey(Couple.create(adjacentSimulationNode, simulationNode)))
+                    voltageSources.put(Couple.create(simulationNode, adjacentSimulationNode), connectionProperties.voltageSource());
+                if (connectionProperties.isVoltageSource() && !voltageSources.containsKey(Couple.create(adjacentSimulationNode, simulationNode)))
+                    voltageSources.put(Couple.create(simulationNode, adjacentSimulationNode), connectionProperties.voltageSource());
+                simulationNode.addAdjacentNode(adjacentSimulationNode, connectionProperties);
+            }
+        }
         return simulationNodes;
     }
 
     public void optimize() {
         List<Node> toDissolve = new LinkedList<>();
         for (Node node : getAllNodes()) {
-            if (adjacency.get(node).size() == 2 && !((node instanceof AttachedNode an) ? an.grounded : sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)) {
-
-                List<ElectricalProperties> connections = getConnections(node).values().stream().toList();
+            double groundConductance = builder.getGroundConductance(node);
+            if (builder.getAdjacentNodes(node).size() == 2 && groundConductance == 0) {
+                List<ElectricalProperties> connections = new ArrayList<>(getConnections(node).values());
                 if (!connections.get(0).isVoltageSource() && !connections.get(1).isVoltageSource() && !connections.get(0).isCurrentSource() && !connections.get(1).isCurrentSource())
                     toDissolve.add(node);
             }
         }
-
+        Set<Node> dissolved = new HashSet<>();
         for (Node node : toDissolve) {
-            List<Node> connections = getConnections(node).keySet().stream().toList();
+            if (dissolved.contains(node))
+                continue;
+
+            Set<Node> connections = getConnections(node).keySet();
             if (connections.size() < 2)
                 continue;
-            Node prevNode = connections.get(0);
-            Node nextNode = connections.get(1);
+            Iterator<Node> it = connections.iterator();
+            Node prevNode = it.next();
+            Node nextNode = it.next();
 
-            ElectricalProperties prevConnection = getConnection(prevNode, node);
-            ElectricalProperties nextConnection = getConnection(nextNode, node);
+            LinkedList<Node> nodeChain = new LinkedList<>();
+            nodeChain.add(prevNode);
+            nodeChain.add(node);
+            nodeChain.add(nextNode);
+            dissolved.addAll(nodeChain);
+            LinkedList<Double> resistanceChain = new LinkedList<>();
+            resistanceChain.add(getConnection(prevNode, node).resistance());
+            resistanceChain.add(getConnection(nextNode, node).resistance());
 
-            if (adjacency.get(prevNode).containsKey(nextNode) || adjacency.get(nextNode).containsKey(prevNode))
-                continue;
 
-            if (prevConnection instanceof DissolvedProperties dp && !(nextConnection instanceof DissolvedProperties)) {
-                List<Node> dissolvedNodes = new ArrayList<>(dp.originalNodes);
-                List<Double> dissolvedResistances = new ArrayList<>(dp.originalResistances);
-
-                if (dissolvedNodes.getLast().equals(node)) {
-                    dissolvedNodes.add(nextNode);
-                    dissolvedResistances.add(nextConnection.resistance());
-                } else if (dissolvedNodes.getFirst().equals(node)) {
-                    dissolvedNodes.add(0, nextNode);
-                    dissolvedResistances.add(0, nextConnection.resistance());
-                }
-
-                DissolvedProperties p = new DissolvedProperties(dissolvedNodes, dissolvedResistances);
-
-                adjacency.remove(node);
-                adjacency.get(prevNode).remove(node);
-                adjacency.get(nextNode).remove(node);
-                adjacency.get(prevNode).put(nextNode, p);
-                adjacency.get(nextNode).put(prevNode, p);
-                allNodes.remove(node);
-
-            } else if (nextConnection instanceof DissolvedProperties dp && !(prevConnection instanceof DissolvedProperties)) {
-
-                List<Node> dissolvedNodes = new ArrayList<>(dp.originalNodes);
-                List<Double> dissolvedResistances = new ArrayList<>(dp.originalResistances);
-
-                if (dissolvedNodes.getLast().equals(node)) {
-                    dissolvedNodes.add(prevNode);
-                    dissolvedResistances.add(prevConnection.resistance());
-                } else if (dissolvedNodes.getFirst().equals(node)) {
-                    dissolvedNodes.add(0, prevNode);
-                    dissolvedResistances.add(0, prevConnection.resistance());
-                }
-
-                DissolvedProperties p = new DissolvedProperties(dissolvedNodes, dissolvedResistances);
-
-                adjacency.remove(node);
-                adjacency.get(prevNode).remove(node);
-                adjacency.get(nextNode).remove(node);
-                adjacency.get(prevNode).put(nextNode, p);
-                adjacency.get(nextNode).put(prevNode, p);
-                allNodes.remove(node);
-
-            } else if (prevConnection instanceof DissolvedProperties dpPrev && nextConnection instanceof DissolvedProperties dpNext) {
-                // Merge the two dissolved chains at 'node'
-                List<Node> dissolvedNodes = new ArrayList<>();
-                List<Double> dissolvedResistances = new ArrayList<>();
-
-                boolean nodeAtEndPrev = dpPrev.originalNodes.getLast().equals(node);
-                boolean nodeAtStartPrev = dpPrev.originalNodes.getFirst().equals(node);
-                boolean nodeAtEndNext = dpNext.originalNodes.getLast().equals(node);
-                boolean nodeAtStartNext = dpNext.originalNodes.getFirst().equals(node);
-
-                if (nodeAtEndPrev && nodeAtStartNext) {
-                    // dpPrev ends with node, dpNext starts with node
-                    dissolvedNodes.addAll(dpPrev.originalNodes);
-                    dissolvedNodes.addAll(dpNext.originalNodes.subList(1, dpNext.originalNodes.size()));
-
-                    dissolvedResistances.addAll(dpPrev.originalResistances);
-                    dissolvedResistances.addAll(dpNext.originalResistances);
-                } else if (nodeAtStartPrev && nodeAtEndNext) {
-                    // dpPrev starts with node, dpNext ends with node
-                    dissolvedNodes.addAll(dpNext.originalNodes);
-                    dissolvedNodes.addAll(dpPrev.originalNodes.subList(1, dpPrev.originalNodes.size()));
-
-                    dissolvedResistances.addAll(dpNext.originalResistances);
-                    dissolvedResistances.addAll(dpPrev.originalResistances);
-                } else if (nodeAtEndPrev && nodeAtEndNext) {
-                    // Both chains end with node, reverse dpNext
-                    dissolvedNodes.addAll(dpPrev.originalNodes);
-                    List<Node> reversedNextNodes = dpNext.originalNodes.reversed();
-                    dissolvedNodes.addAll(reversedNextNodes.subList(1, reversedNextNodes.size()));
-
-                    dissolvedResistances.addAll(dpPrev.originalResistances);
-                    List<Double> reversedNextRes = dpNext.originalResistances.reversed();
-                    dissolvedResistances.addAll(reversedNextRes);
-                } else if (nodeAtStartPrev && nodeAtStartNext) {
-                    // Both chains start with node, reverse dpPrev
-                    List<Node> reversedPrevNodes = dpPrev.originalNodes.reversed();
-                    dissolvedNodes.addAll(reversedPrevNodes);
-                    dissolvedNodes.addAll(dpNext.originalNodes.subList(1, dpNext.originalNodes.size()));
-
-                    List<Double> reversedPrevRes = dpPrev.originalResistances.reversed();
-                    dissolvedResistances.addAll(reversedPrevRes);
-                    dissolvedResistances.addAll(dpNext.originalResistances);
-                } else {
-                    continue;
-                }
-
-                DissolvedProperties p = new DissolvedProperties(dissolvedNodes, dissolvedResistances);
-
-                adjacency.remove(node);
-                adjacency.get(prevNode).remove(node);
-                adjacency.get(nextNode).remove(node);
-                adjacency.get(prevNode).put(nextNode, p);
-                adjacency.get(nextNode).put(prevNode, p);
-                allNodes.remove(node);
-
-            } else {
-
-                DissolvedProperties p = new DissolvedProperties(List.of(prevNode, node, nextNode), List.of(prevConnection.resistance(), nextConnection.resistance()));
-                adjacency.remove(node);
-                adjacency.get(prevNode).remove(node);
-                adjacency.get(nextNode).remove(node);
-                adjacency.get(prevNode).put(nextNode, p);
-                adjacency.get(nextNode).put(prevNode, p);
-                allNodes.remove(node);
+            Node leftNode = prevNode;
+            Node prevLeftNode = node;
+            while (true) {
+                if (dissolved.contains(leftNode) || !toDissolve.contains(leftNode))
+                    break;
+                Set<Node> leftConnections = getConnections(leftNode).keySet();
+                if (leftConnections.size() != 2)
+                    break;
+                Iterator<Node> leftIt = leftConnections.iterator();
+                Node leftPrevNode = leftIt.next();
+                Node leftNextNode = leftIt.next();
+                Node newLeftNode = (prevLeftNode.equals(leftPrevNode)) ? leftNextNode : leftPrevNode;
+                if (adjacency.get(nodeChain.getLast()).containsKey(newLeftNode))
+                    break;
+                prevLeftNode = leftNode;
+                leftNode = newLeftNode;
+                nodeChain.addFirst(leftNode);
+                dissolved.add(leftNode);
+                resistanceChain.addFirst(getConnection(leftNode, prevLeftNode).resistance());
             }
+
+            Node rightNode = nextNode;
+            Node prevRightNode = node;
+            while (true) {
+                if (dissolved.contains(rightNode) || !toDissolve.contains(rightNode))
+                    break;
+                Set<Node> rightConnections = getConnections(rightNode).keySet();
+                if (rightConnections.size() != 2)
+                    break;
+                Iterator<Node> rightIt = rightConnections.iterator();
+                Node rightPrevNode = rightIt.next();
+                Node rightNextNode = rightIt.next();
+                Node newRightNode = (prevRightNode.equals(rightPrevNode)) ? rightNextNode : rightPrevNode;
+                if (adjacency.get(nodeChain.getFirst()).containsKey(newRightNode))
+                    break;
+                prevRightNode = rightNode;
+                rightNode = newRightNode;
+                nodeChain.addLast(rightNode);
+                dissolved.add(rightNode);
+                resistanceChain.addLast(getConnection(rightNode, prevRightNode).resistance());
+            }
+            DissolvedProperties p = new DissolvedProperties(nodeChain, resistanceChain);
+            Map<Node, ElectricalProperties> leftAdjacency = adjacency.get(leftNode);
+            Map<Node, ElectricalProperties> rightAdjacency = adjacency.get(rightNode);
+            leftAdjacency.remove(prevLeftNode);
+            rightAdjacency.remove(prevRightNode);
+            leftAdjacency.put(rightNode, p);
+            rightAdjacency.put(leftNode, p);
+
+            List<Node> toRemove = nodeChain.subList(1, nodeChain.size() - 1);
+            for (Node interiorChainNode : toRemove) {
+                Map<Node, ElectricalProperties> adjacency = this.adjacency.get(interiorChainNode);
+                if (adjacency != null) {
+                    for (Node neighbor : adjacency.keySet()) {
+                        Map<Node, ElectricalProperties> neighbourAdjacency = this.adjacency.get(neighbor);
+                        if (neighbourAdjacency != null)
+                            neighbourAdjacency.remove(interiorChainNode);
+                    }
+                }
+                this.adjacency.remove(interiorChainNode);
+                allNodes.remove(interiorChainNode);
+            }
+
         }
     }
 
@@ -172,54 +151,31 @@ public class Network {
         return getConnections(node1).getOrDefault(node2, null);
     }
 
-    public Pair<Map<Couple<SimulationNode>, Double>, Pair<SparseMatrix<Double>, double[]>> formMatrix(Map<Node, SimulationNode> simulationNodes) {
-        List<Node> groundRods = new ArrayList<>();
-        Map<Couple<SimulationNode>, Double> voltageSources = new HashMap<>();
-        Map<Couple<SimulationNode>, Double> currentSources = new HashMap<>();
-
-        for (Node node : getAllNodes())
-            if ((node instanceof AttachedNode an) ? an.grounded : sd.getDevice(node.sourcePos()).simulatedDevice() instanceof GroundRodDevice)
-                groundRods.add(node);
-
-        for (Map.Entry<Node, SimulationNode> node : simulationNodes.entrySet())
-            for (Map.Entry<Node, ElectricalProperties> e : adjacency.get(node.getKey()).entrySet())
-                node.getValue().addAdjacentNode(simulationNodes.get(e.getKey()), e.getValue());
-
-        SparseMatrix<Double> conductanceMatrix = SparseMatrix.matrixD();
+    public Pair<Map<Couple<SimulationNode>, Double>, Pair<double[][], double[]>> formMatrix(Map<Node, SimulationNode> simulationNodes) {
+        Map<Node, Double> groundRods = builder.getGroundRods();
+        double[][] conductanceMatrix = new double[simulationNodes.size() + voltageSources.size()][simulationNodes.size() + voltageSources.size()];
 
         int id = 0;
-        boolean groundSet = false;
         for (SimulationNode node : simulationNodes.values()) {
             double totalConductance = 0;
             for (SimulationNode adjacentNode : node.getNextNodes()) {
-                totalConductance += node.getConnectionProperties(adjacentNode).conductance();
-                if (node.getConnectionProperties(adjacentNode).isVoltageSource() && !voltageSources.containsKey(Couple.create(adjacentNode, node)))
-                    voltageSources.put(Couple.create(node, adjacentNode), node.getConnectionProperties(adjacentNode).voltageSource());
-                if (node.getConnectionProperties(adjacentNode).isCurrentSource() && !currentSources.containsKey(Couple.create(adjacentNode, node)))
-                    currentSources.put(Couple.create(node, adjacentNode), node.getConnectionProperties(adjacentNode).currentSource());
-                if ((groundRods.isEmpty() && !groundSet) && (node.getConnectionProperties(adjacentNode).voltageSource() > 0 || node.getConnectionProperties(adjacentNode).currentSource() > 0)) {
-                    groundSet = true;
-                    totalConductance += 1;
-                }
+                ElectricalProperties connectionProperties = node.getConnectionProperties(adjacentNode);
+                totalConductance += connectionProperties.conductance();
             }
-
-            if (!groundRods.isEmpty() && groundRods.contains(node.correspondingNode))
-                totalConductance += 1;
-            conductanceMatrix.set(id, id, totalConductance);
+            totalConductance += groundRods.getOrDefault(node.correspondingNode, 0d);
+            conductanceMatrix[id][id] = totalConductance;
             node.id = id++;
         }
 
-        id = 0;
         for (SimulationNode node : simulationNodes.values()) {
             for (SimulationNode adjacentNode : node.getNextNodes()) {
                 double conductance = node.getConnectionProperties(adjacentNode).conductance();
-                conductanceMatrix.set(node.id, adjacentNode.id, -conductance);
-                conductanceMatrix.set(adjacentNode.id, node.id, -conductance);
+                conductanceMatrix[node.id][adjacentNode.id] = -conductance;
+                conductanceMatrix[adjacentNode.id][node.id] = -conductance;
             }
         }
 
-        double[] d = new double[conductanceMatrix.size() + voltageSources.size()];
-
+        double[] d = new double[simulationNodes.size() + voltageSources.size()];
 
         for (Map.Entry<Couple<SimulationNode>, Double> e : currentSources.entrySet()) {
             Couple<SimulationNode> con = e.getKey();
@@ -230,18 +186,17 @@ public class Network {
 
         int i = 0;
         for (Couple<SimulationNode> source : voltageSources.keySet()) {
-            conductanceMatrix.set(simulationNodes.size() + i, source.getFirst().id, 1d);
-            conductanceMatrix.set(simulationNodes.size() + i, source.getSecond().id, -1d);
-            conductanceMatrix.set(source.getFirst().id, simulationNodes.size() + i, 1d);
-            conductanceMatrix.set(source.getSecond().id, simulationNodes.size() + i, -1d);
+            conductanceMatrix[simulationNodes.size() + i][source.getFirst().id] = 1d;
+            conductanceMatrix[simulationNodes.size() + i][source.getSecond().id] = -1d;
+            conductanceMatrix[source.getFirst().id][simulationNodes.size() + i] = 1d;
+            conductanceMatrix[source.getSecond().id][simulationNodes.size() + i] = -1d;
             d[simulationNodes.size() + i] =  - voltageSources.get(source);
             i++;
         }
-
         return Pair.of(voltageSources, Pair.of(conductanceMatrix, d));
     }
 
-    public List<Node> getAllNodes() {
+    public Set<Node> getAllNodes() {
         return allNodes;
     }
 

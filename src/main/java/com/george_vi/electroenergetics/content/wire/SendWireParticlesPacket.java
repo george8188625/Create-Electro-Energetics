@@ -1,9 +1,8 @@
 package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
@@ -12,15 +11,14 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public record SendWireParticlesPacket(Node node1, Node node2, ParticleOptions options, Float sag, float chance) implements ClientboundPacketPayload {
+public record SendWireParticlesPacket(InWorldNode node1, InWorldNode node2, ParticleOptions options, Float sag, float chance) implements ClientboundPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, SendWireParticlesPacket> STREAM_CODEC = StreamCodec.composite(
-            Node.STREAM_CODEC, SendWireParticlesPacket::node1,
-            Node.STREAM_CODEC, SendWireParticlesPacket::node2,
+            InWorldNode.STREAM_CODEC, SendWireParticlesPacket::node1,
+            InWorldNode.STREAM_CODEC, SendWireParticlesPacket::node2,
             ParticleTypes.STREAM_CODEC, SendWireParticlesPacket::options,
             ByteBufCodecs.FLOAT, SendWireParticlesPacket::sag,
             ByteBufCodecs.FLOAT, SendWireParticlesPacket::chance,

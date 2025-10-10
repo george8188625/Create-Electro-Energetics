@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.Node;
 
 import java.util.HashMap;

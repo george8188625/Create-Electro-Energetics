@@ -4,12 +4,10 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.simibubi.create.AllBlockEntityTypes;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
-import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.item.TooltipHelper;
@@ -70,8 +68,8 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
         super.tick();
 
         if (level.isClientSide()) {
-            Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-            Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+            Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
+            Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
 
             if (v1 != null && v2 != null)
                 setValue(voltmeter ? Math.abs(v1 - v2) : Math.abs(v1 - v2) / 0.1);
@@ -94,8 +92,8 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         CreateLang.translate("gui.gauge.info_header")
                 .forGoggles(tooltip);
-        Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
+        Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
 
         if (v1 == null || v2 == null) {
             v1 = 0d;

@@ -85,4 +85,7 @@ public class ElectricalProperties {
     }
 
 
+    public ElectricalProperties add(ElectricalProperties properties) {
+        return new ElectricalProperties(1 / (properties.conductance() + conductance()), properties.voltageSource() + voltageSource(), properties.currentSource() + currentSource(), properties.isForcedVoltageSource || isForcedVoltageSource, properties.isForcedCurrentSource || isForcedCurrentSource);
+    }
 }

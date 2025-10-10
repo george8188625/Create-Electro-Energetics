@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -57,10 +57,10 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        Double vp1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Double vp2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
-        Double vs1 = WireRenderer.getAllVoltages().get(new Node(2, getBlockPos()));
-        Double vs2 = WireRenderer.getAllVoltages().get(new Node(3, getBlockPos()));
+        Double vp1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
+        Double vp2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
+        Double vs1 = WireRenderer.getAllVoltages().get(new InWorldNode(2, getBlockPos()));
+        Double vs2 = WireRenderer.getAllVoltages().get(new InWorldNode(3, getBlockPos()));
         if (vp1 == null || vp2 == null || vs1 == null || vs2 == null)
             return false;
         Lang.builder(CreateElecrtoEnergetics.ID)
@@ -128,8 +128,8 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
         else
             avgVoltage = voltages.stream().reduce(Float::sum).orElse(0f) / voltages.size();
 
-        Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
+        Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
         if (v1 != null && v2 != null) {
             setVoltage((float) (v1 - v2));
             if (avgVoltage > 10) {

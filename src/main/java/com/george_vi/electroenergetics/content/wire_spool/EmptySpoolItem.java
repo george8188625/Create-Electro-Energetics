@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.simibubi.create.AllSoundEvents;
@@ -48,14 +48,14 @@ public class EmptySpoolItem extends Item {
             return InteractionResult.SUCCESS;
         }
 
-        Node hoveredNode = Node.closestNode(level, context.getClickLocation(), 1f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1f);
 
         if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
             if (!(player.level() instanceof ServerLevel sl))
                 return InteractionResult.SUCCESS;
 
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            Node originalNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
+            InWorldNode originalNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
 
             if ((originalNode == null || hoveredNode == null) || !sd.isConnected(originalNode, hoveredNode)) {
                 AllSoundEvents.DENY.playOnServer(level, pos);

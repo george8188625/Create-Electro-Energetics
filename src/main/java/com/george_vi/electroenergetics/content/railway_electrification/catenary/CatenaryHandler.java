@@ -6,6 +6,8 @@ import com.george_vi.electroenergetics.content.railway_electrification.pantograp
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
+import com.george_vi.electroenergetics.foundation.AttachedNode;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
@@ -19,7 +21,6 @@ import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -27,7 +28,7 @@ import java.util.*;
 
 public class CatenaryHandler {
 
-    static List<Pair<Train, Couple<Node>>> trains = new ArrayList<>();
+    static List<Pair<Train, Couple<AttachedNode>>> trains = new ArrayList<>();
     static Map<Train, Double> trainSpeeds = new HashMap<>();
 
     public static void addToGraph(AddToElectricGraphEvent event) {
@@ -105,7 +106,7 @@ public class CatenaryHandler {
         }
 
         int i = 0;
-        Map<Train, List<Node>> trainPantographs = new HashMap<>();
+        Map<Train, List<AttachedNode>> trainPantographs = new HashMap<>();
         for (Couple<BlockPos> connection : allCatenaryConnections) {
             if (cutConnections.containsKey(connection)) {
 
@@ -121,8 +122,8 @@ public class CatenaryHandler {
                             connectedTrains.add(Pair.of(progress, train));
                     }
                 }
-                Node startNode = new Node(0, connection.getFirst());
-                Node endNode = new Node(0, connection.getSecond());
+                InWorldNode startNode = new InWorldNode(0, connection.getFirst());
+                InWorldNode endNode = new InWorldNode(0, connection.getSecond());
                 float totalProgress = 0.01f;
                 double totalResistance = SimulationTicker.getWireResistance(startNode, endNode, CEEWireTypes.COPPER.get());
                 Node lastNode = startNode;
@@ -132,38 +133,41 @@ public class CatenaryHandler {
                     float progress = e.getFirst();
                     Train train = e.getSecond();
                     double resistance = totalResistance * (progress - totalProgress);
-                    Node pantographNode = event.addNode("CeePantographNode", i, BlockPos.ZERO);
-
+                    AttachedNode pantographNode = new AttachedNode(i, "CeePantographNode");
+                    event.builder.addNode(pantographNode);
                     if (!trainPantographs.containsKey(train))
                         trainPantographs.put(train, new ArrayList<>(List.of(pantographNode)));
                     else
                         trainPantographs.get(train).add(pantographNode);
                     i++;
-                    event.connect(lastNode, pantographNode, ElectricalProperties.resistor(resistance));
+                    event.builder.connect(lastNode, pantographNode, ElectricalProperties.resistor(resistance));
                     lastNode = pantographNode;
                 }
-
-                event.connect(lastNode, endNode, ElectricalProperties.resistor(totalResistance * (1.01 - totalProgress)));
+                event.builder.connect(lastNode, endNode, ElectricalProperties.resistor(totalResistance * (1.01 - totalProgress)));
 
             } else {
-                Node node1 = new Node(0, connection.getFirst());
-                Node node2 = new Node(0, connection.getSecond());
-                event.connect(node1, node2, ElectricalProperties.resistor(SimulationTicker.getWireResistance(node1, node2, CEEWireTypes.COPPER.get())));
+                InWorldNode node1 = new InWorldNode(0, connection.getFirst());
+                InWorldNode node2 = new InWorldNode(0, connection.getSecond());
+                event.builder.connect(node1, node2, ElectricalProperties.resistor(SimulationTicker.getWireResistance(node1, node2, CEEWireTypes.COPPER.get())));
             }
         }
 
         // Create train circuit, all pantographs merge into one node, that node is connected to ground through a resistance
         i = 0;
-        for (Map.Entry<Train, List<Node>> e : trainPantographs.entrySet()) {
+        for (Map.Entry<Train, List<AttachedNode>> e : trainPantographs.entrySet()) {
             Train train = e.getKey();
             double trainSpeed = Math.abs(train.speed);
             float acceleration = (float) (trainSpeed - trainSpeeds.getOrDefault(train, trainSpeed));
-            Node groundNode = event.addGroundedNode("CeePantographGroundNode", i, BlockPos.ZERO);
-            Node trainNode = event.addNode("CEETrainNode", i, BlockPos.ZERO);
-            event.connect(groundNode, trainNode, ElectricalProperties.resistor(Math.abs(train.speed) > 0.01 ?
+            AttachedNode groundNode = new AttachedNode(i, "CeePantographGroundNode");
+            AttachedNode trainNode = new AttachedNode(i, "CEETrainNode");
+            event.builder.addNode(groundNode);
+            event.builder.addNode(trainNode);
+            event.builder.ground(groundNode, 10);
+            event.builder.connect(groundNode, trainNode, ElectricalProperties.resistor(Math.abs(train.speed) > 0.01 ?
                     acceleration > 0.001 ? CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() : CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get() : 9999));
-            for (Node node : e.getValue())
-                event.connect(node, trainNode, ElectricalProperties.resistor(CEEConfigs.server().resistanceValues.wireResistance.get()));
+
+            for (AttachedNode node : e.getValue())
+                event.builder.connect(node, trainNode, ElectricalProperties.resistor(CEEConfigs.server().resistanceValues.wireResistance.get()));
             trains.add(Pair.of(train, Couple.create(trainNode, groundNode)));
         }
 
@@ -171,15 +175,15 @@ public class CatenaryHandler {
 
     public static void finishSimulation(FinishElectricSimulationEvent event) {
         List<Train> visitedTrains = new ArrayList<>();
-        for (Pair<Train, Couple<Node>> e : trains) {
+        for (Pair<Train, Couple<AttachedNode>> e : trains) {
             Train train = e.getFirst();
             visitedTrains.add(train);
 
-            Node node1 = e.getSecond().getFirst();
-            Node node2 = e.getSecond().getSecond();
+            AttachedNode node1 = e.getSecond().getFirst();
+            AttachedNode node2 = e.getSecond().getSecond();
 
-            double voltage = Math.abs(event.results.getVoltageAt(node1) - event.results.getVoltageAt(node2));
-            boolean active = voltage > 1990;
+            double voltage = Math.abs(event.results.getVoltageAt(node1, node2));
+            boolean active = voltage > CEEConfigs.server().trainMinVoltage.get();
 
             double trainSpeed = Math.abs(train.speed);
 
@@ -200,7 +204,7 @@ public class CatenaryHandler {
             CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
                     100, new UpdateElectricTrainSoundPacket(train.id, pos, (float) trainSpeed, acceleration, active));
             if (active)
-                if (train.fuelTicks == 0) {
+                if (train.fuelTicks <= 1) {
                     train.fuelTicks = 10;
                 }
 

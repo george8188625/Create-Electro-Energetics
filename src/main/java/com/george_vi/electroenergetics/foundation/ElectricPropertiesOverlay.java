@@ -14,12 +14,12 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
     public static final ElectricPropertiesOverlay INSTANCE = new ElectricPropertiesOverlay();
     
     double voltage;
-    Node node;
+    InWorldNode node;
     float amperage;
     OverlayMode mode;
     int directionPointerAngle;
 
-    public void setHoveredNode(Double voltage, Node node) {
+    public void setHoveredNode(Double voltage, InWorldNode node) {
         this.voltage = voltage;
         this.node = node;
         this.mode = OverlayMode.HOVER_NODE;

@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.rotor;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
@@ -68,8 +68,8 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
             magnets += rotor.magnets;
         }
 
-        Double v1 = WireRenderer.getAllVoltages().get(new Node(0, getBlockPos()));
-        Double v2 = WireRenderer.getAllVoltages().get(new Node(1, getBlockPos()));
+        Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
+        Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
         if (v1 == null || v2 == null)
             return false;
         Lang.builder(CreateElecrtoEnergetics.ID)
