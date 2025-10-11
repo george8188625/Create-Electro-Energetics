@@ -41,8 +41,8 @@ public class Network {
                 SimulationNode adjacentSimulationNode = simulationNodes.get(adjacentNode);
                 if (connectionProperties.isVoltageSource() && !voltageSources.containsKey(Couple.create(adjacentSimulationNode, simulationNode)))
                     voltageSources.put(Couple.create(simulationNode, adjacentSimulationNode), connectionProperties.voltageSource());
-                if (connectionProperties.isVoltageSource() && !voltageSources.containsKey(Couple.create(adjacentSimulationNode, simulationNode)))
-                    voltageSources.put(Couple.create(simulationNode, adjacentSimulationNode), connectionProperties.voltageSource());
+                if (connectionProperties.isCurrentSource() && !currentSources.containsKey(Couple.create(adjacentSimulationNode, simulationNode)))
+                    currentSources.put(Couple.create(simulationNode, adjacentSimulationNode), connectionProperties.currentSource());
                 simulationNode.addAdjacentNode(adjacentSimulationNode, connectionProperties);
             }
         }
@@ -80,6 +80,8 @@ public class Network {
             resistanceChain.add(getConnection(prevNode, node).resistance());
             resistanceChain.add(getConnection(nextNode, node).resistance());
 
+            if (adjacency.get(prevNode).containsKey(nextNode))
+                continue;
 
             Node leftNode = prevNode;
             Node prevLeftNode = node;

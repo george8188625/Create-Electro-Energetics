@@ -61,6 +61,7 @@ public class ElectricHumSoundInstance extends AbstractTickableSoundInstance {
     }
 
     public void setVolumeImmediately(float volume) {
+        this.targetedVolume = volume;
         this.volume = volume;
     }
 }

@@ -187,22 +187,28 @@ public class CatenaryHandler {
 
             double trainSpeed = Math.abs(train.speed);
 
-            Carriage.DimensionalCarriageEntity dce = null;
+            Map<Integer, Vec3> positions = new HashMap<>();
             for (Carriage carriage : train.carriages) {
                 if (((IPantographList)carriage).hasElectricMotor()) {
-                    dce = carriage.getDimensional(event.level);
-                    break;
+                    Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(event.level);
+
+                    if (carriage.isOnTwoBogeys()) {
+                        positions.put(carriage.id, dce.trailingAnchor());
+                        positions.put(-carriage.id, dce.leadingAnchor());
+                    } else
+                        positions.put(carriage.id, dce.trailingAnchor());
                 }
             }
-            if (dce == null)
-                dce = train.carriages.getFirst().getDimensional(event.level);
-            Vec3 pos = dce.leadingAnchor().add(dce.trailingAnchor()).scale(0.5);
             float acceleration = (float) (trainSpeed - trainSpeeds.getOrDefault(train, trainSpeed));
 
             trainSpeeds.put(train, trainSpeed);
+            for (Map.Entry<Integer, Vec3> ce : positions.entrySet()) {
+                Integer carriageID = ce.getKey();
+                Vec3 pos = ce.getValue();
 
-            CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                    100, new UpdateElectricTrainSoundPacket(train.id, pos, (float) trainSpeed, acceleration, active));
+                CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
+                        100, new UpdateElectricTrainSoundPacket(train.id, carriageID, pos, (float) trainSpeed, acceleration, active));
+            }
             if (active)
                 if (train.fuelTicks <= 1) {
                     train.fuelTicks = 10;
@@ -215,11 +221,28 @@ public class CatenaryHandler {
         for (Train train : trainSpeeds.keySet().stream().toList()) {
             if (visitedTrains.contains(train))
                 continue;
-            Carriage carriage = train.currentlyBackwards ? train.carriages.getLast() : train.carriages.getFirst();
-            Vec3 pos = carriage.getDimensional(event.level).positionAnchor;
 
-            CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                    100, new UpdateElectricTrainSoundPacket(train.id, pos, 0, 0, false));
+            Map<Integer, Vec3> positions = new HashMap<>();
+            for (Carriage carriage : train.carriages) {
+                if (((IPantographList)carriage).hasElectricMotor()) {
+                    Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(event.level);
+
+                    if (carriage.isOnTwoBogeys()) {
+                        positions.put(carriage.id, dce.trailingAnchor());
+                        positions.put(carriage.id, dce.leadingAnchor());
+                    } else
+                        positions.put(carriage.id, dce.trailingAnchor());
+                    break;
+                }
+            }
+
+            for (Map.Entry<Integer, Vec3> ce : positions.entrySet()) {
+                Integer carriageID = ce.getKey();
+                Vec3 pos = ce.getValue();
+
+                CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
+                        100, new UpdateElectricTrainSoundPacket(train.id, carriageID, pos, 0, 0, false));
+            }
 
             trainSpeeds.remove(train);
         }

@@ -198,8 +198,7 @@ public class SimulationTicker {
                 WireType wireType = e.getFirst();
                 NodeConnection connection = e.getSecond();
 
-                double vd = Math.abs(resultsPerBlock.getOrDefault(connection.node1().sourcePos(), Collections.emptyMap()).getOrDefault(connection.node1(), 0d)
-                        - resultsPerBlock.getOrDefault(connection.node2().sourcePos(), Collections.emptyMap()).getOrDefault(connection.node2(), 0d));
+                double vd = Math.abs(allVoltages.getOrDefault(connection.node1(), 0d) - allVoltages.getOrDefault(connection.node2(), 0d));
                 double current = vd / getWireResistance(connection.node1(), connection.node2(), wireType);
 
                 float temp = sd.getConnectionTemperature(connection);

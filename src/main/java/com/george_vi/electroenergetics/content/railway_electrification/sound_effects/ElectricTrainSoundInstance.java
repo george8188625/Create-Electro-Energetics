@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.railway_electrification.sound_effects;
 
-import com.george_vi.electroenergetics.CEESoundEvents;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -12,8 +12,9 @@ public class ElectricTrainSoundInstance extends AbstractTickableSoundInstance {
     private int keepAlive;
     public float targetPitch;
     public float targetVolume;
-    protected ElectricTrainSoundInstance(Vec3 pos, boolean main) {
-        super(main ? CEESoundEvents.ELECTRIC_TRAIN.get() : CEESoundEvents.ELECTRIC_TRAIN_BACKGROUND.get(), SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
+
+    public ElectricTrainSoundInstance(Vec3 pos, SoundEvent event) {
+        super(event, SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
         looping = true;
         active = true;
         volume = 0.05f;
@@ -24,6 +25,16 @@ public class ElectricTrainSoundInstance extends AbstractTickableSoundInstance {
         x = pos.x;
         y = pos.y;
         z = pos.z;
+    }
+
+    public void setVolumeImmediately(float volume) {
+        this.volume = volume;
+        this.targetVolume = volume;
+    }
+
+    public void setPitchImmediately(float pitch) {
+        this.pitch = pitch;
+        this.targetPitch = pitch;
     }
 
     public void keepAlive() {

@@ -66,8 +66,9 @@ jobs:
         body: |
           These builds are auto generated on every commit. There is no guarantee these will be stable.
           
-          **changelog:**
-          **${{ github.event.head_commit.message }}**
+          **Changelog:**
+          
+          ${{ github.event.head_commit.message }}
           
           ${{ steps.commit_info.outputs.body }}
         draft: false

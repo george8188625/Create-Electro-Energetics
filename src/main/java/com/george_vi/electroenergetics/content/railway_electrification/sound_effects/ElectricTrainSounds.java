@@ -1,11 +1,9 @@
 package com.george_vi.electroenergetics.content.railway_electrification.sound_effects;
 
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ModernElectricTrainSoundBehaviour;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.trains.entity.Train;
-import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -15,52 +13,36 @@ import java.util.Set;
 import java.util.UUID;
 
 public class ElectricTrainSounds {
-    static Map<UUID, ElectricTrainSoundEntry> soundProperties = new HashMap<>();
+    static Map<Pair<UUID, Integer>, ElectricTrainSoundEntry> soundProperties = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
-    static Map<UUID, Couple<ElectricTrainSoundInstance>> sounds = new HashMap<>();
+    static Map<Pair<UUID, Integer>, ElectricTrainSoundBehaviour> sounds = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     public static void tick() {
-        for (Map.Entry<UUID, ElectricTrainSoundEntry> e : Set.copyOf(soundProperties.entrySet())) {
-            UUID trainID = e.getKey();
+        for (Map.Entry<Pair<UUID, Integer>, ElectricTrainSoundEntry> e : Set.copyOf(soundProperties.entrySet())) {
+            Pair<UUID, Integer> carriagePair = e.getKey();
+            UUID trainID = carriagePair.getFirst();
+            int carriageID = carriagePair.getSecond();
             Train train = CreateClient.RAILWAYS.trains.get(trainID);
             if (train == null) {
-                sounds.remove(trainID);
-                soundProperties.remove(trainID);
+                sounds.remove(carriagePair);
+                soundProperties.remove(carriagePair);
                 continue;
             }
-            Vec3 pos = e.getValue().pos();
+            ElectricTrainSoundBehaviour soundBehaviour = sounds.get(carriagePair);
+            if (soundBehaviour == null)
+                sounds.put(carriagePair, soundBehaviour = new ModernElectricTrainSoundBehaviour());
 
-            Couple<ElectricTrainSoundInstance> instances = sounds.get(trainID);
-            if (instances == null || instances.either(i -> i == null || i.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(i))) {
-                ElectricTrainSoundInstance instanceMain = new ElectricTrainSoundInstance(pos, true);
-                ElectricTrainSoundInstance instanceBackground = new ElectricTrainSoundInstance(pos, false);
-                Minecraft.getInstance().getSoundManager().play(instanceMain);
-                Minecraft.getInstance().getSoundManager().play(instanceBackground);
-                sounds.put(trainID, instances = Couple.create(instanceMain, instanceBackground));
-            }
-            ElectricTrainSoundInstance instanceMain = instances.getFirst();
-            ElectricTrainSoundInstance instanceBackground = instances.getSecond();
-
-            instanceMain.setPos(pos);
-            instanceBackground.setPos(pos);
-            float trainSpeed = e.getValue().speed();
-            float acceleration = e.getValue().acceleration();
-
-            instanceMain.targetPitch = trainSpeed * 1.3f + 0.3f;
-            instanceMain.targetVolume = e.getValue().active() && trainSpeed > 0.01 ? Math.max(0, acceleration) * 600 + 1f : 0;
-
-            instanceBackground.targetPitch = trainSpeed * 2f + 0.4f;
-            instanceBackground.targetVolume = e.getValue().active() ? 1f : 0;
+            soundBehaviour.pos = e.getValue().pos();
+            soundBehaviour.trainSpeed = e.getValue().speed();
+            soundBehaviour.acceleration = e.getValue().acceleration();
 
             if (e.getValue().ticks() > 0) {
-                instanceMain.keepAlive();
-                instanceBackground.keepAlive();
-                soundProperties.replace(trainID, new ElectricTrainSoundEntry(e.getValue().pos(), e.getValue().speed(), e.getValue().acceleration(), e.getValue().active(), e.getValue().ticks() - 1));
-            } else {
-                soundProperties.remove(trainID);
-            }
+                soundBehaviour.tick();
+                soundProperties.replace(carriagePair, new ElectricTrainSoundEntry(e.getValue().pos(), e.getValue().speed(), e.getValue().acceleration(), e.getValue().active(), e.getValue().ticks() - 1));
+            } else
+                soundProperties.remove(carriagePair);
         }
     }
 

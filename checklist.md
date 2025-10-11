@@ -1,8 +1,9 @@
 **CHECKLIST**
 
 **features:**
-- [ ] train sounds out of multiple carriages
+- [x] train sounds out of multiple carriages
 - [ ] train lights
+- [ ] ^ maybe so that they even work with dynamic lights, and emit a beam of light
 - [ ] train sound selection
 - [ ] electric train signals
 - [ ] accumulators on trains
@@ -32,6 +33,10 @@
 - [x] fix transformers
 - [ ] some way of reading voltage / current into an analog signal
 - [ ] electric doors (buzz in door)
+- [ ] some special behaviour when cables go through walls
+- [ ] display sources
+- [ ] some coil-gun-like weapon
+- [ ] more CC integration
 
 **ponders:**
 - [ ] voltage
