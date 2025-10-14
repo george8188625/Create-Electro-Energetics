@@ -21,7 +21,7 @@ public class AccumulatorDevice extends SimulatedDevice {
         super(id);
     }
 
-    double capacitance = 100;
+    double capacitance = 30;
     double timeStep = 0.05;
 
     @Override

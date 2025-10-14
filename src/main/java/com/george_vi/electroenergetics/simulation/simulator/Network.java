@@ -1,11 +1,8 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
-import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
-import com.george_vi.electroenergetics.foundation.AttachedNode;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 
@@ -212,9 +209,9 @@ public class Network {
         for (Map.Entry<Node, SimulationNode> e : simulationNodes.entrySet()) {
             Node originalNode = e.getKey();
             SimulationNode simNode = e.getValue();
-            for (Map.Entry<Node, ElectricalProperties> connectedE : getConnections(originalNode).entrySet()) {
-                Node connectedNode = connectedE.getKey();
-                SimulationNode connectedSimNode = simulationNodes.get(connectedNode);
+            for (Map.Entry<SimulationNode, ElectricalProperties> connectedE : simNode.connections.entrySet()) {
+                Node connectedNode = connectedE.getKey().correspondingNode;
+                SimulationNode connectedSimNode = connectedE.getKey();
                 ElectricalProperties properties = connectedE.getValue();
 
                 if (properties instanceof DissolvedProperties dp) {
@@ -225,13 +222,12 @@ public class Network {
                         result.putAll(dp.getVoltages(v1, v2));
                 }
             }
-        }
-
-        for (Map.Entry<Node, SimulationNode> e : simulationNodes.entrySet()) {
-            Node originalNode = e.getKey();
-            SimulationNode simNode = e.getValue();
-            if (!result.containsKey(originalNode))
-                result.put(originalNode, mnaResult[simNode.id]);
+//        }
+//
+//        for (Map.Entry<Node, SimulationNode> e : simulationNodes.entrySet()) {
+//            Node originalNode = e.getKey();
+//            SimulationNode simNode = e.getValue();
+            result.putIfAbsent(originalNode, mnaResult[simNode.id]);
         }
 
         return result;

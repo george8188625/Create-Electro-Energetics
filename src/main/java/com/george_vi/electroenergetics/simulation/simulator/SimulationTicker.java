@@ -10,7 +10,6 @@ import com.george_vi.electroenergetics.foundation.Node;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.*;
 import com.george_vi.electroenergetics.simulation.util.LUSolver;
-import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
@@ -81,11 +80,14 @@ public class SimulationTicker {
 
         profiler.popPush("connectWires");
 
-        for (Pair<WireType, NodeConnection> connection : connections) {
-            InWorldNode node1 = connection.getSecond().node1();
-            InWorldNode node2 = connection.getSecond().node2();
-            circuitBuilder.connect(node1, node2, ElectricalProperties.resistor(getWireResistance(node1, node2, connection.getFirst())));
-        }
+        sd.getWireConnectionManager().buildCircuit(circuitBuilder);
+//        for (Pair<WireType, NodeConnection> connection : connections) {
+//            InWorldNode node1 = connection.getSecond().node1();
+//            InWorldNode node2 = connection.getSecond().node2();
+//            circuitBuilder.connect(node1, node2, ElectricalProperties.resistor(getWireResistance(node1, node2, connection.getFirst())));
+//        }
+
+        profiler.popPush("addToGraphEvent");
 
         NeoForge.EVENT_BUS.post(new AddToElectricGraphEvent(circuitBuilder, level, sd));
 
@@ -188,69 +190,20 @@ public class SimulationTicker {
             device.simulatedDevice().postTick(device.pos(), level, results, device.extraData());
             profiler.pop();
         }
-        profiler.popPush("updateWireTemperature");
-
-        // WIRE BREAKING
-        if (CEEConfigs.server().wiresBreak.get()) {
-            NodeConnection longestWireToBreak = null;
-            WireType longestWireTypeToBreak = null;
-            for (Pair<WireType, NodeConnection> e : connections) {
-                WireType wireType = e.getFirst();
-                NodeConnection connection = e.getSecond();
-
-                double vd = Math.abs(allVoltages.getOrDefault(connection.node1(), 0d) - allVoltages.getOrDefault(connection.node2(), 0d));
-                double current = vd / getWireResistance(connection.node1(), connection.node2(), wireType);
-
-                float temp = sd.getConnectionTemperature(connection);
-
-                float newTemp = (float) (Math.min(current, 500));
-                newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
-                newTemp = Math.max(temp - 33.3f + newTemp, 0);
-                sd.setConnectionTemperature(connection, newTemp);
-
-                if (newTemp > wireType.getMaxTemperature() * 0.6 && level.isLoaded(connection.node1().sourcePos())) {
-                    // smoke particles
-                    CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, connection.node1().sourcePos().getCenter(), connection.node2().sourcePos().getCenter()),
-                            connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE, wireType.getSag(), 0.2f));
-                }
-
-                if (newTemp > wireType.getMaxTemperature()) {
-                    if (longestWireToBreak == null) {
-                        longestWireToBreak = connection;
-                        longestWireTypeToBreak = wireType;
-
-                    }
-                    else if (getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < getWireResistance(connection.node1(), connection.node2(), wireType)) {
-                        longestWireToBreak = connection;
-                        longestWireTypeToBreak = wireType;
-                    }
-                }
-
-            }
-            if (longestWireToBreak != null) {
-                WireType replaceWith = longestWireTypeToBreak.replaceOverheatedWith();
-                if (replaceWith == null) {
-                    sd.removeConnection(longestWireToBreak);
-                    CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),
-                            longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.BUBBLE_POP, longestWireTypeToBreak.getSag(), 4));
-                } else {
-                    WireData wireConnectionData = sd.getConnectionData(longestWireToBreak);
-                    sd.setConnectionData(longestWireToBreak, new WireData(replaceWith, wireConnectionData.temperature(), wireConnectionData.attachments()));
-                    CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),
-                            longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.LARGE_SMOKE, longestWireTypeToBreak.getSag(), 4));
-                }
-            }
-        }
         profiler.popPush("finish");
 
-        if (!circuitBuilder.getAllNodes().isEmpty())
-            sd.setDirty();
 
         Map<DirectionalNodeConnection, Double> allSourceAmps = new HashMap<>();
         for (Map<DirectionalNodeConnection, Double> v : sourceAmps.values())
             allSourceAmps.putAll(v);
+        SimulationResults allSimulationResults = new SimulationResults(allVoltages, allSourceAmps, circuitBuilder, sd);
+        sd.getWireConnectionManager().finish(allSimulationResults);
 
-        NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(new SimulationResults(allVoltages, allSourceAmps, circuitBuilder, sd), level, sd));
+        NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(allSimulationResults, level, sd));
+
+        if (!circuitBuilder.getAllNodes().isEmpty())
+            sd.setDirty();
+
         profiler.push("syncVoltages");
         VoltageSync.finishSimulation(sd, level);
 

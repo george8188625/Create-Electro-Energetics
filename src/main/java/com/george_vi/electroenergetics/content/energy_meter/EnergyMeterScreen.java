@@ -66,14 +66,15 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
         int stringWidth = font.width(title);
         graphics.drawString(font, title, x - stringWidth / 2 + windowWidth / 2, y + 4, 0xFFFFEE);
 
-        double totalEnergy = Mth.lerp(((AnimationTickHolder.getTicks() + AnimationTickHolder.getPartialTicks()) - be.thisPacketTick) /(be.thisPacketTick-be.lastPacketTick), be.oldTotalEnergy, be.totalEnergy);
+        double smoothTotalEnergy = Mth.lerp(((AnimationTickHolder.getTicks() + AnimationTickHolder.getPartialTicks()) - be.thisPacketTick) /(be.thisPacketTick-be.lastPacketTick), be.oldTotalEnergy, be.totalEnergy);
+        double totalEnergy = Mth.lerp(((AnimationTickHolder.getTicks() + AnimationTickHolder.getPartialTicks()) - be.thisPacketTick) / (be.thisPacketTick-be.lastPacketTick), be.oldTotalEnergy, be.totalEnergy);
 
         if (totalEnergy < 0)
             totalEnergy = 10000000 + totalEnergy;
 
-        float number0 = (float) (totalEnergy * 100 % 1);
-        float number1 = (float) (totalEnergy * 10 % 1);
-        float number2 = (float) (totalEnergy % 1);
+        float number0 = (float) (smoothTotalEnergy * 100 % 1);
+        float number1 = (float) (smoothTotalEnergy * 10 % 1);
+        float number2 = (float) (smoothTotalEnergy % 1);
         float number3 = (float) (totalEnergy / 10 % 1);
         float number4 = (float) (totalEnergy / 100 % 1);
         float number5 = (float) (totalEnergy / 1000 % 1);

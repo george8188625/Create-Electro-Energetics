@@ -41,10 +41,14 @@ public class InfrastructureSavedData extends SavedData {
     // NOT PERSISTENT
     Map<InWorldNode, Double> VOLTAGES = new HashMap<>();
     ServerLevel level;
+
+    WireConnectionManager wireConnectionManager;
+
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public InfrastructureSavedData(ServerLevel level) {
         this.level = level;
+        wireConnectionManager = new WireConnectionManager(this, level);
     }
 
     @Override
@@ -243,6 +247,8 @@ public class InfrastructureSavedData extends SavedData {
             });
         });
 
+        sd.wireConnectionManager.rebuild();
+
         return sd;
     }
 
@@ -267,8 +273,15 @@ public class InfrastructureSavedData extends SavedData {
                 List<InWorldNode> nodes = nodeIDs.stream().map(id -> new InWorldNode(id, pos)).toList();
 
                 if (oldNodes != null && oldNodes.stream().map(InWorldNode::id).sorted().toList().equals(nodeIDs.stream().sorted().toList())) {
-                    for (InWorldNode node : oldNodes)
-                        NODE_POSITIONS.replace(node, node.getPosition(level));
+                    for (InWorldNode node : oldNodes) {
+                        Vec3 newPos = node.getPosition(level);
+                        if (NODE_POSITIONS.replace(node, newPos) != newPos) {
+                            for (NodeConnection connection : getConnections(node)) {
+                                wireConnectionManager.wireRemoved(connection);
+                                wireConnectionManager.wireAdded(connection, getConnectionData(connection));
+                            }
+                        }
+                    }
                     return;
                 }
 
@@ -284,6 +297,11 @@ public class InfrastructureSavedData extends SavedData {
                 for (InWorldNode node : nodes) {
                     NODES.put(node, new ArrayList<>());
                     NODE_POSITIONS.put(node, node.getPosition(level));
+
+                    for (NodeConnection connection : getConnections(node)) {
+                        wireConnectionManager.wireRemoved(connection);
+                        wireConnectionManager.wireAdded(connection, getConnectionData(connection));
+                    }
                 }
 
                 return;
@@ -367,8 +385,13 @@ public class InfrastructureSavedData extends SavedData {
             }
         }
         LoadedWireManager.handleWireRemoved(connection, level);
+        wireConnectionManager.wireRemoved(connection);
         setDirty();
         return connectionData;
+    }
+
+    public Map<NodeConnection, WireData> getAllConnections() {
+        return CONNECTION_DATA;
     }
 
     public NodeConnection connect(InWorldNode node1, InWorldNode node2, WireType wireType) {
@@ -389,6 +412,8 @@ public class InfrastructureSavedData extends SavedData {
         setDirty();
 
         LoadedWireManager.handleWireAdded(connection, data, level);
+        wireConnectionManager.wireAdded(connection, data);
+
         return connection;
     }
 
@@ -411,6 +436,8 @@ public class InfrastructureSavedData extends SavedData {
 
     public void setConnectionData(NodeConnection connection, WireData data) {
         LoadedWireManager.handleWireAdded(connection, data, level);
+        wireConnectionManager.wireRemoved(connection);
+        wireConnectionManager.wireAdded(connection, data);
         CONNECTION_DATA.put(connection, data);
     }
 
@@ -434,7 +461,7 @@ public class InfrastructureSavedData extends SavedData {
 
     public Vec3 getNodePosition(InWorldNode node) {
         Vec3 pos = NODE_POSITIONS.get(node);
-        if (pos == null) {
+        if (pos == null || level.isLoaded(node.sourcePos())) {
             NODE_POSITIONS.replace(node, pos = node.getPosition(level));
         }
         return pos;
@@ -472,6 +499,9 @@ public class InfrastructureSavedData extends SavedData {
         return connections;
     }
 
+    public WireConnectionManager getWireConnectionManager() {
+        return wireConnectionManager;
+    }
 
     public record SimulatedDeviceInstance(SimulatedDevice simulatedDevice, BlockPos pos, CompoundTag extraData, List<InWorldNode> nodes) { }
 }

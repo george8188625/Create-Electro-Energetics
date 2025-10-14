@@ -24,7 +24,7 @@
 - [ ] directional ammeters
 - [ ] galvanic basin recipes
 - [ ] electrocution
-- [ ] uninsulated wire shorts
+- [x] uninsulated wire shorts
 - [ ] thick copper wire (more like cable)
 - [ ] zipline hook (like IE skyhook)
 - [ ] infrastructureSD saved in schematics (wires, devices, etc.)
@@ -37,6 +37,7 @@
 - [ ] display sources
 - [ ] some coil-gun-like weapon
 - [ ] more CC integration
+- [ ] some kind of electric blaze burner
 
 **ponders:**
 - [ ] voltage

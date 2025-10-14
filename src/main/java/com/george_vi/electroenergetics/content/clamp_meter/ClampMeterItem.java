@@ -7,18 +7,28 @@ import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.outliner.Outliner;
 import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.theme.Color;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -99,5 +109,33 @@ public class ClampMeterItem extends Item {
     @OnlyIn(Dist.CLIENT)
     protected void setMetering(float amperage) {
         ElectricPropertiesOverlay.INSTANCE.setAmmeter(amperage, 0);
+        NodeConnectionPoint point = WireInteractionHandler.targetedPoint;
+        if (point == null || Math.abs(amperage) < 1e-2d)
+            return;
+        Level level = Minecraft.getInstance().level;
+        WireData wireData = WireRenderer.getConnectionData(new NodeConnection(point.node1(), point.node2()));
+        Double v1 = WireRenderer.getAllVoltages().get(point.node1());
+        Double v2 = WireRenderer.getAllVoltages().get(point.node2());
+        if (v1 == null || v2 == null || wireData == null)
+            return;
+        Vec3 pos1 = point.node1().getPosition(level);
+        Vec3 pos2 = point.node2().getPosition(level);
+        double distance = pos1.distanceTo(pos2);
+        if (distance == 0)
+            return;
+        for (int i = 0; i < 4; i++) {
+            int ticks = AnimationTickHolder.getTicks();
+            int page = (int) Math.floor((ticks + 6 * i) / 24d);
+            int dotID = page << 2 + i;
+
+            float progress = ((ticks + 6 * i) % 24) / 24f;
+
+            float pointOnWire = (float) (((point.point() * distance) + ((v1 > v2 ? progress : 1.0 - progress) * 1.2f) - 0.6f) / distance);
+            Vec3 position = QuadraticWireHelper.posAt(pos1, pos2, pointOnWire > 1 ? 1 : pointOnWire < 0 ? 0 : pointOnWire, wireData.wireType().getSag());
+            Outliner.getInstance().chaseAABB("cee_clamp_meter_current_visualization_" + dotID, AABB.ofSize(position, 0.01, 0.01, 0.01))
+                    .lineWidth(0.15f * Math.min(1, progress * 4))
+                    .colored(Color.SPRING_GREEN)
+                    .disableLineNormals();
+        }
     }
 }

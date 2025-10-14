@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.simulation.simulator.DissolvedProperties;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 
