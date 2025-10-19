@@ -72,6 +72,7 @@ public class WireSpoolItem extends Item {
             InWorldNode originalNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
 
             if ((hoveredNode == null || originalNode == null) ||
+                    hoveredNode.equals(originalNode) ||
                     (hoveredNode.sourcePos().equals(originalNode.sourcePos()) && !db.canSelfConnect(level, pos, state, hoveredNode.id(), originalNode.id())) ||
                     (sd.isConnected(hoveredNode, originalNode)) ||
                     Math.sqrt(originalNode.sourcePos().distSqr(hoveredNode.sourcePos())) > wireType.get().getMaxLength()) {

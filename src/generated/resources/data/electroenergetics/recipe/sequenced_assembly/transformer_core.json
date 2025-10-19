@@ -1,0 +1,110 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "tag": "c:plates/iron"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "electroenergetics:transformer_core"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_transformer_core"
+        },
+        {
+          "tag": "c:plates/iron"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_transformer_core"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_transformer_core"
+        },
+        {
+          "tag": "c:plates/iron"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_transformer_core"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_transformer_core"
+        },
+        {
+          "tag": "c:plates/iron"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_transformer_core"
+        }
+      ]
+    },
+    {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_transformer_core"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_transformer_core"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_transformer_core"
+        },
+        {
+          "item": "electroenergetics:wire_spool"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_transformer_core"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_transformer_core"
+        },
+        {
+          "item": "electroenergetics:wire_spool"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_transformer_core"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "electroenergetics:incomplete_transformer_core"
+  }
+}

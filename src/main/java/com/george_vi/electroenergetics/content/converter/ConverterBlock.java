@@ -84,7 +84,7 @@ public class ConverterBlock extends DirectionalRolledDeviceBlock implements IWre
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(SOURCE, context.getPlayer() != null && context.getPlayer().isShiftKeyDown());
+        return super.getStateForPlacement(context).setValue(SOURCE, context.getPlayer() != null && context.getPlayer().isShiftKeyDown());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.events;
+package com.george_vi.electroenergetics.events.datagen;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEItems;
@@ -6,27 +6,23 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllTags;
-import com.simibubi.create.foundation.data.recipe.CreateRecipeProvider;
+import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
+import com.simibubi.create.content.kinetics.press.PressingRecipe;
+import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipeBuilder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.Tags;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.UnaryOperator;
 
-public class CEEStandardRecipeGen extends RecipeProvider {
+public class CEERecipeGen extends RecipeProvider {
 
-    public CEEStandardRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+    public CEERecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, registries);
     }
 
@@ -371,11 +367,11 @@ public class CEEStandardRecipeGen extends RecipeProvider {
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.TRANSFORMER)
                 .pattern("C C")
-                .pattern("WAW")
+                .pattern("ATA")
                 .pattern("AAA")
-                .define('W', CEEItems.WIRE_SPOOL)
+                .define('T', CEEBlocks.TRANSFORMER_CORE)
                 .define('C', CEEBlocks.DOUBLE_CONNECTOR)
-                .define('A', AllBlocks.ANDESITE_ALLOY_BLOCK)
+                .define('A', AllItems.ANDESITE_ALLOY)
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/transformer"));
 
@@ -385,7 +381,7 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .pattern(" T ")
                 .define('W', CEEItems.WIRE_SPOOL)
                 .define('S', AllBlocks.SHAFT)
-                .define('T', CEEBlocks.TRANSFORMER)
+                .define('T', CEEBlocks.TRANSFORMER_CORE)
                 .define('P', AllItems.PRECISION_MECHANISM)
                 .unlockedBy("has_transformer", has(CEEBlocks.TRANSFORMER))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/voltage_regulator"));
@@ -505,6 +501,36 @@ public class CEEStandardRecipeGen extends RecipeProvider {
                 .define('A', AllItems.ANDESITE_ALLOY)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/fuse_holder"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.RADIATOR_PANEL)
+                .pattern("ASA")
+                .pattern("ASA")
+                .pattern("ASA")
+                .define('S', AllTags.commonItemTag("plates/iron"))
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .unlockedBy("has_andesite_alloy", has(AllItems.ANDESITE_ALLOY))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/radiator_panel"));
+
+        sequencedAssembly("transformer_core", b -> b.require(AllTags.commonItemTag("plates/iron"))
+                        .transitionTo(CEEItems.INCOMPLETE_TRANSFORMER_CORE)
+                        .addOutput(CEEBlocks.TRANSFORMER_CORE.asStack(), 1)
+                        .loops(1)
+                        .addStep(DeployerApplicationRecipe::new,
+                                rb -> rb.require(Ingredient.of(AllTags.commonItemTag("plates/iron"))))
+                        .addStep(DeployerApplicationRecipe::new,
+                                rb -> rb.require(Ingredient.of(AllTags.commonItemTag("plates/iron"))))
+                        .addStep(DeployerApplicationRecipe::new,
+                                rb -> rb.require(Ingredient.of(AllTags.commonItemTag("plates/iron"))))
+                        .addStep(PressingRecipe::new, rb -> rb)
+                        .addStep(DeployerApplicationRecipe::new,
+                                rb -> rb.require(Ingredient.of(CEEItems.WIRE_SPOOL)))
+                        .addStep(DeployerApplicationRecipe::new,
+                                rb -> rb.require(Ingredient.of(CEEItems.WIRE_SPOOL)))
+                , recipeOutput);
+    }
+
+    protected void sequencedAssembly(String name, UnaryOperator<SequencedAssemblyRecipeBuilder> transform, RecipeOutput recipeOutput) {
+        transform.apply(new SequencedAssemblyRecipeBuilder(CreateElecrtoEnergetics.rl(name))).build(recipeOutput);
     }
 }
 

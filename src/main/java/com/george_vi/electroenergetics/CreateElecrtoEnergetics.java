@@ -3,10 +3,15 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.fuse.FuseHoldables;
+import com.george_vi.electroenergetics.foundation.ElectricStatsTooltipModifier;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
+import com.simibubi.create.foundation.item.ItemDescription;
+import com.simibubi.create.foundation.item.KineticStats;
+import com.simibubi.create.foundation.item.TooltipModifier;
 import com.tterrag.registrate.providers.RegistrateDataProvider;
 
+import net.createmod.catnip.lang.FontHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -23,7 +28,12 @@ public class CreateElecrtoEnergetics
 
     public static CreateRegistrate REGISTRATE;
     public CreateElecrtoEnergetics(IEventBus modEventBus, ModContainer modContainer) {
-        REGISTRATE = CreateRegistrate.create(ID);
+        REGISTRATE = CreateRegistrate.create(ID)
+                .setTooltipModifierFactory(item ->
+                        new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE)
+                                .andThen(TooltipModifier.mapNull(KineticStats.create(item)))
+                                .andThen(TooltipModifier.mapNull(new ElectricStatsTooltipModifier(item)))
+                );
         REGISTRATE.registerEventListeners(modEventBus);
         modEventBus.addListener((GatherDataEvent event) -> event.addProvider(new RegistrateDataProvider(REGISTRATE, ID, event)));
         ModLoadingContext modLoadingContext = ModLoadingContext.get();

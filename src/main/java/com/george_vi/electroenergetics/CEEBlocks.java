@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics;
 
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerBlock;
@@ -32,9 +33,12 @@ import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayBlock
 import com.george_vi.electroenergetics.content.relay.RelayBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
+import com.george_vi.electroenergetics.content.transformer.RadiatorPanelBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
+import com.george_vi.electroenergetics.content.transformer.TransformerCoreBlock;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlock;
 import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
+import com.george_vi.electroenergetics.foundation.ElectricStatsTooltipModifier;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.kinetics.gauge.GaugeGenerator;
 import com.simibubi.create.foundation.data.AssetLookup;
@@ -187,6 +191,9 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addResistance(CEEConfigs.server().resistanceValues.bulbResistance::get)
+                    .addVoltage(() -> 300)))
             .build()
             .register();
 
@@ -312,6 +319,8 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addResistance(CEEConfigs.server().resistanceValues.motorResistance::get)))
             .build()
             .register();
 
@@ -334,6 +343,28 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxPower(() -> 25000)))
+            .build()
+            .register();
+
+    public static final BlockEntry<TransformerCoreBlock> TRANSFORMER_CORE = REGISTRATE.block("transformer_core", TransformerCoreBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .build()
+            .register();
+
+    public static final BlockEntry<RadiatorPanelBlock> RADIATOR_PANEL = REGISTRATE.block("radiator_panel", RadiatorPanelBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
             .build()
             .register();
 
@@ -428,6 +459,8 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/resistor")))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxPower(() -> 1300)))
             .build()
             .register();
 
@@ -448,6 +481,9 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addResistance(() -> 1000)
+                    .addMaxVoltage(() -> 100)))
             .build()
             .register();
 
@@ -468,6 +504,8 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/capacitor")))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxVoltage(() -> 500)))
             .build()
             .register();
 

@@ -3,18 +3,18 @@
   "category": "misc",
   "key": {
     "A": {
-      "item": "create:andesite_alloy_block"
+      "item": "create:andesite_alloy"
     },
     "C": {
       "item": "electroenergetics:double_connector"
     },
-    "W": {
-      "item": "electroenergetics:wire_spool"
+    "T": {
+      "item": "electroenergetics:transformer_core"
     }
   },
   "pattern": [
     "C C",
-    "WAW",
+    "ATA",
     "AAA"
   ],
   "result": {

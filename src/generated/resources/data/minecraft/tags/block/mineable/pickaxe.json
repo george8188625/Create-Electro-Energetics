@@ -24,6 +24,8 @@
     "electroenergetics:electric_motor",
     "electroenergetics:electric_pump",
     "electroenergetics:transformer",
+    "electroenergetics:transformer_core",
+    "electroenergetics:radiator_panel",
     "electroenergetics:voltage_regulator",
     "electroenergetics:alternator_rotor",
     "electroenergetics:alternator_brushes",

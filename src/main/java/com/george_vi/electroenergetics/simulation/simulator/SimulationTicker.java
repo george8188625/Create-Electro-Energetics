@@ -2,7 +2,6 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.content.wire.SendWireParticlesPacket;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
 import com.george_vi.electroenergetics.foundation.InWorldNode;
@@ -12,10 +11,7 @@ import com.george_vi.electroenergetics.simulation.*;
 import com.george_vi.electroenergetics.simulation.util.LUSolver;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.math.VecHelper;
-import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.common.NeoForge;
 

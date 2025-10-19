@@ -25,6 +25,7 @@ import com.george_vi.electroenergetics.content.gauge.ElectricGaugeRenderer;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlockEntity;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlockEntity;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlockEntity;
+import com.george_vi.electroenergetics.content.transformer.TransformerCoreBlockEntity;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlockEntity;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.content.kinetics.base.ShaftRenderer;
@@ -63,6 +64,10 @@ public class CEEBlockEntityTypes {
 
     public static final BlockEntityEntry<TransformerBlockEntity> TRANSFORMER = REGISTRATE.blockEntity("transformer", TransformerBlockEntity::new)
             .validBlocks(CEEBlocks.TRANSFORMER::get)
+            .register();
+
+    public static final BlockEntityEntry<TransformerCoreBlockEntity> TRANSFORMER_CORE = REGISTRATE.blockEntity("transformer_core", TransformerCoreBlockEntity::new)
+            .validBlocks(CEEBlocks.TRANSFORMER_CORE::get)
             .register();
 
     public static final BlockEntityEntry<ElectricPumpBlockEntity> ELECTRIC_PUMP = REGISTRATE.blockEntity("electric_pump", ElectricPumpBlockEntity::new)

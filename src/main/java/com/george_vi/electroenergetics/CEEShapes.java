@@ -21,6 +21,9 @@ public class CEEShapes {
 
     public static final VoxelShaper TRANSFORMER = shape(1,0, 0,15,14,16).forHorizontal(Direction.NORTH);
 
+    public static final VoxelShaper TRANSFORMER_CORE = shape(4, 0, 0, 12, 16, 13).add(2, 4, 2, 14, 12, 14)
+            .forHorizontal(Direction.NORTH);
+
     public static final VoxelShaper VOLTAGE_REGULATOR = shape(3,0, 1,13,16,15).forHorizontal(Direction.NORTH);
 
     public static final VoxelShape ELECTRIC_GAUGE_UP = shape(1,0, 0,15,2,16)

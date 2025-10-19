@@ -22,9 +22,16 @@
   "electroenergetics.gui.goggles.at_current_voltage": "at current voltage",
   "electroenergetics.gui.goggles.at_current_load": "at current load",
   "electroenergetics.gui.goggles.stored_energy": "Stored Energy:",
+  "electroenergetics.gui.goggles.max_heat_dissipation": "Max Heat Dissipation:",
 
   "electroenergetics.tooltip.energy_meter.owner": "Owner : %1$s",
   "electroenergetics.tooltip.energy_meter.energy": "Total Energy : %1$s",
+  "electroenergetics.tooltip.voltage": "Voltage:",
+  "electroenergetics.tooltip.max_voltage": "Max Voltage:",
+  "electroenergetics.tooltip.max_current": "Max Current:",
+  "electroenergetics.tooltip.resistance": "Resistance:",
+  "electroenergetics.tooltip.power": "Power:",
+  "electroenergetics.tooltip.max_power": "Max Power:",
 
   "electroenergetics.nodes.node": "Node",
   "electroenergetics.nodes.feed": "Feed",
@@ -79,6 +86,8 @@
 
   "electroenergetics.transformer.ratio": "Primary to Secondary Ratio",
   "electroenergetics.transformer.ratio_symbol": "÷",
+  "electroenergetics.transformer.turns": "Turns",
+  "electroenergetics.transformer.turns_symbol": "↻",
   "electroenergetics.voltage_regulator.voltage": "Targeted Voltage in Volts",
   "electroenergetics.voltage_regulator.voltage_symbol": "⚡",
   "electroenergetics.creative_battery.voltage": "Generated Voltage in Volts",

@@ -40,7 +40,7 @@ public class CircuitBuilder {
     public void connect(Node node1, Node node2, ElectricalProperties properties) {
         checkFrozen();
         if (node1.equals(node2))
-            throw new IllegalArgumentException("Tried to create an electrical connection between two nodes: " + node1 + ", " + node2);
+            throw new IllegalArgumentException("Tried to create an electrical connection between a single node: " + node1);
         adjacency.computeIfAbsent(node1, n -> new HashMap<>()).compute(node2, (n, p) -> p == null ? properties : p.add(properties));
         adjacency.computeIfAbsent(node2, n -> new HashMap<>()).compute(node1, (n, p) -> p == null ? properties.invert() : p.add(properties.invert()));
     }

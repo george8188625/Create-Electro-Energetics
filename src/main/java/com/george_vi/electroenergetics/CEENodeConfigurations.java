@@ -97,11 +97,16 @@ public class CEENodeConfigurations {
             .add(new Vec3(13/16f, 14/16f, 8/16f))
             .simple();
 
-    public static final NodeConfigurator TRANSFORMER =  new NodeConfigurator.Builder()
+    public static final NodeConfigurator TRANSFORMER = new NodeConfigurator.Builder()
             .add(new Vec3(5/16f, 14/16f, 13/16f))
             .add(new Vec3(11/16f, 14/16f, 13/16f))
             .add(new Vec3(5/16f, 14/16f, 3/16f))
             .add(new Vec3(11/16f, 14/16f, 3/16f))
+            .simple(Direction.NORTH);
+
+    public static final NodeConfigurator TRANSFORMER_CORE = new NodeConfigurator.Builder()
+            .add(new Vec3(3/16f, 8/16f, 13/16f))
+            .add(new Vec3(13/16f, 8/16f, 13/16f))
             .simple(Direction.NORTH);
 
     public static final NodeConfigurator VOLTAGE_REGULATOR = new NodeConfigurator.Builder()

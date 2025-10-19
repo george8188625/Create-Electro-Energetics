@@ -160,15 +160,22 @@ public class InfrastructureSavedData extends SavedData {
             InWorldNode node = new InWorldNode(id, pos);
             NBTHelper.iterateCompoundList(tag.getList("ConnectedNodes", Tag.TAG_COMPOUND), connectionTag -> {
                 InWorldNode connectedNode = new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos"));
+                if (connectedNode.equals(node)) {
+                    LOGGER.warn("Could not load a wire connection, as both ends connect to a single node: {}, skipping...", connectedNode);
+                    return;
+                }
+
                 connectedNodes.add(connectedNode);
                 WireType wireType;
 
                 try {
                     wireType = CEERegistries.WIRE_TYPE.get(ResourceLocation.parse(connectionTag.getString("WireType")));
-                    if (wireType == null)
+                    if (wireType == null) {
+                        LOGGER.warn("Could not load wire type between nodes: {}, {} with id: {} in: {}, changing to standard...", node, connectedNode, connectionTag.getString("WireType"), level.dimension().location());
                         wireType = CEEWireTypes.STANDARD.get();
+                    }
                 } catch (Throwable e) {
-                    LOGGER.warn("Could not load wire type between nodes: {}, {} with id: {} in: {}", node, connectedNode, connectionTag.getString("WireType"), level.dimension().location());
+                    LOGGER.warn("Could not load wire type between nodes: {}, {} with id: {} in: {}, changing to standard...", node, connectedNode, connectionTag.getString("WireType"), level.dimension().location());
                     wireType = CEEWireTypes.STANDARD.get();
                 }
 
@@ -395,6 +402,8 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public NodeConnection connect(InWorldNode node1, InWorldNode node2, WireType wireType) {
+        if (node1.equals(node2))
+            throw new IllegalArgumentException("Tried to connect a wire between a single node: " + node1);
 
         if (!(NODES.containsKey(node1) && NODES.containsKey(node2)))
             throw new IllegalArgumentException("Node: " + (NODES.containsKey(node2) ? node1.toString() : node1) + "doesn't exist.");

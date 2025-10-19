@@ -9,7 +9,7 @@
       "item": "create:shaft"
     },
     "T": {
-      "item": "electroenergetics:transformer"
+      "item": "electroenergetics:transformer_core"
     },
     "W": {
       "item": "electroenergetics:wire_spool"

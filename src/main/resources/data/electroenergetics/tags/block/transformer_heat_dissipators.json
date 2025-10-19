@@ -1,0 +1,13 @@
+{
+  "values": [
+    "electroenergetics:radiator_panel",
+    "create:industrial_iron_block",
+    "create:weathered_iron_block",
+
+    { "id": "createdieselgenerators:sheet_metal_panel", "required": false },
+    { "id": "#c:storage_blocks/iron", "required": false },
+    { "id": "#c:storage_blocks/steel", "required": false },
+    { "id": "#c:storage_blocks/zinc", "required": false },
+    { "id": "#c:storage_blocks/andesite", "required": false }
+  ]
+}

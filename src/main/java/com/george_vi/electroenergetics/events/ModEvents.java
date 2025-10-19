@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
+import com.george_vi.electroenergetics.events.datagen.CEERecipeGen;
 import com.george_vi.electroenergetics.foundation.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.ponder.CEEPonderPlugin;
 import com.google.gson.JsonElement;
@@ -51,7 +52,7 @@ public class ModEvents {
             PonderIndex.addPlugin(new CEEPonderPlugin());
             PonderIndex.getLangAccess().provideLang(CreateElecrtoEnergetics.ID, provider::add);
         });
-        generator.addProvider(event.includeServer(), new CEEStandardRecipeGen(packOutput, lookupProvider));
+        generator.addProvider(event.includeServer(), new CEERecipeGen(packOutput, lookupProvider));
     }
 
     @OnlyIn(Dist.CLIENT)

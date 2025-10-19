@@ -11,12 +11,12 @@
 - [ ] variacs
 - [ ] potentiometers
 - [ ] variable buzzer pitch
-- [ ] multi-block transformers
+- [x] multi-block transformers
 - [ ] floodlights
 - [ ] more light types
 - [x] lights prevent mob spawning even when they are off
 - [ ] energy meters on trains
-- [ ] resistance / voltage tooltips
+- [x] resistance / voltage tooltips
 - [ ] DC motors (~12V, direction depends on voltage, useful for controlling fluid valves, variacs, etc)
 - [ ] transistors
 - [ ] logic chips (adders, logic gates, etc.)
@@ -54,4 +54,5 @@
 - [ ] relays
 - [ ] energy meters
 - [ ] grounding
+- [ ] multi-block transformer
 

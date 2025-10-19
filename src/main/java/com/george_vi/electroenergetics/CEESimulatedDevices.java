@@ -24,6 +24,7 @@ import com.george_vi.electroenergetics.content.pole.ConcretePoleDevice;
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayDevice;
 import com.george_vi.electroenergetics.content.relay.RelayDevice;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesDevice;
+import com.george_vi.electroenergetics.content.transformer.TransformerCoreDevice;
 import com.george_vi.electroenergetics.content.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorDevice;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -63,6 +64,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice RELAY = register(new RelayDevice(CreateElecrtoEnergetics.rl("relay")));
     public static final SimulatedDevice CAPACITOR = register(new CapacitorDevice(CreateElecrtoEnergetics.rl("capacitor")));
     public static final SimulatedDevice MOMENTARY_SWITCH = register(new MomentarySwitchDevice(CreateElecrtoEnergetics.rl("momentary_switch")));
+    public static final SimulatedDevice TRANSFORMER_CORE = register(new TransformerCoreDevice(CreateElecrtoEnergetics.rl("transformer_core")));
 
     public static SimulatedDevice register(SimulatedDevice device) {
         BY_ID.put(device.getID(), device);

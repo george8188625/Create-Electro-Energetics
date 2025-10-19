@@ -79,7 +79,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
             if (dialState > 1 && level.random.nextFloat() < 1 / 2f)
                 dialState -= (dialState - 1) * level.random.nextFloat();
         } else {
-            int newRedstoneSignal = Mth.ceil(Mth.clamp(dialTarget * 15, 0, 15));
+            int newRedstoneSignal = dialTarget < 0.001 ? 0 : Mth.ceil(Mth.clamp(dialTarget * 15, 0, 15));
             if (newRedstoneSignal != redstoneSignal) {
                 redstoneSignal = newRedstoneSignal;
                 setChanged();
