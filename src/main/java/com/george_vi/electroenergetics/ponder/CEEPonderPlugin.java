@@ -29,10 +29,13 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .addStoryBoard("railway_electrification", RailwayElectrificationScenes::setup);
         helper.forComponents(CEEBlocks.DIODE.getId())
                 .addStoryBoard("diode", ElectricityBasicsScenes::diode);
+        helper.forComponents(CEEBlocks.VOLTMETER.getId())
+                .addStoryBoard("voltage", ElectricityBasicsScenes::voltage);
     }
 
     @Override
     public void registerSharedText(SharedTextRegistrationHelper helper) {
+        helper.registerSharedText("voltage0", "0V");
         helper.registerSharedText("voltage300", "300V");
         helper.registerSharedText("voltage600", "600V");
         helper.registerSharedText("ratio1over2", "1 / 2");
@@ -87,6 +90,8 @@ public class CEEPonderPlugin implements PonderPlugin {
                 ;
 
         helper.addToTag(CreateElecrtoEnergetics.rl("electricity_basics"))
+                .add(CEEBlocks.VOLTMETER.getId())
+                .add(CEEBlocks.AMMETER.getId())
                 .add(CEEBlocks.DIODE.getId())
                 .add(CEEBlocks.RESISTOR.getId())
                 ;

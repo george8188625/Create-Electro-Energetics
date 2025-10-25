@@ -40,7 +40,7 @@
 - [ ] some kind of electric blaze burner
 
 **ponders:**
-- [ ] voltage
+- [x] voltage
 - [ ] amperage
 - [ ] resistance
 - [ ] voltage divider

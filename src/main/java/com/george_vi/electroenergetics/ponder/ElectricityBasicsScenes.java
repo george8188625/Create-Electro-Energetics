@@ -1,12 +1,15 @@
 package com.george_vi.electroenergetics.ponder;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
+import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
+import net.createmod.ponder.api.scene.Selection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
@@ -45,6 +48,7 @@ public class ElectricityBasicsScenes {
         scene.idle(2);
         connections.createConnection(util.vector().of(3 + 14/16f, 1 + 3/16f, 24/16f), util.vector().blockSurface(source, Direction.EAST));
         scene.world().modifyBlock(bulb, bs -> bs.setValue(BulbBlock.LIGHT, 2), false);
+        scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.light = 1);
         scene.idle(2);
 
         ElementLink<CurrentVisualizationPonderElement> visualization1 = connections.createCurrentVisualization(util.vector().blockSurface(source, Direction.WEST), util.vector().of(19/16f, 18/16f, 24/16f), 1, 1, true);
@@ -81,6 +85,7 @@ public class ElectricityBasicsScenes {
         scene.idle(130);
 
         scene.world().modifyBlock(bulb, bs -> bs.setValue(BulbBlock.LIGHT, 0), false);
+        scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.light = 0);
         scene.world().modifyBlock(source, bs -> bs.setValue(CreativeBatteryBlock.FACING, Direction.EAST), false);
 
         connections.removeCurrentVisualization(visualization1);
@@ -107,5 +112,174 @@ public class ElectricityBasicsScenes {
 
         scene.idle(130);
 
+    }
+
+    public static void voltage(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+        scene.title("voltage", "What is voltage?");
+        scene.configureBasePlate(0, 0, 5);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+
+        Selection batteries = util.select().fromTo(0, 1, 3, 4, 1, 3);
+        BlockPos voltmeter = util.grid().at(2, 1, 1);
+
+        scene.world().showSection(batteries, Direction.DOWN);
+        scene.idle(2);
+        connections.createConnection(util.vector().centerOf(0, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.WEST));
+        scene.idle(2);
+        connections.createConnection(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.EAST));
+        scene.idle(2);
+        connections.createConnection(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.WEST));
+        scene.idle(2);
+        connections.createConnection(util.vector().centerOf(4, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.EAST));
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Voltage is the measurement of difference of electric potential")
+                .colored(PonderPalette.BLUE)
+                .pointAt(batteries.getCenter())
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.overlay().showText(30)
+                .text("160V")
+                .colored(PonderPalette.WHITE)
+                .pointAt(util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.NORTH))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(50);
+
+        scene.overlay().showText(30)
+                .text("70V")
+                .colored(PonderPalette.WHITE)
+                .pointAt(util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.NORTH))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(50);
+
+        scene.overlay().showText(30)
+                .text("-160V")
+                .colored(PonderPalette.WHITE)
+                .pointAt(util.vector().centerOf(0, 1, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(50);
+
+        scene.overlay().showText(130)
+                .text("Sometimes a voltage value may describe a single point. In that case, it is a value relative to ground, which is always 0V")
+                .colored(PonderPalette.BLUE)
+                .pointAt(util.vector().centerOf(0, 1, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(160);
+
+        scene.overlay().showText(30)
+                .sharedText("voltage0")
+                .colored(PonderPalette.WHITE)
+                .pointAt(util.vector().centerOf(2, 1, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(50);
+
+        scene.overlay().showText(30)
+                .text("70V")
+                .colored(PonderPalette.WHITE)
+                .pointAt(util.vector().centerOf(4, 1, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(50);
+
+        ElementLink<WirePonderElement> voltmeterWire1 = connections.createConnection(util.vector().centerOf(4, 1, 3), util.vector().blockSurface(voltmeter, Direction.EAST));
+        scene.idle(2);
+        ElementLink<WirePonderElement> voltmeterWire2 = connections.createConnection(util.vector().centerOf(0, 1, 3), util.vector().blockSurface(voltmeter, Direction.WEST));
+        scene.idle(2);
+        scene.world().showSection(util.select().position(voltmeter), Direction.DOWN);
+        scene.idle(2);
+
+        scene.overlay().showText(30)
+                .text("230V")
+                .colored(PonderPalette.WHITE)
+                .pointAt(util.vector().centerOf(voltmeter))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(50);
+
+        scene.overlay().showText(130)
+                .text("Notice how the voltage at each connector is -160V and 70V, but the difference is 230V")
+                .colored(PonderPalette.WHITE)
+                .pointAt(util.vector().topOf(voltmeter))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(160);
+
+        scene.overlay().showText(130)
+                .text("Voltage doesn't mean work. It shows how much work could be done, it's not current or flow, just the possibility of it")
+                .colored(PonderPalette.RED)
+                .pointAt(util.vector().topOf(voltmeter))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(160);
+
+        scene.world().replaceBlocks(util.select().position(voltmeter), CEEBlocks.BULB.getDefaultState().setValue(BulbBlock.FACING, Direction.UP), true);
+        connections.removeConnection(voltmeterWire1);
+        connections.removeConnection(voltmeterWire2);
+        scene.idle(20);
+        voltmeterWire1 = connections.createConnection(util.vector().centerOf(4, 1, 3), util.vector().of(2 + 14/16f, 19/16f, 24/16f));
+        voltmeterWire2 = connections.createConnection(util.vector().centerOf(0, 1, 3), util.vector().of(2 + 2/16f, 19/16f, 24/16f));
+        scene.world().modifyBlock(voltmeter, bs -> bs.setValue(BulbBlock.LIGHT, 2), false);
+        scene.world().modifyBlockEntity(voltmeter, BulbBlockEntity.class, be -> be.light = 1);
+        ElementLink<CurrentVisualizationPonderElement> visualization1 = connections.createCurrentVisualization(util.vector().centerOf(0, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.WEST), 1, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization2 = connections.createCurrentVisualization(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.EAST), 1, -1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization3 = connections.createCurrentVisualization(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.WEST), 1, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization4 = connections.createCurrentVisualization(util.vector().centerOf(4, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.EAST), 1, -1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization5 = connections.createCurrentVisualization(util.vector().centerOf(4, 1, 3), util.vector().of(2 + 14/16f, 19/16f, 24/16f), 1, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization6 = connections.createCurrentVisualization(util.vector().centerOf(0, 1, 3), util.vector().of(2 + 2/16f, 19/16f, 24/16f), 1, -1, true);
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Connect a device to a voltage difference, and current will start flowing and doing work")
+                .colored(PonderPalette.GREEN)
+                .pointAt(util.vector().centerOf(voltmeter))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(150);
+
+        scene.overlay().showText(70)
+                .text("Never directly connect different voltages!")
+                .colored(PonderPalette.RED)
+                .pointAt(util.vector().centerOf(voltmeter))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.world().replaceBlocks(util.select().position(voltmeter), CEEBlocks.CONNECTOR.getDefaultState().setValue(BulbBlock.FACING, Direction.UP), true);
+        connections.removeCurrentVisualization(visualization1);
+        connections.removeCurrentVisualization(visualization2);
+        connections.removeCurrentVisualization(visualization3);
+        connections.removeCurrentVisualization(visualization4);
+        connections.removeCurrentVisualization(visualization5);
+        connections.removeCurrentVisualization(visualization6);
+        connections.removeConnection(voltmeterWire1);
+        connections.removeConnection(voltmeterWire2);
+        scene.idle(20);
+        connections.createConnection(util.vector().centerOf(4, 1, 3), util.vector().centerOf(voltmeter));
+        connections.createConnection(util.vector().centerOf(0, 1, 3), util.vector().centerOf(voltmeter));
+        connections.createCurrentVisualization(util.vector().centerOf(0, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.WEST), 1, 5, false);
+        connections.createCurrentVisualization(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.EAST), 1, -5, false);
+        connections.createCurrentVisualization(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.WEST), 1, 5, false);
+        connections.createCurrentVisualization(util.vector().centerOf(4, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.EAST), 1, -5, false);
+        connections.createCurrentVisualization(util.vector().centerOf(4, 1, 3), util.vector().centerOf(voltmeter), 1, 5, false);
+        connections.createCurrentVisualization(util.vector().centerOf(0, 1, 3), util.vector().centerOf(voltmeter), 1, -5, false);
+
+        scene.overlay().showText(70)
+                .text("When two different potentials are connected with low resistance, a lot of current starts flowing")
+                .colored(PonderPalette.RED)
+                .pointAt(util.vector().centerOf(voltmeter))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
     }
 }

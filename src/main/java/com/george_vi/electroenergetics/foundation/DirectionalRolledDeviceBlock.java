@@ -1,7 +1,5 @@
 package com.george_vi.electroenergetics.foundation;
 
-import com.george_vi.electroenergetics.content.bulb.BulbBlock;
-import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.tterrag.registrate.providers.DataGenContext;
@@ -21,12 +19,11 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-public abstract class DirectionalRolledDeviceBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock, IWrenchable {
+public abstract class DirectionalRolledDeviceBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ROLL = BooleanProperty.create("roll");
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -45,7 +42,7 @@ public abstract class DirectionalRolledDeviceBlock extends SimpleDeviceBlock imp
     public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {
         if (targetedFace.getAxis() == originalState.getValue(FACING).getAxis())
             return originalState.cycle(ROLL);
-        return IWrenchable.super.getRotatedBlockState(originalState, targetedFace);
+        return super.getRotatedBlockState(originalState, targetedFace);
     }
 
     @Nullable

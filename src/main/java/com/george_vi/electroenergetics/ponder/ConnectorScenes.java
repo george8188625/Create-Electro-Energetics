@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.ponder;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
+import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.catnip.math.Pointing;
 import net.createmod.ponder.api.PonderPalette;
@@ -108,6 +109,7 @@ public class ConnectorScenes {
         connections.createCurrentVisualization(util.vector().of(34/16f, 19/16f, 0.5), util.vector().centerOf(1, 1, 2), 1, 1, true);
 
         scene.world().modifyBlock(util.grid().at(2, 1, 0), s -> s.setValue(BulbBlock.LIGHT, 2), false);
+        scene.world().modifyBlockEntity(util.grid().at(2, 1, 0), BulbBlockEntity.class, be -> be.light = 1);
     }
 
     public static void chunks(SceneBuilder builder, SceneBuildingUtil util) {

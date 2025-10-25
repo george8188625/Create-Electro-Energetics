@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.List;
 
 public class BulbBlockEntity extends SmartBlockEntity {
-    float light = 0;
+    public float light = 0;
     public BulbBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
