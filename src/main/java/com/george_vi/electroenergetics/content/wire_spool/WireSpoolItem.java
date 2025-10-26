@@ -16,6 +16,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -87,8 +88,13 @@ public class WireSpoolItem extends Item {
                 }
 
                 sd.connectCatenary(hoveredNode.sourcePos(), originalNode.sourcePos());
-            } else
-                sd.connect(originalNode, hoveredNode, wireType.get());
+            } else {
+                if (wireType.get() == CEEWireTypes.STANDARD.get() && player.getOffhandItem().getItem() instanceof DyeItem di) {
+                    WireType newWiretype = CEEWireTypes.COLORED_WIRES.getOrDefault(di.getDyeColor(), CEEWireTypes.STANDARD).get();
+                    sd.connect(originalNode, hoveredNode, newWiretype);
+                } else
+                    sd.connect(originalNode, hoveredNode, wireType.get());
+            }
 
             AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);
 

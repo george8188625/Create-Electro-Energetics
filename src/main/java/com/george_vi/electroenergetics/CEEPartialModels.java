@@ -18,6 +18,7 @@ public class CEEPartialModels {
     public static final PartialModel HV_SWITCH_ARM = PartialModel.of(CreateElecrtoEnergetics.rl("block/high_voltage_switch/arm"));
     public static final PartialModel HV_SWITCH_PIVOT = PartialModel.of(CreateElecrtoEnergetics.rl("block/high_voltage_switch/pivot"));
     public static final PartialModel PANTOGRAPH_UPPER_ARM = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/upper_arm"));
+    public static final PartialModel PANTOGRAPH_UPPER_ARM_ARM = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/upper_arm_arm"));
     public static final PartialModel PANTOGRAPH_LOWER_ARM = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/lower_arm"));
     public static final PartialModel PANTOGRAPH_UPPER_ARMS_DOUBLE = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/upper_arms_double"));
     public static final PartialModel PANTOGRAPH_LOWER_ARMS_DOUBLE = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/lower_arms_double"));
@@ -34,6 +35,7 @@ public class CEEPartialModels {
     public static final PartialModel CATENARY_HOLDER_MOUNT_8 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_8"));
     public static final PartialModel CATENARY_HOLDER_MOUNT_10 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_10"));
     public static final PartialModel BULB_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament"));
+    public static final PartialModel BULB_FILAMENT_BRIGHT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament_bright"));
     public static final PartialModel BULB_BROKEN_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament_broken"));
     public static final PartialModel RESISTOR_STRIP = PartialModel.of(CreateElecrtoEnergetics.rl("block/electronics/resistor_strip"));
     public static final PartialModel FUSE_HOLDER_COPPER_CONDUCTOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/copper_conductor"));

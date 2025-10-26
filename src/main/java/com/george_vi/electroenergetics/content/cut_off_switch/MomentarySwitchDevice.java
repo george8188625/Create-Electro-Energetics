@@ -83,11 +83,4 @@ public class MomentarySwitchDevice extends SimulatedDevice {
             }
         }
     }
-
-    enum SwitchState {
-        OPEN,
-        CLOSED,
-        OPENING,
-        ARCING;
-    }
 }

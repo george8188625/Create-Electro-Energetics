@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerBlock;
+import com.george_vi.electroenergetics.content.cut_off_switch.EmergencyStopBlock;
 import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchBlock;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorBlock;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
@@ -46,7 +47,6 @@ import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.ModelGen;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.tterrag.registrate.util.entry.BlockEntry;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
@@ -513,6 +513,16 @@ public class CEEBlocks {
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(MomentarySwitchBlock.CLOSED) ? p.modLoc("block/momentary_switch/block_closed") : p.modLoc("block/momentary_switch/block")))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<EmergencyStopBlock> EMERGENCY_STOP_BUTTON = REGISTRATE.block("emergency_stop_button", EmergencyStopBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(EmergencyStopBlock.ACTIVATED) ? p.modLoc("block/emergency_stop_button/block_pressed") : p.modLoc("block/emergency_stop_button/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))

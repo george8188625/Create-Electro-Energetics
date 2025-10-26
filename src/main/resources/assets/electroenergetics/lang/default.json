@@ -95,5 +95,18 @@
   "electroenergetics.resistor.resistance": "Resistance in Ohms",
   "electroenergetics.resistor.resistance_symbol": "Ω",
   "electroenergetics.capacitor.capacitance": "Capacitor Capacitance in Farads",
-  "electroenergetics.capacitor.capacitance_symbol": "C"
+  "electroenergetics.capacitor.capacitance_symbol": "C",
+
+  "block.electroenergetics.emergency_stop_button.tooltip.summary": "A _Big Red Button_ useful in _emergencies_.",
+  "block.electroenergetics.emergency_stop_button.tooltip.condition1": "When R-Clicked",
+  "block.electroenergetics.emergency_stop_button.tooltip.behaviour1": "Changes state into _Engaged_, and opens its _Internal Switch_.",
+  "block.electroenergetics.emergency_stop_button.tooltip.condition2": "When Shift R-Clicked",
+  "block.electroenergetics.emergency_stop_button.tooltip.behaviour2": "Disengages the _Switch_.",
+  "block.electroenergetics.buzzer.tooltip.summary": "Creates a buzzing sound.",
+  "block.electroenergetics.buzzer.tooltip.condition1": "When Supplied with Electric Current",
+  "block.electroenergetics.buzzer.tooltip.behaviour1": "Starts buzzing.",
+  "block.electroenergetics.concrete_pole.tooltip.summary": "Contains _Electrical Connectors_ on the top and bottom block of the _Pole_.",
+  "item.electroenergetics.clamp_meter.tooltip.summary": "Measured the _Amperage_ of the _Current_ flowing through a _Wire_.",
+  "item.electroenergetics.clamp_meter.tooltip.condition1": "When R-Clicked while Hovering over a Wire",
+  "item.electroenergetics.clamp_meter.tooltip.behaviour1": "Displays the _Amperage_ and _Direction_ of the _Current_ flowing through the _Wire_."
 }

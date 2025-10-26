@@ -15,10 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.DoubleSupplier;
 
 public class WireConnectionManager {
@@ -28,6 +25,7 @@ public class WireConnectionManager {
     Map<NodeConnection, List<CutWireEntry>> cutConnections = new HashMap<>();
     Map<Couple<AttachedNode>, DoubleSupplier> interWireShorts = new HashMap<>();
     Map<Couple<AttachedNode>, Vec3> shortPositions = new HashMap<>();
+    Map<Couple<AttachedNode>, Double> shortDistances = new HashMap<>();
     Map<NodeConnection, AABB> wireBBs = new HashMap<>();
     int nodeID = 0;
 
@@ -44,6 +42,7 @@ public class WireConnectionManager {
             if (cuts == null)
                 builder.connect(connection.node1(), connection.node2(), ElectricalProperties.resistor(resistance));
             else {
+                cuts.sort(Comparator.comparing(CutWireEntry::point));
                 float totalProgress = 0;
                 Node lastNode = connection.node1();
                 for (CutWireEntry cut : cuts) {
@@ -90,7 +89,7 @@ public class WireConnectionManager {
 
         // Check for wire shorts
         // 4 nested loops, seems super inefficient, but the first two just check if the wires are within bounds, which are quick operations, and the inner two are only executed when a wire is within bounds.
-        // also it's recalculated only when wires / node positions change.
+        // also it's recalculated only on reload
         for (int i = 0; i < allPoints.size(); i++) {
             NodeConnection connection1 = allPoints.get(i).getFirst();
             List<Vec3> points1 = allPoints.get(i).getSecond();
@@ -98,7 +97,6 @@ public class WireConnectionManager {
             for (int j = 0; j < i; j++) {
 
                 NodeConnection connection2 = allPoints.get(j).getFirst();
-                List<Vec3> points2 = allPoints.get(j).getSecond();
                 AABB bb2 = allWireBBs.get(j);
 
 
@@ -109,26 +107,40 @@ public class WireConnectionManager {
                     if (sd.getConnections(connection1.node1()).contains(connection2) ||
                             sd.getConnections(connection1.node2()).contains(connection2))
                         continue;
+                    List<Vec3> points2 = allPoints.get(j).getSecond();
+
+                    float bestPoint = 0;
+                    double bestDist = 999;
+                    Vec3 bestPos = null;
+
                     for (int k = 0; k < points1.size(); k++) {
                         Vec3 point1 = points1.get(k);
                         for (int l = 0; l < points2.size(); l++) {
                             Vec3 point2 = points2.get(l);
-                            if (point1.distanceToSqr(point2) < 0.04) {
-                                WireData wireData1 = sd.getConnectionData(connection1);
-                                WireData wireData2 = sd.getConnectionData(connection2);
-                                if (wireData1 == null || wireData2 == null || wireData1.wireType().insulated() || wireData2.wireType().insulated())
-                                    continue;
-
-                                AttachedNode attachedNode1 = new AttachedNode(nodeID++, "CEECutWire");
-                                AttachedNode attachedNode2 = new AttachedNode(nodeID++, "CEECutWire");
-                                // Wires touch
-                                cutConnections.computeIfAbsent(connection1, c -> new ArrayList<>()).add(new CutWireEntry(k / (float) points1.size(), attachedNode1, attachedNode2, connection2));
-                                cutConnections.computeIfAbsent(connection2, c -> new ArrayList<>()).add(new CutWireEntry(k / (float) points1.size(), attachedNode2, attachedNode1, connection1));
-                                Couple<AttachedNode> shortConnection = Couple.create(attachedNode1, attachedNode2);
-                                interWireShorts.put(shortConnection, () -> 0.1d);
-                                shortPositions.put(shortConnection, point1);
+                            double distance = point1.distanceToSqr(point2);
+                            if (distance < bestDist) {
+                                bestPoint = k / (float) points1.size();
+                                bestDist = distance;
+                                bestPos = point1;
                             }
                         }
+                    }
+
+                    if (bestDist < 0.04) {
+
+                        WireData wireData1 = sd.getConnectionData(connection1);
+                        WireData wireData2 = sd.getConnectionData(connection2);
+                        if (wireData1 == null || wireData2 == null || wireData1.wireType().insulated() || wireData2.wireType().insulated())
+                            continue;
+
+                        AttachedNode attachedNode1 = new AttachedNode(nodeID++, "CEECutWire");
+                        AttachedNode attachedNode2 = new AttachedNode(nodeID++, "CEECutWire");
+                        // Wires touch
+                        cutConnections.computeIfAbsent(connection1, c -> new ArrayList<>()).add(new CutWireEntry(bestPoint, attachedNode1, attachedNode2, connection2));
+                        cutConnections.computeIfAbsent(connection2, c -> new ArrayList<>()).add(new CutWireEntry(bestPoint, attachedNode2, attachedNode1, connection1));
+                        Couple<AttachedNode> shortConnection = Couple.create(attachedNode1, attachedNode2);
+                        interWireShorts.put(shortConnection, () -> 0.1d);
+                        shortDistances.put(shortConnection, bestDist);
                     }
                 }
             }
@@ -198,7 +210,7 @@ public class WireConnectionManager {
                 Vec3 pos = shortPositions.get(shortConnection);
                 if (pos == null)
                     continue;
-                if (level.random.nextFloat() > 0.9f)
+                if (level.random.nextFloat() > 0.7f && shortDistances.getOrDefault(shortConnection, 0d) > 0.03d)
                     CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos, 30, new SendSparkPacket(pos, SendSparkPacket.SparkSize.SMALL));
             }
         }
@@ -220,8 +232,14 @@ public class WireConnectionManager {
                     Node neighbourNode = neighbourCuts.get(j).neighbourNode;
                     if (neighbourNode.equals(cut.node)) {
                         neighbourCuts.remove(j);
-                        interWireShorts.remove(Couple.create(cut.node, neighbourNode));
-                        interWireShorts.remove(Couple.create(neighbourNode, cut.node));
+                        Couple<Node> short1 = Couple.create(cut.node, neighbourNode);
+                        Couple<Node> short2 = Couple.create(neighbourNode, cut.node);
+                        interWireShorts.remove(short1);
+                        interWireShorts.remove(short2);
+                        shortDistances.remove(short1);
+                        shortDistances.remove(short2);
+                        shortPositions.remove(short1);
+                        shortPositions.remove(short2);
                         if (neighbourCuts.isEmpty())
                             cutConnections.remove(neighbourConnection);
                         break;
@@ -261,25 +279,38 @@ public class WireConnectionManager {
 
             List<Vec3> points2 = QuadraticWireHelper.cablePoints(neighbourPos1, neighbourPos2, wireData.wireType().getSag(), 0.5f);
 
+            float bestPoint = 0;
+            double bestDist = 999;
+            Vec3 bestPos = null;
+
             for (int k = 0; k < points1.size(); k++) {
                 Vec3 point1 = points1.get(k);
                 for (int l = 0; l < points2.size(); l++) {
                     Vec3 point2 = points2.get(l);
-                    if (point1.distanceToSqr(point2) < 0.04) {
-                        WireData wireData2 = sd.getConnectionData(neighbourConnection);
-                        if (wireData2 == null || wireData.wireType().insulated() || wireData2.wireType().insulated())
-                            continue;
-
-                        AttachedNode attachedNode1 = new AttachedNode(nodeID++, "CEECutWire");
-                        AttachedNode attachedNode2 = new AttachedNode(nodeID++, "CEECutWire");
-                        // Wires touch
-                        cutConnections.computeIfAbsent(connection, c -> new ArrayList<>()).add(new CutWireEntry(k / (float) points1.size(), attachedNode1, attachedNode2, neighbourConnection));
-                        cutConnections.computeIfAbsent(neighbourConnection, c -> new ArrayList<>()).add(new CutWireEntry(k / (float) points1.size(), attachedNode2, attachedNode1, connection));
-                        Couple<AttachedNode> shortConnection = Couple.create(attachedNode1, attachedNode2);
-                        interWireShorts.put(shortConnection, () -> 0.1d);
-                        shortPositions.put(shortConnection, point1);
+                    double distance = point1.distanceToSqr(point2);
+                    if (distance < bestDist) {
+                        bestPoint = k / (float) points1.size();
+                        bestDist = distance;
+                        bestPos = point1;
                     }
                 }
+            }
+
+            if (bestDist < 0.04) {
+
+                WireData wireData2 = sd.getConnectionData(neighbourConnection);
+                if (wireData2 == null || wireData.wireType().insulated() || wireData2.wireType().insulated())
+                    continue;
+
+                AttachedNode attachedNode1 = new AttachedNode(nodeID++, "CEECutWire");
+                AttachedNode attachedNode2 = new AttachedNode(nodeID++, "CEECutWire");
+                // Wires touch
+                cutConnections.computeIfAbsent(connection, c -> new ArrayList<>()).add(new CutWireEntry(bestPoint, attachedNode1, attachedNode2, neighbourConnection));
+                cutConnections.computeIfAbsent(neighbourConnection, c -> new ArrayList<>()).add(new CutWireEntry(bestPoint, attachedNode2, attachedNode1, connection));
+                Couple<AttachedNode> shortConnection = Couple.create(attachedNode1, attachedNode2);
+                interWireShorts.put(shortConnection, () -> 0.1d);
+                shortPositions.put(shortConnection, bestPos);
+                shortDistances.put(shortConnection, bestDist);
             }
         }
         originalConnections.put(connection, wireData.wireType());

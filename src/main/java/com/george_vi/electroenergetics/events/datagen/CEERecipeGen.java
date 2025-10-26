@@ -502,7 +502,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/fuse_holder"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.RADIATOR_PANEL)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.RADIATOR_PANEL, 4)
                 .pattern("ASA")
                 .pattern("ASA")
                 .pattern("ASA")

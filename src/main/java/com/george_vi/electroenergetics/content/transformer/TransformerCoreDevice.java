@@ -57,19 +57,21 @@ public class TransformerCoreDevice extends SimulatedDevice {
 
         double power = TransformerBehaviour.postTick(nodes, results, extraData);
 
-        float temp = updateTemp(extraData.getFloat("Temp"), (float) Math.abs(power) / 50);
-        extraData.putFloat("Temp", temp);
-
         if (level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof TransformerCoreBlockEntity be)
                 be.power = Math.abs(power);
 
+        double dissipationFactor = extraData.getDouble("HeatDissipationFactor");
+
+        double loadFactor = Math.abs(power) / (dissipationFactor == 0 ? 0.001 : dissipationFactor);
+        loadFactor = Math.min(2.5, loadFactor);
+        float temp = updateTemp(extraData.getFloat("Temp"), (float) loadFactor * 1000);
+        extraData.putFloat("Temp", temp);
+
         if (!CEEConfigs.server().componentDamage.get())
             return;
 
-        double maxTemp = Math.max(0, 30 * (extraData.getDouble("HeatDissipationFactor") / 50 - 3.3));
-
-        if (temp > maxTemp) {
+        if (temp > 31_000) {
             if (level.isLoaded(pos)) {
                 CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.BIG));
                 ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0,0, 0);
@@ -78,7 +80,7 @@ public class TransformerCoreDevice extends SimulatedDevice {
             sd.removeDevice(pos);
             level.explode(null, Explosion.getDefaultDamageSource(level, null), new TransformerExplosionDamageCalculator(), pos.getX(), pos.getY(), pos.getZ(), 4, true, Level.ExplosionInteraction.BLOCK);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
-        } else if (temp > maxTemp * 0.75) {
+        } else if (temp > 26_000) {
             showOverheatingParticles(level, pos);
             showOverheatingParticles(level, pos.relative(facing));
         }

@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.ponder;
 
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.math.VecHelper;
@@ -16,14 +17,14 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class CurrentVisualizationPonderElement extends AnimatedSceneElementBase {
-    final Vec3 pos1, pos2;
+    final InWorldNode node1, node2;
     final float speed;
     final float sag;
     final boolean valid;
 
-    public CurrentVisualizationPonderElement(Vec3 pos1, Vec3 pos2, float speed, float sag, boolean valid) {
-        this.pos1 = pos1;
-        this.pos2 = pos2;
+    public CurrentVisualizationPonderElement(InWorldNode node1, InWorldNode node2, float speed, float sag, boolean valid) {
+        this.node1 = node1;
+        this.node2 = node2;
         this.speed = speed;
         this.sag = sag;
         this.valid = valid;
@@ -31,6 +32,8 @@ public class CurrentVisualizationPonderElement extends AnimatedSceneElementBase 
 
     @Override
     protected void renderLast(PonderLevel world, MultiBufferSource buffer, GuiGraphics graphics, float fade, float pt) {
+        Vec3 pos1 = node1.getPosition(world);
+        Vec3 pos2 = node2.getPosition(world);
         float progress = speed == 0 ? 0 : (AnimationTickHolder.getRenderTime(world) % (1 / (speed / 10))) * (speed / 10);
         if (speed < 0)
             progress = 1 - Math.abs(progress);

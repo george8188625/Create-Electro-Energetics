@@ -83,6 +83,24 @@ public class PantographRenderer extends SmartBlockEntityRenderer<PantographBlock
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM_ARM, state)
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(9/16f, 0.375, 0.8125)
+                    .translate(0, armHingePosY, armHingePosX)
+                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateYDegrees(12.5f)
+                    .light(light)
+                    .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM_ARM, state)
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(7/16f, 0.375, 0.8125)
+                    .translate(0, armHingePosY, armHingePosX)
+                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateYDegrees(-12.5f)
+                    .light(light)
+                    .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_SURFACE, state)
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.8125)

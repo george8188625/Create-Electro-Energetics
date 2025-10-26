@@ -21,9 +21,9 @@ public class BulbBlockEntityRenderer extends SmartBlockEntityRenderer<BulbBlockE
     protected void renderSafe(BulbBlockEntity blockEntity, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         BlockState state = blockEntity.getBlockState();
         if (CEEBlocks.BULB.has(state))
-            CachedBuffers.partial(CEEPartialModels.BULB_FILAMENT, state)
+            CachedBuffers.partial(blockEntity.light > 0.7 ? CEEPartialModels.BULB_FILAMENT_BRIGHT : CEEPartialModels.BULB_FILAMENT, state)
                     .light(blockEntity.light > 0.05 ? LightTexture.FULL_BRIGHT : light)
-                    .color((int) (blockEntity.light * 233) + 22, (int) (blockEntity.light * 233) + 22, (int) (blockEntity.light * 233) + 22, 255)
+                    .color(blockEntity.light > 0.7 ? 255 : (int) (blockEntity.light * 330) + 22, blockEntity.light > 0.7 ? 255 : (int) (blockEntity.light * 330) + 22, blockEntity.light > 0.7 ? 255 : (int) (blockEntity.light * 330) + 22, 255)
                     .center()
                     .rotateYDegrees(state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? (int) state.getValue(BulbBlock.FACING).toYRot() : 0)
                     .rotateXDegrees(state.getValue(BulbBlock.FACING) == Direction.DOWN ? 180 : state.getValue(BulbBlock.FACING).getAxis().isHorizontal() ? 270 : 0)

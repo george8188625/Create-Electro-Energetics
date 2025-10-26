@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
@@ -42,18 +43,18 @@ public class ElectricityBasicsScenes {
 
         scene.idle(100);
 
-        connections.createConnection(util.vector().blockSurface(source, Direction.WEST), util.vector().of(19/16f, 18/16f, 24/16f));
+        ElementLink<WirePonderElement> sourceWire1 = connections.createConnection(new InWorldNode(1, source), new InWorldNode(1, diode));
         scene.idle(2);
-        connections.createConnection(util.vector().of(1 + 13/16f, 18/16f, 24/16f), util.vector().of(3 + 2/16f, 1 + 3/16f, 24/16f));
+        connections.createConnection(new InWorldNode(1, diode), new InWorldNode(0, bulb));
         scene.idle(2);
-        connections.createConnection(util.vector().of(3 + 14/16f, 1 + 3/16f, 24/16f), util.vector().blockSurface(source, Direction.EAST));
+        ElementLink<WirePonderElement> sourceWire2 = connections.createConnection(new InWorldNode(1, bulb), new InWorldNode(0, source));
         scene.world().modifyBlock(bulb, bs -> bs.setValue(BulbBlock.LIGHT, 2), false);
         scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.light = 1);
         scene.idle(2);
 
-        ElementLink<CurrentVisualizationPonderElement> visualization1 = connections.createCurrentVisualization(util.vector().blockSurface(source, Direction.WEST), util.vector().of(19/16f, 18/16f, 24/16f), 1, 1, true);
-        ElementLink<CurrentVisualizationPonderElement> visualization2 = connections.createCurrentVisualization(util.vector().of(1 + 13/16f, 18/16f, 24/16f), util.vector().of(3 + 2/16f, 1 + 3/16f, 24/16f), 1, 1, true);
-        ElementLink<CurrentVisualizationPonderElement> visualization3 = connections.createCurrentVisualization(util.vector().of(3 + 14/16f, 1 + 3/16f, 24/16f), util.vector().blockSurface(source, Direction.EAST), 1, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization1 = connections.createCurrentVisualization(new InWorldNode(1, source), new InWorldNode(1, diode), 1, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization2 = connections.createCurrentVisualization(new InWorldNode(1, diode), new InWorldNode(0, bulb), 1, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization3 = connections.createCurrentVisualization(new InWorldNode(1, bulb), new InWorldNode(0, source), 1, 1, true);
 
         scene.idle(20);
 
@@ -91,9 +92,13 @@ public class ElectricityBasicsScenes {
         connections.removeCurrentVisualization(visualization1);
         connections.removeCurrentVisualization(visualization2);
         connections.removeCurrentVisualization(visualization3);
+        connections.removeConnection(sourceWire1);
+        connections.removeConnection(sourceWire2);
+        connections.createConnection(new InWorldNode(0, source), new InWorldNode(1, diode));
+        connections.createConnection(new InWorldNode(1, bulb), new InWorldNode(1, source));
 
-        connections.createCurrentVisualization(util.vector().of(1 + 13/16f, 18/16f, 24/16f), util.vector().of(3 + 2/16f, 1 + 3/16f, 24/16f), 1, -0.1f, false);
-        connections.createCurrentVisualization(util.vector().of(3 + 14/16f, 1 + 3/16f, 24/16f), util.vector().blockSurface(source, Direction.EAST), 1, -0.1f, false);
+        connections.createCurrentVisualization(new InWorldNode(1, diode), new InWorldNode(0, bulb), 1, -0.1f, false);
+        connections.createCurrentVisualization(new InWorldNode(1, bulb), new InWorldNode(1, source), 1, -0.1f, false);
 
         scene.overlay().showText(100)
                 .text("Otherwise, the diode blocks current flow")
@@ -126,13 +131,13 @@ public class ElectricityBasicsScenes {
 
         scene.world().showSection(batteries, Direction.DOWN);
         scene.idle(2);
-        connections.createConnection(util.vector().centerOf(0, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.WEST));
+        connections.createConnection(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, util.grid().at(1, 1, 3)));
         scene.idle(2);
-        connections.createConnection(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.EAST));
+        connections.createConnection(new InWorldNode(0, util.grid().at(2, 1, 3)), new InWorldNode(1, util.grid().at(1, 1, 3)));
         scene.idle(2);
-        connections.createConnection(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.WEST));
+        connections.createConnection(new InWorldNode(0, util.grid().at(2, 1, 3)), new InWorldNode(0, util.grid().at(3, 1, 3)));
         scene.idle(2);
-        connections.createConnection(util.vector().centerOf(4, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.EAST));
+        connections.createConnection(new InWorldNode(0, util.grid().at(4, 1, 3)), new InWorldNode(1, util.grid().at(3, 1, 3)));
 
         scene.idle(20);
 
@@ -192,9 +197,9 @@ public class ElectricityBasicsScenes {
                 .placeNearTarget();
         scene.idle(50);
 
-        ElementLink<WirePonderElement> voltmeterWire1 = connections.createConnection(util.vector().centerOf(4, 1, 3), util.vector().blockSurface(voltmeter, Direction.EAST));
+        ElementLink<WirePonderElement> voltmeterWire1 = connections.createConnection(new InWorldNode(0, util.grid().at(4, 1, 3)), new InWorldNode(1, voltmeter));
         scene.idle(2);
-        ElementLink<WirePonderElement> voltmeterWire2 = connections.createConnection(util.vector().centerOf(0, 1, 3), util.vector().blockSurface(voltmeter, Direction.WEST));
+        ElementLink<WirePonderElement> voltmeterWire2 = connections.createConnection(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, voltmeter));
         scene.idle(2);
         scene.world().showSection(util.select().position(voltmeter), Direction.DOWN);
         scene.idle(2);
@@ -227,16 +232,13 @@ public class ElectricityBasicsScenes {
         connections.removeConnection(voltmeterWire1);
         connections.removeConnection(voltmeterWire2);
         scene.idle(20);
-        voltmeterWire1 = connections.createConnection(util.vector().centerOf(4, 1, 3), util.vector().of(2 + 14/16f, 19/16f, 24/16f));
-        voltmeterWire2 = connections.createConnection(util.vector().centerOf(0, 1, 3), util.vector().of(2 + 2/16f, 19/16f, 24/16f));
+        voltmeterWire1 = connections.createConnection(new InWorldNode(0, util.grid().at(4, 1, 3)), new InWorldNode(1, voltmeter));
+        voltmeterWire2 = connections.createConnection(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, voltmeter));
         scene.world().modifyBlock(voltmeter, bs -> bs.setValue(BulbBlock.LIGHT, 2), false);
         scene.world().modifyBlockEntity(voltmeter, BulbBlockEntity.class, be -> be.light = 1);
-        ElementLink<CurrentVisualizationPonderElement> visualization1 = connections.createCurrentVisualization(util.vector().centerOf(0, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.WEST), 1, 1, true);
-        ElementLink<CurrentVisualizationPonderElement> visualization2 = connections.createCurrentVisualization(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.EAST), 1, -1, true);
-        ElementLink<CurrentVisualizationPonderElement> visualization3 = connections.createCurrentVisualization(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.WEST), 1, 1, true);
-        ElementLink<CurrentVisualizationPonderElement> visualization4 = connections.createCurrentVisualization(util.vector().centerOf(4, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.EAST), 1, -1, true);
-        ElementLink<CurrentVisualizationPonderElement> visualization5 = connections.createCurrentVisualization(util.vector().centerOf(4, 1, 3), util.vector().of(2 + 14/16f, 19/16f, 24/16f), 1, 1, true);
-        ElementLink<CurrentVisualizationPonderElement> visualization6 = connections.createCurrentVisualization(util.vector().centerOf(0, 1, 3), util.vector().of(2 + 2/16f, 19/16f, 24/16f), 1, -1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization1 = connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, util.grid().at(4, 1, 3)), 0, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization5 = connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(4, 1, 3)), new InWorldNode(1, voltmeter), 1, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization6 = connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, voltmeter), 1, -1, true);
         scene.idle(20);
 
         scene.overlay().showText(70)
@@ -257,22 +259,16 @@ public class ElectricityBasicsScenes {
 
         scene.world().replaceBlocks(util.select().position(voltmeter), CEEBlocks.CONNECTOR.getDefaultState().setValue(BulbBlock.FACING, Direction.UP), true);
         connections.removeCurrentVisualization(visualization1);
-        connections.removeCurrentVisualization(visualization2);
-        connections.removeCurrentVisualization(visualization3);
-        connections.removeCurrentVisualization(visualization4);
         connections.removeCurrentVisualization(visualization5);
         connections.removeCurrentVisualization(visualization6);
         connections.removeConnection(voltmeterWire1);
         connections.removeConnection(voltmeterWire2);
         scene.idle(20);
-        connections.createConnection(util.vector().centerOf(4, 1, 3), util.vector().centerOf(voltmeter));
-        connections.createConnection(util.vector().centerOf(0, 1, 3), util.vector().centerOf(voltmeter));
-        connections.createCurrentVisualization(util.vector().centerOf(0, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.WEST), 1, 5, false);
-        connections.createCurrentVisualization(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(1, 1, 3), Direction.EAST), 1, -5, false);
-        connections.createCurrentVisualization(util.vector().centerOf(2, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.WEST), 1, 5, false);
-        connections.createCurrentVisualization(util.vector().centerOf(4, 1, 3), util.vector().blockSurface(util.grid().at(3, 1, 3), Direction.EAST), 1, -5, false);
-        connections.createCurrentVisualization(util.vector().centerOf(4, 1, 3), util.vector().centerOf(voltmeter), 1, 5, false);
-        connections.createCurrentVisualization(util.vector().centerOf(0, 1, 3), util.vector().centerOf(voltmeter), 1, -5, false);
+        connections.createConnection(new InWorldNode(0, util.grid().at(4, 1, 3)), new InWorldNode(1, voltmeter));
+        connections.createConnection(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, voltmeter));
+        connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, util.grid().at(4, 1, 3)), 0, 5, false);
+        connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(4, 1, 3)), new InWorldNode(0, voltmeter), 1, 5, false);
+        connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, voltmeter), 1, -5, false);
 
         scene.overlay().showText(70)
                 .text("When two different potentials are connected with low resistance, a lot of current starts flowing")

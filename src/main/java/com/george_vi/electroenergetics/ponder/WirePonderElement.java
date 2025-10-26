@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.WireType;
 import net.createmod.catnip.render.CachedBuffers;
@@ -17,20 +18,24 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class WirePonderElement extends AnimatedSceneElementBase {
-    final Vec3 pos1, pos2;
+    final InWorldNode node1, node2;
     final WireType type;
     final boolean catenary;
 
-    public WirePonderElement(Vec3 pos1, Vec3 pos2, WireType type, boolean catenary) {
-        this.pos1 = pos1;
-        this.pos2 = pos2;
+    public WirePonderElement(InWorldNode node1, InWorldNode node2, WireType type, boolean catenary) {
+        this.node1 = node1;
+        this.node2 = node2;
         this.type = type;
         this.catenary = catenary;
     }
 
     @Override
     protected void renderLast(PonderLevel world, MultiBufferSource buffer, GuiGraphics graphics, float fade, float pt) {
+        Vec3 pos1 = node1.getPosition(world);
+        Vec3 pos2 = node2.getPosition(world);
         if (catenary) {
+            pos1 = node1.sourcePos().getBottomCenter();
+            pos2 = node2.sourcePos().getBottomCenter();
             List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(pos1, pos2, 0, 10);
 
             for (int i = 0; i < lowerWirePoints.size(); i++) {

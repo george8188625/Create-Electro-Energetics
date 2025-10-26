@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.catnip.math.Pointing;
 import net.createmod.ponder.api.PonderPalette;
@@ -61,7 +62,7 @@ public class RailwayElectrificationScenes {
                 .rightClick();
         scene.idle(40);
 
-        connections.createCatenaryConnection(holder1.getBottomCenter(), holder2.getBottomCenter(), CEEWireTypes.STANDARD.get(), 1);
+        connections.createCatenaryConnection(holder1, holder2, CEEWireTypes.STANDARD.get(), 1);
         scene.idle(20);
 
         scene.overlay().showText(70)
@@ -91,19 +92,19 @@ public class RailwayElectrificationScenes {
 
         scene.idle(20);
 
-        connections.createConnection(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
-                util.vector().centerOf(12, 6, 6));
+        connections.createConnection(new InWorldNode(0, util.grid().at(13, 6, 3)),
+                new InWorldNode(0, util.grid().at(12, 6, 6)));
         scene.idle(20);
 
         scene.world().showSection(powerSupply, Direction.DOWN);
         scene.idle(20);
 
-        connections.createConnection(util.vector().centerOf(12, 1, 8),
-                util.vector().centerOf(12, 6, 6));
+        connections.createConnection(new InWorldNode(0, util.grid().at(12, 1, 8)),
+                new InWorldNode(0, util.grid().at(12, 6, 6)));
         scene.idle(2);
 
-        connections.createConnection(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.EAST),
-                util.vector().centerOf(12, 1, 8));
+        connections.createConnection(new InWorldNode(1, util.grid().at(10, 1, 9)),
+                new InWorldNode(0, util.grid().at(12, 1, 8)));
         scene.idle(20);
 
         scene.overlay().showText(70)
@@ -114,8 +115,8 @@ public class RailwayElectrificationScenes {
 
         scene.idle(100);
 
-        connections.createConnection(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.WEST),
-                util.vector().of(8/16f, 3/16f, 8/16f).add(8, 1, 9));
+        connections.createConnection(new InWorldNode(0, util.grid().at(10, 1, 9)),
+                new InWorldNode(0, util.grid().at(8, 1, 9)));
         scene.idle(20);
 
         scene.overlay().showText(70)
@@ -146,22 +147,22 @@ public class RailwayElectrificationScenes {
         scene.special().moveParrot(birb, util.vector().of(9, 0, 0), 60);
         scene.idle(80);
 
-        connections.createCurrentVisualization(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
-                util.vector().centerOf(12, 6, 6), 1, -1, true);
-        connections.createCurrentVisualization(util.vector().centerOf(12, 1, 8),
-                util.vector().centerOf(12, 6, 6), 1, 1, true);
-        connections.createCurrentVisualization(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.EAST),
-                util.vector().centerOf(12, 1, 8), 1, 1, true);
-        connections.createCurrentVisualization(util.vector().blockSurface(util.grid().at(10, 1, 9), Direction.WEST),
-                util.vector().of(8/16f, 3/16f, 8/16f).add(8, 1, 9), 1, -1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(13, 6, 3)),
+                new InWorldNode(0, util.grid().at(12, 6, 6)), 1, -1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(12, 1, 8)),
+                new InWorldNode(0, util.grid().at(12, 6, 6)), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, util.grid().at(10, 1, 9)),
+                new InWorldNode(0, util.grid().at(12, 1, 8)), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(10, 1, 9)),
+                new InWorldNode(0, util.grid().at(8, 1, 9)), 1, -1, true);
 
-        connections.createCurrentVisualization(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
-                util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, true);
-        connections.createCurrentVisualization(util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3),
-                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, true);
-
-        connections.createCurrentVisualization(util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3),
-                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 0, 3), 0, 1, true);
+//        connections.createCurrentVisualization(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
+//                util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, true);
+//        connections.createCurrentVisualization(util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3),
+//                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, true);
+//
+//        connections.createCurrentVisualization(util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3),
+//                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 0, 3), 0, 1, true);
 
         scene.idle(60);
     }

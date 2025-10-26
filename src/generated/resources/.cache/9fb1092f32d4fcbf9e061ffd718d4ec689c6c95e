@@ -1,4 +1,4 @@
-// 1.21.1	2025-10-19T19:19:04.0178483	Recipes
+// 1.21.1	2025-10-26T18:56:04.7349076	Recipes
 6d0a52ab43d4f318de46861ec174f1d15d1158c2 data/electroenergetics/advancement/recipes/misc/crafting/accumulator.json
 3aebfa4f38c5a9d6431e63d06c23a7682eb9c06e data/electroenergetics/advancement/recipes/misc/crafting/alternator_brushes.json
 17cb440186b8229ab96e28b4fabfcc6443fd4318 data/electroenergetics/advancement/recipes/misc/crafting/alternator_rotor.json
@@ -92,7 +92,7 @@ aec2fe44c55e4325101d39ddff948a04ac687b8a data/electroenergetics/recipe/crafting/
 63ee99c66d7c83e0bfd86fccd1bdb52bc7e3887c data/electroenergetics/recipe/crafting/pole_mount.json
 b96377e2e31d96b4d6835bd05cbf1ae1179139e7 data/electroenergetics/recipe/crafting/quad_connector.json
 94026d88a737a3b44a35d8e29f99f0330d5cae78 data/electroenergetics/recipe/crafting/quad_connector_from_double.json
-c4a9b7da45e931fdb145a3e17ac2a2242d437ec1 data/electroenergetics/recipe/crafting/radiator_panel.json
+d7e8d1afc6917336636c212e8e2681c57a9cee54 data/electroenergetics/recipe/crafting/radiator_panel.json
 de531cc73b76a0f5618351e5b5c8adb93e2e0a3c data/electroenergetics/recipe/crafting/redstone_relay.json
 6cb114479d3f53f997875b5a77488d4e18d56c6e data/electroenergetics/recipe/crafting/relay.json
 481f4f886c0bb763c2b8a16076742ba4fb0ff0a2 data/electroenergetics/recipe/crafting/resistor.json

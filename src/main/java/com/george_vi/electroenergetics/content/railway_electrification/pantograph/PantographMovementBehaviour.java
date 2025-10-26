@@ -53,7 +53,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             if (context.disabled) {
                 if (!prevDisabled) {
                     ((IPantographList) e.getCarriage()).changePantographState(context.localPos, false);
-                    targetExtensionState = 0;
+                    targetExtensionState = context.state.getValue(PantographBlock.DOUBLE) ? 0.3f : 0f;
                 }
             } else {
                 if (prevDisabled) {
@@ -217,6 +217,28 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                     .translate(0, 0.375, 0.8125)
                     .translate(0, armHingePosY, armHingePosX)
                     .rotateXDegrees(-1 - extensionState * 30)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM_ARM, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(9/16f, 0.375, 0.8125)
+                    .translate(0, armHingePosY, armHingePosX)
+                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateYDegrees(12.5f)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM_ARM, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .translate(7/16f, 0.375, 0.8125)
+                    .translate(0, armHingePosY, armHingePosX)
+                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateYDegrees(-12.5f)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));

@@ -1,0 +1,212 @@
+{
+  "variants": {
+    "activated=false,facing=down,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 180
+    },
+    "activated=false,facing=down,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 180
+    },
+    "activated=false,facing=down,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 180
+    },
+    "activated=false,facing=down,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 180
+    },
+    "activated=false,facing=east,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 270,
+      "y": 270
+    },
+    "activated=false,facing=east,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 270,
+      "y": 270
+    },
+    "activated=false,facing=east,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "activated=false,facing=east,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "activated=false,facing=north,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 270,
+      "y": 180
+    },
+    "activated=false,facing=north,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 270,
+      "y": 180
+    },
+    "activated=false,facing=north,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "activated=false,facing=north,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "activated=false,facing=south,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 270
+    },
+    "activated=false,facing=south,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 270
+    },
+    "activated=false,facing=south,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 270
+    },
+    "activated=false,facing=south,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 270
+    },
+    "activated=false,facing=up,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block"
+    },
+    "activated=false,facing=up,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block"
+    },
+    "activated=false,facing=up,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll"
+    },
+    "activated=false,facing=up,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll"
+    },
+    "activated=false,facing=west,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 270,
+      "y": 90
+    },
+    "activated=false,facing=west,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block",
+      "x": 270,
+      "y": 90
+    },
+    "activated=false,facing=west,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "activated=false,facing=west,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "activated=true,facing=down,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 180
+    },
+    "activated=true,facing=down,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 180
+    },
+    "activated=true,facing=down,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 180
+    },
+    "activated=true,facing=down,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 180
+    },
+    "activated=true,facing=east,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 270,
+      "y": 270
+    },
+    "activated=true,facing=east,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 270,
+      "y": 270
+    },
+    "activated=true,facing=east,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 270,
+      "y": 270
+    },
+    "activated=true,facing=east,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 270,
+      "y": 270
+    },
+    "activated=true,facing=north,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 270,
+      "y": 180
+    },
+    "activated=true,facing=north,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 270,
+      "y": 180
+    },
+    "activated=true,facing=north,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 270,
+      "y": 180
+    },
+    "activated=true,facing=north,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 270,
+      "y": 180
+    },
+    "activated=true,facing=south,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 270
+    },
+    "activated=true,facing=south,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 270
+    },
+    "activated=true,facing=south,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 270
+    },
+    "activated=true,facing=south,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 270
+    },
+    "activated=true,facing=up,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed"
+    },
+    "activated=true,facing=up,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed"
+    },
+    "activated=true,facing=up,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll"
+    },
+    "activated=true,facing=up,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll"
+    },
+    "activated=true,facing=west,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 270,
+      "y": 90
+    },
+    "activated=true,facing=west,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed",
+      "x": 270,
+      "y": 90
+    },
+    "activated=true,facing=west,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 270,
+      "y": 90
+    },
+    "activated=true,facing=west,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/emergency_stop_button/block_pressed_roll",
+      "x": 270,
+      "y": 90
+    }
+  }
+}

@@ -1,11 +1,13 @@
 package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireType;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.foundation.instruction.FadeIntoSceneInstruction;
 import net.createmod.ponder.foundation.instruction.FadeOutOfSceneInstruction;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
@@ -16,28 +18,28 @@ public class WireConnectionInstructions {
         this.builder = builder;
     }
 
-    public ElementLink<WirePonderElement> createConnection(Vec3 pos1, Vec3 pos2, WireType type) {
-        return createConnection(pos1, pos2, type, 1);
+    public ElementLink<WirePonderElement> createConnection(InWorldNode node1, InWorldNode node2, WireType type) {
+        return createConnection(node1, node2, type, 1);
     }
 
-    public ElementLink<WirePonderElement> createConnection(Vec3 pos1, Vec3 pos2) {
-        return createConnection(pos1, pos2, CEEWireTypes.STANDARD.get(), 1);
+    public ElementLink<WirePonderElement> createConnection(InWorldNode node1, InWorldNode node2) {
+        return createConnection(node1, node2, CEEWireTypes.STANDARD.get(), 1);
     }
 
-    public ElementLink<WirePonderElement> createConnection(Vec3 pos1, Vec3 pos2, WireType type, int duration) {
-        CreateWireConnectionInstruction instruction = new CreateWireConnectionInstruction(duration, Direction.DOWN, new WirePonderElement(pos1, pos2, type, false));
+    public ElementLink<WirePonderElement> createConnection(InWorldNode node1, InWorldNode node2, WireType type, int duration) {
+        CreateWireConnectionInstruction instruction = new CreateWireConnectionInstruction(duration, Direction.DOWN, new WirePonderElement(node1, node2, type, false));
         builder.addInstruction(instruction);
         return instruction.createLink(builder.getScene());
     }
 
-    public ElementLink<WirePonderElement> createCatenaryConnection(Vec3 pos1, Vec3 pos2, WireType type, int duration) {
-        CreateWireConnectionInstruction instruction = new CreateWireConnectionInstruction(duration, Direction.DOWN, new WirePonderElement(pos1, pos2, type, true));
+    public ElementLink<WirePonderElement> createCatenaryConnection(BlockPos pos1, BlockPos pos2, WireType type, int duration) {
+        CreateWireConnectionInstruction instruction = new CreateWireConnectionInstruction(duration, Direction.DOWN, new WirePonderElement(new InWorldNode(0, pos1), new InWorldNode(0, pos2), type, true));
         builder.addInstruction(instruction);
         return instruction.createLink(builder.getScene());
     }
 
-    public ElementLink<CurrentVisualizationPonderElement> createCurrentVisualization(Vec3 pos1, Vec3 pos2, float sag, float speed, boolean valid) {
-        CreateCurrentVisualizationInstruction instruction = new CreateCurrentVisualizationInstruction(1, Direction.DOWN, new CurrentVisualizationPonderElement(pos1, pos2, speed, sag, valid));
+    public ElementLink<CurrentVisualizationPonderElement> createCurrentVisualization(InWorldNode node1, InWorldNode node2, float sag, float speed, boolean valid) {
+        CreateCurrentVisualizationInstruction instruction = new CreateCurrentVisualizationInstruction(1, Direction.DOWN, new CurrentVisualizationPonderElement(node1, node2, speed, sag, valid));
         builder.addInstruction(instruction);
         return instruction.createLink(builder.getScene());
     }
