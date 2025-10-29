@@ -10,5 +10,8 @@ Since it has nothing to do with FE, there is a special block to convert electric
 
 Performance seems to be really good, even tho the simulation is really convoluted and runs each tick. On my modded server with a couple of friends, with an extensive electric grid, it takes ~1ms / tick to solve everything. But also there is an optimization in mind that is gonna lower it even further.
 
+**Join the discord server:**
+<br>
+<a href="https://discord.gg/crdN2xhQP2"><img src="https://img.shields.io/discord/1121792423836799128?color=5865f2&label=Discord"></a>
 <br>
 <img width="1883" height="958" alt="high voltage transmission towers" src="https://github.com/user-attachments/assets/c7e5d880-700a-4162-a627-b06d8a9c2b3f" />
