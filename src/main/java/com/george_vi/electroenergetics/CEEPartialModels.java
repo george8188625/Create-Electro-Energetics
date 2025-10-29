@@ -41,6 +41,9 @@ public class CEEPartialModels {
     public static final PartialModel FUSE_HOLDER_COPPER_CONDUCTOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/copper_conductor"));
     public static final PartialModel FUSE_HOLDER_FUSE = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/fuse"));
     public static final PartialModel FUSE_HOLDER_BROKEN_FUSE = PartialModel.of(CreateElecrtoEnergetics.rl("block/fuse_holder/broken_fuse"));
+    public static final PartialModel INDICATOR_BULB_GLOW = PartialModel.of(CreateElecrtoEnergetics.rl("block/indicator_bulb/glow"));
+    public static final PartialModel INDICATOR_BULB_TUBE = PartialModel.of(CreateElecrtoEnergetics.rl("block/indicator_bulb/tube"));
+    public static final PartialModel INDICATOR_BULB_CUBE = PartialModel.of(CreateElecrtoEnergetics.rl("block/indicator_bulb/cube"));
 
     public static final Map<DyeColor, PartialModel> COLORED_WIRE_SEGMENTS = new HashMap<>();
     static {

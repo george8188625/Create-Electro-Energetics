@@ -40,6 +40,7 @@
     "electroenergetics:relay",
     "electroenergetics:capacitor",
     "electroenergetics:momentary_switch",
-    "electroenergetics:emergency_stop_button"
+    "electroenergetics:emergency_stop_button",
+    "electroenergetics:indicator_bulb"
   ]
 }

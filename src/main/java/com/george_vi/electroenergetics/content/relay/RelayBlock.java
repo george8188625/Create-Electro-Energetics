@@ -53,14 +53,14 @@ public class RelayBlock extends DirectionalRolledDeviceBlock {
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
-            return CEENodeConfigurations.RELAY_ROLL.getNodes(state.getValue(FACING));
+            return CEENodeConfigurations.RELAY.rotate(new Vec3(0, 90, 0)).getNodes(state.getValue(FACING));
         return CEENodeConfigurations.RELAY.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
-            return CEENodeConfigurations.RELAY_ROLL.getNodePos(state.getValue(FACING), id);
+            return CEENodeConfigurations.RELAY.rotate(new Vec3(0, 90, 0)).getNodePos(state.getValue(FACING), id);
         return CEENodeConfigurations.RELAY.getNodePos(state.getValue(FACING), id);
     }
 

@@ -30,22 +30,20 @@ public class BuzzerBlock extends DirectionalRolledDeviceBlock implements IBE<Buz
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
-            return CEEShapes.BUZZER_ROLL.get(state.getValue(FACING));
         return CEEShapes.BUZZER.get(state.getValue(FACING));
     }
 
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
-            return CEENodeConfigurations.ELECTRONIC_4_ROLL.getNodes(state.getValue(FACING));
+            return CEENodeConfigurations.ELECTRONIC_4.rotate(new Vec3(0, -90, 0)).getNodes(state.getValue(FACING));
         return CEENodeConfigurations.ELECTRONIC_4.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
-            return CEENodeConfigurations.ELECTRONIC_4_ROLL.getNodePos(state.getValue(FACING), id);
+            return CEENodeConfigurations.ELECTRONIC_4.rotate(new Vec3(0, -90, 0)).getNodePos(state.getValue(FACING), id);
         return CEENodeConfigurations.ELECTRONIC_4.getNodePos(state.getValue(FACING), id);
     }
 

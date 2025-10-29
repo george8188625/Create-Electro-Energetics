@@ -222,6 +222,13 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/bulb"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.INDICATOR_BULB)
+                .pattern("CEC")
+                .define('E', AllItems.ELECTRON_TUBE)
+                .define('C', CEEBlocks.CONNECTOR)
+                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/indicator_bulb"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.FUSE)
                 .pattern("AgA")
                 .pattern("CwC")

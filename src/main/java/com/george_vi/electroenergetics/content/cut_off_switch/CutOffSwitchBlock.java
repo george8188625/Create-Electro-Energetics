@@ -101,10 +101,10 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (isDouble)
             return state.getValue(ROLL) ?
-                    CEENodeConfigurations.DOUBLE_SWITCH_ROLL.getNodes(state.getValue(FACING)) :
+                    CEENodeConfigurations.DOUBLE_SWITCH.rotate(new Vec3(0, 90, 0)).getNodes(state.getValue(FACING)) :
                     CEENodeConfigurations.DOUBLE_SWITCH.getNodes(state.getValue(FACING));
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.BULB_ROLL.getNodes(state.getValue(FACING)) :
+                CEENodeConfigurations.BULB.rotate(new Vec3(0, 90, 0)).getNodes(state.getValue(FACING)) :
                 CEENodeConfigurations.BULB.getNodes(state.getValue(FACING));
     }
 
@@ -112,10 +112,10 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         if (isDouble)
             return state.getValue(ROLL) ?
-                    CEENodeConfigurations.DOUBLE_SWITCH_ROLL.getNodePos(state.getValue(FACING), id) :
+                    CEENodeConfigurations.DOUBLE_SWITCH.rotate(new Vec3(0, 90, 0)).getNodePos(state.getValue(FACING), id) :
                     CEENodeConfigurations.DOUBLE_SWITCH.getNodePos(state.getValue(FACING), id);
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.BULB_ROLL.getNodePos(state.getValue(FACING), id) :
+                CEENodeConfigurations.BULB.rotate(new Vec3(0, 90, 0)).getNodePos(state.getValue(FACING), id) :
                 CEENodeConfigurations.BULB.getNodePos(state.getValue(FACING), id);
     }
 }

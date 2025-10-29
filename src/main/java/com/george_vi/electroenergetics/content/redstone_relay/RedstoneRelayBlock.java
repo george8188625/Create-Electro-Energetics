@@ -89,14 +89,14 @@ public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements 
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.REDSTONE_RELAY_ROLL.getNodes(state.getValue(FACING)) :
+                CEENodeConfigurations.REDSTONE_RELAY.rotate(new Vec3(0, 90, 0)).getNodes(state.getValue(FACING)) :
                 CEENodeConfigurations.REDSTONE_RELAY.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.REDSTONE_RELAY_ROLL.getNodePos(state.getValue(FACING), id) :
+                CEENodeConfigurations.REDSTONE_RELAY.rotate(new Vec3(0, 90, 0)).getNodePos(state.getValue(FACING), id) :
                 CEENodeConfigurations.REDSTONE_RELAY.getNodePos(state.getValue(FACING), id);
     }
 

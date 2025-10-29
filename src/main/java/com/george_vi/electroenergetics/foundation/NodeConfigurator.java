@@ -18,6 +18,10 @@ public class NodeConfigurator {
         this.origin = origin;
     }
 
+    public NodeConfigurator rotate(Vec3 vec) {
+        return new NodeConfigurator(getRotatedNodes(vec), origin);
+    }
+
     public Vec3 getNodePos(Direction direction, int id) {
         List<Vec3> nodes = rotate(origin, direction);
         if (id >= nodes.size())

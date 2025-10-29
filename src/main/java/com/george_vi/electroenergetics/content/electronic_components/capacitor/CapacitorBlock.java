@@ -45,14 +45,14 @@ public class CapacitorBlock extends DirectionalRolledDeviceBlock implements IBE<
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
-            return CEENodeConfigurations.ELECTRONIC_10_ROLL.getNodes(state.getValue(FACING));
+            return CEENodeConfigurations.ELECTRONIC_10.rotate(new Vec3(0, -90, 0)).getNodes(state.getValue(FACING));
         return CEENodeConfigurations.ELECTRONIC_10.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
-            return CEENodeConfigurations.ELECTRONIC_10_ROLL.getNodePos(state.getValue(FACING), id);
+            return CEENodeConfigurations.ELECTRONIC_10.rotate(new Vec3(0, -90, 0)).getNodePos(state.getValue(FACING), id);
         return CEENodeConfigurations.ELECTRONIC_10.getNodePos(state.getValue(FACING), id);
     }
 

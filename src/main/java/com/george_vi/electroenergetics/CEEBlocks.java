@@ -10,6 +10,8 @@ import com.george_vi.electroenergetics.content.electronic_components.capacitor.C
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
+import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlock;
+import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockItem;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographMovementBehaviour;
@@ -47,6 +49,8 @@ import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.ModelGen;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.tterrag.registrate.util.entry.BlockEntry;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
@@ -54,6 +58,13 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 
 import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE;
@@ -353,6 +364,12 @@ public class CEEBlocks {
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(BlockStateGen.horizontalBlockProvider(true))
             .transform(pickaxeOnly())
+            .loot((lt, b) -> lt.add(b, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1f)).add(LootItem.lootTableItem(b.asItem())).when(
+                    AnyOfCondition.anyOf(
+                    LootItemBlockStatePropertyCondition.hasBlockStateProperties(b).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(TransformerCoreBlock.FACING, Direction.EAST)),
+                            LootItemBlockStatePropertyCondition.hasBlockStateProperties(b).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(TransformerCoreBlock.FACING, Direction.NORTH))
+                    )
+            ))))
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()
@@ -526,6 +543,17 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<IndicatorBulbBlock> INDICATOR_BULB = REGISTRATE.block("indicator_bulb", IndicatorBulbBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/indicator_bulb/block_" + bs.getValue(IndicatorBulbBlock.SIDE))))
+            .transform(pickaxeOnly())
+            .loot((lt, b) -> lt.add(b, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1f)).add(LootItem.lootTableItem(b.asItem())).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2f)).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(b).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(IndicatorBulbBlock.SIDE, 2))))))) // why are loot table gens so looong wtf
+            .item(IndicatorBulbBlockItem::new)
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()
             .register();
 

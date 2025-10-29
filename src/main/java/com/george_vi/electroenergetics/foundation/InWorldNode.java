@@ -71,7 +71,10 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         BlockState state = level.getBlockState(sourcePos);
         if (!(state.getBlock() instanceof DeviceBlock db))
             return Vec3.ZERO;
-        return toGlobalPos(db.getNodePosition(level, sourcePos, state, id));
+        Vec3 localPos = db.getNodePosition(level, sourcePos, state, id);
+        if (localPos == null)
+            return null;
+        return toGlobalPos(localPos);
     }
 
     public Vec3 toGlobalPos(Vec3 pos) {

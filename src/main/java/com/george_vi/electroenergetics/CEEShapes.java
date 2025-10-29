@@ -75,13 +75,16 @@ public class CEEShapes {
 
     public static final VoxelShaper BUZZER = shape(5, 0, 5, 11, 4, 11).forDirectional();
 
-    public static final VoxelShaper BUZZER_ROLL = shape(5, 0, 5, 11, 4, 11).forDirectional();
-
     public static final VoxelShaper CAPACITOR = shape(4, 0, 4, 12, 10, 12).forDirectional();
 
     public static final VoxelShaper MOMENTARY_SWITCH = shape(1,0, 6,15,4,10).forDirectional();
 
     public static final VoxelShaper MOMENTARY_SWITCH_ROLL = shape(6,0, 1,10,4,15).forDirectional();
+
+    public static final VoxelShaper INDICATOR_BULB_0_ROLL = shape(5, 0, 9, 11, 11, 15).forDirectional();
+    public static final VoxelShaper INDICATOR_BULB_1_ROLL = shape(5, 0, 1, 11, 11, 7).forDirectional();
+    public static final VoxelShaper INDICATOR_BULB_0 = shape(1, 0, 5, 7, 11, 11).forDirectional();
+    public static final VoxelShaper INDICATOR_BULB_1 = shape(9, 0, 5, 15, 11, 11).forDirectional();
 
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);

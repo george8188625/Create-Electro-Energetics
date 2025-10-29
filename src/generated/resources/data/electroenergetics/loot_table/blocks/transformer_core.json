@@ -5,7 +5,23 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "condition": "minecraft:survives_explosion"
+          "condition": "minecraft:any_of",
+          "terms": [
+            {
+              "block": "electroenergetics:transformer_core",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "facing": "east"
+              }
+            },
+            {
+              "block": "electroenergetics:transformer_core",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "facing": "north"
+              }
+            }
+          ]
         }
       ],
       "entries": [

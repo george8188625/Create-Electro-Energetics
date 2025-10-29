@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "E": {
+      "item": "create:electron_tube"
+    }
+  },
+  "pattern": [
+    "CEC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:indicator_bulb"
+  }
+}

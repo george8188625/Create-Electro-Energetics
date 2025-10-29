@@ -111,11 +111,11 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
         Set<BlockPos> visited = new HashSet<>();
         visited.add(worldPosition);
         heatDissipatorsDFS(visited, worldPosition);
-        double dissipationFactor = 0;
+        double dissipationFactor = 1;
         for (BlockPos pos : visited) {
-            if (worldPosition.equals(pos))
+            if (worldPosition.equals(pos) || worldPosition.relative(facing).equals(pos))
                 continue;
-            dissipationFactor += 1d / Math.sqrt(pos.distSqr(worldPosition));
+            dissipationFactor += 1d / Math.sqrt(pos.getCenter().distanceTo(worldPosition.getCenter().relative(facing, 0.5)));
         }
 
         if (level.getFluidState(worldPosition).isEmpty())

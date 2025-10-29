@@ -58,14 +58,14 @@ public class DoubleConnectorBlock extends DirectionalRolledDeviceBlock implement
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodes(state.getValue(FACING)) :
+                CEENodeConfigurations.DOUBLE_CONNECTOR.rotate(new Vec3(0, 90, 0)).getNodes(state.getValue(FACING)) :
                 CEENodeConfigurations.DOUBLE_CONNECTOR.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return state.getValue(ROLL) ?
-                CEENodeConfigurations.DOUBLE_CONNECTOR_ROLL.getNodePos(state.getValue(FACING), id) :
+                CEENodeConfigurations.DOUBLE_CONNECTOR.rotate(new Vec3(0, 90, 0)).getNodePos(state.getValue(FACING), id) :
                 CEENodeConfigurations.DOUBLE_CONNECTOR.getNodePos(state.getValue(FACING), id);
     }
 

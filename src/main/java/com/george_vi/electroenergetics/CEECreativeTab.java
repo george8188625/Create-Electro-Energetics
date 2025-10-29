@@ -35,6 +35,7 @@ public class CEECreativeTab {
                         output.accept(CEEItems.CLAMP_METER.asStack());
                         output.accept(CEEBlocks.CREATIVE_BATTERY.asStack());
                         output.accept(CEEBlocks.BULB.asStack());
+                        output.accept(CEEBlocks.INDICATOR_BULB.asStack());
                         output.accept(CEEBlocks.MOMENTARY_SWITCH.asStack());
                         output.accept(CEEBlocks.EMERGENCY_STOP_BUTTON.asStack());
                         output.accept(CEEBlocks.CUT_OFF_SWITCH.asStack());

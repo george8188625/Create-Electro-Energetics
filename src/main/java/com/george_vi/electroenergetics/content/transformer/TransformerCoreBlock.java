@@ -81,13 +81,13 @@ public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWat
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide && player.isCreative()) {
             Direction facing = state.getValue(FACING);
             BlockPos otherPos = pos.relative(facing);
             BlockState otherState = level.getBlockState(otherPos);
             if (otherState.is(state.getBlock()) && otherState.getValue(FACING) == facing.getOpposite()) {
                 BlockState newState = otherState.getFluidState().is(Fluids.WATER) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState();
-                level.setBlock(otherPos, newState, 51);
+                level.setBlock(otherPos, newState, 35);
                 level.levelEvent(player, 2001, otherPos, Block.getId(otherState));
             }
 
@@ -96,19 +96,19 @@ public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWat
         return super.playerWillDestroy(level, pos, state, player);
     }
 
-    @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        super.onRemove(state, level, pos, newState, movedByPiston);
-        if (!level.isClientSide && newState.getBlock() != state.getBlock()) {
-            Direction facing = state.getValue(FACING);
-            BlockPos otherPos = pos.relative(facing);
-            BlockState otherState = level.getBlockState(otherPos);
-            if (otherState.is(state.getBlock()) && otherState.getValue(FACING) == facing.getOpposite()) {
-                BlockState newOtherState = otherState.getFluidState().is(Fluids.WATER) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState();
-                level.setBlock(otherPos, newOtherState, 51);
-            }
-        }
-    }
+//    @Override
+//    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+//        super.onRemove(state, level, pos, newState, movedByPiston);
+//        if (!level.isClientSide && newState.getBlock() != state.getBlock()) {
+//            Direction facing = state.getValue(FACING);
+//            BlockPos otherPos = pos.relative(facing);
+//            BlockState otherState = level.getBlockState(otherPos);
+//            if (otherState.is(state.getBlock()) && otherState.getValue(FACING) == facing.getOpposite()) {
+//                BlockState newOtherState = otherState.getFluidState().is(Fluids.WATER) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState();
+//                level.setBlock(otherPos, newOtherState, 51);
+//            }
+//        }
+//    }
 
     @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {

@@ -20,6 +20,7 @@ import com.george_vi.electroenergetics.content.fuse.FuseDevice;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderDevice;
 import com.george_vi.electroenergetics.content.gauge.GaugeDevice;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
+import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbDevice;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleDevice;
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayDevice;
 import com.george_vi.electroenergetics.content.relay.RelayDevice;
@@ -65,6 +66,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice CAPACITOR = register(new CapacitorDevice(CreateElecrtoEnergetics.rl("capacitor")));
     public static final SimulatedDevice MOMENTARY_SWITCH = register(new MomentarySwitchDevice(CreateElecrtoEnergetics.rl("momentary_switch")));
     public static final SimulatedDevice TRANSFORMER_CORE = register(new TransformerCoreDevice(CreateElecrtoEnergetics.rl("transformer_core")));
+    public static final SimulatedDevice INDICATOR_BULB = register(new IndicatorBulbDevice(CreateElecrtoEnergetics.rl("indicator_bulb")));
 
     public static SimulatedDevice register(SimulatedDevice device) {
         BY_ID.put(device.getID(), device);

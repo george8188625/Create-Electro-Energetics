@@ -324,8 +324,12 @@ public class InfrastructureSavedData extends SavedData {
         DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, extraData, nodes));
 
         for (InWorldNode node : nodes) {
+            Vec3 nodePos = node.getPosition(level);
+            // shouldn't ever happen but it's better to be safe
+            if (nodePos == null)
+                continue;
             NODES.put(node, new ArrayList<>());
-            NODE_POSITIONS.put(node, node.getPosition(level));
+            NODE_POSITIONS.put(node, nodePos);
         }
         NODES_BY_POS.put(pos, nodes);
 
@@ -471,7 +475,11 @@ public class InfrastructureSavedData extends SavedData {
     public Vec3 getNodePosition(InWorldNode node) {
         Vec3 pos = NODE_POSITIONS.get(node);
         if (pos == null || level.isLoaded(node.sourcePos())) {
-            NODE_POSITIONS.replace(node, pos = node.getPosition(level));
+            Vec3 newPos = node.getPosition(level);
+            // how would that happen??
+            if (newPos == null)
+                return null;
+            NODE_POSITIONS.replace(node, pos = newPos);
         }
         return pos;
     }
