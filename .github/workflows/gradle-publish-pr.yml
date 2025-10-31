@@ -1,4 +1,4 @@
-name: CEE AutoBuild
+name: PR AutoBuild
 
 on:
   pull_request:
