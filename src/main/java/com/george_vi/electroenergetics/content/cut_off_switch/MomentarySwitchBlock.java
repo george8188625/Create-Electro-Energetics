@@ -10,6 +10,7 @@ import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -41,6 +42,13 @@ public class MomentarySwitchBlock extends DirectionalRolledDeviceBlock {
     @Override
     protected SimulatedDevice getDevice() {
         return CEESimulatedDevices.MOMENTARY_SWITCH;
+    }
+
+    @Override
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("Closed", state.getValue(CLOSED));
+        return tag;
     }
 
     @Override

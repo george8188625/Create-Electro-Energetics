@@ -23,7 +23,7 @@ public class DiodeDevice extends SimulatedDevice {
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
         boolean oldBias = extraData.getBoolean("Forward");
         boolean bias = results.getVoltageAt(pos, 0) > results.getVoltageAt(pos, 1);
-        if (!oldBias && Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1)) < 0.001)
+        if (Math.abs(results.getVoltageAt(pos, 0, 1)) < 0.0001)
             bias = false;
         extraData.putBoolean("Forward", bias);
     }

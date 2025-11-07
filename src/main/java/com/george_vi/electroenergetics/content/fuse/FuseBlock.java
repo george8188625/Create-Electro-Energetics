@@ -10,6 +10,7 @@ import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -46,6 +47,14 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
 
     public static FuseBlock broken(Properties properties) {
         return new FuseBlock(properties, true);
+    }
+
+    @Override
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        if (broken)
+            tag.putBoolean("Broken", true);
+        return tag;
     }
 
     @Override

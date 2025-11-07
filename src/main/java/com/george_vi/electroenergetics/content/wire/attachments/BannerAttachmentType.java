@@ -93,4 +93,21 @@ public class BannerAttachmentType extends WireAttachmentType {
         stack.set(DataComponents.BANNER_PATTERNS, pattern);
         return List.of(stack);
     }
+
+    @Override
+    public List<ItemStack> getItemRequirements(WireAttachment attachment) {
+        BannerPatternLayers pattern = null;
+        if (attachment.data.contains("Pattern"))
+            pattern = BannerPatternLayers.CODEC
+                    .parse(NbtOps.INSTANCE, attachment.data.get("Pattern"))
+                    .resultOrPartial(s -> LogUtils.getLogger().error("Failed to parse banner patterns: '{}'", s))
+                    .orElse(null);
+        if (pattern == null)
+            pattern = BannerPatternLayers.EMPTY;
+
+        DyeColor color = DyeColor.byName(attachment.data.getString("BaseColor"), DyeColor.WHITE);
+        ItemStack stack = BannerBlock.byColor(color).asItem().getDefaultInstance();
+        stack.set(DataComponents.BANNER_PATTERNS, pattern);
+        return List.of(stack);
+    }
 }

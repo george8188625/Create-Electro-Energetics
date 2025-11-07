@@ -1,10 +1,7 @@
 package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEERegistries;
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -45,5 +42,9 @@ public class WireAttachment {
 
     public List<ItemStack> getDrops(Level level) {
         return type.getDrops(this, level);
+    }
+
+    public List<ItemStack> getItemRequirement() {
+        return type.getItemRequirements(this);
     }
 }

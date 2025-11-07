@@ -93,6 +93,9 @@ public class InfrastructureSavedData extends SavedData {
                 subNodeTag.putInt("ID", node.id());
                 WireData connectionData = CONNECTION_DATA.get(new NodeConnection(e.getKey(), node));
 
+                if (connectionData == null)
+                    continue;
+
                 ListTag attachmentList = new ListTag();
                 for (Pair<Float, WireAttachment> attachment : connectionData.attachments()) {
                     CompoundTag attachmentTag = attachment.getSecond().write();
@@ -273,12 +276,12 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public void addDevice(BlockPos pos, SimulatedDevice device, CompoundTag extraData, List<Integer> nodeIDs) {
+        List<InWorldNode> nodes = nodeIDs.stream().map(id -> new InWorldNode(id, pos)).toList();
+
         if (DEVICES.containsKey(pos)) {
             SimulatedDeviceInstance di = DEVICES.get(pos);
             if (di.simulatedDevice == device) {
                 List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
-                List<InWorldNode> nodes = nodeIDs.stream().map(id -> new InWorldNode(id, pos)).toList();
-
                 if (oldNodes != null && oldNodes.stream().map(InWorldNode::id).sorted().toList().equals(nodeIDs.stream().sorted().toList())) {
                     for (InWorldNode node : oldNodes) {
                         Vec3 newPos = node.getPosition(level);
@@ -294,6 +297,8 @@ public class InfrastructureSavedData extends SavedData {
 
                 if (oldNodes != null)
                     for (InWorldNode node : oldNodes) {
+                        if (nodes.contains(node))
+                            continue;
                         getConnections(node).forEach(this::removeConnection);
                         NODES.remove(node);
                         NODE_POSITIONS.remove(node);
@@ -302,7 +307,7 @@ public class InfrastructureSavedData extends SavedData {
                 NODES_BY_POS.replace(pos, nodes);
 
                 for (InWorldNode node : nodes) {
-                    NODES.put(node, new ArrayList<>());
+                    NODES.putIfAbsent(node, new ArrayList<>());
                     NODE_POSITIONS.put(node, node.getPosition(level));
 
                     for (NodeConnection connection : getConnections(node)) {
@@ -312,13 +317,31 @@ public class InfrastructureSavedData extends SavedData {
                 }
 
                 return;
-            } else
-                removeDevice(pos);
-        }
+            } else {
+                DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, extraData, nodes));
 
-        List<InWorldNode> nodes = new ArrayList<>();
-        for (int id : nodeIDs)
-            nodes.add(new InWorldNode(id, pos));
+                List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
+                if (oldNodes != null)
+                    for (InWorldNode node : oldNodes) {
+                        if (nodes.contains(node))
+                            continue;
+                        List<NodeConnection> connections = getConnections(node);
+                        for (NodeConnection connection : connections)
+                            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
+
+                        List<BlockPos> catenaryConnections = List.copyOf(CATENARY.getOrDefault(pos, new ArrayList<>()));
+                        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.COPPER_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
+                        for (BlockPos connection : catenaryConnections)
+                            removeCatenary(pos, connection);
+                        NODES.remove(node);
+                        NODE_POSITIONS.remove(node);
+                    }
+
+                NODES_BY_POS.put(pos, nodes);
+                setDirty();
+                return;
+            }
+        }
 
 
         DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, extraData, nodes));
@@ -370,8 +393,10 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public List<NodeConnection> getConnections(InWorldNode node) {
-        List<NodeConnection> connections = new ArrayList<>();
         List<InWorldNode> connectedNodes = NODES.get(node);
+        if (connectedNodes == null)
+            return Collections.emptyList();
+        List<NodeConnection> connections = new ArrayList<>();
         for (InWorldNode connectedNode : connectedNodes)
             connections.add(new NodeConnection(node, connectedNode));
         return connections;

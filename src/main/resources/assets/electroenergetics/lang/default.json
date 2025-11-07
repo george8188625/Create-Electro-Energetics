@@ -23,6 +23,7 @@
   "electroenergetics.gui.goggles.at_current_load": "at current load",
   "electroenergetics.gui.goggles.stored_energy": "Stored Energy:",
   "electroenergetics.gui.goggles.max_heat_dissipation": "Max Heat Dissipation:",
+  "electroenergetics.gui.goggles.rpm_equivalent": "RPM equivalent:",
 
   "electroenergetics.tooltip.energy_meter.owner": "Owner : %1$s",
   "electroenergetics.tooltip.energy_meter.energy": "Total Energy : %1$s",
@@ -95,7 +96,7 @@
   "electroenergetics.resistor.resistance": "Resistance in Ohms",
   "electroenergetics.resistor.resistance_symbol": "Ω",
   "electroenergetics.capacitor.capacitance": "Capacitor Capacitance in Farads",
-  "electroenergetics.capacitor.capacitance_symbol": "C",
+  "electroenergetics.capacitor.capacitance_symbol": "🔋",
 
   "block.electroenergetics.emergency_stop_button.tooltip.summary": "A _Big Red Button_ useful in _emergencies_.",
   "block.electroenergetics.emergency_stop_button.tooltip.condition1": "When R-Clicked",

@@ -332,7 +332,7 @@ public class WireRenderer {
 
     public static Map<InWorldNode, Double> getAllVoltages() {
         synchronized ("get_node_voltages") {
-            return Map.copyOf(NODE_VOLTAGES);
+            return NODE_VOLTAGES;
         }
     }
 

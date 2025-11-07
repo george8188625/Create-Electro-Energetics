@@ -1,7 +1,5 @@
 package com.george_vi.electroenergetics.foundation;
 
-import net.minecraft.core.BlockPos;
-
 import java.util.Objects;
 
 public class AttachedNode extends Node {

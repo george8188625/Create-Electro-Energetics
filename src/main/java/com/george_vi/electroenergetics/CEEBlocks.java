@@ -79,8 +79,7 @@ public class CEEBlocks {
     public static final BlockEntry<ConnectorBlock> CONNECTOR = REGISTRATE.block("connector", ConnectorBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> p.directionalBlock(c.get(), bs -> bs.getValue(ConnectorBlock.STYLE) == ConnectorBlock.Style.LONG ? AssetLookup.partialBaseModel(c, p, "long") :
-                    bs.getValue(ConnectorBlock.STYLE) == ConnectorBlock.Style.OUTER ? AssetLookup.partialBaseModel(c, p, "outer") : AssetLookup.partialBaseModel(c, p)))
+            .blockstate((c, p) -> p.directionalBlock(c.get(), bs -> AssetLookup.partialBaseModel(c, p, bs.getValue(ConnectorBlock.STYLE).suffix)))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))

@@ -15,6 +15,7 @@ import com.simibubi.create.AllSoundEvents;
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -50,6 +51,13 @@ public class EmergencyStopBlock extends DirectionalRolledDeviceBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(ACTIVATED);
+    }
+
+    @Override
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("Closed", !state.getValue(ACTIVATED));
+        return tag;
     }
 
     @Override

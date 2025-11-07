@@ -10,6 +10,7 @@ import com.george_vi.electroenergetics.foundation.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.ponder.CEEPonderPlugin;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.simibubi.create.Create;
 import com.simibubi.create.content.contraptions.wrench.RadialWrenchMenu;
 import com.simibubi.create.foundation.utility.FilesHelper;
 import com.tterrag.registrate.providers.ProviderType;
@@ -19,6 +20,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -34,11 +36,12 @@ import java.util.concurrent.CompletableFuture;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = CreateElecrtoEnergetics.ID)
 public class ModEvents {
 
-    @SubscribeEvent
-    public static void gatherData(GatherDataEvent event) {
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void gatherDataHighPriority(GatherDataEvent event) {
+        if (!event.getMods().contains(CreateElecrtoEnergetics.ID))
+            return;
+
         DataGenerator generator = event.getGenerator();
-        PackOutput packOutput = generator.getPackOutput();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         CreateElecrtoEnergetics.REGISTRATE.addDataGenerator(ProviderType.LANG, provider -> {
 
@@ -52,6 +55,16 @@ public class ModEvents {
             PonderIndex.addPlugin(new CEEPonderPlugin());
             PonderIndex.getLangAccess().provideLang(CreateElecrtoEnergetics.ID, provider::add);
         });
+    }
+
+    @SubscribeEvent
+    public static void gatherData(GatherDataEvent event) {
+        if (!event.getMods().contains(CreateElecrtoEnergetics.ID))
+            return;
+
+        DataGenerator generator = event.getGenerator();
+        PackOutput packOutput = generator.getPackOutput();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
         generator.addProvider(event.includeServer(), new CEERecipeGen(packOutput, lookupProvider));
     }
 

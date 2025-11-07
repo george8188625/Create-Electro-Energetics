@@ -90,7 +90,6 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
 
         if (!level.isClientSide)
             return;
-
         CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickAudio);
     }
 

@@ -28,6 +28,7 @@ import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesDevice;
 import com.george_vi.electroenergetics.content.transformer.TransformerCoreDevice;
 import com.george_vi.electroenergetics.content.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorDevice;
+import com.george_vi.electroenergetics.foundation.TemporaryDevice;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.resources.ResourceLocation;
 
@@ -37,6 +38,7 @@ import java.util.Map;
 public class CEESimulatedDevices {
     static Map<ResourceLocation, SimulatedDevice> BY_ID = new HashMap<>();
 
+    public static final SimulatedDevice TEMPORARY = register(new TemporaryDevice(CreateElecrtoEnergetics.rl("temporary")));
     public static final SimulatedDevice CONNECTOR = register(new ConnectorDevice(CreateElecrtoEnergetics.rl("connector")));
     public static final SimulatedDevice CREATIVE_BATTERY = register(new CreativeBatteryDevice(CreateElecrtoEnergetics.rl("creative_battery")));
     public static final SimulatedDevice BULB = register(new BulbDevice(CreateElecrtoEnergetics.rl("bulb")));

@@ -27,7 +27,7 @@
 - [x] uninsulated wire shorts
 - [ ] thick copper wire (more like cable)
 - [ ] zipline hook (like IE skyhook)
-- [ ] infrastructureSD saved in schematics (wires, devices, etc.)
+- [x] infrastructureSD saved in schematics (wires, devices, etc.)
 - [ ] advancements
 - [ ] surge protection
 - [x] fix transformers
@@ -38,6 +38,8 @@
 - [ ] some coil-gun-like weapon
 - [ ] more CC integration
 - [ ] some kind of electric blaze burner
+- [ ] solenoid valves
+- [ ] a pipe that detects a presence of a fluid inside of it by shorting the connectors when its filled. I have no idea what to name it
 
 **ponders:**
 - [x] voltage

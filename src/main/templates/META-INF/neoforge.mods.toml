@@ -25,3 +25,10 @@ license="${mod_license}"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="create"
+    type="required"
+    versionRange="${create_version_range}"
+    ordering="NONE"
+    side="BOTH"

@@ -21,7 +21,7 @@ public class WireType {
      * When a current is going through a wire, it raises temperature. It eventually settles into a temperature,
      * the temperature that it stops heating up is dependent on the current.
      * these are temperature values, that the wire settles into, and the currents needed for that.
-     * The current is capped to 500A. Here are a few samples from the function.
+     * The current is capped to 1000A. Here are a few samples from the function.
      * 14000 -> ~ 500A
      * 10000 -> ~ 366A
      * 7500  -> ~ 280A

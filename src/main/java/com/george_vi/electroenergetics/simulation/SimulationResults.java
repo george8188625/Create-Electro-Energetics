@@ -26,6 +26,10 @@ public class SimulationResults {
         this.sd = sd;
     }
 
+    public InfrastructureSavedData getInfrastructure() {
+        return sd;
+    }
+
     public double getVoltageAt(Node node) {
         Double v = voltages.get(node);
         if (v == null && node instanceof InWorldNode iwn)

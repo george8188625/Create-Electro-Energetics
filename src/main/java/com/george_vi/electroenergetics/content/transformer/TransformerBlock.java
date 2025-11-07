@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.transformer;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
@@ -50,6 +51,14 @@ public class TransformerBlock extends SimpleDeviceBlock implements ProperWaterlo
         builder.add(FACING, WATERLOGGED);
     }
 
+    @Override
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        if (level.getBlockEntity(pos) instanceof TransformerBlockEntity be)
+            tag.putDouble("Ratio", TransformerBlockEntity.indexToRatio(be.ratio.value));
+        return tag;
+    }
+
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
@@ -93,13 +102,6 @@ public class TransformerBlock extends SimpleDeviceBlock implements ProperWaterlo
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return CEENodeConfigurations.TRANSFORMER.getNodePos(state.getValue(FACING), id);
-    }
-
-    @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
-        CompoundTag tag = new CompoundTag();
-        tag.putFloat("Ratio", 1);
-        return tag;
     }
 
     @Override

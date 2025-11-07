@@ -31,4 +31,8 @@ public abstract class WireAttachmentType {
     }
 
     public abstract List<ItemStack> getDrops(WireAttachment attachment, Level level);
+
+    public List<ItemStack> getItemRequirements(WireAttachment attachment) {
+        return List.of(ItemStack.EMPTY);
+    }
 }

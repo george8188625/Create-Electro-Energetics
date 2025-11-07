@@ -103,7 +103,7 @@ dependencies {
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
-    implementation("curse.maven:createaddition-439890:6445614")
+//    implementation("curse.maven:createaddition-439890:6445614")
     implementation("curse.maven:supplementaries-412082:6829977")
     implementation("curse.maven:selene-499980:6818413")
     implementation("cc.tweaked:cc-tweaked-1.21.1-forge:1.116.1")
@@ -122,7 +122,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
-            mod_description        : mod_description
+            mod_description        : mod_description,
+            create_version_range   : create_version_range
     ]
     inputs.properties replaceProperties
     expand replaceProperties

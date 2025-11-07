@@ -54,4 +54,12 @@ public class BuntingAttachmentType extends WireAttachmentType {
         DyeColor color = DyeColor.byName(attachment.data.getString("BaseColor"), DyeColor.WHITE);
         return List.of(ModRegistry.BUNTING_BLOCKS.get(color).get().asItem().getDefaultInstance());
     }
+
+    @Override
+    public List<ItemStack> getItemRequirements(WireAttachment attachment) {
+        if (!ModList.get().isLoaded("supplementaries"))
+            return Collections.emptyList();
+        DyeColor color = DyeColor.byName(attachment.data.getString("BaseColor"), DyeColor.WHITE);
+        return List.of(ModRegistry.BUNTING_BLOCKS.get(color).get().asItem().getDefaultInstance());
+    }
 }

@@ -159,12 +159,27 @@ public class WireConnectionManager {
                 NodeConnection connection = e.getKey();
                 WireType wireType = e.getValue();
 
-                double vd = Math.abs(results.getVoltageAt(connection.node1(), connection.node2()));
-                double current = vd / SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType);
+                List<CutWireEntry> cuts = cutConnections.get(connection);
+                double current = 0;
+                double wholeWireResistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType);
+                if (cuts == null) {
+                    double vd = Math.abs(results.getVoltageAt(connection.node1(), connection.node2()));
+                    current = vd / wholeWireResistance;
+                } else {
+                    float prevPoint = 0;
+                    Node prevNode = connection.node1();
+                    for (CutWireEntry cut : cuts) {
+                        float dist = cut.point - prevPoint;
+                        prevPoint = cut.point;
+                        double vd = Math.abs(results.getVoltageAt(prevNode, cut.node));
+                        prevNode = cut.node;
+                        current = Math.max(current, vd / (wholeWireResistance * dist));
+                    }
+                }
 
                 float temp = sd.getConnectionTemperature(connection);
 
-                float newTemp = (float) (Math.min(current, 500));
+                float newTemp = (float) (Math.min(current, 1000));
                 newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
                 newTemp = Math.max(temp - 33.3f + newTemp, 0);
                 sd.setConnectionTemperature(connection, newTemp);

@@ -27,4 +27,8 @@ public record WireData(WireType wireType, float temperature, List<Pair<Float, Wi
             CatnipStreamCodecBuilders.list(Pair.streamCodec(ByteBufCodecs.FLOAT, WireAttachment.STREAM_CODEC)).encode(buffer, value.attachments());
         }
     };
+
+    public float getSag() {
+        return wireType.getSag();
+    }
 }

@@ -132,7 +132,6 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
             avgVoltage = 0;
         else
             avgVoltage = primaryVoltages.stream().reduce(Float::sum).orElse(0f) / primaryVoltages.size();
-
         Double vp1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
         Double vp2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
         Double vs1 = WireRenderer.getAllVoltages().get(new InWorldNode(2, getBlockPos()));

@@ -3,9 +3,13 @@ package com.george_vi.electroenergetics.content.electric_pump;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.fluids.pump.PumpBlockEntity;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
+import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.createmod.catnip.nbt.NBTHelper;
@@ -67,13 +71,26 @@ public class ElectricPumpBlockEntity extends PumpBlockEntity {
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         if (Math.abs(avgVoltage) < 0.1)
             return false;
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        CEELang.builder()
                 .translate("gui.goggles.energy_consumption")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        CEELang.builder()
                 .text(LangNumberFormat.format(Math.round(avgVoltage * avgVoltage / CEEConfigs.server().resistanceValues.pumpResistance.get())))
                 .translate("generic.watts")
+                .style(ChatFormatting.AQUA)
+                .space()
+                .add(Component.translatable("electroenergetics.gui.goggles.at_current_voltage")
+                        .withStyle(ChatFormatting.DARK_GRAY))
+                .forGoggles(tooltip, 1);
+
+        CEELang.builder()
+                .translate("gui.goggles.rpm_equivalent")
+                .style(ChatFormatting.GRAY)
+                .forGoggles(tooltip);
+        CreateLang.builder()
+                .text(LangNumberFormat.format(Math.round(getSpeed())))
+                .translate("generic.unit.rpm")
                 .style(ChatFormatting.AQUA)
                 .space()
                 .add(Component.translatable("electroenergetics.gui.goggles.at_current_voltage")
@@ -85,7 +102,7 @@ public class ElectricPumpBlockEntity extends PumpBlockEntity {
 
     @Override
     public float getSpeed() {
-        return Mth.clamp(avgVoltage, -300, 300);
+        return (float) Mth.clamp(avgVoltage * avgVoltage / CEEConfigs.server().resistanceValues.pumpResistance.get() / AllConfigs.server().kinetics.stressValues.getImpact(AllBlocks.MECHANICAL_PUMP.get()).getAsDouble(), -300, 300);
     }
 
     public void setVoltage(float voltage) {

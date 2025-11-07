@@ -42,7 +42,7 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
         };
         voltage.between(0, 550);
         voltage.value = 102;
-        voltage.withFormatter(v -> indexToVoltage(v) >= 1000 ? indexToVoltage(v) / 1000 + "kV" : indexToVoltage(v) + "V");
+        voltage.withFormatter(v -> CEELang.formatVoltage(indexToVoltage(v)).string());
         voltage.withCallback(i -> this.updateVoltage());
         behaviours.add(voltage);
     }

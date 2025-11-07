@@ -191,4 +191,9 @@ public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock implements 
     public boolean canSelfConnect(Level level, BlockPos pos, BlockState state, int id1, int id2) {
         return !((id1 == 1 && id2 == 0) || (id1 == 0 && id2 == 1) || (id1 == 2 && id2 == 3) || (id1 == 3 && id2 == 2));
     }
+
+    @Override
+    protected boolean shouldReplaceDeviceFor(BlockState thisState, BlockState newState) {
+        return thisState.getBlock().getClass() != newState.getBlock().getClass();
+    }
 }

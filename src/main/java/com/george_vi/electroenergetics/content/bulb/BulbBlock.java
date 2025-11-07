@@ -9,6 +9,7 @@ import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -40,6 +41,14 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
     public BulbBlock(Properties properties, boolean broken) {
         super(properties);
         this.broken = broken;
+    }
+
+    @Override
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        if (broken)
+            tag.putBoolean("Destroyed", true);
+        return tag;
     }
 
     public static BulbBlock broken(Properties properties) {

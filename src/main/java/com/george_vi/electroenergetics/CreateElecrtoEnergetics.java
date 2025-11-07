@@ -35,7 +35,7 @@ public class CreateElecrtoEnergetics
                                 .andThen(TooltipModifier.mapNull(new ElectricStatsTooltipModifier(item)))
                 );
         REGISTRATE.registerEventListeners(modEventBus);
-        modEventBus.addListener((GatherDataEvent event) -> event.addProvider(new RegistrateDataProvider(REGISTRATE, ID, event)));
+//        modEventBus.addListener((GatherDataEvent event) -> event.addProvider(new RegistrateDataProvider(REGISTRATE, ID, event)));
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
         CEEItems.register();

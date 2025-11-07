@@ -55,6 +55,8 @@ public class ConverterBlock extends DirectionalRolledDeviceBlock implements IWre
     protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Source", state.getValue(SOURCE));
+        if (level.getBlockEntity(pos) instanceof ConverterBlockEntity be)
+            tag.putDouble("Voltage", be.voltage.value * 10);
         return tag;
     }
 

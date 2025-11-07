@@ -4,7 +4,7 @@
   "priority": 1234,
   "package": "com.george_vi.electroenergetics.mixins",
   "refmap": "electroenergetics.refmap.json",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "client": [
     "LevelRendererAccessor"
   ],
@@ -13,6 +13,10 @@
   },
   "mixins": [
     "CarriageContraptionMixin",
-    "CarriageMixin"
+    "CarriageMixin",
+    "FluidPropagatorMixin",
+    "SchematicLevelMixin",
+    "SchematicPrinterMixin",
+    "StructureTemplateMixin"
   ]
 }

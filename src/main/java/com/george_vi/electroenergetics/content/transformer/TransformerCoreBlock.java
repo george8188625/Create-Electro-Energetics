@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -8,6 +9,7 @@ import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -56,6 +58,21 @@ public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWat
         if (context.getLevel().getBlockState(context.getClickedPos().relative(context.getHorizontalDirection())).canBeReplaced(context))
             return withWater(defaultBlockState().setValue(FACING, context.getHorizontalDirection()), context);
         return null;
+    }
+
+    @Override
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        if (level.getBlockEntity(pos) instanceof TransformerCoreBlockEntity be) {
+            Direction facing = state.getValue(TransformerCoreBlock.FACING);
+            BlockPos otherPos = pos.relative(facing);
+            if (facing.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
+                if (level.getBlockEntity(otherPos) instanceof TransformerCoreBlockEntity be2) {
+                    tag.putDouble("Ratio", (double) be.turns.value / be2.turns.value);
+                }
+            }
+        }
+        return tag;
     }
 
     @Override

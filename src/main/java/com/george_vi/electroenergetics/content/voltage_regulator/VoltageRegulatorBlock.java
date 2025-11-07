@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.voltage_regulator;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.content.transformer.TransformerBlockEntity;
 import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
@@ -49,6 +50,14 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements SimpleWa
         builder.add(FACING, WATERLOGGED);
     }
 
+    @Override
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        if (level.getBlockEntity(pos) instanceof VoltageRegulatorBlockEntity be)
+            tag.putDouble("Voltage", be.voltage.value * 10);
+        return tag;
+    }
+
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
@@ -93,13 +102,6 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements SimpleWa
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return CEENodeConfigurations.VOLTAGE_REGULATOR.getNodePos(state.getValue(FACING), id);
-    }
-
-    @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
-        CompoundTag tag = new CompoundTag();
-        tag.putFloat("Voltage", 100);
-        return tag;
     }
 
     @Override
