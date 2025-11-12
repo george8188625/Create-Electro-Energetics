@@ -34,7 +34,7 @@ public class TransformerBehaviour {
                     .node(nodes[5])
                     .resistor(nodes[0], nodes[4], 0.001)
                     .resistor(nodes[2], nodes[5], Math.abs(averageSecondaryVoltage) < 1e-6d || Math.abs(load) < 1e-6d ? 1e+6d : (averageSecondaryVoltage / (load / averageSecondaryVoltage)))
-                    .energyLimitedSource(nodes[4], nodes[1], 2000_000, -averageSecondaryVoltage * ratio)
+                    .energyLimitedSource(nodes[4], nodes[1], 5000_000, -averageSecondaryVoltage * ratio)
                     .resistor(nodes[0], nodes[1], 50000000)
                     .resistor(nodes[5], nodes[3], 0.1);
 
@@ -48,7 +48,7 @@ public class TransformerBehaviour {
                     .node(nodes[5])
                     .resistor(nodes[0], nodes[4], 0.1)
                     .resistor(nodes[4], nodes[1], Math.abs(averagePrimaryVoltage) < 1e-6d || Math.abs(load) < 1e-6d ? 1e+6d : (averagePrimaryVoltage / (load / averagePrimaryVoltage)))
-                    .energyLimitedSource(nodes[2], nodes[5], 2000_000, -averagePrimaryVoltage / ratio)
+                    .energyLimitedSource(nodes[2], nodes[5], 5000_000, -averagePrimaryVoltage / ratio)
                     .resistor(nodes[2], nodes[3], 50000000)
                     .resistor(nodes[5], nodes[3], 0.001);
             if (Math.abs(lastPrimaryVoltage / ratio) < Math.abs(lastSecondaryVoltage) && load < 0.0001)

@@ -83,10 +83,7 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
 
     @Override
     public String toString() {
-        return "Node{" +
-                "id=" + id +
-                ", sourcePos=" + sourcePos +
-                '}';
+        return "N" + id + "@" + sourcePos.toShortString();
     }
 
     public int id() {

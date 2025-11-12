@@ -192,7 +192,7 @@ public class InfrastructureSavedData extends SavedData {
 
                 WireType finalWireType = wireType;
                 sd.CONNECTION_DATA.computeIfAbsent(new NodeConnection(new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")),
-                        new InWorldNode(id, pos)), c -> new WireData(finalWireType, connectionTag.getFloat("Temperature"), attachments));
+                        new InWorldNode(id, pos)), c -> new WireData(finalWireType, Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature"), attachments));
             });
             sd.NODE_POSITIONS.put(node, lastKnownPos);
             sd.NODES.put(node, connectedNodes);
@@ -493,8 +493,8 @@ public class InfrastructureSavedData extends SavedData {
         return null;
     }
 
-    public List<InWorldNode> getNodes(){
-        return NODES.keySet().stream().toList();
+    public Set<InWorldNode> getNodes() {
+        return NODES.keySet();
     }
 
     public Vec3 getNodePosition(InWorldNode node) {
@@ -515,6 +515,10 @@ public class InfrastructureSavedData extends SavedData {
 
     public void setVoltage(InWorldNode node, double v) {
         VOLTAGES.put(node, v);
+    }
+
+    public void clearVoltages() {
+        VOLTAGES.clear();
     }
 
     public void connectCatenary(BlockPos pos1, BlockPos pos2) {

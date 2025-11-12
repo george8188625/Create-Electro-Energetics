@@ -2,24 +2,23 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.simulation.simulator.DirectionalInWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
 public class SimulationResults {
-    Map<Node, Double> voltages;
-    Map<DirectionalNodeConnection, Double> sourceAmps;
+    Object2DoubleMap<Node> voltages;
+    Object2DoubleMap<DirectionalNodeConnection> sourceAmps;
     CircuitBuilder circuitBuilder;
     InfrastructureSavedData sd;
 
-    public SimulationResults(Map<Node, Double> voltages, Map<DirectionalNodeConnection, Double> sourceAmps, CircuitBuilder circuitBuilder, InfrastructureSavedData sd) {
+    public SimulationResults(Object2DoubleMap<Node> voltages, Object2DoubleMap<DirectionalNodeConnection> sourceAmps, CircuitBuilder circuitBuilder, InfrastructureSavedData sd) {
         this.voltages = voltages;
         this.sourceAmps = sourceAmps;
         this.circuitBuilder = circuitBuilder;
@@ -31,10 +30,7 @@ public class SimulationResults {
     }
 
     public double getVoltageAt(Node node) {
-        Double v = voltages.get(node);
-        if (v == null && node instanceof InWorldNode iwn)
-            v = sd.getVoltageAt(iwn);
-        return v == null ? 0 : v;
+        return voltages.getOrDefault(node, 0d);
     }
 
     public double getVoltageAt(BlockPos pos, int id) {
@@ -47,9 +43,9 @@ public class SimulationResults {
         node2 = fc.node2();
 
         if (sourceAmps.containsKey(new DirectionalNodeConnection(node1, node2)))
-            return sourceAmps.get(new DirectionalNodeConnection(node1, node2));
+            return sourceAmps.getDouble(new DirectionalNodeConnection(node1, node2));
         if (sourceAmps.containsKey(new DirectionalNodeConnection(node2, node1)))
-            return -sourceAmps.get(new DirectionalNodeConnection(node2, node1));
+            return -sourceAmps.getDouble(new DirectionalNodeConnection(node2, node1));
         ElectricalProperties properties = circuitBuilder.getConnectionProperties(node1, node2);
         if (properties == null || properties.resistance() == 0)
             return 0;

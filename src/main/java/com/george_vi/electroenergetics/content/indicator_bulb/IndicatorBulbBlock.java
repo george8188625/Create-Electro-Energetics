@@ -51,10 +51,48 @@ public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock implements 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockState state = super.getStateForPlacement(context);
-        if (state == null)
-            return null;
-        return state.setValue(SIDE, clickedOnFirst(state, context.getClickLocation().subtract(Vec3.atLowerCornerOf(context.getClickedPos()))) ? 0 : 1);
+        Vec3 position = context.getClickLocation().subtract(Vec3.atLowerCornerOf(context.getClickedPos()));
+        double x = position.x();
+        double y = position.y();
+        double z = position.z();
+        
+        if (context.getClickedFace().getAxis().isVertical()) {
+            int side = 0;
+            if (z > x && z > 1 - x) side = 0b10;
+            else if (z > x && z < 1 - x) side = 0b00;
+            else if (z < x && z < 1 - x) side = 0b11;
+            else if (z < x && z > 1 - x) side = 0b01;
+            if (context.getClickedFace() == Direction.DOWN && (side & 2) == 2)
+                side = (side & 2) | ((~side) & 1);
+
+            return withWater(defaultBlockState().setValue(ROLL, (side & 2) == 2).setValue(SIDE, (side & 1)).setValue(FACING, context.getClickedFace()), context);
+        } else {
+            int side = 0;
+            if (context.getClickedFace().getAxis() == Direction.Axis.X) {
+                x = x + z;
+                z = x - z;
+                x = x - z;
+            }
+            if (y > x && y > 1 - x) side = 0b10;
+            else if (y > x && y < 1 - x) side = 0b00;
+            else if (y < x && y < 1 - x) side = 0b11;
+            else if (y < x && y > 1 - x) side = 0b01;
+            if (context.getClickedFace().getAxisDirection() == Direction.AxisDirection.NEGATIVE && (side & 2) == 2)
+                side = (side & 2) | ((~side) & 1);
+            if (context.getClickedFace() == Direction.NORTH && (side & 2) == 0)
+                side = (side & 2) | ((~side) & 1);
+            if (context.getClickedFace() == Direction.SOUTH && (side & 2) == 2)
+                side = (side & 2) | ((~side) & 1);
+            if (context.getClickedFace() == Direction.EAST)
+                side = (side & 2) | ((~side) & 1);
+
+            return withWater(defaultBlockState().setValue(ROLL, (side & 2) == 2).setValue(SIDE, (side & 1)).setValue(FACING, context.getClickedFace()), context);
+        
+        }
+//        BlockState state = super.getStateForPlacement(context);
+//        if (state == null)
+//            return null;
+//        return state.setValue(SIDE, clickedOnFirst(state, context.getClickLocation().subtract(Vec3.atLowerCornerOf(context.getClickedPos()))) ? 0 : 1);
     }
 
     @Override
@@ -110,7 +148,7 @@ public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock implements 
 
         if (facing.getAxis() == Direction.Axis.X) {
             firstSlot = (roll ? position.y() : position.z()) > 0.5;
-            if (roll && facing.getAxisDirection() == Direction.AxisDirection.POSITIVE)
+            if (!roll && facing.getAxisDirection() == Direction.AxisDirection.NEGATIVE)
                 firstSlot = !firstSlot;
         }
 

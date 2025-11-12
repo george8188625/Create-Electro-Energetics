@@ -40,6 +40,14 @@ public class IndicatorBulbDevice extends SimulatedDevice {
         if (side == 1 || side == 2)
             secondLight = (float) Math.min(1, Math.abs(results.getVoltageAt(pos, 2, 3) / 70));
 
+        float oldSecondLight = extraData.getFloat("OldSecondLight");
+        float oldFirstLight = extraData.getFloat("OldFirstLight");
+
+        extraData.putDouble("OldSecondLight", secondLight);
+        extraData.putDouble("OldFirstLight", firstLight);
+
+        secondLight = Math.min(secondLight, oldSecondLight);
+        firstLight = Math.min(firstLight, oldFirstLight);
         if (level.isLoaded(pos)) {
             if (level.getBlockEntity(pos) instanceof IndicatorBulbBlockEntity be) {
                 if (Math.abs(be.firstLight - firstLight) > 0.02 || Math.abs(be.secondLight - secondLight) > 0.02) {

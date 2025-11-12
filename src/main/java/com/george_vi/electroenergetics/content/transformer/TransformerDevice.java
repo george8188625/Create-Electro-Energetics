@@ -34,7 +34,7 @@ public class TransformerDevice extends SimulatedDevice {
     public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
         double power = TransformerBehaviour.postTick(TransformerBehaviour.setupStandardNodes(pos), results, extraData);
 
-        float temp = updateTemp(extraData.getFloat("Temp"), (float) Math.abs(power) / 10);
+        float temp = updateTemp(extraData.getFloat("Temp"), (float) Math.min(70_000, Math.abs(power)) / 10);
         extraData.putFloat("Temp", temp);
 
         if (level.isLoaded(pos))

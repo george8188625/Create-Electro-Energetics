@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 public class VoltageSync {
-    static Map<InWorldNode, Double> oldVoltages = new HashMap<>();
+
     public static void finishSimulation(InfrastructureSavedData sd, ServerLevel level) {
-        Map<InWorldNode, Double> voltages = Map.copyOf(sd.VOLTAGES);
+
         Map<Player, NodeConnection> clampMeteringPlayers = new HashMap<>();
         for (Player player : level.getPlayers(p -> true)) {
             if (player.isUsingItem()) {
@@ -33,9 +33,8 @@ public class VoltageSync {
             }
         }
         Map<Player, List<Pair<InWorldNode, Double>>> nodesPerPlayer = new HashMap<>();
-        for (Map.Entry<InWorldNode, Double> e : voltages.entrySet()) {
-            InWorldNode node = e.getKey();
-            Double voltage = e.getValue();
+        for (InWorldNode node : sd.getNodes()) {
+            double voltage = sd.getVoltageAt(node);
             InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(node.sourcePos());
             if (deviceInstance == null)
                 continue;

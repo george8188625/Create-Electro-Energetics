@@ -3,8 +3,12 @@ package com.george_vi.electroenergetics.simulation.simulator;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.Node;
-import net.createmod.catnip.data.Couple;
-import net.createmod.catnip.data.Pair;
+import com.george_vi.electroenergetics.simulation.util.DataPacker;
+import it.unimi.dsi.fastutil.longs.Long2DoubleMap;
+import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.util.*;
 
@@ -13,8 +17,14 @@ public class Network {
     final CircuitBuilder builder;
     final Map<Node, Map<Node, ElectricalProperties>> adjacency;
     final InfrastructureSavedData sd;
-    final Map<Couple<SimulationNode>, Double> voltageSources = new HashMap<>();
-    final Map<Couple<SimulationNode>, Double> currentSources = new HashMap<>();
+    // For performance, instead of Couple<Integer>. A single long can hold 2 ints.
+    // First -> First 4 bytes >> 32
+    // Last -> Last 4 bytes
+    final Long2DoubleMap voltageSources = new Long2DoubleOpenHashMap();
+    final Long2DoubleMap currentSources = new Long2DoubleOpenHashMap();
+    SimulationNode[] simulationNodes;
+    public double[][] conductanceMatrix;
+    public double[] rhsVector;
 
     public Network(Set<Node> allNodes, Map<Node, Map<Node, ElectricalProperties>> adjacency, CircuitBuilder builder, InfrastructureSavedData sd) {
         this.allNodes = new HashSet<>(allNodes);
@@ -23,26 +33,42 @@ public class Network {
         this.sd = sd;
     }
 
-    public Map<Node, SimulationNode> mapToSimNodes() {
-        Map<Node, SimulationNode> simulationNodes = new HashMap<>();
+    public SimulationNode[] mapToSimNodes() {
+        simulationNodes = new SimulationNode[allNodes.size()];
+        Object2IntOpenHashMap<Node> nodeIDs = new Object2IntOpenHashMap<>(allNodes.size(), 0.999f);
 
-        for (Node node : getAllNodes())
-            simulationNodes.put(node, new SimulationNode(node));
+        int id = 0;
+        for (Node node : allNodes) {
+            SimulationNode simulationNode = new SimulationNode(node);
+            simulationNode.id = id;
+            simulationNodes[id] = simulationNode;
+            nodeIDs.addTo(node, id);
+            id++;
+        }
 
-        for (Map.Entry<Node, SimulationNode> e : simulationNodes.entrySet()) {
-            Node node = e.getKey();
-            SimulationNode simulationNode = e.getValue();
-            for (Map.Entry<Node, ElectricalProperties> e2 : adjacency.get(node).entrySet()) {
-                ElectricalProperties connectionProperties = e2.getValue();
-                Node adjacentNode = e2.getKey();
-                SimulationNode adjacentSimulationNode = simulationNodes.get(adjacentNode);
-                if (connectionProperties.isVoltageSource() && !voltageSources.containsKey(Couple.create(adjacentSimulationNode, simulationNode)))
-                    voltageSources.put(Couple.create(simulationNode, adjacentSimulationNode), connectionProperties.voltageSource());
-                if (connectionProperties.isCurrentSource() && !currentSources.containsKey(Couple.create(adjacentSimulationNode, simulationNode)))
-                    currentSources.put(Couple.create(simulationNode, adjacentSimulationNode), connectionProperties.currentSource());
-                simulationNode.addAdjacentNode(adjacentSimulationNode, connectionProperties);
+        for (int i = 0; i < simulationNodes.length; i++) {
+            SimulationNode simulationNode = simulationNodes[i];
+            Map<Node, ElectricalProperties> nodeAdjacency = adjacency.get(simulationNode.correspondingNode);
+            simulationNode.adjacentIDs = new int[nodeAdjacency.size()];
+            simulationNode.adjacentProperties = new ElectricalProperties[nodeAdjacency.size()];
+            int j = 0;
+            for (Map.Entry<Node, ElectricalProperties> e : nodeAdjacency.entrySet()) {
+                Node adjacentNode = e.getKey();
+                ElectricalProperties connectionProperties = e.getValue();
+
+                int adjacentID = nodeIDs.getInt(adjacentNode);
+                simulationNode.adjacentIDs[j] = adjacentID;
+                simulationNode.adjacentProperties[j] = connectionProperties;
+
+                if (connectionProperties.isVoltageSource() && i > adjacentID)
+                    voltageSources.put(DataPacker.pack(i, adjacentID), connectionProperties.voltageSource());
+                if (connectionProperties.isCurrentSource() && i > adjacentID)
+                    currentSources.put(DataPacker.pack(i, adjacentID), connectionProperties.currentSource());
+
+                j++;
             }
         }
+
         return simulationNodes;
     }
 
@@ -150,49 +176,45 @@ public class Network {
         return getConnections(node1).getOrDefault(node2, null);
     }
 
-    public Pair<Map<Couple<SimulationNode>, Double>, Pair<double[][], double[]>> formMatrix(Map<Node, SimulationNode> simulationNodes) {
+    public void formMatrix() {
         Map<Node, Double> groundRods = builder.getGroundRods();
-        double[][] conductanceMatrix = new double[simulationNodes.size() + voltageSources.size()][simulationNodes.size() + voltageSources.size()];
+        conductanceMatrix = new double[simulationNodes.length + voltageSources.size()][simulationNodes.length + voltageSources.size()];
 
-        int id = 0;
-        for (SimulationNode node : simulationNodes.values()) {
+        for (SimulationNode node : simulationNodes) {
             double totalConductance = 0;
-            for (SimulationNode adjacentNode : node.getNextNodes()) {
-                ElectricalProperties connectionProperties = node.getConnectionProperties(adjacentNode);
-                totalConductance += connectionProperties.conductance();
+            for (int i = 0; i < node.adjacentProperties.length; i++) {
+                double conductance = node.adjacentProperties[i].conductance();
+
+                totalConductance += conductance;
+                conductanceMatrix[node.id][node.adjacentIDs[i]] = -conductance;
+                conductanceMatrix[node.adjacentIDs[i]][node.id] = -conductance;
             }
             totalConductance += groundRods.getOrDefault(node.correspondingNode, 0d);
-            conductanceMatrix[id][id] = totalConductance;
-            node.id = id++;
+            conductanceMatrix[node.id][node.id] = totalConductance;
         }
 
-        for (SimulationNode node : simulationNodes.values()) {
-            for (SimulationNode adjacentNode : node.getNextNodes()) {
-                double conductance = node.getConnectionProperties(adjacentNode).conductance();
-                conductanceMatrix[node.id][adjacentNode.id] = -conductance;
-                conductanceMatrix[adjacentNode.id][node.id] = -conductance;
-            }
-        }
+        rhsVector = new double[simulationNodes.length + voltageSources.size()];
 
-        double[] d = new double[simulationNodes.size() + voltageSources.size()];
-
-        for (Map.Entry<Couple<SimulationNode>, Double> e : currentSources.entrySet()) {
-            Couple<SimulationNode> con = e.getKey();
+        for (Map.Entry<Long, Double> e : currentSources.entrySet()) {
+            long packedConnection = e.getKey();
             double v = e.getValue();
-            d[con.getFirst().id] = -v;
-            d[con.getSecond().id] = v;
+            rhsVector[DataPacker.unpackFirstI(packedConnection)] = -v;
+            rhsVector[DataPacker.unpackSecondI(packedConnection)] = v;
         }
 
         int i = 0;
-        for (Couple<SimulationNode> source : voltageSources.keySet()) {
-            conductanceMatrix[simulationNodes.size() + i][source.getFirst().id] = 1d;
-            conductanceMatrix[simulationNodes.size() + i][source.getSecond().id] = -1d;
-            conductanceMatrix[source.getFirst().id][simulationNodes.size() + i] = 1d;
-            conductanceMatrix[source.getSecond().id][simulationNodes.size() + i] = -1d;
-            d[simulationNodes.size() + i] =  - voltageSources.get(source);
+        for (Map.Entry<Long, Double> e : voltageSources.entrySet()) {
+            long packedConnection = e.getKey();
+            double v = e.getValue();
+            int first = DataPacker.unpackFirstI(packedConnection);
+            int second = DataPacker.unpackSecondI(packedConnection);
+            conductanceMatrix[simulationNodes.length + i][first] = 1d;
+            conductanceMatrix[simulationNodes.length + i][second] = -1d;
+            conductanceMatrix[first][simulationNodes.length + i] = 1d;
+            conductanceMatrix[second][simulationNodes.length + i] = -1d;
+            rhsVector[simulationNodes.length + i] = -v;
             i++;
         }
-        return Pair.of(voltageSources, Pair.of(conductanceMatrix, d));
     }
 
     public Set<Node> getAllNodes() {
@@ -203,33 +225,29 @@ public class Network {
         return adjacency.getOrDefault(node, Collections.emptyMap());
     }
 
-    public Map<Node, Double> getResults(double[] mnaResult, Map<Node, SimulationNode> simulationNodes) {
-        Map<Node, Double> result = new HashMap<>(mnaResult.length);
+    public Object2DoubleMap<Node> getResults(double[] mnaResult) {
+        Object2DoubleMap<Node> result = new Object2DoubleOpenHashMap<>(mnaResult.length);
+        for (int i = 0; i < simulationNodes.length; i++) {
+            SimulationNode simulationNode = simulationNodes[i];
+            Node originalNode = simulationNode.correspondingNode;
 
-        for (Map.Entry<Node, SimulationNode> e : simulationNodes.entrySet()) {
-            Node originalNode = e.getKey();
-            SimulationNode simNode = e.getValue();
-            for (Map.Entry<SimulationNode, ElectricalProperties> connectedE : simNode.connections.entrySet()) {
-                Node connectedNode = connectedE.getKey().correspondingNode;
-                SimulationNode connectedSimNode = connectedE.getKey();
-                ElectricalProperties properties = connectedE.getValue();
+            for (int j = 0; j < simulationNode.adjacentIDs.length; j++) {
+                int adjacentID = simulationNode.adjacentIDs[j];
+                SimulationNode adjacentSimulationNode = simulationNodes[adjacentID];
+                ElectricalProperties properties = simulationNode.adjacentProperties[j];
 
                 if (properties instanceof DissolvedProperties dp) {
-                    double v2 = mnaResult[simNode.id];
-                    double v1 = mnaResult[connectedSimNode.id];
+                    double v2 = mnaResult[i];
+                    double v1 = mnaResult[adjacentID];
 
-                    if (dp.originalNodes.getFirst().equals(connectedNode))
+                    if (dp.originalNodes.getFirst().equals(adjacentSimulationNode.correspondingNode))
                         result.putAll(dp.getVoltages(v1, v2));
                 }
             }
-//        }
-//
-//        for (Map.Entry<Node, SimulationNode> e : simulationNodes.entrySet()) {
-//            Node originalNode = e.getKey();
-//            SimulationNode simNode = e.getValue();
-            result.putIfAbsent(originalNode, mnaResult[simNode.id]);
+            result.putIfAbsent(originalNode, mnaResult[i]);
         }
 
         return result;
     }
+
 }

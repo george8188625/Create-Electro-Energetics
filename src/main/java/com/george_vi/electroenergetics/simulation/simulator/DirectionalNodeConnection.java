@@ -51,8 +51,6 @@ public class DirectionalNodeConnection {
 
     @Override
     public String toString() {
-        return "DirectionalNodeConnection[" +
-                "node1=" + node1 + ", " +
-                "node2=" + node2 + ']';
+        return node1 + " - " + node2;
     }
 }

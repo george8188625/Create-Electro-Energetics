@@ -1,54 +1,53 @@
 package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalNodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import net.minecraft.core.BlockPos;
 
-import java.util.List;
-import java.util.Map;
-
 public class BridgeCollector {
-    final List<ElectricalNodeConnection> bridges;
-    final List<InWorldNode> nodes;
-    final Map<Node, Double> groundConductance;
-    final Map<Node, Integer> defaultZeroPotentials;
+    final InfrastructureSavedData sd;
+    final CircuitBuilder circuitBuilder;
 
-    public BridgeCollector(List<ElectricalNodeConnection> bridges, List<InWorldNode> nodes, Map<Node, Double> groundConductance, Map<Node, Integer> defaultZeroPotentials) {
-        this.bridges = bridges;
-        this.nodes = nodes;
-        this.groundConductance = groundConductance;
-        this.defaultZeroPotentials = defaultZeroPotentials;
+    public BridgeCollector(CircuitBuilder circuitBuilder, InfrastructureSavedData sd) {
+        this.sd = sd;
+        this.circuitBuilder = circuitBuilder;
     }
+
 
     public void bridge(InWorldNode node1, InWorldNode node2, double resistance, double voltageSource, double currentSource) {
         bridge(node1, node2, new ElectricalProperties(resistance, voltageSource, currentSource));
     }
 
     public void bridge(InWorldNode node1, InWorldNode node2, ElectricalProperties electricalProperties) {
-        // Don't Bridge a node to itself, Don't accept any NaN values, that can mess up entire grids
-        if (node1.equals(node2) || Double.isNaN(electricalProperties.resistance()) || Double.isNaN(electricalProperties.voltageSource()) || Double.isNaN(electricalProperties.currentSource()))
-            return;
-        if (electricalProperties.resistance() == 0)
-            throw new IllegalArgumentException("Resistance can't be zero!");
-        bridges.add(new ElectricalNodeConnection(node1, node2, electricalProperties));
+        circuitBuilder.connect(node1, node2, electricalProperties);
     }
 
-    public void ground(InWorldNode inWorldNode, double conductance) {
-        groundConductance.put(inWorldNode, conductance);
+    public void ground(InWorldNode node, double conductance) {
+        circuitBuilder.ground(node, conductance);
     }
 
-    public void defaultZeroPotential(InWorldNode inWorldNode, int priority) {
-        defaultZeroPotentials.put(inWorldNode, priority);
+    public void defaultZeroPotential(InWorldNode node, int priority) {
+        circuitBuilder.defaultZeroPotential(node, priority);
     }
 
     public void addInternalNode(int id, BlockPos pos) {
-        nodes.add(new InWorldNode(id, pos));
+        circuitBuilder.addNode(new InWorldNode(id, pos));
     }
 
     public void addInternalNode(InWorldNode node) {
-        nodes.add(node);
+        circuitBuilder.addNode(node);
+    }
+
+    public InfrastructureSavedData getSD() {
+        return sd;
+    }
+
+    public CircuitBuilder getCircuitBuilder() {
+        return circuitBuilder;
+    }
+
+    public double getTimeStep() {
+        return 0.05d;
     }
 
     public Builder builder(BlockPos pos) {
@@ -67,7 +66,7 @@ public class BridgeCollector {
 
         public Builder voltageSourceWithResistance(int n1, int n2, double resistance, double voltage) {
             collector.addInternalNode(1000 + i, pos);
-            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(1000 + i, pos), 999999999, voltage, 0);
+            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(1000 + i, pos), 10e+11d, voltage, 0);
             collector.bridge(new InWorldNode(1000 + i, pos), new InWorldNode(n2, pos), resistance, 0, 0);
             collector.defaultZeroPotential(voltage > 0 ? new InWorldNode(n1, pos) : new InWorldNode(n2, pos), 60);
             i++;
@@ -86,7 +85,7 @@ public class BridgeCollector {
                 resistance = (voltage * voltage) / (4 * energy);
 
             collector.addInternalNode(1000 + i, pos);
-            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(1000 + i, pos), 999999999, energy <= 0 ? 0 : voltage, 0);
+            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(1000 + i, pos), 10e+11d, energy <= 0 ? 0 : voltage, 0);
             collector.bridge(new InWorldNode(1000 + i, pos), new InWorldNode(n2, pos), resistance + internalResistance, 0, 0);
             i++;
             collector.defaultZeroPotential(voltage > 0 ? new InWorldNode(n1, pos) : new InWorldNode(n2, pos), 50);
@@ -94,20 +93,18 @@ public class BridgeCollector {
         }
 
         public Builder idealVoltageSource(int n1, int n2, double voltage) {
-            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(n2, pos), new ElectricalProperties(999999999, voltage, 0, true, false));
-            collector.defaultZeroPotential(voltage > 0 ? new InWorldNode(n1, pos) : new InWorldNode(n2, pos), 100);
+            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(n2, pos), new ElectricalProperties(10e+11d, voltage, 0, true, false));
             return this;
         }
 
         public Builder idealCurrentSource(int n1, int n2, double current) {
-            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(n2, pos), new ElectricalProperties(999999999, 0, current, false, true));
-            collector.defaultZeroPotential(current > 0 ? new InWorldNode(n1, pos) : new InWorldNode(n2, pos), 100);
+            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(n2, pos), new ElectricalProperties(10e+11d, 0, current, false, true));
             return this;
         }
 
         public Builder voltageSourceWithResistance(InWorldNode n1, InWorldNode n2, double resistance, double voltage) {
             collector.addInternalNode(1000 + i, pos);
-            collector.bridge(n1, new InWorldNode(1000 + i, pos), 999999999, voltage, 0);
+            collector.bridge(n1, new InWorldNode(1000 + i, pos), 10e+11d, voltage, 0);
             collector.bridge(new InWorldNode(1000 + i, pos), n2, resistance, 0, 0);
             collector.defaultZeroPotential(voltage > 0 ? n1 : n2, 60);
             i++;
@@ -126,7 +123,7 @@ public class BridgeCollector {
                 resistance = (voltage * voltage) / (4 * energy);
 
             collector.addInternalNode(1000 + i, pos);
-            collector.bridge(n1, new InWorldNode(1000 + i, pos), 999999999, energy <= 0 ? 0 : voltage, 0);
+            collector.bridge(n1, new InWorldNode(1000 + i, pos), 10e+11d, energy <= 0 ? 0 : voltage, 0);
             collector.bridge(new InWorldNode(1000 + i, pos), n2, resistance + internalResistance, 0, 0);
             i++;
             collector.defaultZeroPotential(voltage > 0 ? n1 : n2, 50);
@@ -134,13 +131,13 @@ public class BridgeCollector {
         }
 
         public Builder idealVoltageSource(InWorldNode n1, InWorldNode n2, double voltage) {
-            collector.bridge(n1, n2, new ElectricalProperties(999999999, voltage, 0, true, false));
+            collector.bridge(n1, n2, new ElectricalProperties(10e+11d, voltage, 0, true, false));
             collector.defaultZeroPotential(voltage > 0 ? n1 : n2, 100);
             return this;
         }
 
         public Builder idealCurrentSource(InWorldNode n1, InWorldNode n2, double current) {
-            collector.bridge(n1, n2, new ElectricalProperties(999999999, 0, current, false, true));
+            collector.bridge(n1, n2, new ElectricalProperties(10e+11d, 0, current, false, true));
             collector.defaultZeroPotential(current > 0 ? n1 : n2, 100);
             return this;
         }

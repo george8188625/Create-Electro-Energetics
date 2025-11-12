@@ -15,7 +15,7 @@ public class ElectricalProperties {
 
     public ElectricalProperties(double resistance, double voltageSource, double currentSource, boolean isForcedVoltageSource, boolean isForcedCurrentSource) {
         if (resistance == 0)
-            resistance = 0.01d;
+            throw new IllegalArgumentException("Resistance can't be zero!");
         this.resistance = resistance;
         this.voltageSource = voltageSource;
         this.currentSource = currentSource;
@@ -86,6 +86,7 @@ public class ElectricalProperties {
 
 
     public ElectricalProperties add(ElectricalProperties properties) {
-        return new ElectricalProperties(1 / (properties.conductance() + conductance()), properties.voltageSource() + voltageSource(), properties.currentSource() + currentSource(), properties.isForcedVoltageSource || isForcedVoltageSource, properties.isForcedCurrentSource || isForcedCurrentSource);
+        double addedConductance = (properties.conductance() + conductance());
+        return new ElectricalProperties(addedConductance == 0 ? 1e+11d : 1 / addedConductance, properties.voltageSource() + voltageSource(), properties.currentSource() + currentSource(), properties.isForcedVoltageSource || isForcedVoltageSource, properties.isForcedCurrentSource || isForcedCurrentSource);
     }
 }

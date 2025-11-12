@@ -3,13 +3,14 @@ package com.george_vi.electroenergetics.simulation.simulator;
 import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.Node;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DissolvedProperties extends ElectricalProperties {
-    final List<Node> originalNodes;
-    final List<Double> originalResistances;
+    public final List<Node> originalNodes;
+    public final List<Double> originalResistances;
 
     public DissolvedProperties(List<Node> originalNodes, List<Double> originalResistances) {
         super(originalResistances.stream().mapToDouble(d -> d).sum(), 0, 0);
@@ -37,5 +38,14 @@ public class DissolvedProperties extends ElectricalProperties {
         }
 
         return voltages;
+    }
+
+    @Override
+    public ElectricalProperties invert() {
+        return this;
+    }
+
+    public Collection<Node> getMiddleNodes() {
+        return originalNodes.subList(1, originalNodes.size() - 1);
     }
 }

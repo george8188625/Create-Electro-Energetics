@@ -1,37 +1,35 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
-import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
 import com.george_vi.electroenergetics.foundation.InWorldNode;
 import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
 import com.george_vi.electroenergetics.simulation.*;
+import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import com.george_vi.electroenergetics.simulation.util.LUSolver;
-import net.createmod.catnip.data.Couple;
-import net.createmod.catnip.data.Pair;
+import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.common.NeoForge;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SimulationTicker {
 
-    public static int totalTime = 0;
     public static SimulatorProfiler profiler = new SimulatorProfiler();
 
     public static void tick(ServerLevel level) {
         profiler.push(level.dimension().location().toString());
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
 
-        // SETUP
+        // Setup
         profiler.push("setupNodes");
 
-        Set<Pair<WireType, NodeConnection>> connections = new HashSet<>();
-
-        List<InWorldNode> inWorldNodes = sd.getNodes();
+        Set<InWorldNode> inWorldNodes = sd.getNodes();
         CircuitBuilder circuitBuilder = new CircuitBuilder(inWorldNodes);
 
         if (circuitBuilder.getAllNodes().isEmpty()) {
@@ -40,77 +38,46 @@ public class SimulationTicker {
             return;
         }
 
-        profiler.popPush("setupConnections");
-
-        for (InWorldNode node : inWorldNodes) {
-            for (NodeConnection connection : sd.getConnections(node)) {
-                WireData connectionData = sd.getConnectionData(connection);
-                WireType wireType = connectionData == null ? CEEWireTypes.STANDARD.get() : connectionData.wireType();
-                connections.add(Pair.of(wireType, connection));
-            }
-        }
-
         profiler.popPush("preTick");
 
-        // PRE-TICK / COLLECT BRIDGES
+        // PreTick
         for (InfrastructureSavedData.SimulatedDeviceInstance deviceInstance : sd.getDevices()) {
             SimulatedDevice device = deviceInstance.simulatedDevice();
             profiler.push(device.getID().toString());
-
-            List<ElectricalNodeConnection> bridges = new ArrayList<>();
-            List<InWorldNode> internalNodes = new ArrayList<>();
-            Map<Node, Double> groundConductance = new HashMap<>();
-            Map<Node, Integer> defaultZeroPotentials = new HashMap<>();
-
-            device.preTick(deviceInstance.pos(), level, new BridgeCollector(bridges, internalNodes, groundConductance, defaultZeroPotentials), deviceInstance.extraData());
-
-            for (ElectricalNodeConnection bridge : bridges)
-                circuitBuilder.connect(bridge.node1(), bridge.node2(), bridge.electricalProperties);
-            for (Map.Entry<Node, Double> e : groundConductance.entrySet())
-                circuitBuilder.ground(e.getKey(), e.getValue());
-
-            for (Map.Entry<Node, Integer> e : defaultZeroPotentials.entrySet())
-                circuitBuilder.defaultZeroPotential(e.getKey(), e.getValue());
+            device.preTick(deviceInstance.pos(), level, new BridgeCollector(circuitBuilder, sd), deviceInstance.extraData());
             profiler.pop();
         }
 
         profiler.popPush("connectWires");
 
         sd.getWireConnectionManager().buildCircuit(circuitBuilder);
-//        for (Pair<WireType, NodeConnection> connection : connections) {
-//            InWorldNode node1 = connection.getSecond().node1();
-//            InWorldNode node2 = connection.getSecond().node2();
-//            circuitBuilder.connect(node1, node2, ElectricalProperties.resistor(getWireResistance(node1, node2, connection.getFirst())));
-//        }
 
         profiler.popPush("addToGraphEvent");
 
         NeoForge.EVENT_BUS.post(new AddToElectricGraphEvent(circuitBuilder, level, sd));
 
-        // RESET ALL VOLTAGES
-
-        for (InWorldNode node : inWorldNodes)
-            sd.setVoltage(node, 0d);
+        sd.clearVoltages();
 
         profiler.popPush("dfs");
 
-        // DFS
         List<Set<Node>> networks = circuitBuilder.dfs();
 
         profiler.popPush("solveNetworks");
 
-        Map<BlockPos, Map<Node, Double>> resultsPerBlock = new HashMap<>();
-        Map<BlockPos, Map<DirectionalNodeConnection, Double>> sourceAmps = new HashMap<>();
-        Map<Node, Double> allVoltages = new HashMap<>(circuitBuilder.getAllNodes().size());
-        // SOLVE NETWORKS
+        // Solve
+        Map<BlockPos, Object2DoubleMap<DirectionalNodeConnection>> sourceAmps = new HashMap<>();
+        Object2DoubleMap<Node> allVoltages = new Object2DoubleOpenHashMap<>(circuitBuilder.getAllNodes().size(), 0.999f);
+        allVoltages.defaultReturnValue(0d);
 
         for (Set<Node> networkNodes : networks) {
-
+            if (networkNodes.size() == 1)
+                continue;
             profiler.push("divideConnections");
+
             boolean foundSource = false;
-            Map<Node, Map<Node, ElectricalProperties>> networkConnections = new HashMap<>(networkNodes.size());
+            Object2ObjectOpenHashMap<Node, Map<Node, ElectricalProperties>> networkConnections = new Object2ObjectOpenHashMap<>(networkNodes.size(), 0.999f);
             for (Node node : networkNodes) {
-                Map<Node, ElectricalProperties> nodeConnections = new HashMap<>(3);
+                Map<Node, ElectricalProperties> nodeConnections = new Object2ObjectArrayMap<>(16);
                 for (Map.Entry<Node, ElectricalProperties> e : circuitBuilder.getAdjacentNodes(node).entrySet()) {
                     Node connectedNode = e.getKey();
                     ElectricalProperties properties = e.getValue();
@@ -121,54 +88,48 @@ public class SimulationTicker {
                 }
                 networkConnections.put(node, nodeConnections);
             }
+
             profiler.pop();
-            double[] mnaResults;
 
-            Map<Node, Double> results;
+            if (!foundSource)
+                continue;
 
-            if (foundSource) {
-                Network network = new Network(networkNodes, networkConnections, circuitBuilder, sd);
+            Network network = new Network(networkNodes, networkConnections, circuitBuilder, sd);
 
-                profiler.push("optimize");
-                if (CEEConfigs.server().optimizeGraph.get())
-                    network.optimize();
-                profiler.popPush("matrixify");
+            profiler.push("optimize");
+            if (CEEConfigs.server().optimizeGraph.get() && networkNodes.size() > 40)
+                network.optimize();
+            profiler.popPush("matrixify");
 
-                Map<Node, SimulationNode> simulationNodes = network.mapToSimNodes();
-                Pair<Map<Couple<SimulationNode>, Double>, Pair<double[][], double[]>> matrices = network.formMatrix(simulationNodes);
-                profiler.popPush("solve");
+            network.mapToSimNodes();
+            network.formMatrix();
 
-                Map<Couple<SimulationNode>, Double> voltageSources = matrices.getFirst();
+            profiler.popPush("solve");
 
-                mnaResults = LUSolver.solve(matrices.getSecond().getFirst(), matrices.getSecond().getSecond());
+            double[] mnaResults = LUSolver.solve(network.conductanceMatrix, network.rhsVector);
 
-                profiler.popPush("interpretResults");
+            profiler.popPush("interpretResults");
 
-                int i = 0;
-                for (Couple<SimulationNode> con : voltageSources.keySet()) {
-                    double amps = mnaResults[simulationNodes.size() + i];
-                    if (con.getFirst().correspondingNode instanceof InWorldNode iwn1 && con.getSecond().correspondingNode instanceof InWorldNode iwn2)
-                        sourceAmps.computeIfAbsent(iwn1.sourcePos(), p -> new HashMap<>())
-                                .put(new DirectionalNodeConnection(iwn1, iwn2), amps);
-                    i++;
-                }
-
-                results = network.getResults(mnaResults, simulationNodes);
-                profiler.pop();
-            } else {
-                results = new HashMap<>(networkNodes.size());
-                for (Node node : networkNodes)
-                    results.put(node, 0d);
+            int i = 0;
+            for (long packedConnection : network.voltageSources.keySet()) {
+                double amps = mnaResults[network.simulationNodes.length + i];
+                Node first = network.simulationNodes[DataPacker.unpackFirstI(packedConnection)].correspondingNode;
+                Node second = network.simulationNodes[DataPacker.unpackSecondI(packedConnection)].correspondingNode;
+                if (first instanceof InWorldNode iwn1 && second instanceof InWorldNode iwn2)
+                    sourceAmps.computeIfAbsent(iwn1.sourcePos(), p -> new Object2DoubleOpenHashMap<>())
+                            .put(new DirectionalNodeConnection(iwn1, iwn2), amps);
+                i++;
             }
 
-            profiler.push("interpretResults");
+            Object2DoubleMap<Node> results = network.getResults(mnaResults);
 
-            for (Map.Entry<Node, Double> e : results.entrySet()) {
-                double voltage = e.getValue();
-                Node node = e.getKey();
-                if (node instanceof InWorldNode iwn)
-                    sd.setVoltage(iwn, voltage);
-            }
+            profiler.popPush("interpretResults");
+
+            results.forEach((n, v) -> {
+                if (n instanceof InWorldNode iwn)
+                    sd.setVoltage(iwn, v);
+            });
+
             allVoltages.putAll(results);
 
             profiler.pop();
@@ -176,21 +137,18 @@ public class SimulationTicker {
 
         profiler.pop();
 
-        for (InWorldNode node : inWorldNodes)
-            allVoltages.putIfAbsent(node, 0d);
-
         profiler.push("postTick");
         for (InfrastructureSavedData.SimulatedDeviceInstance device : sd.getDevices()) {
             profiler.push(device.simulatedDevice().getID().toString());
-            SimulationResults results = new SimulationResults(allVoltages, sourceAmps.getOrDefault(device.pos(), Collections.emptyMap()), circuitBuilder, sd);
+            SimulationResults results = new SimulationResults(allVoltages, sourceAmps.getOrDefault(device.pos(), Object2DoubleMaps.emptyMap()), circuitBuilder, sd);
             device.simulatedDevice().postTick(device.pos(), level, results, device.extraData());
             profiler.pop();
         }
         profiler.popPush("finish");
 
 
-        Map<DirectionalNodeConnection, Double> allSourceAmps = new HashMap<>();
-        for (Map<DirectionalNodeConnection, Double> v : sourceAmps.values())
+        Object2DoubleMap<DirectionalNodeConnection> allSourceAmps = new Object2DoubleOpenHashMap<>();
+        for (Object2DoubleMap<DirectionalNodeConnection> v : sourceAmps.values())
             allSourceAmps.putAll(v);
         SimulationResults allSimulationResults = new SimulationResults(allVoltages, allSourceAmps, circuitBuilder, sd);
         sd.getWireConnectionManager().finish(allSimulationResults);
