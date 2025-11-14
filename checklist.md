@@ -7,7 +7,7 @@
 - [ ] train sound selection
 - [ ] electric train signals
 - [ ] accumulators on trains
-- [ ] colored bulbs
+- [x] colored bulbs
 - [ ] variacs
 - [ ] potentiometers
 - [ ] variable buzzer pitch
