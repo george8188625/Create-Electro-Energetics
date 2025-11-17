@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
-import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;

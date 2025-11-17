@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.wire.interaction;
 
 import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.CEERegistries;
-import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import net.minecraft.network.codec.StreamCodec;

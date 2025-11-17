@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.simulation;
 
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import net.minecraft.core.BlockPos;
 

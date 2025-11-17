@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "tag": "c:plates/iron"
+  },
+  "result": {
+    "count": 2,
+    "id": "electroenergetics:electric_shock_sign"
+  }
+}

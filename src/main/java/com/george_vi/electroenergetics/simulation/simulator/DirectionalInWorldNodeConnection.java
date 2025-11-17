@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
-import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 

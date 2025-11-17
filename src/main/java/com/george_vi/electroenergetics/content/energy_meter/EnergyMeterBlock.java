@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.energy_meter;
 
 import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;

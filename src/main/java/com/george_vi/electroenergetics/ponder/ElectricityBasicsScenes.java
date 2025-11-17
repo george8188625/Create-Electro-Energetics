@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;

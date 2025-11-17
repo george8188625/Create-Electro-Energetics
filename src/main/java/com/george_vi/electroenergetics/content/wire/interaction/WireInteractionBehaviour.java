@@ -2,8 +2,8 @@ package com.george_vi.electroenergetics.content.wire.interaction;
 
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
-import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.simibubi.create.AllSoundEvents;

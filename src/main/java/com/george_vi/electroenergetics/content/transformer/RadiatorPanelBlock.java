@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.content.transformer;
 
-import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;

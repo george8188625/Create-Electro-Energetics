@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
+import com.george_vi.electroenergetics.events.datagen.CEEGeneratedEntriesProvider;
 import com.george_vi.electroenergetics.events.datagen.CEERecipeGen;
 import com.george_vi.electroenergetics.foundation.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.ponder.CEEPonderPlugin;
@@ -13,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.contraptions.wrench.RadialWrenchMenu;
 import com.simibubi.create.foundation.utility.FilesHelper;
+import com.simibubi.create.infrastructure.data.GeneratedEntriesProvider;
 import com.tterrag.registrate.providers.ProviderType;
 import net.createmod.ponder.foundation.PonderIndex;
 import net.minecraft.core.HolderLookup;
@@ -41,8 +43,6 @@ public class ModEvents {
         if (!event.getMods().contains(CreateElecrtoEnergetics.ID))
             return;
 
-        DataGenerator generator = event.getGenerator();
-
         CreateElecrtoEnergetics.REGISTRATE.addDataGenerator(ProviderType.LANG, provider -> {
 
             JsonElement jsonElement = FilesHelper.loadJsonResource("assets/electroenergetics/lang/default.json");
@@ -65,6 +65,9 @@ public class ModEvents {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+
+        CEEGeneratedEntriesProvider generatedEntriesProvider = new CEEGeneratedEntriesProvider(packOutput, lookupProvider);
+        generator.addProvider(event.includeServer(), generatedEntriesProvider);
         generator.addProvider(event.includeServer(), new CEERecipeGen(packOutput, lookupProvider));
     }
 

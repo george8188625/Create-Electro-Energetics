@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import it.unimi.dsi.fastutil.longs.Long2DoubleMap;
 import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;

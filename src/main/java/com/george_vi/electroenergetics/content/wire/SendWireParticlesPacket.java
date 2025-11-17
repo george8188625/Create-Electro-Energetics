@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;

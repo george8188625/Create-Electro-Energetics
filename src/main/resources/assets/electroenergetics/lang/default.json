@@ -112,5 +112,10 @@
   "item.electroenergetics.clamp_meter.tooltip.behaviour1": "Displays the _Amperage_ and _Direction_ of the _Current_ flowing through the _Wire_.",
   "block.electroenergetics.indicator_bulb.tooltip.summary": "While not useful for lighting, but can be used as an _Indicator_ or _Signal_.",
   "block.electroenergetics.indicator_bulb.tooltip.condition1": "When R-Clicked with a Dye",
-  "block.electroenergetics.indicator_bulb.tooltip.behaviour1": "Dyes the _Bulb_."
+  "block.electroenergetics.indicator_bulb.tooltip.behaviour1": "Dyes the _Bulb_.",
+
+  "death.attack.electroenergetics.electrocution": "%1$s was electrocuted.",
+  "death.attack.electroenergetics.electrocution.player": "%1$s was electrocuted by %2$s.",
+  "death.attack.electroenergetics.hv_electrocution": "%1$s wasn't careful around High Voltage.",
+  "death.attack.electroenergetics.hv_electrocution.player": "%1$s was thrown into a High Voltage wire by %2$s."
 }

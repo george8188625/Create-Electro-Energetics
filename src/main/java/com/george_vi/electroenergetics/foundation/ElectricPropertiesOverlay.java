@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.foundation;
 
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;

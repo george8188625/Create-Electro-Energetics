@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.simulation;
 
-import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.simulator.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;

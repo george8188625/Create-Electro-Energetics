@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.neoforge.common.util.FakePlayer;
 
 import java.util.Optional;
 

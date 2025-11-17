@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.george_vi.electroenergetics.simulation.simulator.DirectionalInWorldNodeConnection;
 import io.netty.buffer.ByteBuf;

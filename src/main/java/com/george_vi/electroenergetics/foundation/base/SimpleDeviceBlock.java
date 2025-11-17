@@ -1,7 +1,9 @@
-package com.george_vi.electroenergetics.foundation;
+package com.george_vi.electroenergetics.foundation.base;
 
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.simulation.*;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;

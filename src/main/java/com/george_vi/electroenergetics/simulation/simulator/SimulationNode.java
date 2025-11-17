@@ -1,8 +1,6 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
-import com.george_vi.electroenergetics.foundation.Node;
-
-import java.util.*;
+import com.george_vi.electroenergetics.foundation.nodes.Node;
 
 public class SimulationNode {
     final Node correspondingNode;

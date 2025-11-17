@@ -19,7 +19,7 @@ public class CEEWireTypes {
             CEEConfigs.server().resistanceValues.wireResistance::get,
             CEEPartialModels.COPPER_WIRE_SEGMENT,
             CEEItems.COPPER_WIRE, CEEItems.COPPER_WIRE_SPOOL::get,
-            false,
+            0,
             () -> null, () -> 5000,
             1f,
             CEEConfigs.server().maxWireLength::get));
@@ -28,7 +28,7 @@ public class CEEWireTypes {
             CEEConfigs.server().resistanceValues.wireResistance::get,
             CEEPartialModels.WIRE_SEGMENT,
             CEEItems.INSULATED_WIRE, CEEItems.WIRE_SPOOL::get,
-            true,
+            33_0000,
             COPPER,
             () -> 3540,
             1f,
@@ -38,7 +38,7 @@ public class CEEWireTypes {
             () -> 0.00001d,
             CEEPartialModels.CREATIVE_WIRE_SEGMENT,
             () -> Items.AIR, CEEItems.CREATIVE_WIRE_SPOOL::get,
-            true,
+            1e+11d,
             () -> null, () -> 9999999,
             1f,
             CEEConfigs.server().maxWireLength::get));
@@ -47,7 +47,7 @@ public class CEEWireTypes {
             CEEConfigs.server().resistanceValues.ironWireResistance::get,
             CEEPartialModels.IRON_WIRE_SEGMENT, CEEItems.IRON_WIRE_STRAND,
             CEEItems.IRON_WIRE_SPOOL::get,
-            false,
+            0,
             () -> null, () -> 6000,
             1f,
             CEEConfigs.server().maxWireLength::get));
@@ -56,7 +56,7 @@ public class CEEWireTypes {
             CEEConfigs.server().resistanceValues.ironWireResistance::get,
             CEEPartialModels.IRON_BUS_SEGMENT, Items.IRON_INGOT::asItem,
             CEEItems.IRON_BUS_SPOOL::get,
-            false,
+            0,
             () -> null, () -> 10000,
             0f,
             CEEConfigs.server().maxBusWireLength::get));
@@ -69,7 +69,7 @@ public class CEEWireTypes {
                         CEEConfigs.server().resistanceValues.wireResistance::get,
                         CEEPartialModels.COLORED_WIRE_SEGMENTS.get(color),
                         CEEItems.INSULATED_WIRE, CEEItems.WIRE_SPOOL::get,
-                        true,
+                        33_0000,
                         COPPER,
                         () -> 3540,
                         1f,

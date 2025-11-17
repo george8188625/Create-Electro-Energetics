@@ -16,6 +16,7 @@ public class SimulatorProfiler {
         ResultEntry parent = entryStack.peek();
         ResultEntry node = (parent == null) ? root.getOrCreateChild(id) : parent.getOrCreateChild(id);
         entryStack.push(node);
+        profilerOverheadNanos += System.nanoTime() - t0;
     }
 
     public void pop() {

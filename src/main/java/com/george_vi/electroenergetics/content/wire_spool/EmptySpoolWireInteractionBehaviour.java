@@ -3,8 +3,8 @@ package com.george_vi.electroenergetics.content.wire_spool;
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
-import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.simibubi.create.AllSoundEvents;
@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 
 public class EmptySpoolWireInteractionBehaviour extends WireInteractionBehaviour {
     @Override

@@ -1,16 +1,14 @@
 package com.george_vi.electroenergetics.content.electric_pump;
 
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.fluids.pump.PumpBlockEntity;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
-import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.ChatFormatting;

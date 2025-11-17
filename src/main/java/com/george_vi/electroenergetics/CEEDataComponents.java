@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics;
 
-import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;

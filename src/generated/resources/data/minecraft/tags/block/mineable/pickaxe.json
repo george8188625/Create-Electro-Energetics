@@ -41,6 +41,9 @@
     "electroenergetics:capacitor",
     "electroenergetics:momentary_switch",
     "electroenergetics:emergency_stop_button",
-    "electroenergetics:indicator_bulb"
+    "electroenergetics:indicator_bulb",
+    "electroenergetics:high_voltage_sign",
+    "electroenergetics:electric_shock_sign",
+    "electroenergetics:grounding_sign"
   ]
 }

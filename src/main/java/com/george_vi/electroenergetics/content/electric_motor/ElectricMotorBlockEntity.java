@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.deployer.DeployerBlock;

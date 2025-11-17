@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics;
 
-import com.george_vi.electroenergetics.foundation.NodeConfigurator;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConfigurator;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 

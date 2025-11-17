@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.foundation;
+package com.george_vi.electroenergetics.foundation.base;
 
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;

@@ -15,6 +15,7 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.neoforged.neoforge.common.Tags;
 
 import java.util.concurrent.CompletableFuture;
@@ -517,6 +518,18 @@ public class CEERecipeGen extends RecipeProvider {
                 .define('A', AllItems.ANDESITE_ALLOY)
                 .unlockedBy("has_andesite_alloy", has(AllItems.ANDESITE_ALLOY))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/radiator_panel"));
+
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(AllTags.commonItemTag("plates/iron")), RecipeCategory.DECORATIONS, CEEBlocks.HIGH_VOLTAGE_SIGN, 2)
+                .unlockedBy("has_iron_plate", has(AllTags.commonItemTag("plates/iron")))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("stonecutting/high_voltage_sign"));
+
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(AllTags.commonItemTag("plates/iron")), RecipeCategory.DECORATIONS, CEEBlocks.ELECTRIC_SHOCK_SIGN, 2)
+                .unlockedBy("has_iron_plate", has(AllTags.commonItemTag("plates/iron")))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("stonecutting/electric_shock_sign"));
+
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(AllTags.commonItemTag("plates/iron")), RecipeCategory.DECORATIONS, CEEBlocks.GROUNDING_SIGN, 2)
+                .unlockedBy("has_iron_plate", has(AllTags.commonItemTag("plates/iron")))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("stonecutting/grounding_sign"));
 
         sequencedAssembly("transformer_core", b -> b.require(AllTags.commonItemTag("plates/iron"))
                         .transitionTo(CEEItems.INCOMPLETE_TRANSFORMER_CORE)

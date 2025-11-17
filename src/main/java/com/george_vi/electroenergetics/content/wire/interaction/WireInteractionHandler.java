@@ -2,8 +2,8 @@ package com.george_vi.electroenergetics.content.wire.interaction;
 
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
-import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.WireData;

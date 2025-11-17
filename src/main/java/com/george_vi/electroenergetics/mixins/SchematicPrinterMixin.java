@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;

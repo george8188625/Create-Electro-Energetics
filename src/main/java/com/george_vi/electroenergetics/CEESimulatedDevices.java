@@ -28,7 +28,7 @@ import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesDevice;
 import com.george_vi.electroenergetics.content.transformer.TransformerCoreDevice;
 import com.george_vi.electroenergetics.content.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorDevice;
-import com.george_vi.electroenergetics.foundation.TemporaryDevice;
+import com.george_vi.electroenergetics.foundation.base.TemporaryDevice;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.resources.ResourceLocation;
 

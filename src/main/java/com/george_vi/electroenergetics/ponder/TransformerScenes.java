@@ -1,13 +1,12 @@
 package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.minecraft.core.Direction;
-import net.minecraft.world.phys.Vec3;
 
 public class TransformerScenes {
     public static void transformer(SceneBuilder builder, SceneBuildingUtil util) {

@@ -2,8 +2,8 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;

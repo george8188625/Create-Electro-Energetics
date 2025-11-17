@@ -86,6 +86,8 @@ public class CEEShapes {
     public static final VoxelShaper INDICATOR_BULB_0 = shape(1, 0, 5, 7, 11, 11).forDirectional();
     public static final VoxelShaper INDICATOR_BULB_1 = shape(9, 0, 5, 15, 11, 11).forDirectional();
 
+    public static final VoxelShaper WARNING_SIGN = shape(1,2, 0,15,14,2).forHorizontal(Direction.NORTH);
+
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);
     }

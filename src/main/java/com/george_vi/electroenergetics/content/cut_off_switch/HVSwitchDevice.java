@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;

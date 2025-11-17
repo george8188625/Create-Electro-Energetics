@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.WireType;
 import net.createmod.catnip.render.CachedBuffers;

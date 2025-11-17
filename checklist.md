@@ -23,7 +23,7 @@
 - [ ] small alternators
 - [ ] directional ammeters
 - [ ] galvanic basin recipes
-- [ ] electrocution
+- [x] electrocution
 - [x] uninsulated wire shorts
 - [ ] thick copper wire (more like cable)
 - [ ] zipline hook (like IE skyhook)

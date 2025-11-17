@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.foundation;
+package com.george_vi.electroenergetics.foundation.base;
 
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.data.AssetLookup;

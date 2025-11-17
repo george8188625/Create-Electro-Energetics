@@ -1,15 +1,13 @@
 package com.george_vi.electroenergetics.content.accumulator;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;

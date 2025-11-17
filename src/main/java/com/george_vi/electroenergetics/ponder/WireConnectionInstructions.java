@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEWireTypes;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireType;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
@@ -9,7 +9,6 @@ import net.createmod.ponder.foundation.instruction.FadeIntoSceneInstruction;
 import net.createmod.ponder.foundation.instruction.FadeOutOfSceneInstruction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.phys.Vec3;
 
 public class WireConnectionInstructions {
     final SceneBuilder builder;

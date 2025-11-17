@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;

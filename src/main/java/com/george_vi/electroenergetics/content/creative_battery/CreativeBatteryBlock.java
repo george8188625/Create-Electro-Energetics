@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.creative_battery;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;

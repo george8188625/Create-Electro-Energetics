@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.simulation.WireData;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;

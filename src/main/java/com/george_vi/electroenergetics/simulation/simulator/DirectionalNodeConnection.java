@@ -1,8 +1,7 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
-import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.Node;
 import net.minecraft.core.BlockPos;
 
 import java.util.Objects;

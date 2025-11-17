@@ -1,8 +1,7 @@
 package com.george_vi.electroenergetics.content.electronic_components.resistor;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
-import com.george_vi.electroenergetics.content.bulb.BulbBlock;
-import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
 import net.createmod.catnip.render.CachedBuffers;

@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.ground_rod;
 
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.simibubi.create.AllTags;

@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.foundation;
+package com.george_vi.electroenergetics.foundation.nodes;
 
 import java.util.Objects;
 

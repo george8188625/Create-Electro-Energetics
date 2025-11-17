@@ -36,11 +36,12 @@ import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayBlock
 import com.george_vi.electroenergetics.content.relay.RelayBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
+import com.george_vi.electroenergetics.content.sign.WarningSignBlock;
 import com.george_vi.electroenergetics.content.transformer.RadiatorPanelBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerCoreBlock;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlock;
-import com.george_vi.electroenergetics.foundation.DirectionalRolledDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.ElectricStatsTooltipModifier;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.kinetics.gauge.GaugeGenerator;
@@ -553,6 +554,36 @@ public class CEEBlocks {
             .loot((lt, b) -> lt.add(b, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1f)).add(LootItem.lootTableItem(b.asItem())).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2f)).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(b).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(IndicatorBulbBlock.SIDE, 2))))))) // why are loot table gens so looong wtf
             .item(IndicatorBulbBlockItem::new)
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .build()
+            .register();
+
+    public static final BlockEntry<WarningSignBlock> HIGH_VOLTAGE_SIGN = REGISTRATE.block("high_voltage_sign", WarningSignBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs -> bs.getValue(WarningSignBlock.ATTACHED) ? AssetLookup.partialBaseModel(c, p, "attached") : AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<WarningSignBlock> ELECTRIC_SHOCK_SIGN = REGISTRATE.block("electric_shock_sign", WarningSignBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs -> bs.getValue(WarningSignBlock.ATTACHED) ? AssetLookup.partialBaseModel(c, p, "attached") : AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<WarningSignBlock> GROUNDING_SIGN = REGISTRATE.block("grounding_sign", WarningSignBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs -> bs.getValue(WarningSignBlock.ATTACHED) ? AssetLookup.partialBaseModel(c, p, "attached") : AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
             .build()
             .register();
 

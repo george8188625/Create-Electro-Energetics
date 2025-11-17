@@ -1,22 +1,20 @@
 package com.george_vi.electroenergetics.simulation;
 
-import com.george_vi.electroenergetics.foundation.Node;
-import com.george_vi.electroenergetics.simulation.simulator.DirectionalNodeConnection;
-import com.george_vi.electroenergetics.simulation.simulator.DissolvedProperties;
+import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import it.unimi.dsi.fastutil.objects.*;
 
 import java.util.*;
 
 public class CircuitBuilder {
-    final Map<Node, Map<Node, ElectricalProperties>> adjacency = new HashMap<>();
-    final Set<Node> allNodes = new HashSet<>();
+    final Map<Node, Map<Node, ElectricalProperties>> adjacency = new Object2ObjectOpenHashMap<>();
+    final Set<Node> allNodes;
     final Object2DoubleMap<Node> groundConductance = new Object2DoubleOpenHashMap<>();
     final Object2IntMap<Node> defaultZeroPotentials = new Object2IntOpenHashMap<>();
 
     boolean frozen;
     public <T extends Node> CircuitBuilder(Collection<T> allNodes) {
-        this.allNodes.addAll(allNodes);
+        this.allNodes = new HashSet<>(allNodes);
     }
 
     public ElectricalProperties getConnectionProperties(Node node1, Node node2) {

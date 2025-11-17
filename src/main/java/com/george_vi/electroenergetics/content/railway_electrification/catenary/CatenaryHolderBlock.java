@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.railway_electrification.catenary
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.foundation.block.IBE;

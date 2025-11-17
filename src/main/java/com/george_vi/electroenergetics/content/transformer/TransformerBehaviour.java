@@ -1,7 +1,6 @@
 package com.george_vi.electroenergetics.content.transformer;
 
-import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;

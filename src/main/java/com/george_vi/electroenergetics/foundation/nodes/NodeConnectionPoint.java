@@ -1,5 +1,6 @@
-package com.george_vi.electroenergetics.foundation;
+package com.george_vi.electroenergetics.foundation.nodes;
 
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

@@ -6,9 +6,9 @@ import com.george_vi.electroenergetics.content.railway_electrification.pantograp
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
-import com.george_vi.electroenergetics.foundation.AttachedNode;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.Node;
+import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;

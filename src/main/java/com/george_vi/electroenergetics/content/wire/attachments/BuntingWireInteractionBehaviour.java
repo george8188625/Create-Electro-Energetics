@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.wire.attachments;
 import com.george_vi.electroenergetics.CEEWireAttachments;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
-import com.george_vi.electroenergetics.foundation.NodeConnectionPoint;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import net.mehvahdjukaar.supplementaries.common.items.BuntingItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

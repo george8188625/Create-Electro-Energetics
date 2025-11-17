@@ -7,10 +7,13 @@ import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
-import com.george_vi.electroenergetics.foundation.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleRBTreeMap;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.nbt.NBTHelper;
@@ -39,7 +42,7 @@ public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, List<BlockPos>> CATENARY = new HashMap<>();
 
     // NOT PERSISTENT
-    Map<InWorldNode, Double> VOLTAGES = new HashMap<>();
+    Object2DoubleMap<InWorldNode> VOLTAGES = new Object2DoubleOpenHashMap<>();
     ServerLevel level;
 
     WireConnectionManager wireConnectionManager;
@@ -384,8 +387,8 @@ public class InfrastructureSavedData extends SavedData {
         setDirty();
     }
 
-    public List<SimulatedDeviceInstance> getDevices(){
-        return DEVICES.values().stream().toList();
+    public Collection<SimulatedDeviceInstance> getDevices() {
+        return DEVICES.values();
     }
 
     public SimulatedDeviceInstance getDevice(BlockPos pos) {

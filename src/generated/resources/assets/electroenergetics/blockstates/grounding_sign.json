@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "attached=false,facing=east,waterlogged=false": {
+      "model": "electroenergetics:block/grounding_sign/block",
+      "y": 90
+    },
+    "attached=false,facing=east,waterlogged=true": {
+      "model": "electroenergetics:block/grounding_sign/block",
+      "y": 90
+    },
+    "attached=false,facing=north,waterlogged=false": {
+      "model": "electroenergetics:block/grounding_sign/block"
+    },
+    "attached=false,facing=north,waterlogged=true": {
+      "model": "electroenergetics:block/grounding_sign/block"
+    },
+    "attached=false,facing=south,waterlogged=false": {
+      "model": "electroenergetics:block/grounding_sign/block",
+      "y": 180
+    },
+    "attached=false,facing=south,waterlogged=true": {
+      "model": "electroenergetics:block/grounding_sign/block",
+      "y": 180
+    },
+    "attached=false,facing=west,waterlogged=false": {
+      "model": "electroenergetics:block/grounding_sign/block",
+      "y": 270
+    },
+    "attached=false,facing=west,waterlogged=true": {
+      "model": "electroenergetics:block/grounding_sign/block",
+      "y": 270
+    },
+    "attached=true,facing=east,waterlogged=false": {
+      "model": "electroenergetics:block/grounding_sign/block_attached",
+      "y": 90
+    },
+    "attached=true,facing=east,waterlogged=true": {
+      "model": "electroenergetics:block/grounding_sign/block_attached",
+      "y": 90
+    },
+    "attached=true,facing=north,waterlogged=false": {
+      "model": "electroenergetics:block/grounding_sign/block_attached"
+    },
+    "attached=true,facing=north,waterlogged=true": {
+      "model": "electroenergetics:block/grounding_sign/block_attached"
+    },
+    "attached=true,facing=south,waterlogged=false": {
+      "model": "electroenergetics:block/grounding_sign/block_attached",
+      "y": 180
+    },
+    "attached=true,facing=south,waterlogged=true": {
+      "model": "electroenergetics:block/grounding_sign/block_attached",
+      "y": 180
+    },
+    "attached=true,facing=west,waterlogged=false": {
+      "model": "electroenergetics:block/grounding_sign/block_attached",
+      "y": 270
+    },
+    "attached=true,facing=west,waterlogged=true": {
+      "model": "electroenergetics:block/grounding_sign/block_attached",
+      "y": 270
+    }
+  }
+}

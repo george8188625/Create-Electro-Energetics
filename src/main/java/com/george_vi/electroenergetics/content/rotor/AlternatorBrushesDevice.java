@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.content.rotor;
 
-import com.george_vi.electroenergetics.foundation.GeneratingDevice;
+import com.george_vi.electroenergetics.foundation.base.GeneratingDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

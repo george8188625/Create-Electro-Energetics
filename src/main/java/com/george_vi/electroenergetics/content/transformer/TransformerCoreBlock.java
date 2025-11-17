@@ -1,8 +1,7 @@
 package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.*;
-import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.foundation.block.IBE;

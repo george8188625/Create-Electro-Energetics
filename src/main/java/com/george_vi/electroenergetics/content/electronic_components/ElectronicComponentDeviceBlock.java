@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.content.electronic_components;
 
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

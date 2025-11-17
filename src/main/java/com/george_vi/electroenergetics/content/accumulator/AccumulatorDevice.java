@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.accumulator;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.foundation.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;

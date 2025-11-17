@@ -1,9 +1,8 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
 import com.george_vi.electroenergetics.*;
-import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
-import com.george_vi.electroenergetics.foundation.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllItems;
@@ -16,7 +15,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
