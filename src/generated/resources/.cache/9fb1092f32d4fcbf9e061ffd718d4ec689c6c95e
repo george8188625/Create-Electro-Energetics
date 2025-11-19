@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-16T23:34:32.4061243	Recipes
+// 1.21.1	2025-11-19T23:27:19.2997418	Recipes
 e4558ff2c12de196a56a9f67ffe27050cdfe38f7 data/electroenergetics/advancement/recipes/decorations/stonecutting/electric_shock_sign.json
 1e443110466e17eb3a8f102e9fc77c86fc29380e data/electroenergetics/advancement/recipes/decorations/stonecutting/grounding_sign.json
 e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/recipes/decorations/stonecutting/high_voltage_sign.json
@@ -31,6 +31,8 @@ eae9b379924c897b517ffacdbbadfe9946ec99f2 data/electroenergetics/advancement/reci
 da36d5357f3bca1b1bfaf1415e7473235decf9a6 data/electroenergetics/advancement/recipes/misc/crafting/fuse.json
 33bc73def6b1348fedd4cbc98576e3650df9ed0f data/electroenergetics/advancement/recipes/misc/crafting/fuse_holder.json
 3b0eb2e425247677c97bf2f2d5a1dbadf9400163 data/electroenergetics/advancement/recipes/misc/crafting/ground_rod.json
+ca1359fe6865becc8833a4ac32f026dd432139ee data/electroenergetics/advancement/recipes/misc/crafting/heavily_insulated_wire.json
+b98a34e8914bbfcd08bf9b970e4b937b70de498e data/electroenergetics/advancement/recipes/misc/crafting/heavily_insulated_wire_spool.json
 babdf5fc3cdc6ce6fd59ca06277f5774a1e33113 data/electroenergetics/advancement/recipes/misc/crafting/hv_switch.json
 866eb1a3aa987fbdfe1f88ad1aa3f8daf04e7aa7 data/electroenergetics/advancement/recipes/misc/crafting/indicator_bulb.json
 c306175636fc6d01ac5fbdb49a1dd77542f62853 data/electroenergetics/advancement/recipes/misc/crafting/insulated_wire.json
@@ -84,6 +86,8 @@ baa0fdbb2102c6b209eb385649922df5e01ca610 data/electroenergetics/recipe/crafting/
 69c3deca08049ce15318df5ebaf560f5f03c15d1 data/electroenergetics/recipe/crafting/fuse.json
 26c490f0f5aa438568f9da18ce33e593743cc759 data/electroenergetics/recipe/crafting/fuse_holder.json
 e29829f1256fce5fba6be1ac0e1caef5d4627a0a data/electroenergetics/recipe/crafting/ground_rod.json
+876f28797ffe73c59ad4bdd885608c2349084f56 data/electroenergetics/recipe/crafting/heavily_insulated_wire.json
+9e857db250d940869c793af20360d43c10debaa8 data/electroenergetics/recipe/crafting/heavily_insulated_wire_spool.json
 3a1cc0f929077f01eda48514a62e2f8be81df3f1 data/electroenergetics/recipe/crafting/hv_switch.json
 8ca987b4e92d42a9cc0ee8e8b0ca64dd92b8e3d3 data/electroenergetics/recipe/crafting/indicator_bulb.json
 01a607602d1a7f9442cb8f57263cba75eeedf789 data/electroenergetics/recipe/crafting/insulated_wire.json

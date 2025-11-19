@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.creative_battery;
 
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.core.BlockPos;
@@ -21,5 +22,6 @@ public class CreativeBatteryDevice extends SimulatedDevice {
 
         bridges.builder(pos)
                 .idealVoltageSource(0, 1, voltage);
+        bridges.defaultZeroPotential(new InWorldNode(0, pos), 200);
     }
 }

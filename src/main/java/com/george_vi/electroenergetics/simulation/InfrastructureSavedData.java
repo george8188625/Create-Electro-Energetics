@@ -388,7 +388,7 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public Collection<SimulatedDeviceInstance> getDevices() {
-        return DEVICES.values();
+        return new ArrayList<>(DEVICES.values());
     }
 
     public SimulatedDeviceInstance getDevice(BlockPos pos) {

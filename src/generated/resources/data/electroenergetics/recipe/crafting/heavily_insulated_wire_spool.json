@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "s": {
+      "item": "electroenergetics:empty_spool"
+    },
+    "w": {
+      "item": "electroenergetics:heavily_insulated_wire"
+    }
+  },
+  "pattern": [
+    " w ",
+    "wsw",
+    " w "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:heavily_insulated_wire_spool"
+  }
+}

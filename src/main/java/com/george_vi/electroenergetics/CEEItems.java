@@ -24,33 +24,50 @@ public class CEEItems {
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addResistancePerMeter(CEEConfigs.server().resistanceValues.wireResistance::get)))
             .register();
+
+    public static final ItemEntry<WireSpoolItem> HEAVILY_INSULATED_WIRE_SPOOL = REGISTRATE.item("heavily_insulated_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.HEAVILY_INSULATED))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.wireResistance::get)))
+            .register();
+
     public static final ItemEntry<WireSpoolItem> COPPER_WIRE_SPOOL = REGISTRATE.item("copper_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.COPPER))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addResistancePerMeter(CEEConfigs.server().resistanceValues.wireResistance::get)))
             .register();
+
     public static final ItemEntry<WireSpoolItem> IRON_WIRE_SPOOL = REGISTRATE.item("iron_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.IRON))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addResistancePerMeter(CEEConfigs.server().resistanceValues.ironWireResistance::get)))
             .register();
+
     public static final ItemEntry<WireSpoolItem> IRON_BUS_SPOOL = REGISTRATE.item("iron_bus_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.IRON_BUS))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addResistancePerMeter(CEEConfigs.server().resistanceValues.ironWireResistance::get)))
             .register();
+
     public static final ItemEntry<WireSpoolItem> CREATIVE_WIRE_SPOOL = REGISTRATE.item("creative_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.CREATIVE))
             .properties(p -> p.rarity(Rarity.EPIC))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addResistancePerMeter(() -> 0.00001d)))
             .register();
+
     public static final ItemEntry<EmptySpoolItem> EMPTY_SPOOL = REGISTRATE.item("empty_spool", EmptySpoolItem::new)
             .register();
+
     public static final ItemEntry<Item> INSULATED_WIRE = REGISTRATE.item("insulated_wire", Item::new)
             .register();
+
+    public static final ItemEntry<Item> HEAVILY_INSULATED_WIRE = REGISTRATE.item("heavily_insulated_wire", Item::new)
+            .register();
+
     public static final ItemEntry<Item> COPPER_WIRE = REGISTRATE.item("copper_wire", Item::new)
             .tag(AllTags.commonItemTag("wires/copper"))
             .register();
+
     public static final ItemEntry<Item> IRON_WIRE = REGISTRATE.item("iron_wire", Item::new)
             .tag(AllTags.commonItemTag("wires/iron"))
             .register();
+
     public static final ItemEntry<Item> IRON_WIRE_STRAND = REGISTRATE.item("iron_wire_strand", Item::new)
             .register();
 

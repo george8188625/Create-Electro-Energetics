@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.foundation.*;
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.PositionedAttachedNode;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
@@ -25,6 +26,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -66,94 +68,106 @@ public class WireConnectionManager {
         AtomicInteger electrocutionNodeID = new AtomicInteger();
         int cutElectrocutionNodeID = 0;
         Map<NodeConnection, List<CutWireEntry>> electrocutionCuts = new Object2ObjectOpenHashMap<>();
-        for (Entity entity : ((ServerLevel) level).getAllEntities()) {
-            AABB bb1 = entity.getBoundingBox();
-            int xChunkPos = entity.chunkPosition().x;
-            int zChunkPos = entity.chunkPosition().z;
-            List<NodeConnection> wiresToCheck = new LinkedList<>();
-            List<NodeConnection> addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos + 1));
-            if (addedWires != null)
-                wiresToCheck.addAll(addedWires);
-            addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos + 1));
-            if (addedWires != null)
-                wiresToCheck.addAll(addedWires);
-            addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos + 1));
-            if (addedWires != null)
-                wiresToCheck.addAll(addedWires);
-            addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos));
-            if (addedWires != null)
-                wiresToCheck.addAll(addedWires);
-            addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos));
-            if (addedWires != null)
-                wiresToCheck.addAll(addedWires);
-            addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos));
-            if (addedWires != null)
-                wiresToCheck.addAll(addedWires);
-            addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos - 1));
-            if (addedWires != null)
-                wiresToCheck.addAll(addedWires);
-            addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos - 1));
-            if (addedWires != null)
-                wiresToCheck.addAll(addedWires);
-            addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos - 1));
-            if (addedWires != null)
-                wiresToCheck.addAll(addedWires);
+        if (CEEConfigs.server().enableElectrocution.get())
+            for (Entity entity : ((ServerLevel) level).getAllEntities()) {
+                if (!(entity instanceof Mob || entity instanceof Player))
+                    continue;
+                AABB bb1 = entity.getBoundingBox();
+                int xChunkPos = entity.chunkPosition().x;
+                int zChunkPos = entity.chunkPosition().z;
+                List<NodeConnection> wiresToCheck = new LinkedList<>();
+                List<NodeConnection> addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos + 1));
+                if (addedWires != null)
+                    wiresToCheck.addAll(addedWires);
+                addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos + 1));
+                if (addedWires != null)
+                    wiresToCheck.addAll(addedWires);
+                addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos + 1));
+                if (addedWires != null)
+                    wiresToCheck.addAll(addedWires);
+                addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos));
+                if (addedWires != null)
+                    wiresToCheck.addAll(addedWires);
+                addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos));
+                if (addedWires != null)
+                    wiresToCheck.addAll(addedWires);
+                addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos));
+                if (addedWires != null)
+                    wiresToCheck.addAll(addedWires);
+                addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos - 1));
+                if (addedWires != null)
+                    wiresToCheck.addAll(addedWires);
+                addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos - 1));
+                if (addedWires != null)
+                    wiresToCheck.addAll(addedWires);
+                addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos - 1));
+                if (addedWires != null)
+                    wiresToCheck.addAll(addedWires);
 
-            if (wiresToCheck.isEmpty())
-                continue;
+                if (wiresToCheck.isEmpty())
+                    continue;
 
-            ElectrocutionEntry electrocutionEntry = null;
-            for (NodeConnection connection : wiresToCheck) {
+                ElectrocutionEntry electrocutionEntry = null;
+                for (NodeConnection connection : wiresToCheck) {
 
-                double lastWireVoltage = Math.max(Math.abs(sd.getVoltageAt(connection.node1())), Math.abs(sd.getVoltageAt(connection.node2())));
-                double unsafeDistance = Mth.clamp(Math.log(0.006d * lastWireVoltage + 1) / 8.1d + 0.000011d * lastWireVoltage -0.6d, 0.1, 3);
-                double unsafeDistanceSqr = unsafeDistance * unsafeDistance;
-                AABB bb2 = lastWireVoltage < 1000 ? wireBBs.get(connection) : wireBBs.get(connection).inflate(unsafeDistance);
+                    double lastWireVoltage = Math.max(Math.abs(sd.getVoltageAt(connection.node1())), Math.abs(sd.getVoltageAt(connection.node2())));
+                    double unsafeDistance = Mth.clamp(Math.log(0.006d * lastWireVoltage + 1) / 8.1d + 0.000011d * lastWireVoltage -0.6d, 0.1, 3);
+                    double unsafeDistanceSqr = unsafeDistance * unsafeDistance;
+                    AABB bb2 = lastWireVoltage < 1000 ? wireBBs.get(connection) : wireBBs.get(connection).inflate(unsafeDistance);
 
-                if (bb1.minX <= bb2.maxX && bb1.maxX >= bb2.minX &&
-                        bb1.minY <= bb2.maxY && bb1.maxY >= bb2.minY &&
-                        bb1.minZ <= bb2.maxZ && bb1.maxZ >= bb2.minZ) {
+                    if (bb1.minX <= bb2.maxX && bb1.maxX >= bb2.minX &&
+                            bb1.minY <= bb2.maxY && bb1.maxY >= bb2.minY &&
+                            bb1.minZ <= bb2.maxZ && bb1.maxZ >= bb2.minZ) {
 
-                    Vec3 pos1 = sd.getNodePosition(connection.node1());
-                    Vec3 pos2 = sd.getNodePosition(connection.node2());
-                    WireData wireData = sd.getConnectionData(connection);
-                    if (wireData == null)
-                        continue;
-                    List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag(), 0.5f);
-                    Vec3 bestPoint = null;
-                    float bestProgress = 0;
-                    double bestResistance = 99999999999d;
-                    for (int i = 0; i < points.size(); i++) {
-                        Vec3 point = points.get(i);
-                        double distanceX = Math.max(0, Math.max(bb1.minX - point.x, point.x - bb1.maxX));
-                        double distanceY = Math.max(0, Math.max(bb1.minY - point.y, point.y - bb1.maxY));
-                        double distanceZ = Math.max(0, Math.max(bb1.minZ - point.z, point.z - bb1.maxZ));
-                        double distanceSqr = (distanceX * distanceX) + (distanceY * distanceY) + (distanceZ * distanceZ);
-                        if (distanceSqr < unsafeDistanceSqr) {
-                            double resistance = wireData.wireType().insulationResistance() + 100;
-                            if (distanceSqr > 0.1f)
-                                resistance += distanceSqr * 1000;
-                            if (resistance < bestResistance) {
-                                bestPoint = point;
-                                bestProgress = (float) i/points.size();
-                                bestResistance = resistance;
+                        Vec3 pos1 = sd.getNodePosition(connection.node1());
+                        Vec3 pos2 = sd.getNodePosition(connection.node2());
+                        WireData wireData = sd.getConnectionData(connection);
+                        if (wireData == null || wireData.wireType().maxInsulationVoltage() > lastWireVoltage)
+                            continue;
+                        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag(), 0.5f);
+                        Vec3 bestPoint = null;
+                        float bestProgress = 0;
+                        double bestResistance = 1e+11d;
+                        for (int i = 0; i < points.size(); i++) {
+                            Vec3 point = points.get(i);
+                            double distanceX = Math.max(0, Math.max(bb1.minX - point.x, point.x - bb1.maxX));
+                            double distanceY = Math.max(0, Math.max(bb1.minY - point.y, point.y - bb1.maxY));
+                            double distanceZ = Math.max(0, Math.max(bb1.minZ - point.z, point.z - bb1.maxZ));
+                            double distanceSqr = (distanceX * distanceX) + (distanceY * distanceY) + (distanceZ * distanceZ);
+                            if (distanceSqr < unsafeDistanceSqr) {
+                                double resistance = wireData.wireType().insulationResistance() + 1444;
+                                if (distanceSqr > 0.1f)
+                                    resistance += distanceSqr * 1000;
+                                if (resistance < bestResistance) {
+                                    bestPoint = point;
+                                    bestProgress = (float) i/points.size();
+                                    bestResistance = resistance;
+                                }
                             }
                         }
-                    }
 
-                    if (bestPoint != null) {
-                        if (electrocutionEntry == null)
-                            electrocutionEntry = electrocutions.computeIfAbsent(entity, k -> new ElectrocutionEntry(new AttachedNode(electrocutionNodeID.getAndIncrement(), "ElectrocutionNode"), new Object2DoubleArrayMap<>(16), new Object2ObjectArrayMap<>(16)));
-                        AttachedNode cutNode = new AttachedNode(cutElectrocutionNodeID, "CEEElectrocutionCut");
-                        electrocutionEntry.nodes.put(cutNode, bestResistance);
-                        electrocutionEntry.positions.put(cutNode, bestPoint);
-                        electrocutionCuts.computeIfAbsent(connection, k -> new ArrayList<>()).add(new CutWireEntry(bestProgress, cutNode, null, null));
-                        builder.connect(electrocutionEntry.centralNode, cutNode, ElectricalProperties.resistor(bestResistance));
-
+                        if (bestPoint != null) {
+                            if (electrocutionEntry == null)
+                                electrocutionEntry = electrocutions.computeIfAbsent(entity, k -> {
+                                    ElectrocutionEntry ee = new ElectrocutionEntry(new AttachedNode(electrocutionNodeID.getAndIncrement(), "ElectrocutionNode"), new Object2DoubleArrayMap<>(16), new Object2ObjectArrayMap<>(16));
+                                    if (entity.onGround()) {
+                                        PositionedAttachedNode groundNode = new PositionedAttachedNode(electrocutionNodeID.getAndIncrement(), "ElectrocutionGroundNode", entity.position());
+                                        ee.nodes.put(groundNode, 10);
+                                        ee.positions().put(groundNode, entity.position());
+                                        builder.connect(ee.centralNode, groundNode, ElectricalProperties.resistor(10));
+                                        builder.ground(groundNode, 1 / 2333d);
+                                    }
+                                    return ee;
+                                });
+                            AttachedNode cutNode = new AttachedNode(cutElectrocutionNodeID, "CEEElectrocutionCut");
+                            electrocutionEntry.nodes.put(cutNode, bestResistance);
+                            electrocutionEntry.positions.put(cutNode, bestPoint);
+                            electrocutionCuts.computeIfAbsent(connection, k -> new ArrayList<>()).add(new CutWireEntry(bestProgress, cutNode, null, null));
+                            builder.connect(electrocutionEntry.centralNode, cutNode, ElectricalProperties.resistor(bestResistance));
+                        }
                     }
                 }
             }
-        }
 
         for (Map.Entry<NodeConnection, WireType> e : originalConnections.entrySet()) {
             NodeConnection connection = e.getKey();
@@ -380,7 +394,7 @@ public class WireConnectionManager {
             }
         }
 
-        if (electrocutions.isEmpty()) {
+        if (electrocutions.isEmpty() || !CEEConfigs.server().enableElectrocution.get()) {
             SimulationTicker.profiler.pop();
             return;
         }
@@ -415,7 +429,7 @@ public class WireConnectionManager {
             }
 
             if (highestCurrent > 0.03) {
-                float damage = highestVoltage < 19_000 ? (float) (highestCurrent * highestCurrent * 58 + highestCurrent * 10 -0.5) :
+                float damage = highestVoltage < 14_000 ? (float) (2 * (Math.log(highestCurrent * 10.5d) * 1.9d + 3.6d + 4.84d * highestCurrent)) :
                         (float) (highestVoltage / 3_000);
 
                 entity.hurt(highestVoltage > 9_900 ? hvDamageSource : damageSource, damage);

@@ -64,6 +64,16 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_copper_wire", has(AllTags.commonItemTag("wires/copper")))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/insulated_wire"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.HEAVILY_INSULATED_WIRE, 4)
+                .pattern("pwp")
+                .pattern("wkw")
+                .pattern("pwp")
+                .define('w', CEEItems.INSULATED_WIRE)
+                .define('k', Items.DRIED_KELP)
+                .define('p', Items.PAPER)
+                .unlockedBy("has_insulated_wire", has(CEEItems.INSULATED_WIRE))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/heavily_insulated_wire"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_WIRE_STRAND)
                 .pattern("ww")
                 .pattern("ww")
@@ -79,6 +89,15 @@ public class CEERecipeGen extends RecipeProvider {
                 .define('s', CEEItems.EMPTY_SPOOL)
                 .unlockedBy("has_insulated_wire", has(CEEItems.INSULATED_WIRE))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/wire_spool"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.HEAVILY_INSULATED_WIRE_SPOOL)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', CEEItems.HEAVILY_INSULATED_WIRE)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_heavily_insulated_wire", has(CEEItems.HEAVILY_INSULATED_WIRE))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/heavily_insulated_wire_spool"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.COPPER_WIRE_SPOOL)
                 .pattern(" w ")

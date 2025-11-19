@@ -20,7 +20,7 @@ public class CEEWireTypes {
             CEEPartialModels.COPPER_WIRE_SEGMENT,
             CEEItems.COPPER_WIRE, CEEItems.COPPER_WIRE_SPOOL::get,
             0,
-            () -> null, () -> 5000,
+            0d, () -> null, () -> 5000,
             1f,
             CEEConfigs.server().maxWireLength::get));
 
@@ -29,17 +29,27 @@ public class CEEWireTypes {
             CEEPartialModels.WIRE_SEGMENT,
             CEEItems.INSULATED_WIRE, CEEItems.WIRE_SPOOL::get,
             33_0000,
-            COPPER,
+            1500, COPPER,
             () -> 3540,
             1f,
             CEEConfigs.server().maxWireLength::get));
+
+    public static final DeferredHolder<WireType, WireType> HEAVILY_INSULATED = WIRE_TYPES.register("heavily_insulated", () -> new WireType(
+            CEEConfigs.server().resistanceValues.wireResistance::get,
+            CEEPartialModels.HEAVILY_INSULATED_WIRE_SEGMENT,
+            CEEItems.HEAVILY_INSULATED_WIRE, CEEItems.HEAVILY_INSULATED_WIRE_SPOOL::get,
+            66_0000,
+            20_000, COPPER,
+            () -> 6000,
+            0.7f,
+            CEEConfigs.server().maxHeavilyInsulatedWireLength::get));
 
     public static final DeferredHolder<WireType, WireType> CREATIVE = WIRE_TYPES.register("creative", () -> new WireType(
             () -> 0.00001d,
             CEEPartialModels.CREATIVE_WIRE_SEGMENT,
             () -> Items.AIR, CEEItems.CREATIVE_WIRE_SPOOL::get,
             1e+11d,
-            () -> null, () -> 9999999,
+            1e+11d, () -> null, () -> 9999999,
             1f,
             CEEConfigs.server().maxWireLength::get));
 
@@ -48,7 +58,7 @@ public class CEEWireTypes {
             CEEPartialModels.IRON_WIRE_SEGMENT, CEEItems.IRON_WIRE_STRAND,
             CEEItems.IRON_WIRE_SPOOL::get,
             0,
-            () -> null, () -> 6000,
+            0d, () -> null, () -> 6000,
             1f,
             CEEConfigs.server().maxWireLength::get));
 
@@ -57,7 +67,7 @@ public class CEEWireTypes {
             CEEPartialModels.IRON_BUS_SEGMENT, Items.IRON_INGOT::asItem,
             CEEItems.IRON_BUS_SPOOL::get,
             0,
-            () -> null, () -> 10000,
+            0d, () -> null, () -> 10000,
             0f,
             CEEConfigs.server().maxBusWireLength::get));
 
@@ -70,7 +80,7 @@ public class CEEWireTypes {
                         CEEPartialModels.COLORED_WIRE_SEGMENTS.get(color),
                         CEEItems.INSULATED_WIRE, CEEItems.WIRE_SPOOL::get,
                         33_0000,
-                        COPPER,
+                    1500, COPPER,
                         () -> 3540,
                         1f,
                         CEEConfigs.server().maxWireLength::get)));

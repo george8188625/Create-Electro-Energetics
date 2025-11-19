@@ -214,6 +214,8 @@
   "item.electroenergetics.copper_wire_spool": "Copper Wire Spool",
   "item.electroenergetics.creative_wire_spool": "Creative Wire Spool",
   "item.electroenergetics.empty_spool": "Empty Spool",
+  "item.electroenergetics.heavily_insulated_wire": "Heavily Insulated Wire",
+  "item.electroenergetics.heavily_insulated_wire_spool": "Heavily Insulated Wire Spool",
   "item.electroenergetics.incomplete_transformer_core": "Incomplete Transformer Core",
   "item.electroenergetics.insulated_wire": "Insulated Wire",
   "item.electroenergetics.iron_bus_spool": "Iron Bus Spool",
