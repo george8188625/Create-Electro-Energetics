@@ -25,7 +25,9 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -93,6 +95,11 @@ public class QuadConnectorBlock extends SimpleDeviceBlock implements IWrenchable
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return CEENodeConfigurations.QUAD_CONNECTOR.getNodePos(state.getValue(FACING), id);
+    }
+
+    @Override
+    protected @NotNull VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
     }
 
     @Override

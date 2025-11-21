@@ -21,7 +21,7 @@ public class BuzzerBlockEntity extends SmartBlockEntity {
     double voltage = 0;
 
     @OnlyIn(Dist.CLIENT)
-    private ElectricHumSoundInstance soundInstance = null;
+    private ElectricHumSoundInstance soundInstance;
 
     public BuzzerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);

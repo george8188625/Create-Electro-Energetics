@@ -40,6 +40,7 @@
 - [ ] some kind of electric blaze burner
 - [ ] solenoid valves
 - [ ] a pipe that detects a presence of a fluid inside of it by shorting the connectors when its filled. I have no idea what to name it
+- [ ] electromagnets
 
 **ponders:**
 - [x] voltage

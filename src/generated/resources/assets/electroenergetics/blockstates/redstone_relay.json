@@ -1,210 +1,418 @@
 {
   "variants": {
-    "facing=down,powered=false,roll=false,waterlogged=false": {
+    "facing=down,inverted=false,powered=false,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 180
     },
-    "facing=down,powered=false,roll=false,waterlogged=true": {
+    "facing=down,inverted=false,powered=false,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 180
     },
-    "facing=down,powered=false,roll=true,waterlogged=false": {
+    "facing=down,inverted=false,powered=false,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 180
     },
-    "facing=down,powered=false,roll=true,waterlogged=true": {
+    "facing=down,inverted=false,powered=false,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 180
     },
-    "facing=down,powered=true,roll=false,waterlogged=false": {
+    "facing=down,inverted=false,powered=true,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 180
     },
-    "facing=down,powered=true,roll=false,waterlogged=true": {
+    "facing=down,inverted=false,powered=true,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 180
     },
-    "facing=down,powered=true,roll=true,waterlogged=false": {
+    "facing=down,inverted=false,powered=true,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
       "x": 180
     },
-    "facing=down,powered=true,roll=true,waterlogged=true": {
+    "facing=down,inverted=false,powered=true,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
       "x": 180
     },
-    "facing=east,powered=false,roll=false,waterlogged=false": {
+    "facing=down,inverted=true,powered=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 180
+    },
+    "facing=down,inverted=true,powered=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 180
+    },
+    "facing=down,inverted=true,powered=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 180
+    },
+    "facing=down,inverted=true,powered=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 180
+    },
+    "facing=down,inverted=true,powered=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 180
+    },
+    "facing=down,inverted=true,powered=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 180
+    },
+    "facing=down,inverted=true,powered=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
+      "x": 180
+    },
+    "facing=down,inverted=true,powered=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
+      "x": 180
+    },
+    "facing=east,inverted=false,powered=false,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 270,
       "y": 270
     },
-    "facing=east,powered=false,roll=false,waterlogged=true": {
+    "facing=east,inverted=false,powered=false,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 270,
       "y": 270
     },
-    "facing=east,powered=false,roll=true,waterlogged=false": {
+    "facing=east,inverted=false,powered=false,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 270,
       "y": 270
     },
-    "facing=east,powered=false,roll=true,waterlogged=true": {
+    "facing=east,inverted=false,powered=false,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 270,
       "y": 270
     },
-    "facing=east,powered=true,roll=false,waterlogged=false": {
+    "facing=east,inverted=false,powered=true,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 270,
       "y": 270
     },
-    "facing=east,powered=true,roll=false,waterlogged=true": {
+    "facing=east,inverted=false,powered=true,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 270,
       "y": 270
     },
-    "facing=east,powered=true,roll=true,waterlogged=false": {
+    "facing=east,inverted=false,powered=true,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
       "x": 270,
       "y": 270
     },
-    "facing=east,powered=true,roll=true,waterlogged=true": {
+    "facing=east,inverted=false,powered=true,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
       "x": 270,
       "y": 270
     },
-    "facing=north,powered=false,roll=false,waterlogged=false": {
+    "facing=east,inverted=true,powered=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=north,inverted=false,powered=false,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 270,
       "y": 180
     },
-    "facing=north,powered=false,roll=false,waterlogged=true": {
+    "facing=north,inverted=false,powered=false,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 270,
       "y": 180
     },
-    "facing=north,powered=false,roll=true,waterlogged=false": {
+    "facing=north,inverted=false,powered=false,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,powered=false,roll=true,waterlogged=true": {
+    "facing=north,inverted=false,powered=false,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,powered=true,roll=false,waterlogged=false": {
+    "facing=north,inverted=false,powered=true,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 270,
       "y": 180
     },
-    "facing=north,powered=true,roll=false,waterlogged=true": {
+    "facing=north,inverted=false,powered=true,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 270,
       "y": 180
     },
-    "facing=north,powered=true,roll=true,waterlogged=false": {
+    "facing=north,inverted=false,powered=true,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,powered=true,roll=true,waterlogged=true": {
+    "facing=north,inverted=false,powered=true,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
       "x": 270,
       "y": 180
     },
-    "facing=south,powered=false,roll=false,waterlogged=false": {
+    "facing=north,inverted=true,powered=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=south,inverted=false,powered=false,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 270
     },
-    "facing=south,powered=false,roll=false,waterlogged=true": {
+    "facing=south,inverted=false,powered=false,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 270
     },
-    "facing=south,powered=false,roll=true,waterlogged=false": {
+    "facing=south,inverted=false,powered=false,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 270
     },
-    "facing=south,powered=false,roll=true,waterlogged=true": {
+    "facing=south,inverted=false,powered=false,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 270
     },
-    "facing=south,powered=true,roll=false,waterlogged=false": {
+    "facing=south,inverted=false,powered=true,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 270
     },
-    "facing=south,powered=true,roll=false,waterlogged=true": {
+    "facing=south,inverted=false,powered=true,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 270
     },
-    "facing=south,powered=true,roll=true,waterlogged=false": {
+    "facing=south,inverted=false,powered=true,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
       "x": 270
     },
-    "facing=south,powered=true,roll=true,waterlogged=true": {
+    "facing=south,inverted=false,powered=true,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
       "x": 270
     },
-    "facing=up,powered=false,roll=false,waterlogged=false": {
+    "facing=south,inverted=true,powered=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 270
+    },
+    "facing=south,inverted=true,powered=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 270
+    },
+    "facing=south,inverted=true,powered=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 270
+    },
+    "facing=south,inverted=true,powered=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 270
+    },
+    "facing=south,inverted=true,powered=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 270
+    },
+    "facing=south,inverted=true,powered=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 270
+    },
+    "facing=south,inverted=true,powered=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
+      "x": 270
+    },
+    "facing=south,inverted=true,powered=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
+      "x": 270
+    },
+    "facing=up,inverted=false,powered=false,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block"
     },
-    "facing=up,powered=false,roll=false,waterlogged=true": {
+    "facing=up,inverted=false,powered=false,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block"
     },
-    "facing=up,powered=false,roll=true,waterlogged=false": {
+    "facing=up,inverted=false,powered=false,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_roll"
     },
-    "facing=up,powered=false,roll=true,waterlogged=true": {
+    "facing=up,inverted=false,powered=false,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_roll"
     },
-    "facing=up,powered=true,roll=false,waterlogged=false": {
+    "facing=up,inverted=false,powered=true,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered"
     },
-    "facing=up,powered=true,roll=false,waterlogged=true": {
+    "facing=up,inverted=false,powered=true,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered"
     },
-    "facing=up,powered=true,roll=true,waterlogged=false": {
+    "facing=up,inverted=false,powered=true,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll"
     },
-    "facing=up,powered=true,roll=true,waterlogged=true": {
+    "facing=up,inverted=false,powered=true,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll"
     },
-    "facing=west,powered=false,roll=false,waterlogged=false": {
+    "facing=up,inverted=true,powered=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted"
+    },
+    "facing=up,inverted=true,powered=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted"
+    },
+    "facing=up,inverted=true,powered=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll"
+    },
+    "facing=up,inverted=true,powered=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll"
+    },
+    "facing=up,inverted=true,powered=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered"
+    },
+    "facing=up,inverted=true,powered=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered"
+    },
+    "facing=up,inverted=true,powered=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll"
+    },
+    "facing=up,inverted=true,powered=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll"
+    },
+    "facing=west,inverted=false,powered=false,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 270,
       "y": 90
     },
-    "facing=west,powered=false,roll=false,waterlogged=true": {
+    "facing=west,inverted=false,powered=false,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block",
       "x": 270,
       "y": 90
     },
-    "facing=west,powered=false,roll=true,waterlogged=false": {
+    "facing=west,inverted=false,powered=false,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,powered=false,roll=true,waterlogged=true": {
+    "facing=west,inverted=false,powered=false,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,powered=true,roll=false,waterlogged=false": {
+    "facing=west,inverted=false,powered=true,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 270,
       "y": 90
     },
-    "facing=west,powered=true,roll=false,waterlogged=true": {
+    "facing=west,inverted=false,powered=true,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered",
       "x": 270,
       "y": 90
     },
-    "facing=west,powered=true,roll=true,waterlogged=false": {
+    "facing=west,inverted=false,powered=true,roll=true,waterlogged=false": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,powered=true,roll=true,waterlogged=true": {
+    "facing=west,inverted=false,powered=true,roll=true,waterlogged=true": {
       "model": "electroenergetics:block/redstone_relay/block_powered_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/redstone_relay/block_inverted_powered_roll",
       "x": 270,
       "y": 90
     }

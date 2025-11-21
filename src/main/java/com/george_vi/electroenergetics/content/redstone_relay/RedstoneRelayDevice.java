@@ -22,7 +22,7 @@ public class RedstoneRelayDevice extends SimulatedDevice {
                 extraData.putBoolean("Powered", state.getValue(RedstoneRelayBlock.POWERED));
         }
 
-        if (extraData.getBoolean("Powered"))
+        if (extraData.getBoolean("Powered") ^ extraData.getBoolean("Inverted"))
             bridges.builder(pos)
                     .resistor(0, 1, 0.1);
     }

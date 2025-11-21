@@ -29,10 +29,10 @@ public class CEEShapes {
     public static final VoxelShape ELECTRIC_GAUGE_UP = shape(1,0, 0,15,2,16)
             .add(2,2, 0,14,14,16).build();
 
-    public static final VoxelShaper BULB = shape(4,0, 4,12,11,12)
+    public static final VoxelShaper BULB = shape(5,0, 5,11,10,11)
             .add(0,0, 6,16,5,10).forDirectional();
 
-    public static final VoxelShaper BULB_ROLL = shape(4,0, 4,12,11,12)
+    public static final VoxelShaper BULB_ROLL = shape(5,0, 5,11,10,11)
             .add(6,0, 0,10,5,16).forDirectional();
 
     public static final VoxelShaper DOUBLE_CONNECTOR = shape(1,0, 6,15,7,10).forDirectional();

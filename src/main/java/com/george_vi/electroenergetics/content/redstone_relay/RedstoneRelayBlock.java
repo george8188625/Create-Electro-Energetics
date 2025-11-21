@@ -6,17 +6,24 @@ import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -27,10 +34,19 @@ import java.util.Map;
 
 public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements IWrenchable {
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
+    public static final BooleanProperty INVERTED = BlockStateProperties.INVERTED;
 
     public RedstoneRelayBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(POWERED, false));
+        registerDefaultState(defaultBlockState().setValue(POWERED, false).setValue(INVERTED, false));
+    }
+
+    @Override
+    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("Inverted", state.getValue(INVERTED));
+        tag.putBoolean("Powered", state.getValue(POWERED));
+        return tag;
     }
 
     @Override
@@ -55,6 +71,8 @@ public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements 
         if (instance == null)
             return;
 
+        level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
+
         instance.extraData().putBoolean("Powered", state.getValue(POWERED));
     }
 
@@ -66,7 +84,7 @@ public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(POWERED);
+        builder.add(POWERED, INVERTED);
     }
 
     @Nullable
@@ -94,4 +112,16 @@ public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements 
                 CEENodeConfigurations.REDSTONE_RELAY.getNodePos(state.getValue(FACING), id);
     }
 
+    @Override
+    public InteractionResult onWrenched(BlockState state, UseOnContext context) {
+        if (context.getLevel() instanceof ServerLevel serverLevel) {
+            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
+            if (device != null)
+                device.extraData().putBoolean("Inverted", !state.getValue(INVERTED));
+            serverLevel.setBlockAndUpdate(context.getClickedPos(), state.cycle(INVERTED));
+            AllSoundEvents.WRENCH_ROTATE.playOnServer(context.getLevel(), context.getClickedPos());
+        }
+
+        return InteractionResult.SUCCESS;
+    }
 }

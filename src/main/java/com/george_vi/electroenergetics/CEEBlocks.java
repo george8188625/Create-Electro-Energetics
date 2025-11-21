@@ -201,7 +201,7 @@ public class CEEBlocks {
             .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
             .transform(pickaxeOnly())
             .item()
-            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addResistance(CEEConfigs.server().resistanceValues.bulbResistance::get)
                     .addVoltage(() -> 300)))
@@ -214,7 +214,7 @@ public class CEEBlocks {
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/bulb/block")))
             .transform(pickaxeOnly())
             .item()
-            .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/bulb/block")))
+            .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/bulb/item")))
             .build()
             .register();
 
@@ -241,7 +241,7 @@ public class CEEBlocks {
     public static final BlockEntry<RedstoneRelayBlock> REDSTONE_RELAY = REGISTRATE.block("redstone_relay", RedstoneRelayBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(RedstoneRelayBlock.POWERED) ? p.modLoc("block/redstone_relay/block_powered") : p.modLoc("block/redstone_relay/block")))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc((bs.getValue(RedstoneRelayBlock.INVERTED) ? "block/redstone_relay/block_inverted" : "block/redstone_relay/block") + (bs.getValue(RedstoneRelayBlock.POWERED) ? "_powered" : ""))))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))

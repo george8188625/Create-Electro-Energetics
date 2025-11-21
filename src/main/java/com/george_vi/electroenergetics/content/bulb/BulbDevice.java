@@ -67,13 +67,13 @@ public class BulbDevice extends SimulatedDevice {
             }
         }
         float loss = (float) results.getHeatLoss(pos, 0, 1);
-        float temp = updateTemp(extraData.getFloat("Temp"), Math.min(loss, 10000));
+        float temp = updateTemp(extraData.getFloat("Temp"), loss / 200);
         extraData.putFloat("Temp", temp);
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
 
-        if (temp > 10000) {
+        if (temp > 50) {
             extraData.putBoolean("Destroyed", true);
             extraData.putFloat("Temp", 0);
         }
