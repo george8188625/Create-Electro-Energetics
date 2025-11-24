@@ -25,7 +25,6 @@
 - [ ] galvanic basin recipes
 - [x] electrocution
 - [x] uninsulated wire shorts
-- [ ] thick copper wire (more like cable)
 - [ ] zipline hook (like IE skyhook)
 - [x] infrastructureSD saved in schematics (wires, devices, etc.)
 - [ ] advancements
@@ -34,7 +33,7 @@
 - [ ] some way of reading voltage / current into an analog signal
 - [ ] electric doors (buzz in door)
 - [ ] some special behaviour when cables go through walls
-- [ ] display sources
+- [x] display sources
 - [ ] some coil-gun-like weapon
 - [ ] more CC integration
 - [ ] some kind of electric blaze burner

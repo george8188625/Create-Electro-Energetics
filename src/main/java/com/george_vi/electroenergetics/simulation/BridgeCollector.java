@@ -117,8 +117,10 @@ public class BridgeCollector {
 
         public Builder energyLimitedSource(InWorldNode n1, InWorldNode n2, double energy, double voltage, double internalResistance) {
             double resistance;
-            if (voltage == 0 || energy <= 0)
-                resistance = 0.01;
+            if (Math.abs(voltage) < 0.001 || energy <= 0.01)
+                voltage = 0;
+            if (voltage == 0)
+                resistance = 0.001;
             else
                 resistance = (voltage * voltage) / (4 * energy);
 

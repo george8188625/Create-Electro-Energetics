@@ -37,7 +37,9 @@ public class EnergyMeterDevice extends SimulatedDevice {
         if (!level.isLoaded(pos))
             return;
 
-        if (level.getBlockEntity(pos) instanceof EnergyMeterBlockEntity be)
+        if (level.getBlockEntity(pos) instanceof EnergyMeterBlockEntity be) {
             be.setTotalEnergy((float) totalEnergy);
+            be.activePower = extraData.getBoolean("Closed") ? amps * v : 0;
+        }
     }
 }

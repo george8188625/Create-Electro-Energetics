@@ -29,7 +29,9 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -123,6 +125,11 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
     @Override
     public boolean isOuterInsulator(Level level, BlockPos pos, BlockState state, int id) {
         return state.getValue(STYLE) == Style.OUTER;
+    }
+
+    @Override
+    protected @NotNull VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
     }
 
     @Override

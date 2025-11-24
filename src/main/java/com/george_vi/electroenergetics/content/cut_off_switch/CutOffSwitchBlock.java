@@ -30,7 +30,9 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -117,5 +119,11 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
         return state.getValue(ROLL) ?
                 CEENodeConfigurations.BULB.rotate(new Vec3(0, 90, 0)).getNodePos(state.getValue(FACING), id) :
                 CEENodeConfigurations.BULB.getNodePos(state.getValue(FACING), id);
+    }
+
+
+    @Override
+    protected @NotNull VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
     }
 }

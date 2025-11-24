@@ -46,7 +46,9 @@ public class TriPolarEnergyMeterDevice extends SimulatedDevice {
         if (!level.isLoaded(pos))
             return;
 
-        if (level.getBlockEntity(pos) instanceof EnergyMeterBlockEntity be)
+        if (level.getBlockEntity(pos) instanceof EnergyMeterBlockEntity be) {
             be.setTotalEnergy((float) totalEnergy);
+            be.activePower = extraData.getBoolean("Closed") ? amps1 * v1 - amps2 * v2 : 0;
+        }
     }
 }

@@ -25,6 +25,16 @@ public class TransformerBehaviour {
         double averagePrimaryVoltage = extraData.getDouble("AveragePrimaryVoltage");
         double averageSecondaryVoltage = extraData.getDouble("AverageSecondaryVoltage");
 
+        if (Math.abs(lastPrimaryVoltage) < 0.1)
+            lastPrimaryVoltage = 0;
+        if (Math.abs(lastSecondaryVoltage) < 0.1)
+            lastSecondaryVoltage = 0;
+
+        if (Math.abs(averagePrimaryVoltage) < 0.1)
+            averagePrimaryVoltage = 0;
+        if (Math.abs(averageSecondaryVoltage) < 0.1)
+            averageSecondaryVoltage = 0;
+
         if (backwards) {
             double load = Math.max(0, rawFeed);
 

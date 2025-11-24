@@ -13,10 +13,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class EnergyMeterBlockEntity extends SmartBlockEntity {
+
     public EnergyMeterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
+
+    public double activePower = 0;
     public double totalEnergy = 0;
     public double oldTotalEnergy = 0;
     public int ticks = 0;
@@ -51,6 +54,7 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
 
         oldTotalEnergy = totalEnergy;
         totalEnergy = tag.getDouble("TotalEnergy");
+        activePower = tag.getDouble("ActivePower");
         disconnected = tag.getBoolean("Disconnected");
         if (tag.contains("Owner"))
             owner = tag.getUUID("Owner");
@@ -66,6 +70,7 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
         super.write(tag, registries, clientPacket);
 
         tag.putDouble("TotalEnergy", totalEnergy);
+        tag.putDouble("ActivePower", activePower);
         tag.putBoolean("Disconnected", disconnected);
         if (owner != null)
             tag.putUUID("Owner", owner);

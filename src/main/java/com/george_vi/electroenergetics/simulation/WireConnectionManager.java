@@ -415,16 +415,13 @@ public class WireConnectionManager {
                 double resistance = e1.getDoubleValue();
                 double current = Math.abs(results.getVoltageAt(centralNode, node)) / resistance;
                 double voltage = Math.abs(results.getVoltageAt(node));
-                if (current > 0.03 || (voltage > 1990 && resistance < voltage / 0.03d)) {
+                if (current > 0.03) {
                     Vec3 pos1 = electrocutionEntry.positions.get(node);
                     Vec3 pos2 = entity.position();
                     if (!(entity instanceof Player p && p.isCreative()))
                         CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos1, 40, new SendQuadraticParticlesPacket(pos1, pos2, ParticleTypes.BUBBLE_POP, -2f, 0.7f));
                 }
-                if ((voltage > 1990 && resistance < voltage / 0.03d))
-                    highestCurrent = Math.max(highestCurrent, voltage / resistance);
-                else
-                    highestCurrent = Math.max(highestCurrent, current);
+                highestCurrent = Math.max(highestCurrent, current);
                 highestVoltage = Math.max(highestVoltage, voltage);
             }
 

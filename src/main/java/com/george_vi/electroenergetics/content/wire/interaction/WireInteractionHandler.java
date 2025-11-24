@@ -2,19 +2,20 @@ package com.george_vi.electroenergetics.content.wire.interaction;
 
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
-import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.george_vi.electroenergetics.simulation.WireType;
-import com.simibubi.create.foundation.utility.RaycastHelper;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -45,8 +46,8 @@ public class WireInteractionHandler {
         mc.getProfiler().push("rayCastWire");
         double range = mc.player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE) + 1;
 
-        Vec3 from = RaycastHelper.getTraceOrigin(mc.player);
-        Vec3 to = RaycastHelper.getTraceTarget(mc.player, range, from);
+        Vec3 from = getTraceOrigin(mc.player);
+        Vec3 to = getTraceTarget(mc.player, range, from);
         HitResult hit = mc.hitResult;
 
         double bestDist = range;
@@ -109,7 +110,17 @@ public class WireInteractionHandler {
                 double ab_length_squared = ab.lengthSqr();
                 double t = ab_length_squared == 0 ? 0.0 : ap.dot(ab) / ab_length_squared;
 
-                bestProgress = (float) Mth.lerp(t, i - 1, i + 1) / (points.size() - 1);
+                if (points.size() == 1)
+                    bestProgress = (float) t / (points.size());
+                if (points.size() == 2) {
+                    if (i == 0 && t < 0.5)
+                        continue;
+                    bestProgress = (float) Mth.lerp(t, i - 1, i + 1) / (points.size());
+                } else {
+                    if (t < 0)
+                        continue;
+                    bestProgress = (float) Mth.lerp(t, i - 1, i + 1) / (points.size() - 0.5f);
+                }
                 bestPosition = VecHelper.lerp((float) t, prevPoint, nextPoint);
                 bestWireType = wire.getSecond().wireType();
             }
@@ -123,7 +134,13 @@ public class WireInteractionHandler {
         }
 
         targetedPoint = new NodeConnectionPoint(bestConnection.node1(), bestConnection.node2(), bestProgress);
+        Vec3 pos1 = targetedPoint.node1().getPosition(mc.level);
+        Vec3 pos2 = targetedPoint.node2().getPosition(mc.level);
 
+        if (pos1 == null || pos2 == null)
+            return;
+
+        bestPosition = QuadraticWireHelper.posAt(pos1, pos2, targetedPoint.point());
         WireInteractionBehaviour.DisplayType displayType = behaviour.getWireDisplayType(targetedPoint, mc.level, mc.player, stackInHand);
         if (displayType == WireInteractionBehaviour.DisplayType.DOT) {
             Outliner.getInstance().chaseAABB("cee_wire_interaction_point", AABB.ofSize(bestPosition, 0.01, 0.01, 0.01))
@@ -131,22 +148,6 @@ public class WireInteractionHandler {
                     .colored(behaviour.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
                     .disableLineNormals();
         } else if (displayType == WireInteractionBehaviour.DisplayType.LINE) {
-            Vec3 pos1 = null;
-            Vec3 pos2 = null;
-
-            BlockState state1 = mc.level.getBlockState(targetedPoint.node1().sourcePos());
-            BlockState state2 = mc.level.getBlockState(targetedPoint.node2().sourcePos());
-
-            if (state1.getBlock() instanceof DeviceBlock db)
-                pos1 = db.getNodePosition(mc.level, targetedPoint.node1().sourcePos(), state1, targetedPoint.node1().id());
-            if (state2.getBlock() instanceof DeviceBlock db)
-                pos2 = db.getNodePosition(mc.level, targetedPoint.node2().sourcePos(), state2, targetedPoint.node2().id());
-
-            if (pos1 == null || pos2 == null)
-                return;
-
-            pos1 = targetedPoint.node1().toGlobalPos(pos1);
-            pos2 = targetedPoint.node2().toGlobalPos(pos2);
 
             List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, bestWireType.getSag(), 1f);
             points.add(pos2);
@@ -162,5 +163,26 @@ public class WireInteractionHandler {
             }
         }
 
+    }
+
+
+    // From RaycastHelper. That class got moved in 6.0.7, so it is copied here to ensure it is compatible with both 6.0.6 and 6.0.7.
+    public static Vec3 getTraceTarget(Player playerIn, double range, Vec3 origin) {
+        float f = playerIn.getXRot();
+        float f1 = playerIn.getYRot();
+        float f2 = Mth.cos(-f1 * 0.017453292F - (float) Math.PI);
+        float f3 = Mth.sin(-f1 * 0.017453292F - (float) Math.PI);
+        float f4 = -Mth.cos(-f * 0.017453292F);
+        float f5 = Mth.sin(-f * 0.017453292F);
+        float f6 = f3 * f4;
+        float f7 = f2 * f4;
+        return origin.add((double) f6 * range, (double) f5 * range, (double) f7 * range);
+    }
+
+    public static Vec3 getTraceOrigin(Player playerIn) {
+        double d0 = playerIn.getX();
+        double d1 = playerIn.getY() + (double) playerIn.getEyeHeight();
+        double d2 = playerIn.getZ();
+        return new Vec3(d0, d1, d2);
     }
 }

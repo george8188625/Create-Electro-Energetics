@@ -38,6 +38,8 @@ import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE
 
 public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<EnergyMeterBlockEntity> ENERGY_METER = REGISTRATE.blockEntity("energy_meter", EnergyMeterBlockEntity::new)
+            .displaySource(CEEDisplaySources.ENERGY_METER)
+            .displaySource(CEEDisplaySources.WATTMETER)
             .validBlocks(CEEBlocks.ENERGY_METER::get, CEEBlocks.TRI_POLAR_ENERGY_METER::get)
             .register();
 
@@ -46,11 +48,13 @@ public class CEEBlockEntityTypes {
             .register();
 
     public static final BlockEntityEntry<ElectricGaugeBlockEntity> VOLTMETER = REGISTRATE.blockEntity("voltmeter", ElectricGaugeBlockEntity::voltmeter)
+            .displaySource(CEEDisplaySources.VOLTAGE)
             .validBlock(CEEBlocks.VOLTMETER::get)
             .renderer(() -> ElectricGaugeRenderer::voltmeter)
             .register();
 
     public static final BlockEntityEntry<ElectricGaugeBlockEntity> AMMETER = REGISTRATE.blockEntity("ammeter", ElectricGaugeBlockEntity::ammeter)
+            .displaySource(CEEDisplaySources.AMPERAGE)
             .validBlock(CEEBlocks.AMMETER::get)
             .renderer(() -> ElectricGaugeRenderer::ammeter)
             .register();
