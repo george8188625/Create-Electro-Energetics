@@ -35,7 +35,7 @@ public class VoltageSync {
         Map<Player, List<Pair<InWorldNode, Double>>> nodesPerPlayer = new HashMap<>();
         for (InWorldNode node : sd.getNodes()) {
             double voltage = sd.getVoltageAt(node);
-            InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(node.sourcePos());
+            SimulatedDeviceInstance deviceInstance = sd.getDevice(node.sourcePos());
             if (deviceInstance == null)
                 continue;
 

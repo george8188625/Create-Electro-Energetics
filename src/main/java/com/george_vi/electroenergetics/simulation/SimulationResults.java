@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.simulator.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import net.minecraft.core.BlockPos;
 
@@ -13,12 +14,12 @@ import java.util.Set;
 
 
 public class SimulationResults {
-    Object2DoubleMap<Node> voltages;
+    double[] voltages;
     Object2DoubleMap<DirectionalNodeConnection> sourceAmps;
     CircuitBuilder circuitBuilder;
     InfrastructureSavedData sd;
 
-    public SimulationResults(Object2DoubleMap<Node> voltages, Object2DoubleMap<DirectionalNodeConnection> sourceAmps, CircuitBuilder circuitBuilder, InfrastructureSavedData sd) {
+    public SimulationResults(double[] voltages, Object2DoubleMap<DirectionalNodeConnection> sourceAmps, CircuitBuilder circuitBuilder, InfrastructureSavedData sd) {
         this.voltages = voltages;
         this.sourceAmps = sourceAmps;
         this.circuitBuilder = circuitBuilder;
@@ -30,7 +31,7 @@ public class SimulationResults {
     }
 
     public double getVoltageAt(Node node) {
-        return voltages.getOrDefault(node, 0d);
+        return voltages[circuitBuilder.nodeIndexes.getInt(node)];
     }
 
     public double getVoltageAt(BlockPos pos, int id) {
@@ -75,17 +76,18 @@ public class SimulationResults {
 
         // the reason this is here, is when a device creates a non-ideal voltage source, it adds a node in the middle.
         // this just returns the real connection, so that the device doesn't have to worry about these nodes.
-
-        Set<Node> node1connections = circuitBuilder.getAdjacentNodes(node1).keySet();
-        Set<Node> node2connections = circuitBuilder.getAdjacentNodes(node2).keySet();
-        if (node1connections.contains(node2))
+        WrappedIndexedNode indexedNode1 = circuitBuilder.getNode(circuitBuilder.nodeIndexes.getInt(node1));
+        WrappedIndexedNode indexedNode2 = circuitBuilder.getNode(circuitBuilder.nodeIndexes.getInt(node2));
+        IntSet node1connections = indexedNode1.adjacency.keySet();
+        IntSet node2connections = indexedNode2.adjacency.keySet();
+        if (node1connections.contains(indexedNode2.ordinal))
             return new DirectionalNodeConnection(node1, node2);
 
         List<Node> nodesInTheMiddle = new ArrayList<>();
-        for (Node node1connection : node1connections) {
-            for (Node node2connection : node2connections) {
-                if (node1connection.equals(node2connection))
-                    nodesInTheMiddle.add(node1connection);
+        for (int node1connection : node1connections) {
+            for (int node2connection : node2connections) {
+                if (node1connection == node2connection)
+                    nodesInTheMiddle.add(circuitBuilder.allIndexedNodes.get(node1connection).node);
             }
         }
         if (nodesInTheMiddle.size() == 1)

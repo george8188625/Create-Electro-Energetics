@@ -4,28 +4,27 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 /**
  * This device creates a voltage source, and behaves in a way, that doesn't allow the load to take more power than it has available
  */
-public abstract class GeneratingDevice extends SimulatedDevice {
+public abstract class GeneratingDevice<T extends GeneratingDevice.DataHolder> extends SimulatedDevice<T> {
 
     public GeneratingDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
+    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, T extraData) {
         double voltage = getVoltage(pos, level, extraData);
 
-        bridges.builder(pos).energyLimitedSource(0, 1, extraData.getDouble("StoredEnergy"), Math.abs(voltage));
+        bridges.builder(pos).energyLimitedSource(0, 1, extraData.storedEnergy, Math.abs(voltage));
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+    public void postTick(BlockPos pos, Level level, SimulationResults results, T extraData) {
         // The stored energy is stored in its internal storage, to a max of 10x, this makes the voltage not drop super low when loaded normally.
         // That is because voltage sources are limited by a resistor in series, but that drops the voltage significantly on normal load.
 
@@ -35,17 +34,19 @@ public abstract class GeneratingDevice extends SimulatedDevice {
 
         double power = getPower(pos, level, extraData);
 
-        double storedEnergy = extraData.getDouble("StoredEnergy");
-        storedEnergy -= Math.abs(current * (v1 - v2));
+        extraData.storedEnergy -= Math.abs(current * (v1 - v2));
 
-        storedEnergy = Math.min(storedEnergy + power, power * 10);
-        if (storedEnergy < 0)
-            storedEnergy = 0;
+        extraData.storedEnergy = Math.min(extraData.storedEnergy + power, power * 10);
+        if (extraData.storedEnergy < 0)
+            extraData.storedEnergy = 0;
 
-        extraData.putDouble("StoredEnergy", storedEnergy);
     }
 
-    protected abstract double getVoltage(BlockPos pos, Level level, CompoundTag extraData);
+    protected abstract double getVoltage(BlockPos pos, Level level, T extraData);
 
-    protected abstract double getPower(BlockPos pos, Level level, CompoundTag extraData);
+    protected abstract double getPower(BlockPos pos, Level level, T extraData);
+
+    public static class DataHolder {
+        public double storedEnergy;
+    }
 }

@@ -9,31 +9,28 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
-import java.util.Map;
-
-public class DiodeDevice extends SimulatedDevice {
+public class DiodeDevice extends SimulatedDevice<DiodeDevice.DataHolder> {
     public DiodeDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
+    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
         // Thanks, ChatGPT
-        double voltage = extraData.getDouble("Voltage");
 
         double iS = 10e-12d;
         double vT = 0.046d;
 
-        voltage = Mth.clamp(voltage, -0.8, 0.8);
+        extraData.voltage = Mth.clamp(extraData.voltage, -0.8, 0.8);
 
         double Cj = 1e-12d;
         double gCap = Cj / bridges.getTimeStep();
-        double iEqCap = gCap * voltage;
+        double iEqCap = gCap * extraData.voltage;
 
-        double g = Math.max(1e-12d, (iS / vT) * Math.exp(voltage / vT)) + gCap;
+        double g = Math.max(1e-12d, (iS / vT) * Math.exp(extraData.voltage / vT)) + gCap;
 
         double resistance = 1 / g;
-        double currentSource = iS * (Math.exp(voltage / vT) - 1) - g * voltage;
+        double currentSource = iS * (Math.exp(extraData.voltage / vT) - 1) - g * extraData.voltage;
 
         bridges.builder(pos)
                 .resistor(0, 1, resistance)
@@ -41,8 +38,29 @@ public class DiodeDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        extraData.putDouble("Voltage", results.getVoltageAt(pos, 1, 0));
+    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
+        extraData.voltage = results.getVoltageAt(pos, 1, 0);
+    }
+
+    @Override
+    public DataHolder read(CompoundTag tag) {
+        DataHolder dataHolder = new DataHolder();
+        dataHolder.voltage = tag.getDouble("Voltage");
+        dataHolder.temp = tag.getFloat("Temp");
+        return dataHolder;
+    }
+
+    @Override
+    public CompoundTag write(DataHolder extraData) {
+        CompoundTag tag = new CompoundTag();
+        tag.putDouble("Voltage", extraData.voltage);
+        tag.putFloat("Temp", extraData.temp);
+        return tag;
+    }
+
+    public static class DataHolder {
+        public double voltage;
+        public float temp;
     }
 }
 

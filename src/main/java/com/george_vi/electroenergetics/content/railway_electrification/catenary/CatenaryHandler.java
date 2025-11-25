@@ -183,7 +183,7 @@ public class CatenaryHandler {
             AttachedNode node2 = e.getSecond().getSecond();
 
             double voltage = Math.abs(event.results.getVoltageAt(node1, node2));
-            boolean active = voltage > CEEConfigs.server().trainMinVoltage.get();
+            boolean active = voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
 
             double trainSpeed = Math.abs(train.speed);
 

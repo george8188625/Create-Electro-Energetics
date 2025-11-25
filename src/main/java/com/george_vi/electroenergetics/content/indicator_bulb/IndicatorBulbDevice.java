@@ -8,21 +8,20 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-public class IndicatorBulbDevice extends SimulatedDevice {
+public class IndicatorBulbDevice extends SimulatedDevice<IndicatorBulbDevice.DataHolder> {
     public IndicatorBulbDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        byte side = extraData.getByte("Side");
-        if (side == 0)
+    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+        if (extraData.side == 0)
             bridges.builder(pos)
                     .resistor(0, 1, 1000);
-        if (side == 1)
+        if (extraData.side == 1)
             bridges.builder(pos)
                     .resistor(2, 3, 1000);
-        if (side == 2)
+        if (extraData.side == 2)
             bridges.builder(pos)
                     .resistor(0, 1, 1000)
                     .resistor(2, 3, 1000);
@@ -30,33 +29,60 @@ public class IndicatorBulbDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        byte side = extraData.getByte("Side");
+    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
 
         float firstLight = 0;
         float secondLight = 0;
-        if (side == 0 || side == 2)
+        if (extraData.side == 0 || extraData.side == 2)
             firstLight = (float) Math.min(1, Math.abs(results.getVoltageAt(pos, 0, 1) / 70));
-        if (side == 1 || side == 2)
+        if (extraData.side == 1 || extraData.side == 2)
             secondLight = (float) Math.min(1, Math.abs(results.getVoltageAt(pos, 2, 3) / 70));
 
-        float oldSecondLight = extraData.getFloat("OldSecondLight");
-        float oldFirstLight = extraData.getFloat("OldFirstLight");
+        float oldSecondLight = extraData.oldSecondLight;
+        float oldFirstLight = extraData.oldFirstLight;
 
-        extraData.putDouble("OldSecondLight", secondLight);
-        extraData.putDouble("OldFirstLight", firstLight);
+        extraData.oldSecondLight = secondLight;
+        extraData.oldFirstLight = firstLight;
 
-        secondLight = Math.min(secondLight, oldSecondLight);
         firstLight = Math.min(firstLight, oldFirstLight);
-        if (level.isLoaded(pos)) {
-            if (level.getBlockEntity(pos) instanceof IndicatorBulbBlockEntity be) {
-                if (Math.abs(be.firstLight - firstLight) > 0.02 || Math.abs(be.secondLight - secondLight) > 0.02) {
-                    be.firstLight = firstLight;
-                    be.secondLight = secondLight;
-                    be.sendData();
+        secondLight = Math.min(secondLight, oldSecondLight);
+
+        if (extraData.be == null && level.isLoaded(pos))
+            if (level.getBlockEntity(pos) instanceof IndicatorBulbBlockEntity be)
+                extraData.be = be;
+
+        if (extraData.be != null) {
+            if (extraData.be.isRemoved())
+                extraData.be = null;
+            else {
+                if (Math.abs(extraData.be.firstLight - firstLight) > 0.02 || Math.abs(extraData.be.secondLight - secondLight) > 0.02) {
+                    extraData.be.firstLight = firstLight;
+                    extraData.be.secondLight = secondLight;
+                    extraData.be.sendData();
                 }
             }
         }
 
+    }
+
+    @Override
+    public DataHolder read(CompoundTag tag) {
+        DataHolder dataHolder = new DataHolder();
+        dataHolder.side = tag.getInt("Side");
+        return dataHolder;
+    }
+
+    @Override
+    public CompoundTag write(DataHolder extraData) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("Side", extraData.side);
+        return tag;
+    }
+
+    public static class DataHolder {
+        public int side;
+        public float oldFirstLight;
+        public float oldSecondLight;
+        public IndicatorBulbBlockEntity be;
     }
 }

@@ -1,8 +1,10 @@
 package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterWireInteractionBehaviour;
+import com.george_vi.electroenergetics.content.wire.attachments.AttachmentRemovalWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.attachments.BannerWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.attachments.BuntingWireInteractionBehaviour;
+import com.george_vi.electroenergetics.content.wire.attachments.DamperWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.DyeWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolWireInteractionBehaviour;
@@ -19,6 +21,8 @@ public class CEEWireInteractionBehaviours {
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> EMPTY_SPOOL = WIRE_INTERACTION_BEHAVIOURS.register("empty_spool", EmptySpoolWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> CLAMP_METER = WIRE_INTERACTION_BEHAVIOURS.register("clamp_meter", ClampMeterWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> DYE = WIRE_INTERACTION_BEHAVIOURS.register("dye", DyeWireInteractionBehaviour::new);
+    public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> DAMPER = WIRE_INTERACTION_BEHAVIOURS.register("damper", DamperWireInteractionBehaviour::new);
+    public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> ATTACHMENT_REMOVAL = WIRE_INTERACTION_BEHAVIOURS.register("attachment_removal", AttachmentRemovalWireInteractionBehaviour::new);
     public static void register(IEventBus bus) {
         WIRE_INTERACTION_BEHAVIOURS.register(bus);
     }

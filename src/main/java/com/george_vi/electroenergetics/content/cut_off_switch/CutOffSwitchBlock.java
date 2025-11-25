@@ -4,12 +4,14 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import net.createmod.catnip.data.Iterate;
@@ -71,9 +73,9 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
-            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null)
-                device.extraData().putBoolean("Closed", !state.getValue(CLOSED));
+            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
+            if (device != null && device.extraData() instanceof CutOffSwitchDevice.DataHolder dataHolder)
+                dataHolder.isClosed = !state.getValue(CLOSED);
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
         } else {
             Vec3 pPos = Vec3.atCenterOf(pos);

@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.creative_battery;
 
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -12,7 +13,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollVa
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
@@ -70,10 +70,10 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
         if (!(level instanceof ServerLevel sl))
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(getBlockPos());
+        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
-        if (deviceInstance != null) {
-            deviceInstance.extraData().putDouble("Voltage", indexToVoltage(voltage.value));
+        if (deviceInstance != null && deviceInstance.extraData() instanceof CreativeBatteryDevice.DataHolder dataHolder) {
+            dataHolder.voltage = indexToVoltage(voltage.value);
         }
     }
 

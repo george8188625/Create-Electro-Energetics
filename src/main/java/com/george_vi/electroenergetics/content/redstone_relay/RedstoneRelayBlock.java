@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
@@ -66,14 +67,13 @@ public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements 
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        InfrastructureSavedData.SimulatedDeviceInstance instance = sd.getDevice(pos);
+        SimulatedDeviceInstance<?> instance = sd.getDevice(pos);
 
-        if (instance == null)
+        if (instance == null || !(instance.extraData() instanceof RedstoneRelayDevice.DataHolder dataHolder))
             return;
 
         level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
-
-        instance.extraData().putBoolean("Powered", state.getValue(POWERED));
+        dataHolder.powered = state.getValue(POWERED);
     }
 
     @Override
@@ -115,9 +115,9 @@ public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements 
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         if (context.getLevel() instanceof ServerLevel serverLevel) {
-            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
-            if (device != null)
-                device.extraData().putBoolean("Inverted", !state.getValue(INVERTED));
+            SimulatedDeviceInstance<?> deviceInstance = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
+            if (deviceInstance != null && deviceInstance.extraData() instanceof RedstoneRelayDevice.DataHolder dataHolder)
+                dataHolder.inverted = !state.getValue(INVERTED);
             serverLevel.setBlockAndUpdate(context.getClickedPos(), state.cycle(INVERTED));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(context.getLevel(), context.getClickedPos());
         }

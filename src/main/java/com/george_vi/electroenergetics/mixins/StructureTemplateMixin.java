@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @Mixin(StructureTemplate.class)
 public class StructureTemplateMixin {
     @Unique
-    List<InfrastructureSavedData.SimulatedDeviceInstance> electroEnergetics$allDevices = new ArrayList<>();
+    List<SimulatedDeviceInstance> electroEnergetics$allDevices = new ArrayList<>();
 
     @Unique
     List<Pair<NodeConnection, WireData>> electroEnergetics$allWireConnections = new ArrayList<>();
@@ -65,7 +65,7 @@ public class StructureTemplateMixin {
             electroEnergetics$allDevices = sd.getDevices().stream().filter(d -> d.pos().getX() >= pos.getX() && d.pos().getX() < pos.getX() + size.getX() &&
                                                                         d.pos().getY() >= pos.getY() && d.pos().getY() < pos.getY() + size.getY() &&
                                                                         d.pos().getZ() >= pos.getZ() && d.pos().getZ() < pos.getZ() + size.getZ())
-                    .map(d -> new InfrastructureSavedData.SimulatedDeviceInstance(d.simulatedDevice(), d.pos().subtract(pos), d.extraData(), d.nodes().stream().map(n -> new InWorldNode(n.id(), n.sourcePos().subtract(pos))).toList())).toList();
+                    .map(d -> new SimulatedDeviceInstance(d.simulatedDevice(), d.pos().subtract(pos), d.extraData(), d.nodes().stream().map(n -> new InWorldNode(((InWorldNode)n).id(), ((InWorldNode)n).sourcePos().subtract(pos))).toList())).toList();
             Set<InWorldNode> allNodes = sd.getNodes().stream().filter(d -> d.sourcePos().getX() >= pos.getX() && d.sourcePos().getX() < pos.getX() + size.getX() &&
                     d.sourcePos().getY() >= pos.getY() && d.sourcePos().getY() < pos.getY() + size.getY() &&
                     d.sourcePos().getZ() >= pos.getZ() && d.sourcePos().getZ() < pos.getZ() + size.getZ()).collect(Collectors.toSet());
@@ -113,7 +113,7 @@ public class StructureTemplateMixin {
                 BlockState state = level.getBlockState(devicePos);
                 if (state.getBlock() instanceof DeviceBlock db) {
                     // Connector as placeholder, since the blocks should be ticked after being loaded, so the proper device should be added.
-                    electroEnergetics$allDevices.add(new InfrastructureSavedData.SimulatedDeviceInstance(CEESimulatedDevices.TEMPORARY, devicePos.subtract(pos), new CompoundTag(), db.getNodePositions(level, devicePos, state).keySet().stream().map(id -> new InWorldNode(id, devicePos)).toList()));
+                    electroEnergetics$allDevices.add(new SimulatedDeviceInstance(CEESimulatedDevices.TEMPORARY, devicePos.subtract(pos), null, db.getNodePositions(level, devicePos, state).keySet().stream().map(id -> new InWorldNode(id, devicePos)).toList()));
                 }
             }
         }
@@ -126,12 +126,12 @@ public class StructureTemplateMixin {
         CompoundTag ceeTag = new CompoundTag();
 
         ListTag deviceList = new ListTag();
-        for (InfrastructureSavedData.SimulatedDeviceInstance deviceInstance : electroEnergetics$allDevices) {
+        for (SimulatedDeviceInstance<?> deviceInstance : electroEnergetics$allDevices) {
             CompoundTag deviceTag = new CompoundTag();
 
             deviceTag.put("Pos", NbtUtils.writeBlockPos(deviceInstance.pos()));
             deviceTag.putString("ID", deviceInstance.simulatedDevice().getID().toString());
-            deviceTag.put("ExtraData", deviceInstance.extraData());
+            deviceTag.put("ExtraData", deviceInstance.write());
 
             ListTag deviceNodeList = new ListTag();
             for (InWorldNode node : deviceInstance.nodes())
@@ -187,7 +187,7 @@ public class StructureTemplateMixin {
 
             ListTag nodeListTag = deviceTag.getList("Nodes", Tag.TAG_INT_ARRAY);
 
-            electroEnergetics$allDevices.add(new InfrastructureSavedData.SimulatedDeviceInstance(device, pos, deviceTag.getCompound("ExtraData"), nodeListTag.stream().map(t -> InWorldNode.CODEC.decode(NbtOps.INSTANCE, t).getOrThrow().getFirst()).toList()));
+            electroEnergetics$allDevices.add(new SimulatedDeviceInstance(device, pos, device.read(deviceTag.getCompound("ExtraData")), nodeListTag.stream().map(t -> InWorldNode.CODEC.decode(NbtOps.INSTANCE, t).getOrThrow().getFirst()).toList()));
         });
 
         NBTHelper.iterateCompoundList(ceeTag.getList("Connections", Tag.TAG_COMPOUND), connectionTag -> {
@@ -229,9 +229,9 @@ public class StructureTemplateMixin {
             level = (ServerLevel) serverLevel;
         else if (serverLevel instanceof SchematicLevel) {
             if (serverLevel instanceof ISchematicInfrastructureList slm) {
-                for (InfrastructureSavedData.SimulatedDeviceInstance deviceInstance : electroEnergetics$allDevices) {
+                for (SimulatedDeviceInstance deviceInstance : electroEnergetics$allDevices) {
                     if (boundingBox == null || boundingBox.isInside(deviceInstance.pos().offset(offset)))
-                        slm.electroEnergetics$getDevices().add(new InfrastructureSavedData.SimulatedDeviceInstance(deviceInstance.simulatedDevice(), StructureTemplate.calculateRelativePosition(settings, deviceInstance.pos()).offset(offset), deviceInstance.extraData(), deviceInstance.nodes()));
+                        slm.electroEnergetics$getDevices().add(new SimulatedDeviceInstance(deviceInstance.simulatedDevice(), StructureTemplate.calculateRelativePosition(settings, deviceInstance.pos()).offset(offset), deviceInstance.extraData(), deviceInstance.nodes()));
                 }
 
                 for (Pair<NodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
@@ -247,9 +247,9 @@ public class StructureTemplateMixin {
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
 
-        for (InfrastructureSavedData.SimulatedDeviceInstance deviceInstance : electroEnergetics$allDevices) {
+        for (SimulatedDeviceInstance<?> deviceInstance : electroEnergetics$allDevices) {
             if (boundingBox == null || boundingBox.isInside(deviceInstance.pos().offset(offset)))
-                sd.addDevice(StructureTemplate.calculateRelativePosition(settings, deviceInstance.pos()).offset(offset), deviceInstance.simulatedDevice(), deviceInstance.extraData(), deviceInstance.nodes().stream().map(InWorldNode::id).toList());
+                sd.addDevice(StructureTemplate.calculateRelativePosition(settings, deviceInstance.pos()).offset(offset), deviceInstance.simulatedDevice(), deviceInstance.write(), deviceInstance.nodes().stream().map(InWorldNode::id).toList());
         }
 
         for (Pair<NodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {

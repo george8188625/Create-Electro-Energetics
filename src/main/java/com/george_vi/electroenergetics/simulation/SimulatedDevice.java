@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-public class SimulatedDevice {
+public abstract class SimulatedDevice<T> {
     final ResourceLocation id;
     public SimulatedDevice(ResourceLocation id) {
         this.id = id;
@@ -25,7 +25,7 @@ public class SimulatedDevice {
      * @param bridges used to 'bridge' nodes or create internal nodes
      * @param extraData saved data local to the device
      */
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {}
+    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, T extraData) {}
 
     /**
      * This method is called once per device after the simulation. Each device can now process the voltages, currents and show results in the world.
@@ -34,7 +34,7 @@ public class SimulatedDevice {
      * @param results a holder for the resulting voltages, also containing methods useful for calculating currents etc.
      * @param extraData saved data local to the device
      */
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {}
+    public void postTick(BlockPos pos, Level level, SimulationResults results, T extraData) {}
 
     /**
      * Returns the maximum distance at which the server will send node voltages to clients.
@@ -43,6 +43,10 @@ public class SimulatedDevice {
     public int sendVoltagesDistance() {
         return 20;
     }
+
+    public abstract T read(CompoundTag tag);
+
+    public abstract CompoundTag write(T extraData);
 
     protected void showOverheatingParticles(Level level, BlockPos pos) {
         if (!level.isLoaded(pos))

@@ -46,6 +46,7 @@ public class CEEPartialModels {
     public static final PartialModel INDICATOR_BULB_GLOW = PartialModel.of(CreateElecrtoEnergetics.rl("block/indicator_bulb/glow"));
     public static final PartialModel INDICATOR_BULB_TUBE = PartialModel.of(CreateElecrtoEnergetics.rl("block/indicator_bulb/tube"));
     public static final PartialModel INDICATOR_BULB_CUBE = PartialModel.of(CreateElecrtoEnergetics.rl("block/indicator_bulb/cube"));
+    public static final PartialModel WIRE_DAMPER_ATTACHMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/wire_damper_attachment"));
 
     public static final Map<DyeColor, PartialModel> COLORED_WIRE_SEGMENTS = new HashMap<>();
     static {

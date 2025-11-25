@@ -1,116 +1,142 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
+import com.george_vi.electroenergetics.content.connector.ConnectorDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulationResults;
+import com.george_vi.electroenergetics.simulation.*;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
-public class HVSwitchDevice extends SimulatedDevice {
+public class HVSwitchDevice extends SimulatedDevice<HVSwitchDevice.DataHolder> {
     public HVSwitchDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        if (!extraData.contains("Target"))
+    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+        if (extraData.target == null)
             return;
 
         InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
-        SwitchState state = SwitchState.values()[extraData.getInt("State")];
-        BlockPos targetPos = NBTHelper.readBlockPos(extraData, "Target");
 
-        InfrastructureSavedData.SimulatedDeviceInstance instance = sd.getDevice(targetPos);
+        SimulatedDeviceInstance<?> instance = sd.getDevice(extraData.target);
         if (instance == null ||
-            instance.simulatedDevice() != CEESimulatedDevices.CONNECTOR ||
-            !instance.extraData().getBoolean("HVSwitchTarget"))
+                instance.simulatedDevice() != CEESimulatedDevices.CONNECTOR ||
+                !((ConnectorDevice.DataHolder)instance.extraData()).isHVSwitchTarget)
             return;
-        double airResistance = extraData.getDouble("AirResistance");
+        double airResistance = extraData.airResistance;
 
-        if (state == SwitchState.ARCING)
+        if (extraData.state == SwitchState.ARCING)
             bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, instance.pos()), 500, 0, 0);
-        else if (state == SwitchState.MOVING)
+        else if (extraData.state == SwitchState.MOVING)
             bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, instance.pos()), airResistance < 1000 ? 1000 : airResistance, 0, 0);
-        else if (state == SwitchState.CONNECTED)
+        else if (extraData.state == SwitchState.CONNECTED)
             bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, instance.pos()), 0.01, 0, 0);
 
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        if (!extraData.contains("Target"))
+    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
+        if (extraData.target == null)
             return;
 
         InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
-        BlockPos targetPos = NBTHelper.readBlockPos(extraData, "Target");
 
-        InfrastructureSavedData.SimulatedDeviceInstance instance = sd.getDevice(targetPos);
+        SimulatedDeviceInstance<?> instance = sd.getDevice(extraData.target);
         if (instance == null ||
                 instance.simulatedDevice() != CEESimulatedDevices.CONNECTOR ||
-                !instance.extraData().getBoolean("HVSwitchTarget"))
+                !((ConnectorDevice.DataHolder)instance.extraData()).isHVSwitchTarget)
             return;
 
-        SwitchState state = SwitchState.values()[extraData.getInt("State")];
-        float progress = extraData.getFloat("Progress");
-        boolean connecting = extraData.getBoolean("Connected");
-        double airResistance = extraData.getDouble("AirResistance");
         double v1 = results.getVoltageAt(pos, 0);
         double v2 = results.getVoltageAt(instance.pos(), 0);
         double current = Math.abs(results.getCurrentThrough(new InWorldNode(0, pos), new InWorldNode(0, instance.pos())));
 
-        if (progress > 0.9)
-            state = SwitchState.CONNECTED;
-        else if (state == SwitchState.MOVING && progress >= 0.6) {
-            if (Math.abs(v1 - v2) > Mth.lerp((progress - 0.6) * 2.5, 50000, 1)) {
-                state = SwitchState.ARCING;
-                airResistance = Mth.lerp(progress, 200000, 100);
+        if (extraData.progress > 0.9)
+            extraData.state = SwitchState.CONNECTED;
+        else if (extraData.state == SwitchState.MOVING && extraData.progress >= 0.6) {
+            if (Math.abs(v1 - v2) > Mth.lerp((extraData.progress - 0.6) * 2.5, 50000, 1)) {
+                extraData.state = SwitchState.ARCING;
+                extraData.airResistance = Mth.lerp(extraData.progress, 200000, 100);
             }
-        } else if (progress > 0.6 && connecting)
-            state = SwitchState.MOVING;
-        else if (state == SwitchState.CONNECTED && progress < 0.8 && !connecting) {
+        } else if (extraData.progress > 0.6 && extraData.isConnecting)
+            extraData.state = SwitchState.MOVING;
+        else if (extraData.state == SwitchState.CONNECTED && extraData.progress < 0.8 && !extraData.isConnecting) {
             if (current > 0.05) {
-                state = SwitchState.ARCING;
-                airResistance = Mth.lerp(progress, 200000, 100);
+                extraData.state = SwitchState.ARCING;
+                extraData.airResistance = Mth.lerp(extraData.progress, 200000, 100);
             } else
-                state = SwitchState.DISCONNECTED;
-        } else if (state == SwitchState.ARCING) {
-            if (!connecting) {
-                if (Math.abs(v1 - v2) < Mth.lerp(progress, 3000, 1) ||
-                        (progress < 0.1 && level.random.nextFloat() > 0.98)) {
-                    state = SwitchState.DISCONNECTED;
+                extraData.state = SwitchState.DISCONNECTED;
+        } else if (extraData.state == SwitchState.ARCING) {
+            if (!extraData.isConnecting) {
+                if (Math.abs(v1 - v2) < Mth.lerp(extraData.progress, 3000, 1) ||
+                        (extraData.progress < 0.1 && level.random.nextFloat() > 0.98)) {
+                    extraData.state = SwitchState.DISCONNECTED;
                 }
             }
-            airResistance = Mth.lerp(progress, 200000, 100);
+            extraData.airResistance = Mth.lerp(extraData.progress, 200000, 100);
         }
 
-        if (state == SwitchState.MOVING)
-            airResistance = Mth.lerp((progress - 0.5) / 0.3, 99999, 999);
+        if (extraData.state == SwitchState.MOVING)
+            extraData.airResistance = Mth.lerp((extraData.progress - 0.5) / 0.3, 99999, 999);
 
-        progress = Mth.clamp(progress + (connecting ? 0.01f : -0.01f), 0, 1);
-        extraData.putFloat("Progress", progress);
-        extraData.putDouble("AirResistance", airResistance);
-        extraData.putInt("State", state.ordinal());
+        extraData.progress = Mth.clamp(extraData.progress + (extraData.isConnecting ? 0.01f : -0.01f), 0, 1);
 
-        if (level.isLoaded(pos)) {
-            if (level.getBlockEntity(pos) instanceof HVSwitchBlockEntity be) {
-                be.progress = progress;
-                be.connected = extraData.getBoolean("Connected");
-                boolean shouldArc = state == SwitchState.ARCING;
-                if (be.arcing != shouldArc) {
-                    be.arcing = shouldArc;
-                    be.sendData();
+        if (extraData.be == null && level.isLoaded(pos))
+            if (level.getBlockEntity(pos) instanceof HVSwitchBlockEntity be)
+                extraData.be = be;
+
+        if (extraData.be != null) {
+            if (extraData.be.isRemoved())
+                extraData.be = null;
+            else {
+                extraData.be.progress = extraData.progress;
+                extraData.be.connected = extraData.isConnecting;
+                boolean shouldArc = extraData.state == SwitchState.ARCING;
+                if (extraData.be.arcing != shouldArc) {
+                    extraData.be.arcing = shouldArc;
+                    extraData.be.sendData();
                 }
-
             }
         }
+    }
+
+    @Override
+    public DataHolder read(CompoundTag tag) {
+        DataHolder dataHolder = new DataHolder();
+        dataHolder.state = SwitchState.values()[tag.getInt("State")];
+        dataHolder.target = NBTHelper.readBlockPos(tag, "Target");
+        dataHolder.isConnecting = tag.getBoolean("Connected");
+        dataHolder.progress = tag.getFloat("Progress");
+        dataHolder.airResistance = tag.getDouble("AirResistance");
+        return dataHolder;
+    }
+
+    @Override
+    public CompoundTag write(DataHolder extraData) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("State", extraData.state.ordinal());
+        tag.putDouble("AirResistance", extraData.airResistance);
+        tag.putFloat("Progress", extraData.progress);
+        tag.put("Target", NbtUtils.writeBlockPos(extraData.target));
+        tag.putBoolean("Connected", extraData.isConnecting);
+        return tag;
+    }
+
+    public static class DataHolder {
+        public SwitchState state;
+        public double airResistance;
+        public BlockPos target;
+        public float progress;
+        public boolean isConnecting;
+        public HVSwitchBlockEntity be;
     }
 
     enum SwitchState {

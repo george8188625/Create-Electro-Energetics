@@ -4,10 +4,12 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -68,11 +70,13 @@ public class MomentarySwitchBlock extends DirectionalRolledDeviceBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
-            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device == null || device.extraData().getInt("ClosedTicks") == -1)
+            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
+            if (device != null && device.extraData() instanceof MomentarySwitchDevice.DataHolder dataHolder) {
+                if (dataHolder.closedTicks == -1)
+                    level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
+                dataHolder.closedTicks = 4;
+            } else
                 level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
-            if (device != null)
-                device.extraData().putInt("ClosedTicks", 4);
         }
 
         level.setBlockAndUpdate(pos, state.setValue(CLOSED, true));

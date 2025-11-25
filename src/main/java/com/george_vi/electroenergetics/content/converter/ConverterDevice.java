@@ -1,5 +1,7 @@
 package com.george_vi.electroenergetics.content.converter;
 
+import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
+import com.george_vi.electroenergetics.content.accumulator.AccumulatorDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -11,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
-public class ConverterDevice extends SimulatedDevice {
+public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder> {
     public ConverterDevice(ResourceLocation id) {
         super(id);
     }
@@ -19,53 +21,77 @@ public class ConverterDevice extends SimulatedDevice {
     static final int MAX_ENERGY = 100_000;
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        if (extraData.getBoolean("Source"))
+    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+        if (extraData.isSource)
             bridges.builder(pos)
-                    .energyLimitedSource(0, 1, extraData.getDouble("StoredEnergy"), extraData.getDouble("Voltage"));
+                    .energyLimitedSource(0, 1, extraData.storedEnergy, extraData.voltage);
         else
             bridges.builder(pos)
-                    .resistor(0, 1, extraData.contains("Resistance") ? extraData.getDouble("Resistance") : 999999);
+                    .resistor(0, 1, extraData.resistance == 0 ? 999999 : extraData.resistance);
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        double storedEnergy = extraData.getDouble("StoredEnergy");
+    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
         double conversionRate = 34;
 
         double vd = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
-        if (extraData.getBoolean("Source")) {
+        if (extraData.isSource) {
 
             double current = results.getCurrentThrough(pos, 0, 1);
             double power = Math.abs(current) * vd;
 
-            storedEnergy -= power;
+            extraData.storedEnergy -= power;
 
-            if (storedEnergy < MAX_ENERGY && level.isLoaded(pos)) {
+            if (extraData.storedEnergy < MAX_ENERGY && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
                 IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()), state.getValue(ConverterBlock.FACING));
                 if (energyStorage != null)
-                    storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - storedEnergy) / conversionRate), false) * conversionRate;
+                    extraData.storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - extraData.storedEnergy) / conversionRate), false) * conversionRate;
             }
 
-            extraData.putDouble("StoredEnergy", storedEnergy);
             return;
         }
 
         double power = Math.abs(vd * results.getCurrentThrough(pos, 0, 1));
 
-        storedEnergy += power;
+        extraData.storedEnergy += power;
 
-        if (storedEnergy > 0 && level.isLoaded(pos)) {
+        if (extraData.storedEnergy > 0 && level.isLoaded(pos)) {
             BlockState state = level.getBlockState(pos);
             IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()), state.getValue(ConverterBlock.FACING));
             if (energyStorage != null)
-                storedEnergy -= energyStorage.receiveEnergy((int) (storedEnergy / conversionRate), false) * conversionRate;
+                extraData.storedEnergy -= energyStorage.receiveEnergy((int) (extraData.storedEnergy / conversionRate), false) * conversionRate;
         }
 
-        extraData.putDouble("StoredEnergy", storedEnergy);
 
         if (vd > 1)
-            extraData.putDouble("Resistance", Math.max(20, vd / (Math.max((MAX_ENERGY - storedEnergy), 0.01) / vd)));
+            extraData.resistance = Math.max(20, vd / (Math.max((MAX_ENERGY - extraData.storedEnergy), 0.01) / vd));
+    }
+
+    @Override
+    public DataHolder read(CompoundTag tag) {
+        DataHolder dataHolder = new DataHolder();
+        dataHolder.voltage = tag.getDouble("Voltage");
+        dataHolder.resistance = tag.getDouble("Resistance");
+        dataHolder.storedEnergy = tag.getDouble("StoredEnergy");
+        return dataHolder;
+    }
+
+    @Override
+    public CompoundTag write(DataHolder extraData) {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("Source", extraData.isSource);
+        tag.putDouble("Voltage", extraData.voltage);
+        tag.putDouble("Resistance", extraData.resistance);
+        tag.putDouble("StoredEnergy", extraData.storedEnergy);
+        return tag;
+    }
+
+    public static class DataHolder {
+        public boolean isSource;
+        public double voltage;
+        public double resistance;
+        public double storedEnergy;
+        public ConverterBlockEntity be;
     }
 }

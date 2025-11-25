@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
@@ -49,23 +50,21 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
             return;
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(worldPosition);
+        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(worldPosition);
 
-        if (deviceInstance == null)
+        if (deviceInstance == null || !(deviceInstance.extraData() instanceof AlternatorBrushesDevice.DataHolder dataHolder))
             return;
 
-        deviceInstance.extraData().putDouble("Stress", totalStress);
-        deviceInstance.extraData().putDouble("Voltage", totalStress / 100);
+        dataHolder.stress = totalStress;
+        dataHolder.voltage = totalStress / 100;
     }
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         float totalStress = 0;
-        int magnets = 0;
         for (int i = 0; i < rotors.size(); i++) {
             AlternatorRotorBlockEntity rotor = rotors.get(i);
             totalStress += rotor.magnets * 48 * Math.abs(rotor.getSpeed());
-            magnets += rotor.magnets;
         }
 
         Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));

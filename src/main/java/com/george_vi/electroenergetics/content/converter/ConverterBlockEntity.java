@@ -1,10 +1,9 @@
 package com.george_vi.electroenergetics.content.converter;
 
-import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
-import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlockEntity;
-import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlockEntity;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -53,10 +52,10 @@ public class ConverterBlockEntity extends SmartBlockEntity {
         if (!(level instanceof ServerLevel sl))
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(getBlockPos());
+        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
-        if (deviceInstance != null) {
-            deviceInstance.extraData().putFloat("Voltage", voltage.value * 10);
+        if (deviceInstance != null && deviceInstance.extraData() instanceof ConverterDevice.DataHolder dataHolder) {
+            dataHolder.voltage = voltage.value * 10;
         }
     }
 

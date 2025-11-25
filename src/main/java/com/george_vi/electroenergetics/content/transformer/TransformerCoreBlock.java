@@ -1,9 +1,11 @@
 package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
@@ -130,9 +132,9 @@ public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWat
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(pos);
-        if (deviceInstance != null)
-            deviceInstance.extraData().putByte("Facing", (byte) state.getValue(FACING).ordinal());
+        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(pos);
+        if (deviceInstance != null && deviceInstance.extraData() instanceof TransformerCoreDevice.DataHolder dataHolder)
+            dataHolder.facing = state.getValue(FACING);
     }
 
     @Override

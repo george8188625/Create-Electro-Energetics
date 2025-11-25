@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -186,11 +187,11 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
         if (!(level instanceof ServerLevel sl))
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(getBlockPos());
+        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
-        if (deviceInstance != null) {
+        if (deviceInstance != null && deviceInstance.extraData() instanceof VoltageRegulatorDevice.DataHolder dataHolder) {
             int i = voltage.value;
-            deviceInstance.extraData().putFloat("Voltage", i * 10);
+            dataHolder.voltage = i * 10;
         }
     }
 

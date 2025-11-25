@@ -1,119 +1,170 @@
 package com.george_vi.electroenergetics.simulation;
 
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.util.*;
 
 public class CircuitBuilder {
-    final Map<Node, Map<Node, ElectricalProperties>> adjacency = new Object2ObjectOpenHashMap<>();
-    final Set<Node> allNodes;
-    final Object2DoubleMap<Node> groundConductance = new Object2DoubleOpenHashMap<>();
-    final Object2IntMap<Node> defaultZeroPotentials = new Object2IntOpenHashMap<>();
+    List<WrappedIndexedNode> allIndexedNodes;
+    Object2IntMap<Node> nodeIndexes;
+    Int2IntMap defaultZeroPotentials;  // K -> node id, V -> priority
+    int id = 0;
 
-    boolean frozen;
-    public <T extends Node> CircuitBuilder(Collection<T> allNodes) {
-        this.allNodes = new HashSet<>(allNodes);
+    public CircuitBuilder(Set<InWorldNode> nodes) {
+        allIndexedNodes = new ArrayList<>(nodes.size() * 2);
+        nodeIndexes = new Object2IntOpenHashMap<>();
+        defaultZeroPotentials = new Int2IntOpenHashMap();
+        for (Node node : nodes) {
+            WrappedIndexedNode indexedNode = new WrappedIndexedNode(node, id);
+            allIndexedNodes.add(indexedNode);
+            nodeIndexes.put(node, id);
+            id++;
+        }
     }
 
-    public ElectricalProperties getConnectionProperties(Node node1, Node node2) {
-        Map<Node, ElectricalProperties> connections = adjacency.get(node1);
-        return connections == null ? null : connections.get(node2);
+    public ElectricalProperties getConnectionProperties(int n1, int n2) {
+        checkOutOfBounds(n1);
+        checkOutOfBounds(n2);
+
+        WrappedIndexedNode indexedNode1 = allIndexedNodes.get(n1);
+        return indexedNode1.adjacency.get(n2);
     }
 
-    public double getGroundConductance(Node node) {
-        return groundConductance.getOrDefault(node, 0d);
-    }
-    public Object2DoubleMap<Node> getGroundRods() {
-        return groundConductance;
+    public ElectricalProperties getConnectionProperties(WrappedIndexedNode n1, WrappedIndexedNode n2) {
+        return n1.adjacency.get(n2.ordinal);
     }
 
-    public Set<Node> getAllNodes() {
-        return allNodes;
+    public ElectricalProperties getConnectionProperties(Node n1, Node n2) {
+        return getConnectionProperties(nodeIndexes.getInt(n1), nodeIndexes.getInt(n2));
     }
 
-    public void connect(Node node1, Node node2, ElectricalProperties properties) {
-        checkFrozen();
-        if (node1.equals(node2))
-            throw new IllegalArgumentException("Tried to create an electrical connection between a single node: " + node1);
+    public void connect(int n1, int n2, ElectricalProperties properties) {
+        checkOutOfBounds(n1);
+        checkOutOfBounds(n2);
+        if (n1 == n2)
+            throw new IllegalArgumentException("Tried to create an electrical connection between a single node: " + allIndexedNodes.get(n1).node);
         if (Double.isNaN(properties.resistance()) || Double.isNaN(properties.voltageSource()) || Double.isNaN(properties.currentSource()))
             return;
 
-        adjacency.computeIfAbsent(node1, n -> new Object2ObjectArrayMap<>(16)).compute(node2, (n, p) -> p == null ? properties : p.add(properties));
-        adjacency.computeIfAbsent(node2, n -> new Object2ObjectArrayMap<>(16)).compute(node1, (n, p) -> p == null ? properties.invert() : p.add(properties.invert()));
+        WrappedIndexedNode indexedNode1 = allIndexedNodes.get(n1);
+        WrappedIndexedNode indexedNode2 = allIndexedNodes.get(n2);
+        indexedNode1.adjacency.compute(n2, (n, p) -> p == null ? properties : p.add(properties));
+        indexedNode2.adjacency.compute(n1, (n, p) -> p == null ? properties.invert() : p.add(properties.invert()));
+    }
+
+    public void connect(WrappedIndexedNode n1, WrappedIndexedNode n2, ElectricalProperties properties) {
+        if (Double.isNaN(properties.resistance()) || Double.isNaN(properties.voltageSource()) || Double.isNaN(properties.currentSource()))
+            return;
+
+        n1.adjacency.compute(n2.ordinal, (n, p) -> p == null ? properties : p.add(properties));
+        n2.adjacency.compute(n1.ordinal, (n, p) -> p == null ? properties.invert() : p.add(properties.invert()));
+    }
+
+    public void connect(Node n1, Node n2, ElectricalProperties properties) {
+        if (!nodeIndexes.containsKey(n1))
+            addNode(n1);
+        if (!nodeIndexes.containsKey(n2))
+            addNode(n2);
+        connect(nodeIndexes.getInt(n1), nodeIndexes.getInt(n2), properties);
+    }
+
+    public void ground(int node, double conductance) {
+        checkOutOfBounds(node);
+
+        allIndexedNodes.get(node).groundConductance = conductance;
+    }
+
+    public void ground(WrappedIndexedNode node, double conductance) {
+        node.groundConductance = conductance;
     }
 
     public void ground(Node node, double conductance) {
-        checkFrozen();
-        groundConductance.put(node, conductance);
+        ground(nodeIndexes.getInt(node), conductance);
     }
 
-    public void defaultZeroPotential(Node node, int priority) {
-        checkFrozen();
+    public void defaultZeroPotential(int node, int priority) {
+        checkOutOfBounds(node);
         defaultZeroPotentials.put(node, priority);
     }
 
-    public void addNode(Node node) {
-        checkFrozen();
-        allNodes.add(node);
+    public void defaultZeroPotential(WrappedIndexedNode node, int priority) {
+        defaultZeroPotentials.put(node.ordinal, priority);
     }
 
-    public List<Set<Node>> dfs() {
-        frozen = true;
-        List<Set<Node>> networks = new ArrayList<>();
-        Set<Node> visited = new HashSet<>();
-        for (Node node : allNodes) {
-            if (!visited.contains(node)) {
-                Set<Node> component = new HashSet<>();
-                dfsInner(node, visited, component);
-                networks.add(component);
-            }
+    public void defaultZeroPotential(Node node, int priority) {
+        defaultZeroPotential(nodeIndexes.getInt(node), priority);
+    }
+
+    public WrappedIndexedNode addNode(Node node) {
+        WrappedIndexedNode indexedNode = new WrappedIndexedNode(node, id);
+        allIndexedNodes.add(indexedNode);
+        nodeIndexes.put(node, id);
+        id++;
+        return indexedNode;
+    }
+
+    List<Set<WrappedIndexedNode>> allNetworks;
+    public List<Set<WrappedIndexedNode>> dfs() {
+        allNetworks = new ArrayList<>();
+        boolean[] visited = new boolean[allIndexedNodes.size()];
+        for (int i = 0; i < allIndexedNodes.size(); i++) {
+            if (visited[i])
+                continue;
+            visited[i] = true;
+            WrappedIndexedNode node = allIndexedNodes.get(i);
+            Set<WrappedIndexedNode> networkNodes = new HashSet<>();
+            networkNodes.add(node);
+            dfsInner(node, visited, networkNodes);
+            allNetworks.add(networkNodes);
         }
         NetworksLoop:
-        for (Set<Node> networkNodes : networks) {
-            Node highestPriorityGround = null;
+        for (Set<WrappedIndexedNode> networkNodes : allNetworks) {
+            WrappedIndexedNode highestPriorityGround = null;
             int highestPriority = Integer.MIN_VALUE;
 
-            for (Node node : networkNodes) {
-                if (groundConductance.getOrDefault(node, 0d) != 0d)
+            for (WrappedIndexedNode node : networkNodes) {
+                if (node.groundConductance != 0d)
                     continue NetworksLoop;
 
-                int priority = defaultZeroPotentials.getOrDefault(node, 0);
+                int priority = defaultZeroPotentials.get(node.ordinal);
                 if (priority > highestPriority) {
                     highestPriorityGround = node;
                     highestPriority = priority;
                 }
             }
-
-            groundConductance.put(highestPriorityGround, 1d);
+            if (highestPriorityGround != null)
+                highestPriorityGround.groundConductance = 10d;
         }
-        return networks;
+        return allNetworks;
     }
 
-    private void dfsInner(Node current, Set<Node> visited, Set<Node> component) {
-        visited.add(current);
-        component.add(current);
-        Map<Node, ElectricalProperties> currentAdjacency = adjacency.get(current);
-        if (currentAdjacency == null)
-            return;
-        for (Node neighbor : currentAdjacency.keySet()) {
-            if (!visited.contains(neighbor)) {
-                dfsInner(neighbor, visited, component);
-            }
+    private void dfsInner(WrappedIndexedNode node, boolean[] visited, Set<WrappedIndexedNode> networkNodes) {
+        for (int i : node.adjacency.keySet()) {
+            if (visited[i])
+                continue;
+            visited[i] = true;
+            WrappedIndexedNode adjacentNode = allIndexedNodes.get(i);
+            networkNodes.add(adjacentNode);
+            dfsInner(adjacentNode, visited, networkNodes);
         }
     }
-
-    public Map<Node, ElectricalProperties> getAdjacentNodes(Node node) {
-        return adjacency.getOrDefault(node, Collections.emptyMap());
+    private void checkOutOfBounds(int id) {
+        if (id >= allIndexedNodes.size())
+            throw new IllegalArgumentException("(Indexed) node of ID: " + id + " doesn't exist");
     }
 
-    public boolean isFrozen() {
-        return frozen;
+    public List<WrappedIndexedNode> allNodes() {
+        return allIndexedNodes;
     }
 
-    private void checkFrozen() {
-        if (frozen)
-            throw new IllegalStateException("Tried to modify a frozen circuit!");
+    public WrappedIndexedNode getNode(int id) {
+        checkOutOfBounds(id);
+        return allIndexedNodes.get(id);
     }
 }

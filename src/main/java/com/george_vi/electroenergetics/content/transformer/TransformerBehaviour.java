@@ -13,17 +13,15 @@ import java.util.Arrays;
 
 public class TransformerBehaviour {
 
-    public static void preTick(InWorldNode[] nodes, double ratio, BlockPos pos, BridgeCollector bridges, CompoundTag extraData) {
+    public static void preTick(InWorldNode[] nodes, double ratio, BlockPos pos, BridgeCollector bridges, TransformerBehaviourDataHolder extraData) {
 
-        boolean backwards = extraData.getBoolean("Backwards");
+        double rawLoad = extraData.load;
+        double rawFeed = -extraData.feed;
 
-        double rawLoad = extraData.getDouble("Load");
-        double rawFeed = -extraData.getDouble("Feed");
-
-        double lastPrimaryVoltage = extraData.getDouble("LastPrimaryVoltage");
-        double lastSecondaryVoltage = extraData.getDouble("LastSecondaryVoltage");
-        double averagePrimaryVoltage = extraData.getDouble("AveragePrimaryVoltage");
-        double averageSecondaryVoltage = extraData.getDouble("AverageSecondaryVoltage");
+        double lastPrimaryVoltage = extraData.lastPrimaryVoltage;
+        double lastSecondaryVoltage = extraData.lastSecondaryVoltage;
+        double averagePrimaryVoltage = extraData.averagePrimaryVoltage;
+        double averageSecondaryVoltage = extraData.averageSecondaryVoltage;
 
         if (Math.abs(lastPrimaryVoltage) < 0.1)
             lastPrimaryVoltage = 0;
@@ -35,7 +33,7 @@ public class TransformerBehaviour {
         if (Math.abs(averageSecondaryVoltage) < 0.1)
             averageSecondaryVoltage = 0;
 
-        if (backwards) {
+        if (extraData.backwards) {
             double load = Math.max(0, rawFeed);
 
             bridges.builder(pos)
@@ -48,7 +46,7 @@ public class TransformerBehaviour {
                     .resistor(nodes[5], nodes[3], 0.1);
 
             if (Math.abs(lastPrimaryVoltage / ratio) > Math.abs(lastSecondaryVoltage) && load < 0.0001)
-                extraData.remove("Backwards");
+                extraData.backwards = false;
         } else {
             double load = Math.max(0, rawLoad);
 
@@ -61,52 +59,99 @@ public class TransformerBehaviour {
                     .resistor(nodes[2], nodes[3], 50000000)
                     .resistor(nodes[5], nodes[3], 0.001);
             if (Math.abs(lastPrimaryVoltage / ratio) < Math.abs(lastSecondaryVoltage) && load < 0.0001)
-                extraData.putBoolean("Backwards", true);
+                extraData.backwards = true;
         }
     }
 
-    public static double postTick(InWorldNode[] nodes, SimulationResults results, CompoundTag extraData) {
+    public static double postTick(InWorldNode[] nodes, SimulationResults results, TransformerBehaviourDataHolder extraData) {
         double primaryVoltage = results.getVoltageAt(nodes[0], nodes[1]);
-        extraData.putDouble("LastPrimaryVoltage", primaryVoltage);
+        extraData.lastPrimaryVoltage = primaryVoltage;
         double secondaryVoltage = results.getVoltageAt(nodes[2], nodes[3]);
         double secondaryCurrent = results.getCurrentThrough(nodes[5], nodes[3]);
-        extraData.putDouble("LastSecondaryVoltage", secondaryVoltage);
+        extraData.lastSecondaryVoltage = secondaryVoltage;
         double load = -secondaryCurrent * secondaryVoltage;
-        extraData.putDouble("Load", load);
+        extraData.load = load;
         double primaryCurrent = results.getCurrentThrough(nodes[0], nodes[4]);
         double feed = primaryCurrent * primaryVoltage;
-        extraData.putDouble("Feed", feed);
+        extraData.feed = feed;
 
-        // calculate the average voltages
+        extraData.average(primaryVoltage, secondaryVoltage);
 
-        double[] prevPrimaryVoltages = extraData.getList("LastPrimaryVoltages", Tag.TAG_DOUBLE).stream().mapToDouble(t -> ((DoubleTag)t).getAsDouble()).toArray();
-        ListTag pTag = new ListTag();
-        pTag.add(DoubleTag.valueOf(primaryVoltage));
-        for (int i = 0; i < Math.min(22, prevPrimaryVoltages.length); i++) {
-            pTag.add(DoubleTag.valueOf(prevPrimaryVoltages[i]));
-        }
-        extraData.put("LastPrimaryVoltages", pTag);
-
-        double averagePrimaryVoltage = (Arrays.stream(prevPrimaryVoltages).sum() + primaryVoltage) / (prevPrimaryVoltages.length + 1);
-
-
-        double[] prevSecondaryVoltages = extraData.getList("LastSecondaryVoltages", Tag.TAG_DOUBLE).stream().mapToDouble(t -> ((DoubleTag)t).getAsDouble()).toArray();
-        ListTag sTag = new ListTag();
-        sTag.add(DoubleTag.valueOf(secondaryVoltage));
-        for (int i = 0; i < Math.min(22, prevSecondaryVoltages.length); i++) {
-            sTag.add(DoubleTag.valueOf(prevSecondaryVoltages[i]));
-        }
-        extraData.put("LastSecondaryVoltages", sTag);
-
-        double averageSecondaryVoltage = (Arrays.stream(prevSecondaryVoltages).sum() + secondaryVoltage) / (prevSecondaryVoltages.length + 1);
-
-        extraData.putDouble("AveragePrimaryVoltage", averagePrimaryVoltage);
-        extraData.putDouble("AverageSecondaryVoltage", averageSecondaryVoltage);
-
-        return extraData.getBoolean("Backwards") ? feed : load;
+        return extraData.backwards ? feed : load;
     }
 
     public static InWorldNode[] setupStandardNodes(BlockPos pos) {
         return new InWorldNode[] {new InWorldNode(0, pos), new InWorldNode(1, pos), new InWorldNode(2, pos), new InWorldNode(3, pos), new InWorldNode(4, pos), new InWorldNode(5, pos)};
+    }
+
+    public static class TransformerBehaviourDataHolder {
+        public double averagePrimaryVoltage;
+        public double averageSecondaryVoltage;
+        public double lastPrimaryVoltage;
+        public double lastSecondaryVoltage;
+        public boolean backwards;
+        public final int averageWindowSize;
+        public double[] lastPrimaryVoltages;
+        public double[] lastSecondaryVoltages;
+        public int averagePointer;
+        public double feed;
+        public double load;
+
+        public TransformerBehaviourDataHolder() {
+            averageWindowSize = 20;
+            lastPrimaryVoltages = new double[averageWindowSize];
+            lastSecondaryVoltages = new double[averageWindowSize];
+        }
+
+        public TransformerBehaviourDataHolder(CompoundTag tag) {
+            this();
+
+            averagePrimaryVoltage = tag.getDouble("AveragePrimaryVoltage");
+            averageSecondaryVoltage = tag.getDouble("AverageSecondaryVoltage");
+            lastPrimaryVoltage = tag.getDouble("LastPrimaryVoltage");
+            lastSecondaryVoltage = tag.getDouble("LastSecondaryVoltage");
+            backwards = tag.getBoolean("Backwards");
+
+            long[] pArr = tag.getLongArray("PrimaryVoltages");
+            long[] sArr = tag.getLongArray("SecondaryVoltages");
+
+            for (int i = 0; i < Math.min(pArr.length, averageWindowSize); i++)
+                lastPrimaryVoltages[i] = Double.longBitsToDouble(pArr[i]);
+
+            for (int i = 0; i < Math.min(sArr.length, averageWindowSize); i++)
+                lastSecondaryVoltages[i] = Double.longBitsToDouble(sArr[i]);
+
+            feed = tag.getDouble("Feed");
+            load = tag.getDouble("Load");
+            averagePointer = tag.getInt("AveragePointer");
+        }
+
+        public CompoundTag write() {
+            CompoundTag tag = new CompoundTag();
+            tag.putDouble("AveragePrimaryVoltage", averagePrimaryVoltage);
+            tag.putDouble("AverageSecondaryVoltage", averageSecondaryVoltage);
+            tag.putDouble("LastPrimaryVoltage", lastPrimaryVoltage);
+            tag.putDouble("LastSecondaryVoltage", lastSecondaryVoltage);
+            tag.putBoolean("Backwards", backwards);
+            tag.putLongArray("PrimaryVoltages", Arrays.stream(lastPrimaryVoltages).mapToLong(Double::doubleToRawLongBits).toArray());
+            tag.putLongArray("SecondaryVoltages", Arrays.stream(lastSecondaryVoltages).mapToLong(Double::doubleToRawLongBits).toArray());
+            tag.putDouble("Feed", feed);
+            tag.putDouble("Load", load);
+            tag.putInt("AveragePointer", averagePointer);
+            return tag;
+        }
+
+        public void average(double primaryVoltage, double secondaryVoltage) {
+            averagePointer = (averagePointer + 1) % averageWindowSize;
+            lastPrimaryVoltages[averagePointer] = primaryVoltage;
+            lastSecondaryVoltages[averagePointer] = secondaryVoltage;
+
+            averagePrimaryVoltage = 0;
+            for (double voltage : lastPrimaryVoltages) averagePrimaryVoltage += (voltage / averageWindowSize);
+
+            averageSecondaryVoltage = 0;
+            for (double voltage : lastSecondaryVoltages) averageSecondaryVoltage += (voltage / averageWindowSize);
+        }
+
     }
 }

@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.energy_meter;
 
 import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllSoundEvents;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
@@ -28,14 +29,14 @@ public record ChangeEnergyMeterStatePacket(boolean reset, boolean disconnect, Bl
             return;
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        InfrastructureSavedData.SimulatedDeviceInstance device = sd.getDevice(pos);
+        SimulatedDeviceInstance<?> device = sd.getDevice(pos);
 
-        if (device == null || !(device.simulatedDevice() instanceof EnergyMeterDevice || device.simulatedDevice() instanceof TriPolarEnergyMeterDevice))
+        if (device == null || !(device.simulatedDevice() instanceof EnergyMeterDevice || device.simulatedDevice() instanceof TriPolarEnergyMeterDevice) || !(device.extraData() instanceof EnergyMeterDevice.DataHolder dataHolder))
             return;
 
         if (reset)
-            device.extraData().putDouble("TotalEnergy", 0);
-        device.extraData().putBoolean("Closed", !disconnect);
+            dataHolder.totalEnergy = 0;
+        dataHolder.isClosed ^= true;
         be.disconnected = disconnect;
         be.sendData();
 

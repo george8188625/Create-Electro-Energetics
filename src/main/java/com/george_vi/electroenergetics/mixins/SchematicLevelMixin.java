@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.WireData;
 import net.createmod.catnip.levelWrappers.SchematicLevel;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +19,7 @@ public class SchematicLevelMixin implements ISchematicInfrastructureList {
     Map<NodeConnection, WireData> electroEnergetics$wireConnections = new HashMap<>();
 
     @Unique
-    List<InfrastructureSavedData.SimulatedDeviceInstance> electroEnergetics$devices = new ArrayList<>();
+    List<SimulatedDeviceInstance> electroEnergetics$devices = new ArrayList<>();
 
     @Override
     public Map<NodeConnection, WireData> electroEnergetics$getWireConnections() {
@@ -27,7 +27,7 @@ public class SchematicLevelMixin implements ISchematicInfrastructureList {
     }
 
     @Override
-    public List<InfrastructureSavedData.SimulatedDeviceInstance> electroEnergetics$getDevices() {
+    public List<SimulatedDeviceInstance> electroEnergetics$getDevices() {
         return electroEnergetics$devices;
     }
 }

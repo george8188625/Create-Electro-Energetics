@@ -2,10 +2,12 @@ package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -79,9 +81,9 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
-            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null)
-                device.extraData().putBoolean("Broken", false);
+            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
+            if (device != null && device.extraData() instanceof FuseDevice.DataHolder dataHolder)
+                dataHolder.isBroken = false;
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
         }
 
@@ -115,4 +117,6 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
     protected BlockState mirror(BlockState state, Mirror mirror) {
         return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
     }
+
+
 }

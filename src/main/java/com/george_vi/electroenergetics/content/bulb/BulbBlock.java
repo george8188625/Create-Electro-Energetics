@@ -1,9 +1,11 @@
 package com.george_vi.electroenergetics.content.bulb;
 
 import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.block.IBE;
@@ -31,7 +33,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.Map;
 
 public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbBlockEntity> {
-    public static final IntegerProperty LIGHT = IntegerProperty.create("light", 0, 2);
+    public static final IntegerProperty LIGHT = IntegerProperty.create("light", 0, 15);
     public final boolean broken;
 
     public BulbBlock(Properties properties) {
@@ -75,9 +77,9 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
     protected BlockState updateShape(
             BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         if (level instanceof ServerLevel sl) {
-            InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = InfrastructureSavedData.load(sl).getDevice(pos);
-            if (deviceInstance != null)
-                deviceInstance.extraData().putBoolean("Destroyed", broken);
+            SimulatedDeviceInstance<?> deviceInstance = InfrastructureSavedData.load(sl).getDevice(pos);
+            if (deviceInstance != null && deviceInstance.extraData() instanceof BulbDevice.DataHolder dataHolder)
+                dataHolder.destroyed = broken;
         }
 
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
@@ -89,9 +91,9 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
-            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null)
-                device.extraData().putBoolean("Destroyed", false);
+            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
+            if (device != null && device.extraData() instanceof BulbDevice.DataHolder dataHolder)
+                dataHolder.destroyed = false;
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
         }
 
@@ -105,7 +107,7 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
     public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
         if (broken)
             return 0;
-        return state.getValue(LIGHT) * 7;
+        return state.getValue(LIGHT);
     }
 
     @Override

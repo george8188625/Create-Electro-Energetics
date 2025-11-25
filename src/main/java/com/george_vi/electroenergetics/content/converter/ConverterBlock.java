@@ -3,10 +3,12 @@ package com.george_vi.electroenergetics.content.converter;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
@@ -66,9 +68,9 @@ public class ConverterBlock extends DirectionalRolledDeviceBlock implements IWre
             return super.onWrenched(state, context);
 
         if (context.getLevel() instanceof ServerLevel serverLevel) {
-            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
-            if (device != null)
-                device.extraData().putBoolean("Source", !state.getValue(SOURCE));
+            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
+            if (device != null && device.extraData() instanceof ConverterDevice.DataHolder dataHolder)
+                dataHolder.isSource = !state.getValue(SOURCE);
             serverLevel.setBlockAndUpdate(context.getClickedPos(), state.cycle(SOURCE));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(context.getLevel(), context.getClickedPos());
         }

@@ -2,10 +2,12 @@ package com.george_vi.electroenergetics.content.connector;
 
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.createmod.catnip.lang.Lang;
@@ -113,12 +115,12 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        InfrastructureSavedData.SimulatedDeviceInstance instance = sd.getDevice(pos);
-        if (instance != null) {
-            if (state.getValue(STYLE) == Style.LONG)
-                instance.extraData().putBoolean("HVSwitchTarget", true);
+        SimulatedDeviceInstance<?> instance = sd.getDevice(pos);
+        if (instance != null && instance.extraData() instanceof ConnectorDevice.DataHolder dataHolder) {
+            if (state.getValue(STYLE) == Style.LONG && state.getValue(FACING) == Direction.UP)
+                dataHolder.isHVSwitchTarget = true;
             else
-                instance.extraData().remove("HVSwitchTarget");
+                dataHolder.isHVSwitchTarget = false;
         }
     }
 

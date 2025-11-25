@@ -22,27 +22,34 @@ public class CEEItems {
 
     public static final ItemEntry<WireSpoolItem> WIRE_SPOOL = REGISTRATE.item("wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.STANDARD))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
-                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.wireResistance::get)))
+                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.wireResistance::get)
+                    .addMaxVoltage(CEEConfigs.server().voltageValues.wireMaxVoltage::get)
+                    .addMaxCurrent(() -> CEEWireTypes.STANDARD.get().getMaxTemperature() / 30 + 33.33)))
             .register();
 
     public static final ItemEntry<WireSpoolItem> HEAVILY_INSULATED_WIRE_SPOOL = REGISTRATE.item("heavily_insulated_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.HEAVILY_INSULATED))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
-                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.wireResistance::get)))
+                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.wireResistance::get)
+                    .addMaxVoltage(CEEConfigs.server().voltageValues.heavilyInsulatedWireMaxVoltage::get)
+                    .addMaxCurrent(() -> CEEWireTypes.HEAVILY_INSULATED.get().getMaxTemperature() / 30 + 33.33)))
             .register();
 
     public static final ItemEntry<WireSpoolItem> COPPER_WIRE_SPOOL = REGISTRATE.item("copper_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.COPPER))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
-                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.wireResistance::get)))
+                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.wireResistance::get)
+                    .addMaxCurrent(() -> CEEWireTypes.COPPER.get().getMaxTemperature() / 30 + 33.33)))
             .register();
 
     public static final ItemEntry<WireSpoolItem> IRON_WIRE_SPOOL = REGISTRATE.item("iron_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.IRON))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
-                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.ironWireResistance::get)))
+                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.ironWireResistance::get)
+                    .addMaxCurrent(() -> CEEWireTypes.IRON.get().getMaxTemperature() / 30 + 33.33)))
             .register();
 
     public static final ItemEntry<WireSpoolItem> IRON_BUS_SPOOL = REGISTRATE.item("iron_bus_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.IRON_BUS))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
-                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.ironWireResistance::get)))
+                    .addResistancePerMeter(CEEConfigs.server().resistanceValues.ironWireResistance::get)
+                    .addMaxCurrent(() -> CEEWireTypes.IRON_BUS.get().getMaxTemperature() / 30 + 33.33)))
             .register();
 
     public static final ItemEntry<WireSpoolItem> CREATIVE_WIRE_SPOOL = REGISTRATE.item("creative_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.CREATIVE))

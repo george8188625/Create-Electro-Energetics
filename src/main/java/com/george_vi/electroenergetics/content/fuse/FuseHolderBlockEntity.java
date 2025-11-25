@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.createmod.catnip.data.Pair;
@@ -70,24 +70,24 @@ public class FuseHolderBlockEntity extends SmartBlockEntity {
         sendData();
         if (level instanceof ServerLevel sl) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            InfrastructureSavedData.SimulatedDeviceInstance instance = sd.getDevice(getBlockPos());
-            if (instance == null)
+            SimulatedDeviceInstance<?> instance = sd.getDevice(getBlockPos());
+            if (instance == null || !(instance.extraData() instanceof FuseHolderDevice.DataHolder dataHolder))
                 return;
 
             if (firstFuse != null) {
-                instance.extraData().putString("FirstID", firstFuse.getFirst().getID().toString());
-                instance.extraData().put("FirstData", firstFuse.getSecond());
+                dataHolder.firstFuse = firstFuse.getFirst();
+                dataHolder.firstData = firstFuse.getSecond();
             } else {
-                instance.extraData().remove("FirstID");
-                instance.extraData().remove("FirstData");
+                dataHolder.firstFuse = null;
+                dataHolder.firstData = null;
             }
 
             if (secondFuse != null) {
-                instance.extraData().putString("SecondID", secondFuse.getFirst().getID().toString());
-                instance.extraData().put("SecondData", secondFuse.getSecond());
+                dataHolder.firstFuse = secondFuse.getFirst();
+                dataHolder.firstData = secondFuse.getSecond();
             } else {
-                instance.extraData().remove("SecondID");
-                instance.extraData().remove("SecondData");
+                dataHolder.secondFuse = null;
+                dataHolder.secondData = null;
             }
         }
     }

@@ -28,9 +28,6 @@ public class ElectricStatsTooltipModifier implements TooltipModifier {
 
     @Override
     public void modify(ItemTooltipEvent context) {
-        if (!GogglesItem.isWearingGoggles(context.getEntity()))
-            return;
-
         List<Component> tooltip = context.getToolTip();
 
         ElectricStatSet entries = ALL_ENTRIES.get(item);

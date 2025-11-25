@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.simibubi.create.content.schematics.SchematicPrinter;
 import com.simibubi.create.content.schematics.cannon.MaterialChecklist;
@@ -54,17 +55,17 @@ public class SchematicPrinterMixin {
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
                 if (sd.getDevice(node1.sourcePos()) == null) {
-                    InfrastructureSavedData.SimulatedDeviceInstance di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
+                    SimulatedDeviceInstance<?> di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
                     if (di == null)
                         continue;
-                    sd.addDevice(node1.sourcePos(), di.simulatedDevice(), di.extraData(), di.nodes().stream().map(InWorldNode::id).toList());
+                    sd.addDevice(node1.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
                 }
 
                 if (sd.getDevice(node2.sourcePos()) == null) {
-                    InfrastructureSavedData.SimulatedDeviceInstance di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
+                    SimulatedDeviceInstance<?> di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
                     if (di == null)
                         continue;
-                    sd.addDevice(node2.sourcePos(), di.simulatedDevice(), di.extraData(), di.nodes().stream().map(InWorldNode::id).toList());
+                    sd.addDevice(node2.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
                 }
 
                 if (!sd.getConnections(node1).contains(connection)) {
@@ -114,7 +115,7 @@ public class SchematicPrinterMixin {
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
 
-                if (!sd.getConnections(node1).contains(node2)) {
+                if (!sd.getConnections(node1).contains(new NodeConnection(node1, node2))) {
                     List<ItemStack> allRequirements = new ArrayList<>();
                     for (Pair<Float, WireAttachment> attachment : wireData.attachments())
                         allRequirements.addAll(attachment.getSecond().getItemRequirement());
@@ -137,17 +138,17 @@ public class SchematicPrinterMixin {
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
                 if (sd.getDevice(node1.sourcePos()) == null) {
-                    InfrastructureSavedData.SimulatedDeviceInstance di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
+                    SimulatedDeviceInstance<?> di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
                     if (di == null)
                         continue;
-                    sd.addDevice(node1.sourcePos(), di.simulatedDevice(), di.extraData(), di.nodes().stream().map(InWorldNode::id).toList());
+                    sd.addDevice(node1.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
                 }
 
                 if (sd.getDevice(node2.sourcePos()) == null) {
-                    InfrastructureSavedData.SimulatedDeviceInstance di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
+                    SimulatedDeviceInstance<?> di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
                     if (di == null)
                         continue;
-                    sd.addDevice(node2.sourcePos(), di.simulatedDevice(), di.extraData(), di.nodes().stream().map(InWorldNode::id).toList());
+                    sd.addDevice(node2.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
                 }
 
                 if (!sd.getConnections(node1).contains(connection)) {

@@ -16,13 +16,23 @@ import net.minecraft.world.ticks.LevelTickAccess;
  * (All {@link DeviceBlock} implementations should add / replace the device on their block ticks.)
  * Otherwise, the device is removed, as it was probably misplaced.
  */
-public class TemporaryDevice extends SimulatedDevice {
+public class TemporaryDevice extends SimulatedDevice<Void> {
     public TemporaryDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+    public Void read(CompoundTag tag) {
+        return null;
+    }
+
+    @Override
+    public CompoundTag write(Void extraData) {
+        return new CompoundTag();
+    }
+
+    @Override
+    public void postTick(BlockPos pos, Level level, SimulationResults results, Void extraData) {
         if (level.getBlockState(pos).getBlock() instanceof DeviceBlock db){
             LevelTickAccess<Block> blockTicks = level.getBlockTicks();
             if (!blockTicks.hasScheduledTick(pos, (Block) db))

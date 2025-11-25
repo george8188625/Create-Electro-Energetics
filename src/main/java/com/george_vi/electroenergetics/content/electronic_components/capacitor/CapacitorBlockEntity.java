@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.electronic_components.capacitor;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -50,10 +51,10 @@ public class CapacitorBlockEntity extends SmartBlockEntity {
         if (!(level instanceof ServerLevel sl))
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(getBlockPos());
+        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
-        if (deviceInstance != null) {
-            deviceInstance.extraData().putDouble("Capacitance", indexToCapacitance(capacitance.value));
+        if (deviceInstance != null && deviceInstance.extraData() instanceof CapacitorDevice.DataHolder dataHolder) {
+            dataHolder.capacitance = indexToCapacitance(capacitance.value);
         }
     }
 

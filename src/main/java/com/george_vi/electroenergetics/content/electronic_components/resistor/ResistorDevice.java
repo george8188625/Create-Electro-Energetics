@@ -15,27 +15,26 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
-public class ResistorDevice extends SimulatedDevice {
+public class ResistorDevice extends SimulatedDevice<ResistorDevice.DataHolder> {
     public ResistorDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
+    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
         bridges.builder(pos)
-                .resistor(0, 1, extraData.getDouble("Resistance") + 0.0001);
+                .resistor(0, 1, extraData.resistance + 0.0001);
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
         float loss = (float) results.getHeatLoss(pos, 0, 1);
-        float temp = updateTemp(extraData.getFloat("Temp"), Math.min(loss, 10000));
-        extraData.putFloat("Temp", temp);
+        extraData.temp = updateTemp(extraData.temp, Math.min(loss, 10000));
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
 
-        if (temp > 40000) {
+        if (extraData.temp > 40000) {
             if (level.isLoaded(pos)) {
                 CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.SMALL));
                 ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0,0, 0);
@@ -43,7 +42,28 @@ public class ResistorDevice extends SimulatedDevice {
             InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
             sd.removeDevice(pos);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
-        } else if (temp > 30000)
+        } else if (extraData.temp > 30000)
             showOverheatingParticles(level, pos);
+    }
+
+    @Override
+    public DataHolder read(CompoundTag tag) {
+        DataHolder dataHolder = new DataHolder();
+        dataHolder.resistance = tag.getDouble("Resistance");
+        dataHolder.temp = tag.getFloat("Temp");
+        return dataHolder;
+    }
+
+    @Override
+    public CompoundTag write(DataHolder extraData) {
+        CompoundTag tag = new CompoundTag();
+        tag.putDouble("Resistance", extraData.resistance);
+        tag.putFloat("Temp", extraData.temp);
+        return tag;
+    }
+
+    public static class DataHolder {
+        public double resistance;
+        public float temp;
     }
 }

@@ -3,10 +3,12 @@ package com.george_vi.electroenergetics.content.relay;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -82,9 +84,9 @@ public class RelayBlock extends DirectionalRolledDeviceBlock {
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         if (context.getLevel() instanceof ServerLevel serverLevel) {
-            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
-            if (device != null)
-                device.extraData().putBoolean("Inverted", !state.getValue(INVERTED));
+            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
+            if (device != null && device.extraData() instanceof RelayDevice.DataHolder dataHolder)
+                dataHolder.inverted = !state.getValue(INVERTED);
             serverLevel.setBlockAndUpdate(context.getClickedPos(), state.cycle(INVERTED));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(context.getLevel(), context.getClickedPos());
         }

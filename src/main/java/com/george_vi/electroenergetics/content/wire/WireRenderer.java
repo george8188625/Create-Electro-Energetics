@@ -160,8 +160,10 @@ public class WireRenderer {
             if (state2.getBlock() instanceof DeviceBlock db)
                 pos2 = db.getNodePosition(mc.level, connection.node2().sourcePos(), state2, connection.node2().id());
 
-            if (pos1 == null || pos2 == null)
-                continue;
+            if (pos1 == null || pos2 == null) {
+                pos1 = connection.node1().sourcePos().getCenter();
+                pos2 = connection.node1().sourcePos().getCenter();
+            }
 
             BlockPos devicePos1 = connection.node1().sourcePos();
             BlockPos devicePos2 = connection.node2().sourcePos();

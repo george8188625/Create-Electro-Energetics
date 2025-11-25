@@ -48,7 +48,7 @@ public class ElectricityBasicsScenes {
         connections.createConnection(new InWorldNode(1, diode), new InWorldNode(0, bulb));
         scene.idle(2);
         ElementLink<WirePonderElement> sourceWire2 = connections.createConnection(new InWorldNode(1, bulb), new InWorldNode(0, source));
-        scene.world().modifyBlock(bulb, bs -> bs.setValue(BulbBlock.LIGHT, 2), false);
+        scene.world().modifyBlock(bulb, bs -> bs.setValue(BulbBlock.LIGHT, 15), false);
         scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.light = 1);
         scene.idle(2);
 
@@ -234,7 +234,7 @@ public class ElectricityBasicsScenes {
         scene.idle(20);
         voltmeterWire1 = connections.createConnection(new InWorldNode(0, util.grid().at(4, 1, 3)), new InWorldNode(1, voltmeter));
         voltmeterWire2 = connections.createConnection(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, voltmeter));
-        scene.world().modifyBlock(voltmeter, bs -> bs.setValue(BulbBlock.LIGHT, 2), false);
+        scene.world().modifyBlock(voltmeter, bs -> bs.setValue(BulbBlock.LIGHT, 15), false);
         scene.world().modifyBlockEntity(voltmeter, BulbBlockEntity.class, be -> be.light = 1);
         ElementLink<CurrentVisualizationPonderElement> visualization1 = connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(0, 1, 3)), new InWorldNode(0, util.grid().at(4, 1, 3)), 0, 1, true);
         ElementLink<CurrentVisualizationPonderElement> visualization5 = connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(4, 1, 3)), new InWorldNode(1, voltmeter), 1, 1, true);

@@ -1,10 +1,12 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
 import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.AllSoundEvents;
@@ -84,10 +86,10 @@ public class HVSwitchBlock extends SimpleDeviceBlock implements IBE<HVSwitchBloc
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
-            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null) {
+            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
+            if (device != null && device.extraData() instanceof HVSwitchDevice.DataHolder dataHolder) {
                 if (level.getBlockEntity(pos) instanceof HVSwitchBlockEntity be) {
-                    device.extraData().putBoolean("Connected", !be.connected);
+                    dataHolder.isConnecting = !be.connected;
                     be.connected = !be.connected;
                     be.sendData();
                 }
@@ -108,10 +110,10 @@ public class HVSwitchBlock extends SimpleDeviceBlock implements IBE<HVSwitchBloc
             if (!powered)
                 return;
             if (level instanceof ServerLevel serverLevel) {
-                InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-                if (device != null) {
+                SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
+                if (device != null && device.extraData() instanceof HVSwitchDevice.DataHolder dataHolder) {
                     if (level.getBlockEntity(pos) instanceof HVSwitchBlockEntity be) {
-                        device.extraData().putBoolean("Connected", !be.connected);
+                        dataHolder.isConnecting = !be.connected;
                         be.connected = !be.connected;
                         be.sendData();
                     }
@@ -128,10 +130,10 @@ public class HVSwitchBlock extends SimpleDeviceBlock implements IBE<HVSwitchBloc
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
 
         BlockPos targetPos = pos.relative(state.getValue(HVSwitchBlock.FACING), 2);
-        InfrastructureSavedData.SimulatedDeviceInstance instance = sd.getDevice(pos);
+        SimulatedDeviceInstance<?> instance = sd.getDevice(pos);
 
-        if (instance != null)
-            instance.extraData().put("Target", NbtUtils.writeBlockPos(targetPos));
+        if (instance != null && instance.extraData() instanceof HVSwitchDevice.DataHolder dataHolder)
+            dataHolder.target = targetPos;
     }
 
     @Override

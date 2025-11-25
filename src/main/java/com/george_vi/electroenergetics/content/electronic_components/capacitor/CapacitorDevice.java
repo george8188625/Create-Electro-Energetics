@@ -16,20 +16,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
-public class CapacitorDevice extends SimulatedDevice {
+public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder> {
     public CapacitorDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        double capacitance = extraData.getDouble("Capacitance") + 0.000001;
+    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+        double capacitance = extraData.capacitance + 0.000001;
         double timeStep = 0.05;
 
-        double lastVoltage = extraData.getDouble("LastVoltage");
-
         double conductance = capacitance / timeStep;
-        double historyCurrent = conductance * lastVoltage;
+        double historyCurrent = conductance * extraData.lastVoltage;
 
         bridges.builder(pos)
                 .node(2)
@@ -38,17 +36,16 @@ public class CapacitorDevice extends SimulatedDevice {
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
+    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
         double voltage = results.getVoltageAt(pos, 0, 2);
-        extraData.putDouble("LastVoltage", voltage);
+        extraData.lastVoltage = voltage;
 
-        float temp = updateTemp(extraData.getFloat("Temp"), (float) Math.abs(voltage));
-        extraData.putFloat("Temp", temp);
+        extraData.temp = updateTemp(extraData.temp, (float) Math.abs(voltage));
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
 
-        if (temp > 17000) {
+        if (extraData.temp > 17000) {
             if (level.isLoaded(pos)) {
                 CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.SMALL));
                 ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0,0, 0);
@@ -56,7 +53,31 @@ public class CapacitorDevice extends SimulatedDevice {
             InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
             sd.removeDevice(pos);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
-        } else if (temp > 14000)
+        } else if (extraData.temp > 14000)
             showOverheatingParticles(level, pos);
+    }
+
+    @Override
+    public DataHolder read(CompoundTag tag) {
+        DataHolder dataHolder = new DataHolder();
+        dataHolder.lastVoltage = tag.getDouble("LastVoltage");
+        dataHolder.capacitance = tag.getDouble("Capacitance");
+        dataHolder.temp = tag.getFloat("Temp");
+        return dataHolder;
+    }
+
+    @Override
+    public CompoundTag write(DataHolder extraData) {
+        CompoundTag tag = new CompoundTag();
+        tag.putDouble("LastVoltage", extraData.lastVoltage);
+        tag.putDouble("Capacitance", extraData.capacitance);
+        tag.putFloat("Temp", extraData.temp);
+        return tag;
+    }
+
+    public static class DataHolder {
+        public double lastVoltage;
+        public double capacitance;
+        public float temp;
     }
 }

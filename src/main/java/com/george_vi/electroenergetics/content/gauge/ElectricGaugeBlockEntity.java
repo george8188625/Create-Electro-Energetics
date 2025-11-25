@@ -104,9 +104,9 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
                 .translate(voltmeter ? "generic.voltage" : "generic.current")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        float v = Math.round(Math.abs(v1 - v2) / (voltmeter ? 1 : 0.1));
+        float v = Math.round(Math.abs(v1 - v2) / (voltmeter ? 1 : 0.01));
         if (v <= 1)
-            v = (float) (Math.abs(v1 - v2) / (voltmeter ? 1 : 0.1));
+            v = (float) (Math.abs(v1 - v2) / (voltmeter ? 1 : 0.01));
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .text(TooltipHelper.makeProgressBar(3, dialState < 0.01 ? 0 : dialState < 0.33 ? 1 : dialState < 0.66 ? 2 : 3))
                 .space()

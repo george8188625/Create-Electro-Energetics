@@ -10,6 +10,7 @@ import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBl
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
@@ -72,9 +73,9 @@ public class EmergencyStopBlock extends DirectionalRolledDeviceBlock {
         boolean activate = !player.isShiftKeyDown();
 
         if (level instanceof ServerLevel serverLevel) {
-            InfrastructureSavedData.SimulatedDeviceInstance device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null)
-                device.extraData().putBoolean("Closed", !activate);
+            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
+            if (device != null && device.extraData() instanceof CutOffSwitchDevice.DataHolder dataHolder)
+                dataHolder.isClosed = !activate;
         }
 
         if (state.getValue(ACTIVATED) != activate) {

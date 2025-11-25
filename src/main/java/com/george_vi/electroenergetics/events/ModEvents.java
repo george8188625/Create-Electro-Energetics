@@ -89,7 +89,6 @@ public class ModEvents {
     @SubscribeEvent
     public static void newRegistry(NewRegistryEvent event) {
         event.register(CEERegistries.WIRE_TYPE);
-        event.register(CEERegistries.CABLE_TYPE);
         event.register(CEERegistries.WIRE_ATTACHMENT_TYPE);
         event.register(CEERegistries.WIRE_INTERACTION_BEHAVIOUR);
     }

@@ -16,7 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
-public class AccumulatorDevice extends SimulatedDevice {
+public class AccumulatorDevice extends SimulatedDevice<AccumulatorDevice.DataHolder> {
     public AccumulatorDevice(ResourceLocation id) {
         super(id);
     }
@@ -25,40 +25,44 @@ public class AccumulatorDevice extends SimulatedDevice {
     double timeStep = 0.05;
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, CompoundTag extraData) {
-        double lastVoltage = extraData.getDouble("LastVoltage");
-        double lastTotalVoltage = extraData.getDouble("LastTotalVoltage");
-        double diff = Math.abs(lastTotalVoltage - lastVoltage);
+    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+        double diff = Math.abs(extraData.lastTotalVoltage - extraData.lastVoltage);
 
         double conductance = capacitance / timeStep;
-        double historyCurrent = conductance * lastVoltage;
+        double historyCurrent = conductance * extraData.lastVoltage;
 
         bridges.builder(pos)
                 .node(2)
-                .resistor(2, 1, lastTotalVoltage == 0 ? 100 : (diff / 50) + 0.01);
+                .resistor(2, 1, extraData.lastTotalVoltage == 0 ? 100 : (diff / 50) + 0.01);
         bridges.bridge(new InWorldNode(0, pos), new InWorldNode(2, pos), 1 / conductance, 0, -historyCurrent);
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, CompoundTag extraData) {
-        extraData.putDouble("LastVoltage", results.getVoltageAt(pos, 0, 2));
-        extraData.putDouble("LastTotalVoltage", results.getVoltageAt(pos, 0, 1));
-        double v = Math.abs(results.getVoltageAt(pos, 0, 2));
-        if (level.isLoaded(pos)) {
-            if (level.getBlockEntity(pos) instanceof AccumulatorBlockEntity be) {
-                be.energy = (float) ((capacitance / 2) * (v*v)) / 3600;
+    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
+        extraData.lastVoltage = results.getVoltageAt(pos, 0, 2);
+        extraData.lastTotalVoltage = results.getVoltageAt(pos, 0, 1);
+        double v = Math.abs(extraData.lastVoltage);
+
+        if (extraData.be == null && level.isLoaded(pos))
+            if (level.getBlockEntity(pos) instanceof AccumulatorBlockEntity be)
+                extraData.be = be;
+
+        if (extraData.be != null) {
+            if (extraData.be.isRemoved())
+                extraData.be = null;
+            else {
+                extraData.be.energy = (float) ((capacitance / 2) * (v*v)) / 3600;
             }
         }
 
         float loss = (float) Math.abs(results.getCurrentThrough(pos, 1, 2) * results.getVoltageAt(pos, 0, 1) * results.getVoltageAt(pos, 0, 1)) / 10000;
 
-        float temp = updateTemp(extraData.getFloat("Temp"), loss);
-        extraData.putFloat("Temp", temp);
+        extraData.temp = updateTemp(extraData.temp, loss);
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
 
-        if (temp > 150000) {
+        if (extraData.temp > 150000) {
             if (level.isLoaded(pos)) {
                 CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.SMALL));
                 ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0,0, 0);
@@ -66,7 +70,32 @@ public class AccumulatorDevice extends SimulatedDevice {
             InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
             sd.removeDevice(pos);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
-        } else if (temp > 120000)
+        } else if (extraData.temp > 120000)
             showOverheatingParticles(level, pos);
+    }
+
+    @Override
+    public DataHolder read(CompoundTag tag) {
+        DataHolder dataHolder = new DataHolder();
+        dataHolder.lastTotalVoltage = tag.getDouble("LastTotalVoltage");
+        dataHolder.lastVoltage = tag.getDouble("LastVoltage");
+        dataHolder.temp = tag.getFloat("Temp");
+        return dataHolder;
+    }
+
+    @Override
+    public CompoundTag write(DataHolder extraData) {
+        CompoundTag tag = new CompoundTag();
+        tag.putDouble("LastTotalVoltage", extraData.lastTotalVoltage);
+        tag.putDouble("LastVoltage", extraData.lastVoltage);
+        tag.putFloat("Temp", extraData.temp);
+        return tag;
+    }
+
+    public static class DataHolder {
+        public double lastVoltage;
+        public double lastTotalVoltage;
+        public float temp;
+        public AccumulatorBlockEntity be;
     }
 }

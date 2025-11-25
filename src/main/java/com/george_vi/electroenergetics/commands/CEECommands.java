@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.commands;
 
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.simulator.SimulatorProfiler;
 import com.mojang.brigadier.CommandDispatcher;
@@ -9,8 +10,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.simibubi.create.foundation.utility.CreateLang;
-import com.sun.jdi.connect.Connector;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,17 +18,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.util.StringUtil;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 
 public class CEECommands {
     private static final UnaryOperator<Style> white = st -> st.withColor(ChatFormatting.WHITE.getColor());
@@ -95,10 +87,10 @@ public class CEECommands {
     public static int deviceData(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         CommandSourceStack source = ctx.getSource();
         BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
-        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = InfrastructureSavedData.load(source.getLevel()).getDevice(pos);
+        SimulatedDeviceInstance deviceInstance = InfrastructureSavedData.load(source.getLevel()).getDevice(pos);
         if (deviceInstance == null)
             throw NO_DEVICE_ERROR.create();
-        source.sendSuccess(() -> Component.literal("The device's stored data is: ").append(NbtUtils.toPrettyComponent(deviceInstance.extraData())), false);
+        source.sendSuccess(() -> Component.literal("The device's stored data is: ").append(NbtUtils.toPrettyComponent(deviceInstance.write())), false);
         return 1;
     }
 
@@ -107,7 +99,7 @@ public class CEECommands {
         BlockPos pos = BlockPos.containing(source.getPosition());
         int distance = IntegerArgumentType.getInteger(ctx, "distance");
 
-        for (InfrastructureSavedData.SimulatedDeviceInstance instance : InfrastructureSavedData.load(source.getLevel()).getDevices())
+        for (SimulatedDeviceInstance instance : InfrastructureSavedData.load(source.getLevel()).getDevices())
             if (Math.sqrt(instance.pos().distSqr(pos)) <= distance)
                 source.sendSuccess(() -> Component.literal(instance.simulatedDevice().getID().toString() + " : " + instance.pos().toShortString()).withStyle(blue), false);
 

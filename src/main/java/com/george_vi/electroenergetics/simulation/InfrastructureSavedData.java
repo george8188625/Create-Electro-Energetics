@@ -13,7 +13,6 @@ import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleRBTreeMap;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.nbt.NBTHelper;
@@ -31,11 +30,10 @@ import org.slf4j.Logger;
 import java.util.*;
 
 public class InfrastructureSavedData extends SavedData {
-    Map<BlockPos, SimulatedDeviceInstance> DEVICES = new TreeMap<>();
+    Map<BlockPos, SimulatedDeviceInstance<?>> DEVICES = new TreeMap<>();
     Map<InWorldNode, List<InWorldNode>> NODES = new HashMap<>();
     Map<InWorldNode, Vec3> NODE_POSITIONS = new HashMap<>();
     Map<BlockPos, List<InWorldNode>> NODES_BY_POS = new HashMap<>();
-    Map<BlockPos, CableType> CABLES = new HashMap<>();
     Map<NodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
 
     // TRAINS
@@ -60,12 +58,12 @@ public class InfrastructureSavedData extends SavedData {
         // Save Devices
 
         ListTag deviceList = new ListTag();
-        for (Map.Entry<BlockPos, SimulatedDeviceInstance> e : DEVICES.entrySet()) {
+        for (Map.Entry<BlockPos, SimulatedDeviceInstance<?>> e : DEVICES.entrySet()) {
             CompoundTag deviceTag = new CompoundTag();
 
             deviceTag.put("Pos", NbtUtils.writeBlockPos(e.getKey()));
-            deviceTag.putString("ID", e.getValue().simulatedDevice.getID().toString());
-            deviceTag.put("ExtraData", e.getValue().extraData());
+            deviceTag.putString("ID", e.getValue().simulatedDevice().getID().toString());
+            deviceTag.put("ExtraData", e.getValue().write());
 
             deviceList.add(deviceTag);
         }
@@ -118,17 +116,6 @@ public class InfrastructureSavedData extends SavedData {
         }
         compoundTag.put("Nodes", nodeList);
 
-        // Save Cables
-
-        ListTag cableList = new ListTag();
-        for (Map.Entry<BlockPos, CableType> e : CABLES.entrySet()) {
-            CompoundTag cableTag = new CompoundTag();
-            cableTag.put("Pos", NbtUtils.writeBlockPos(e.getKey()));
-            cableTag.putString("ID", CEERegistries.CABLE_TYPE.getKey(e.getValue()).toString());
-            cableList.add(cableTag);
-        }
-        compoundTag.put("Cables", cableList);
-
         // Save Railway Catenary
 
         ListTag catenaryList = new ListTag();
@@ -151,7 +138,6 @@ public class InfrastructureSavedData extends SavedData {
         sd.DEVICES = new HashMap<>();
         sd.NODES = new HashMap<>();
         sd.NODES_BY_POS = new HashMap<>();
-        sd.CABLES = new HashMap<>();
         sd.CONNECTION_DATA = new HashMap<>();
         sd.CATENARY = new HashMap<>();
 
@@ -188,8 +174,12 @@ public class InfrastructureSavedData extends SavedData {
                 List<Pair<Float, WireAttachment>> attachments = new ArrayList<>();
                 NBTHelper.iterateCompoundList(connectionTag.getList("Attachments", Tag.TAG_COMPOUND), attachmentTag -> {
                    float point = attachmentTag.getFloat("Point");
-                   WireAttachment attachment = WireAttachment.read(attachmentTag);
-                   attachments.add(Pair.of(point, attachment));
+                   try {
+                       WireAttachment attachment = WireAttachment.read(attachmentTag);
+                       attachments.add(Pair.of(point, attachment));
+                   } catch (Throwable ignored) {
+                       LOGGER.warn("Could not load wire attachment: {}", attachmentTag.getString("ID"));
+                   }
                 });
 
 
@@ -211,7 +201,7 @@ public class InfrastructureSavedData extends SavedData {
 
         NBTHelper.iterateCompoundList(compoundTag.getList("Devices", Tag.TAG_COMPOUND), tag -> {
             BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
-            SimulatedDevice device = CEESimulatedDevices.get(ResourceLocation.parse(tag.getString("ID")));
+            SimulatedDevice<?> device = CEESimulatedDevices.get(ResourceLocation.parse(tag.getString("ID")));
             if (device == null) {
                 List<InWorldNode> nodes = sd.NODES_BY_POS.get(pos);
                 for (InWorldNode node : nodes) {
@@ -223,27 +213,11 @@ public class InfrastructureSavedData extends SavedData {
                 LOGGER.warn("Could not load device: {} at pos: {} in: {}. No device with such ID, removing...", tag.getString("ID"), pos.toShortString(), level.dimension().location());
                 return;
             }
-            sd.DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, tag.getCompound("ExtraData"), sd.NODES_BY_POS.getOrDefault(pos, new ArrayList<>())));
-        });
-
-        // Read Cables
-
-        NBTHelper.iterateCompoundList(compoundTag.getList("Cables", Tag.TAG_COMPOUND), tag -> {
-            BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
-            CableType cableType = null;
-            try {
-                cableType = CEERegistries.CABLE_TYPE.get(ResourceLocation.parse(tag.getString("ID")));
-            } catch (Throwable e) {
-                LOGGER.warn("Could not load cable type: {} at pos: {} in: {}", tag.getString("ID"), pos.toShortString(), level.dimension().location());
-            }
-            if (cableType == null)
-                return;
-            sd.CABLES.put(pos, cableType);
+            sd.DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, device.read(tag.getCompound("ExtraData")), sd.NODES_BY_POS.getOrDefault(pos, new ArrayList<>())));
         });
 
         // Read Railway Catenary
 
-        ListTag catenaryList = new ListTag();
         NBTHelper.iterateCompoundList(compoundTag.getList("Catenary", Tag.TAG_COMPOUND), tag -> {
             BlockPos from = NBTHelper.readBlockPos(tag, "From");
 
@@ -270,20 +244,12 @@ public class InfrastructureSavedData extends SavedData {
                 .computeIfAbsent(new Factory<>(() -> new InfrastructureSavedData(level), (compoundTag, provider) -> InfrastructureSavedData.load(level, compoundTag, provider)), "electroenergetics_infrastructure");
     }
 
-    public void addCable(BlockPos pos, CableType type) {
-        CABLES.put(pos, type);
-    }
-
-    public void removeCable(BlockPos pos) {
-        CABLES.remove(pos);
-    }
-
-    public void addDevice(BlockPos pos, SimulatedDevice device, CompoundTag extraData, List<Integer> nodeIDs) {
+    public<T> void addDevice(BlockPos pos, SimulatedDevice<T> device, CompoundTag extraData, List<Integer> nodeIDs) {
         List<InWorldNode> nodes = nodeIDs.stream().map(id -> new InWorldNode(id, pos)).toList();
 
         if (DEVICES.containsKey(pos)) {
-            SimulatedDeviceInstance di = DEVICES.get(pos);
-            if (di.simulatedDevice == device) {
+            SimulatedDeviceInstance<?> di = DEVICES.get(pos);
+            if (di.simulatedDevice() == device) {
                 List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
                 if (oldNodes != null && oldNodes.stream().map(InWorldNode::id).sorted().toList().equals(nodeIDs.stream().sorted().toList())) {
                     for (InWorldNode node : oldNodes) {
@@ -321,7 +287,7 @@ public class InfrastructureSavedData extends SavedData {
 
                 return;
             } else {
-                DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, extraData, nodes));
+                DEVICES.put(pos, new SimulatedDeviceInstance<>(device, pos, device.read(extraData), nodes));
 
                 List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
                 if (oldNodes != null)
@@ -347,11 +313,11 @@ public class InfrastructureSavedData extends SavedData {
         }
 
 
-        DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, extraData, nodes));
+        DEVICES.put(pos, new SimulatedDeviceInstance<>(device, pos, device.read(extraData), nodes));
 
         for (InWorldNode node : nodes) {
             Vec3 nodePos = node.getPosition(level);
-            // shouldn't ever happen but it's better to be safe
+            // shouldn't ever happen, but it's better to be safe
             if (nodePos == null)
                 continue;
             NODES.put(node, new ArrayList<>());
@@ -362,7 +328,7 @@ public class InfrastructureSavedData extends SavedData {
         setDirty();
     }
 
-    public void addDevice(BlockPos pos, SimulatedDevice device, List<Integer> nodeIDs) {
+    public void addDevice(BlockPos pos, SimulatedDevice<?> device, List<Integer> nodeIDs) {
         addDevice(pos, device, new CompoundTag(), nodeIDs);
     }
 
@@ -387,11 +353,11 @@ public class InfrastructureSavedData extends SavedData {
         setDirty();
     }
 
-    public Collection<SimulatedDeviceInstance> getDevices() {
+    public Collection<SimulatedDeviceInstance<?>> getDevices() {
         return new ArrayList<>(DEVICES.values());
     }
 
-    public SimulatedDeviceInstance getDevice(BlockPos pos) {
+    public SimulatedDeviceInstance<?> getDevice(BlockPos pos) {
         return DEVICES.get(pos);
     }
 
@@ -552,5 +518,4 @@ public class InfrastructureSavedData extends SavedData {
         return wireConnectionManager;
     }
 
-    public record SimulatedDeviceInstance(SimulatedDevice simulatedDevice, BlockPos pos, CompoundTag extraData, List<InWorldNode> nodes) { }
 }

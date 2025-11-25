@@ -1,10 +1,12 @@
 package com.george_vi.electroenergetics.content.indicator_bulb;
 
 import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchDevice;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConfigurator;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
@@ -210,9 +212,9 @@ public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock implements 
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        InfrastructureSavedData.SimulatedDeviceInstance deviceInstance = sd.getDevice(pos);
-        if (deviceInstance != null)
-            deviceInstance.extraData().putByte("Side", state.getValue(SIDE).byteValue());
+        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(pos);
+        if (deviceInstance != null && deviceInstance.extraData() instanceof IndicatorBulbDevice.DataHolder dataHolder)
+            dataHolder.side = state.getValue(SIDE).byteValue();
     }
 
     @Override

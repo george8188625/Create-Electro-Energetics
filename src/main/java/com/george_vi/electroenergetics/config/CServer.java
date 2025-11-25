@@ -15,8 +15,8 @@ public class CServer extends ConfigBase {
     public final ConfigBool componentDamage = b(true, "componentDamage", "Components get damaged when overloaded");
     public final ConfigBool optimizeGraph = b(true, "optimizeGraph");
     public final ConfigBool saveInfrastructureInSchematics = b(true, "saveInfrastructureSDInSchematics");
-    public final ConfigInt trainMinVoltage = i(1900, 0, "trainMinVoltage");
     public final CResistances resistanceValues = nested(1, CResistances::new, "Resistance Values");
+    public final CVoltages voltageValues = nested(1, CVoltages::new, "Voltage Values");
 
     @Override
     public String getName() {

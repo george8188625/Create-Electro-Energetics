@@ -2,8 +2,9 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.foundation.nodes.Node;
+import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.Long2DoubleMap;
 import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
@@ -13,32 +14,31 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.*;
 
 public class Network {
-    final Set<Node> allNodes;
+    final Set<WrappedIndexedNode> allNodes;
     final CircuitBuilder builder;
-    final Map<Node, Map<Node, ElectricalProperties>> adjacency;
     final InfrastructureSavedData sd;
     // For performance, instead of Couple<Integer>. A single long can hold 2 ints.
     // First -> First 4 bytes >> 32
     // Last -> Last 4 bytes
     final Long2DoubleMap voltageSources = new Long2DoubleOpenHashMap();
     final Long2DoubleMap currentSources = new Long2DoubleOpenHashMap();
+    Int2ObjectMap<Int2ObjectMap<ElectricalProperties>> adjacencyOverrides = new Int2ObjectOpenHashMap<>();
     SimulationNode[] simulationNodes;
     public double[][] conductanceMatrix;
     public double[] rhsVector;
 
-    public Network(Set<Node> allNodes, Map<Node, Map<Node, ElectricalProperties>> adjacency, CircuitBuilder builder, InfrastructureSavedData sd) {
+    public Network(Set<WrappedIndexedNode> allNodes, CircuitBuilder builder, InfrastructureSavedData sd) {
         this.allNodes = new HashSet<>(allNodes);
         this.builder = builder;
-        this.adjacency = adjacency;
         this.sd = sd;
     }
 
     public SimulationNode[] mapToSimNodes() {
         simulationNodes = new SimulationNode[allNodes.size()];
-        Object2IntOpenHashMap<Node> nodeIDs = new Object2IntOpenHashMap<>(allNodes.size(), 0.999f);
+        Object2IntOpenHashMap<WrappedIndexedNode> nodeIDs = new Object2IntOpenHashMap<>(allNodes.size(), 0.999f);
 
         int id = 0;
-        for (Node node : allNodes) {
+        for (WrappedIndexedNode node : allNodes) {
             SimulationNode simulationNode = new SimulationNode(node);
             simulationNode.id = id;
             simulationNodes[id] = simulationNode;
@@ -48,12 +48,12 @@ public class Network {
 
         for (int i = 0; i < simulationNodes.length; i++) {
             SimulationNode simulationNode = simulationNodes[i];
-            Map<Node, ElectricalProperties> nodeAdjacency = adjacency.get(simulationNode.correspondingNode);
+            Int2ObjectMap<ElectricalProperties> nodeAdjacency = getAdjacency(simulationNode.correspondingNode);
             simulationNode.adjacentIDs = new int[nodeAdjacency.size()];
             simulationNode.adjacentProperties = new ElectricalProperties[nodeAdjacency.size()];
             int j = 0;
-            for (Map.Entry<Node, ElectricalProperties> e : nodeAdjacency.entrySet()) {
-                Node adjacentNode = e.getKey();
+            for (Int2ObjectMap.Entry<ElectricalProperties> e : nodeAdjacency.int2ObjectEntrySet()) {
+                WrappedIndexedNode adjacentNode = builder.getNode(e.getIntKey());
                 ElectricalProperties connectionProperties = e.getValue();
 
                 int adjacentID = nodeIDs.getInt(adjacentNode);
@@ -73,111 +73,110 @@ public class Network {
     }
 
     public void optimize() {
-        List<Node> toDissolve = new LinkedList<>();
-        for (Node node : getAllNodes()) {
-            double groundConductance = builder.getGroundConductance(node);
-            if (builder.getAdjacentNodes(node).size() == 2 && groundConductance == 0) {
-                List<ElectricalProperties> connections = new ArrayList<>(getConnections(node).values());
+        List<WrappedIndexedNode> toDissolve = new LinkedList<>();
+        for (WrappedIndexedNode node : allNodes) {
+            double groundConductance = node.groundConductance;
+            if (getAdjacency(node).size() == 2 && groundConductance == 0) {
+                List<ElectricalProperties> connections = new ArrayList<>(getAdjacency(node).values());
                 if (!connections.get(0).isVoltageSource() && !connections.get(1).isVoltageSource() && !connections.get(0).isCurrentSource() && !connections.get(1).isCurrentSource())
                     toDissolve.add(node);
             }
         }
-        Set<Node> dissolved = new HashSet<>();
-        for (Node node : toDissolve) {
+        Set<WrappedIndexedNode> dissolved = new HashSet<>();
+        for (WrappedIndexedNode node : toDissolve) {
             if (dissolved.contains(node))
                 continue;
 
-            Set<Node> connections = getConnections(node).keySet();
+            IntSet connections = getAdjacency(node).keySet();
             if (connections.size() < 2)
                 continue;
-            Iterator<Node> it = connections.iterator();
-            Node prevNode = it.next();
-            Node nextNode = it.next();
+            IntIterator it = connections.iterator();
+            WrappedIndexedNode prevNode = builder.getNode(it.nextInt());
+            WrappedIndexedNode nextNode = builder.getNode(it.nextInt());
 
-            LinkedList<Node> nodeChain = new LinkedList<>();
+            LinkedList<WrappedIndexedNode> nodeChain = new LinkedList<>();
             nodeChain.add(prevNode);
             nodeChain.add(node);
             nodeChain.add(nextNode);
             dissolved.addAll(nodeChain);
             LinkedList<Double> resistanceChain = new LinkedList<>();
-            resistanceChain.add(getConnection(prevNode, node).resistance());
-            resistanceChain.add(getConnection(nextNode, node).resistance());
+            resistanceChain.add(getAdjacency(prevNode).get(node.ordinal).resistance());
+            resistanceChain.add(getAdjacency(nextNode).get(node.ordinal).resistance());
 
-            if (adjacency.get(prevNode).containsKey(nextNode))
+            if (getAdjacency(prevNode).containsKey(nextNode.ordinal))
                 continue;
 
-            Node leftNode = prevNode;
-            Node prevLeftNode = node;
+            WrappedIndexedNode leftNode = prevNode;
+            WrappedIndexedNode prevLeftNode = node;
             while (true) {
                 if (dissolved.contains(leftNode) || !toDissolve.contains(leftNode))
                     break;
-                Set<Node> leftConnections = getConnections(leftNode).keySet();
+                IntSet leftConnections = getAdjacency(leftNode).keySet();
                 if (leftConnections.size() != 2)
                     break;
-                Iterator<Node> leftIt = leftConnections.iterator();
-                Node leftPrevNode = leftIt.next();
-                Node leftNextNode = leftIt.next();
-                Node newLeftNode = (prevLeftNode.equals(leftPrevNode)) ? leftNextNode : leftPrevNode;
-                if (adjacency.get(nodeChain.getLast()).containsKey(newLeftNode))
+                IntIterator leftIt = leftConnections.iterator();
+                WrappedIndexedNode leftPrevNode = builder.getNode(leftIt.nextInt());
+                WrappedIndexedNode leftNextNode = builder.getNode(leftIt.nextInt());
+                WrappedIndexedNode newLeftNode = (prevLeftNode.equals(leftPrevNode)) ? leftNextNode : leftPrevNode;
+                if (getAdjacency(nodeChain.getLast()).containsKey(newLeftNode.ordinal))
                     break;
                 prevLeftNode = leftNode;
                 leftNode = newLeftNode;
                 nodeChain.addFirst(leftNode);
                 dissolved.add(leftNode);
-                resistanceChain.addFirst(getConnection(leftNode, prevLeftNode).resistance());
+                resistanceChain.addFirst(getAdjacency(leftNode).get(prevLeftNode.ordinal).resistance());
             }
 
-            Node rightNode = nextNode;
-            Node prevRightNode = node;
+            WrappedIndexedNode rightNode = nextNode;
+            WrappedIndexedNode prevRightNode = node;
             while (true) {
                 if (dissolved.contains(rightNode) || !toDissolve.contains(rightNode))
                     break;
-                Set<Node> rightConnections = getConnections(rightNode).keySet();
+                IntSet rightConnections = getAdjacency(rightNode).keySet();
                 if (rightConnections.size() != 2)
                     break;
-                Iterator<Node> rightIt = rightConnections.iterator();
-                Node rightPrevNode = rightIt.next();
-                Node rightNextNode = rightIt.next();
-                Node newRightNode = (prevRightNode.equals(rightPrevNode)) ? rightNextNode : rightPrevNode;
-                if (adjacency.get(nodeChain.getFirst()).containsKey(newRightNode))
+                IntIterator rightIt = rightConnections.iterator();
+                WrappedIndexedNode rightPrevNode = builder.getNode(rightIt.nextInt());
+                WrappedIndexedNode rightNextNode = builder.getNode(rightIt.nextInt());
+                WrappedIndexedNode newRightNode = (prevRightNode.equals(rightPrevNode)) ? rightNextNode : rightPrevNode;
+                if (getAdjacency(nodeChain.getFirst()).containsKey(newRightNode.ordinal))
                     break;
                 prevRightNode = rightNode;
                 rightNode = newRightNode;
                 nodeChain.addLast(rightNode);
                 dissolved.add(rightNode);
-                resistanceChain.addLast(getConnection(rightNode, prevRightNode).resistance());
+                resistanceChain.addLast(getAdjacency(rightNode).get(prevRightNode.ordinal).resistance());
             }
             DissolvedProperties p = new DissolvedProperties(nodeChain, resistanceChain);
-            Map<Node, ElectricalProperties> leftAdjacency = adjacency.get(leftNode);
-            Map<Node, ElectricalProperties> rightAdjacency = adjacency.get(rightNode);
-            leftAdjacency.remove(prevLeftNode);
-            rightAdjacency.remove(prevRightNode);
-            leftAdjacency.put(rightNode, p);
-            rightAdjacency.put(leftNode, p);
+            Int2ObjectMap<ElectricalProperties> leftAdjacency = overrideAdjacency(leftNode);
+            Int2ObjectMap<ElectricalProperties> rightAdjacency = overrideAdjacency(rightNode);
+            leftAdjacency.remove(prevLeftNode.ordinal);
+            rightAdjacency.remove(prevRightNode.ordinal);
+            leftAdjacency.put(rightNode.ordinal, p);
+            rightAdjacency.put(leftNode.ordinal, p);
 
-            List<Node> toRemove = nodeChain.subList(1, nodeChain.size() - 1);
-            for (Node interiorChainNode : toRemove) {
-                Map<Node, ElectricalProperties> adjacency = this.adjacency.get(interiorChainNode);
-                if (adjacency != null) {
-                    for (Node neighbor : adjacency.keySet()) {
-                        Map<Node, ElectricalProperties> neighbourAdjacency = this.adjacency.get(neighbor);
-                        if (neighbourAdjacency != null)
-                            neighbourAdjacency.remove(interiorChainNode);
-                    }
-                }
-                this.adjacency.remove(interiorChainNode);
+            List<WrappedIndexedNode> toRemove = nodeChain.subList(1, nodeChain.size() - 1);
+            for (WrappedIndexedNode interiorChainNode : toRemove) {
+                for (int neighbor : getAdjacency(interiorChainNode).keySet())
+                    overrideAdjacency(builder.getNode(neighbor)).remove(interiorChainNode.ordinal);
+                overrideAdjacency(interiorChainNode).clear();
                 allNodes.remove(interiorChainNode);
             }
 
         }
     }
-
-    private ElectricalProperties getConnection(Node node1, Node node2) {
-        return getConnections(node1).getOrDefault(node2, null);
+    private Int2ObjectMap<ElectricalProperties> getAdjacency(WrappedIndexedNode node) {
+        return adjacencyOverrides.getOrDefault(node.ordinal, node.adjacency);
+    }
+    private Int2ObjectMap<ElectricalProperties> overrideAdjacency(WrappedIndexedNode node) {
+        return adjacencyOverrides.computeIfAbsent(node.ordinal, k -> {
+            Int2ObjectArrayMap<ElectricalProperties> r = new Int2ObjectArrayMap<>();
+            r.putAll(node.adjacency);
+            return r;
+        });
     }
 
     public void formMatrix() {
-        Map<Node, Double> groundRods = builder.getGroundRods();
         conductanceMatrix = new double[simulationNodes.length + voltageSources.size()][simulationNodes.length + voltageSources.size()];
 
         for (SimulationNode node : simulationNodes) {
@@ -189,7 +188,7 @@ public class Network {
                 conductanceMatrix[node.id][node.adjacentIDs[i]] = -conductance;
                 conductanceMatrix[node.adjacentIDs[i]][node.id] = -conductance;
             }
-            totalConductance += groundRods.getOrDefault(node.correspondingNode, 0d);
+            totalConductance += node.correspondingNode.groundConductance;
             conductanceMatrix[node.id][node.id] = totalConductance;
         }
 
@@ -217,19 +216,11 @@ public class Network {
         }
     }
 
-    public Set<Node> getAllNodes() {
-        return allNodes;
-    }
-
-    public Map<Node, ElectricalProperties> getConnections(Node node) {
-        return adjacency.getOrDefault(node, Collections.emptyMap());
-    }
-
-    public Object2DoubleMap<Node> getResults(double[] mnaResult) {
-        Object2DoubleMap<Node> result = new Object2DoubleOpenHashMap<>(mnaResult.length);
+    public Object2DoubleMap<WrappedIndexedNode> getResults(double[] mnaResult) {
+        Object2DoubleMap<WrappedIndexedNode> result = new Object2DoubleOpenHashMap<>(mnaResult.length);
         for (int i = 0; i < simulationNodes.length; i++) {
             SimulationNode simulationNode = simulationNodes[i];
-            Node originalNode = simulationNode.correspondingNode;
+            WrappedIndexedNode originalNode = simulationNode.correspondingNode;
 
             for (int j = 0; j < simulationNode.adjacentIDs.length; j++) {
                 int adjacentID = simulationNode.adjacentIDs[j];

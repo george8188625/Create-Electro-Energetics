@@ -14,7 +14,7 @@ public class WireType {
     final Supplier<Item> droppedItem;
     final Supplier<Item> spoolItem;
     final double insulationResistance;
-    final double maxInsulationVoltage;
+    final DoubleSupplier maxInsulationVoltage;
     final Supplier<WireType> onOverheated;
 
     /**
@@ -36,7 +36,7 @@ public class WireType {
     final float sag;
     final IntSupplier maxLength;
 
-    public WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, double insulationResistance, double maxInsulationVoltage, Supplier<WireType> onOverheated, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength) {
+    public WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage, Supplier<WireType> onOverheated, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength) {
         this.resistance = resistance;
         this.model = model;
         this.droppedItem = droppedItem;
@@ -74,7 +74,7 @@ public class WireType {
     };
 
     public double maxInsulationVoltage() {
-        return maxInsulationVoltage;
+        return maxInsulationVoltage.getAsDouble();
     };
 
     public PartialModel getModel() {
