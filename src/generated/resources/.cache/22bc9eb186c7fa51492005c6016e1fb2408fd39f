@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-25T21:36:05.9356476	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-11-26T18:33:49.0082797	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -12,7 +12,7 @@ b793a6b89e2676a1eddf656d88e9bcb6169db8ec assets/electroenergetics/blockstates/bu
 26aa9925a737df60304f5f5924661aa4a3d62cbb assets/electroenergetics/blockstates/concrete_pole.json
 8e6bf7948c266c6716de53ce64432b1455dfaa9b assets/electroenergetics/blockstates/connector.json
 111f7a1d3d317e469b5f845f8ec43c17156d0ff6 assets/electroenergetics/blockstates/converter.json
-de9b130ef597a608d81f95623b8b15f450a2ce97 assets/electroenergetics/blockstates/creative_battery.json
+0c00844e273dc7e253ba71c93d39a1b27892e08b assets/electroenergetics/blockstates/creative_battery.json
 7a91c60a2b82a797df9673afb3038750aab05079 assets/electroenergetics/blockstates/cut_off_switch.json
 bffa4f2344c47f7897ce938e353c84ed5357aa4d assets/electroenergetics/blockstates/diode.json
 ac02f30e421facb60a8ecb82196b35d71753b573 assets/electroenergetics/blockstates/double_connector.json
@@ -47,6 +47,7 @@ b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/vo
 dae2143bff8182d482c16acc42be3a83b0644488 assets/electroenergetics/lang/en_ud.json
 cb8a23dba540de9ffebfe88ef6653864c358b427 assets/electroenergetics/lang/en_us.json
 765c328111edefba08ab581cf90002ac3163c985 assets/electroenergetics/models/block/creative_battery.json
+41220aad614f77bd1e09d645e147029acb992cf5 assets/electroenergetics/models/block/creative_battery_ac.json
 f2a0a8c7269e5b0a9318f61027d189a0c74da680 assets/electroenergetics/models/block/magnet.json
 c49ab7eac9e9bc1062c69face97b3675b9eeca79 assets/electroenergetics/models/item/accumulator.json
 302dfc4802bee60b3875ed360793c85c7141f857 assets/electroenergetics/models/item/alternator_brushes.json

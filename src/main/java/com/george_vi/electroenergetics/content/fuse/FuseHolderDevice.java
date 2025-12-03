@@ -85,8 +85,8 @@ public class FuseHolderDevice extends SimulatedDevice<FuseHolderDevice.DataHolde
         }
 
         if (extraData.secondFuse != null) {
-            tag.putString("FirstID", extraData.secondFuse.getID().toString());
-            tag.put("FirstData", extraData.secondData);
+            tag.putString("SecondID", extraData.secondFuse.getID().toString());
+            tag.put("SecondData", extraData.secondData);
         }
         return tag;
     }

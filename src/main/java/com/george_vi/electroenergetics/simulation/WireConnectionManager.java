@@ -10,7 +10,7 @@ import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.PositionedAttachedNode;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
-import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.*;
@@ -171,7 +171,7 @@ public class WireConnectionManager {
 
         for (Map.Entry<NodeConnection, WireType> e : originalConnections.entrySet()) {
             NodeConnection connection = e.getKey();
-            double resistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), e.getValue());
+            double resistance = MicroTickedSimulationTicker.getWireResistance(connection.node1(), connection.node2(), e.getValue());
             List<CutWireEntry> cuts = cutConnections.get(connection);
             if (cuts != null)
                 cuts = new ArrayList<>(cuts);
@@ -309,7 +309,7 @@ public class WireConnectionManager {
     }
 
     public void finish(SimulationResults results) {
-        SimulationTicker.profiler.push("updateWireTemperature");
+        MicroTickedSimulationTicker.profiler.push("updateWireTemperature");
 
         // Wire breaking
         if (CEEConfigs.server().wiresBreak.get()) {
@@ -322,7 +322,7 @@ public class WireConnectionManager {
 
                 List<CutWireEntry> cuts = cutConnections.get(connection);
                 double current = 0;
-                double wholeWireResistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType);
+                double wholeWireResistance = MicroTickedSimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType);
                 if (cuts == null) {
                     double vd = Math.abs(results.getVoltageAt(connection.node1(), connection.node2()));
                     current = vd / wholeWireResistance;
@@ -357,7 +357,7 @@ public class WireConnectionManager {
                         longestWireTypeToBreak = wireType;
 
                     }
-                    else if (SimulationTicker.getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType)) {
+                    else if (MicroTickedSimulationTicker.getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < MicroTickedSimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType)) {
                         longestWireToBreak = connection;
                         longestWireTypeToBreak = wireType;
                     }
@@ -379,7 +379,7 @@ public class WireConnectionManager {
                 }
             }
         }
-        SimulationTicker.profiler.popPush("showWireShorts");
+        MicroTickedSimulationTicker.profiler.popPush("showWireShorts");
 
         for (long packedConnection : interWireShorts.keySet()) {
             AttachedNode node1 = createFirstNode(packedConnection);
@@ -395,11 +395,11 @@ public class WireConnectionManager {
         }
 
         if (electrocutions.isEmpty() || !CEEConfigs.server().enableElectrocution.get()) {
-            SimulationTicker.profiler.pop();
+            MicroTickedSimulationTicker.profiler.pop();
             return;
         }
 
-        SimulationTicker.profiler.popPush("electrocute");
+        MicroTickedSimulationTicker.profiler.popPush("electrocute");
 
         Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
         DamageSource damageSource = new DamageSource(registry.getHolderOrThrow(CEEDamageTypes.ELECTROCUTION));
@@ -433,7 +433,7 @@ public class WireConnectionManager {
             }
         }
 
-        SimulationTicker.profiler.pop();
+        MicroTickedSimulationTicker.profiler.pop();
     }
 
     public void wireRemoved(NodeConnection connection) {

@@ -13,7 +13,7 @@ import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionB
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,12 +52,12 @@ public class GameEvents {
     @SubscribeEvent
     public static void tickLevel(LevelTickEvent.Pre event) {
         if (event.getLevel() instanceof ServerLevel level)
-            SimulationTicker.tick(level);
+            MicroTickedSimulationTicker.tick(level);
     }
 
     @SubscribeEvent
     public static void tickServer(ServerTickEvent.Pre event) {
-        SimulationTicker.profiler.clear();
+        MicroTickedSimulationTicker.profiler.clear();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -135,16 +135,16 @@ public class GameEvents {
 
     @SubscribeEvent
     public static void addToElectricGraph(AddToElectricGraphEvent event) {
-        SimulationTicker.profiler.push("catenaryStuff");
+        MicroTickedSimulationTicker.profiler.push("catenaryStuff");
         CatenaryHandler.addToGraph(event);
-        SimulationTicker.profiler.pop();
+        MicroTickedSimulationTicker.profiler.pop();
     }
 
     @SubscribeEvent
     public static void finishElectricSimulation(FinishElectricSimulationEvent event) {
-        SimulationTicker.profiler.push("catenaryStuff");
+        MicroTickedSimulationTicker.profiler.push("catenaryStuff");
         CatenaryHandler.finishSimulation(event);
-        SimulationTicker.profiler.pop();
+        MicroTickedSimulationTicker.profiler.pop();
     }
 
     @SubscribeEvent

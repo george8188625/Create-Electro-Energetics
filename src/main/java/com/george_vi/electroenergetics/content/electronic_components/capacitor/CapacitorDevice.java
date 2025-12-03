@@ -7,6 +7,7 @@ import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.simulator.MicroTickingElectricalProperties;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -23,22 +24,15 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
-        double capacitance = extraData.capacitance + 0.000001;
-        double timeStep = 0.05;
-
-        double conductance = capacitance / timeStep;
-        double historyCurrent = conductance * extraData.lastVoltage;
-
         bridges.builder(pos)
                 .node(2)
-                .connect(0, 2, new ElectricalProperties(1 / conductance, 0, -historyCurrent))
+                .connect(0, 2, new CapacitorProperties(extraData))
                 .resistor(1, 2, 0.1);
     }
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
         double voltage = results.getVoltageAt(pos, 0, 2);
-        extraData.lastVoltage = voltage;
 
         extraData.temp = updateTemp(extraData.temp, (float) Math.abs(voltage));
 
@@ -79,5 +73,39 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
         public double lastVoltage;
         public double capacitance;
         public float temp;
+    }
+
+    static class CapacitorProperties extends MicroTickingElectricalProperties {
+        final DataHolder extraData;
+
+        CapacitorProperties(DataHolder extraData) {
+            this.extraData = extraData;
+        }
+
+        @Override
+        public void firstTick(int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
+            tickCapacitor(totalMicroTicks);
+        }
+
+        @Override
+        public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
+            tickCapacitor(totalMicroTicks);
+        }
+
+        @Override
+        public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
+            extraData.lastVoltage = allVoltages[(n1 << microTickBits) | (microTick)] - allVoltages[(n2 << microTickBits) | (microTick)];
+        }
+
+        private void tickCapacitor(int totalMicroTicks) {
+            double capacitance = extraData.capacitance + 0.000001;
+            double timeStep = 0.05 / totalMicroTicks;
+
+            double conductance = capacitance / timeStep;
+            double historyCurrent = conductance * extraData.lastVoltage;
+
+            this.resistance = 1 / conductance;
+            this.currentSource = -historyCurrent;
+        }
     }
 }

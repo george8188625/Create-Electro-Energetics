@@ -1,28 +1,54 @@
 {
   "variants": {
-    "facing=down": {
+    "ac=false,facing=down": {
       "model": "electroenergetics:block/creative_battery",
       "x": 180
     },
-    "facing=east": {
+    "ac=false,facing=east": {
       "model": "electroenergetics:block/creative_battery",
       "x": 90,
       "y": 90
     },
-    "facing=north": {
+    "ac=false,facing=north": {
       "model": "electroenergetics:block/creative_battery",
       "x": 90
     },
-    "facing=south": {
+    "ac=false,facing=south": {
       "model": "electroenergetics:block/creative_battery",
       "x": 90,
       "y": 180
     },
-    "facing=up": {
+    "ac=false,facing=up": {
       "model": "electroenergetics:block/creative_battery"
     },
-    "facing=west": {
+    "ac=false,facing=west": {
       "model": "electroenergetics:block/creative_battery",
+      "x": 90,
+      "y": 270
+    },
+    "ac=true,facing=down": {
+      "model": "electroenergetics:block/creative_battery_ac",
+      "x": 180
+    },
+    "ac=true,facing=east": {
+      "model": "electroenergetics:block/creative_battery_ac",
+      "x": 90,
+      "y": 90
+    },
+    "ac=true,facing=north": {
+      "model": "electroenergetics:block/creative_battery_ac",
+      "x": 90
+    },
+    "ac=true,facing=south": {
+      "model": "electroenergetics:block/creative_battery_ac",
+      "x": 90,
+      "y": 180
+    },
+    "ac=true,facing=up": {
+      "model": "electroenergetics:block/creative_battery_ac"
+    },
+    "ac=true,facing=west": {
+      "model": "electroenergetics:block/creative_battery_ac",
       "x": 90,
       "y": 270
     }

@@ -34,7 +34,7 @@ public class BulbDevice extends SimulatedDevice<BulbDevice.DataHolder> {
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
-        double vd = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
+        double vd = Math.abs(results.getVoltageAt(pos, 0, 1));
         if (level.isLoaded(pos)) {
             BlockState state = level.getBlockState(pos);
             if (extraData.destroyed) {
@@ -72,13 +72,13 @@ public class BulbDevice extends SimulatedDevice<BulbDevice.DataHolder> {
                 }
             }
         }
-        float loss = (float) results.getHeatLoss(pos, 0, 1);
-        extraData.temp = updateTemp(extraData.temp, loss / 200);
+        float loss = (float) (vd * vd / CEEConfigs.server().resistanceValues.bulbResistance.get());
+        extraData.temp = updateTemp(extraData.temp, loss);
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
 
-        if (extraData.temp > 50) {
+        if (extraData.temp > 2900) {
             extraData.destroyed = true;
             extraData.temp = 0;
         }

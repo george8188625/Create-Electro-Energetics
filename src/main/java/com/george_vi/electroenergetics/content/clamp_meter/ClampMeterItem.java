@@ -9,7 +9,7 @@ import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.WireData;
-import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.outliner.Outliner;
@@ -82,7 +82,7 @@ public class ClampMeterItem extends Item {
             if (v1 == null || v2 == null || wire == null)
                 return;
 
-            double resistance = SimulationTicker.getWireResistance(point.node1(), point.node2(), wire.getSecond().wireType());
+            double resistance = MicroTickedSimulationTicker.getWireResistance(point.node1(), point.node2(), wire.getSecond().wireType());
             CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> setMetering((float) (Math.abs(v1 - v2) / resistance)));
         }
     }

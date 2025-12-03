@@ -149,26 +149,16 @@ public class WireRenderer {
             NodeConnection connection = wire.getFirst();
             WireData wireData = wire.getSecond();
 
-            Vec3 pos1 = null;
-            Vec3 pos2 = null;
-
             BlockState state1 = mc.level.getBlockState(connection.node1().sourcePos());
             BlockState state2 = mc.level.getBlockState(connection.node2().sourcePos());
 
-            if (state1.getBlock() instanceof DeviceBlock db)
-                pos1 = db.getNodePosition(mc.level, connection.node1().sourcePos(), state1, connection.node1().id());
-            if (state2.getBlock() instanceof DeviceBlock db)
-                pos2 = db.getNodePosition(mc.level, connection.node2().sourcePos(), state2, connection.node2().id());
+            Vec3 pos1 = connection.node1().getPosition(mc.level);
+            Vec3 pos2 = connection.node2().getPosition(mc.level);
 
             if (pos1 == null || pos2 == null) {
                 pos1 = connection.node1().sourcePos().getCenter();
-                pos2 = connection.node1().sourcePos().getCenter();
+                pos2 = connection.node2().sourcePos().getCenter();
             }
-
-            BlockPos devicePos1 = connection.node1().sourcePos();
-            BlockPos devicePos2 = connection.node2().sourcePos();
-            pos1 = pos1.add(devicePos1.getX(), devicePos1.getY(), devicePos1.getZ());
-            pos2 = pos2.add(devicePos2.getX(), devicePos2.getY(), devicePos2.getZ());
 
             List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag());
             List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag(), mc.gameRenderer.getMainCamera().getPosition()) :

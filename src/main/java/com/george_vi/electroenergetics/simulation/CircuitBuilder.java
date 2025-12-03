@@ -3,8 +3,12 @@ package com.george_vi.electroenergetics.simulation;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.simulator.MicroTickingElectricalProperties;
+import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -14,6 +18,7 @@ public class CircuitBuilder {
     List<WrappedIndexedNode> allIndexedNodes;
     Object2IntMap<Node> nodeIndexes;
     Int2IntMap defaultZeroPotentials;  // K -> node id, V -> priority
+    public Long2ObjectMap<MicroTickingElectricalProperties> microTickers = new Long2ObjectOpenHashMap<>();
     int id = 0;
 
     public CircuitBuilder(Set<InWorldNode> nodes) {
@@ -54,16 +59,21 @@ public class CircuitBuilder {
 
         WrappedIndexedNode indexedNode1 = allIndexedNodes.get(n1);
         WrappedIndexedNode indexedNode2 = allIndexedNodes.get(n2);
-        indexedNode1.adjacency.compute(n2, (n, p) -> p == null ? properties : p.add(properties));
-        indexedNode2.adjacency.compute(n1, (n, p) -> p == null ? properties.invert() : p.add(properties.invert()));
+        if (properties instanceof MicroTickingElectricalProperties ep)
+            microTickers.put(DataPacker.pack(n1, n2), ep);
+
+        indexedNode1.adjacency.put(n2, properties);
+        indexedNode2.adjacency.put(n1, properties.invert());
     }
 
     public void connect(WrappedIndexedNode n1, WrappedIndexedNode n2, ElectricalProperties properties) {
         if (Double.isNaN(properties.resistance()) || Double.isNaN(properties.voltageSource()) || Double.isNaN(properties.currentSource()))
             return;
+        if (properties instanceof MicroTickingElectricalProperties ep)
+            microTickers.put(DataPacker.pack(n1.ordinal, n2.ordinal), ep);
 
-        n1.adjacency.compute(n2.ordinal, (n, p) -> p == null ? properties : p.add(properties));
-        n2.adjacency.compute(n1.ordinal, (n, p) -> p == null ? properties.invert() : p.add(properties.invert()));
+        n1.adjacency.put(n2.ordinal, properties);
+        n2.adjacency.put(n1.ordinal, properties.invert());
     }
 
     public void connect(Node n1, Node n2, ElectricalProperties properties) {
@@ -133,13 +143,16 @@ public class CircuitBuilder {
                     continue NetworksLoop;
 
                 int priority = defaultZeroPotentials.get(node.ordinal);
-                if (priority > highestPriority) {
+                if (priority == highestPriority) {
+                  if (highestPriorityGround == null || highestPriorityGround.node.hashCode() > node.node.hashCode())
+                      highestPriorityGround = node;
+                } else if (priority > highestPriority) {
                     highestPriorityGround = node;
                     highestPriority = priority;
                 }
             }
             if (highestPriorityGround != null)
-                highestPriorityGround.groundConductance = 10d;
+                highestPriorityGround.groundConductance = 1000d;
         }
         return allNetworks;
     }

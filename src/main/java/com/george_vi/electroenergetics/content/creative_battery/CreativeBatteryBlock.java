@@ -4,13 +4,20 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
@@ -19,6 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -27,9 +35,11 @@ import java.util.Map;
 
 public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<CreativeBatteryBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final BooleanProperty AC = BooleanProperty.create("ac");
 
     public CreativeBatteryBlock(Properties properties) {
         super(properties);
+        registerDefaultState(defaultBlockState().setValue(AC, false));
     }
 
     @Override
@@ -39,7 +49,7 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, AC);
     }
 
     @Override
@@ -47,6 +57,8 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof CreativeBatteryBlockEntity be)
             tag.putDouble("Voltage", be.indexToVoltage(be.voltage.value));
+        if (state.getValue(AC))
+            tag.putDouble("ACFrequency", 20);
         return tag;
     }
 
@@ -54,6 +66,15 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return super.getStateForPlacement(context).setValue(FACING, context.getPlayer().isShiftKeyDown() ? context.getNearestLookingDirection().getOpposite() : context.getNearestLookingDirection());
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        super.tick(state, level, pos, random);
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(pos);
+        if (deviceInstance != null && deviceInstance.extraData() instanceof CreativeBatteryDevice.DataHolder dataHolder)
+            dataHolder.acFrequency = state.getValue(AC) ? 20 : 0;
     }
 
     @Override
@@ -79,6 +100,11 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
     @Override
     public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
+    }
+
+    @Override
+    public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {
+        return originalState.cycle(AC);
     }
 
     @Override

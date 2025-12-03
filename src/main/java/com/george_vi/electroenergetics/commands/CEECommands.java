@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.commands;
 
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
 import com.george_vi.electroenergetics.simulation.simulator.SimulatorProfiler;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -60,10 +60,10 @@ public class CEECommands {
     public static int performance(CommandContext<CommandSourceStack> ctx) {
         CommandSourceStack source = ctx.getSource();
         source.sendSuccess(() -> Component.literal("-+------<< Simulation Performance: >>------+-"), false);
-        List<SimulatorProfiler.ResultEntry> results = List.copyOf(SimulationTicker.profiler.getResults());
+        List<SimulatorProfiler.ResultEntry> results = List.copyOf(MicroTickedSimulationTicker.profiler.getResults());
         long totalTime = results.stream().mapToLong(re -> re.timeTookNanos).sum();
         listResults(1, results, source, totalTime == 0 ? 1 : totalTime, totalTime);
-                source.sendSuccess(() -> Component.literal("profiler: " + SimulationTicker.profiler.getProfilerOverheadNanos() / 1000 + " μs").withStyle(blue), false);
+                source.sendSuccess(() -> Component.literal("profiler: " + MicroTickedSimulationTicker.profiler.getProfilerOverheadNanos() / 1000 + " μs").withStyle(blue), false);
 
         source.sendSuccess(() -> Component.literal("-+------------------------------------+-"), false);
         return 1;

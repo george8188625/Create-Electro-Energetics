@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.energy_meter;
 
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -25,12 +26,23 @@ public class EnergyMeterDevice extends SimulatedDevice<EnergyMeterDevice.DataHol
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
-        double vd = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 2);
-        double v = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
-        double amps = vd / 0.001;
+        double[] v0s = results.getVoltages(new InWorldNode(0, pos));
+        double[] v1s = results.getVoltages(new InWorldNode(1, pos));
+        double[] v2s = results.getVoltages(new InWorldNode(2, pos));
+        double power = 0;
 
-        if (Math.abs(amps) > 0.01 && extraData.isClosed)
-            extraData.totalEnergy += (amps * v / 72000) / 1000;
+        for (int i = 0; i < v0s.length; i++) {
+
+            double amps = (v0s[i] - v2s[i]) / 0.001;
+
+            if (Math.abs(amps) > 0.01 && extraData.isClosed) {
+//                energy += amps * (v0s[i] - v1s[i]) * (0.05/8);
+                extraData.totalEnergy += (amps * (v0s[i] - v1s[i]) / 72000) / (1000 * v0s.length);
+                power += amps * (v0s[i] - v1s[i]);
+            }
+        }
+
+        power /= v0s.length;
 
         if (!level.isLoaded(pos))
             return;
@@ -45,7 +57,7 @@ public class EnergyMeterDevice extends SimulatedDevice<EnergyMeterDevice.DataHol
                 extraData.be = null;
             else {
                 extraData.be.setTotalEnergy((float) extraData.totalEnergy);
-                extraData.be.activePower = extraData.isClosed ? amps * v : 0;
+                extraData.be.activePower = extraData.isClosed ? power : 0;
             }
         }
     }

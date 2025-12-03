@@ -93,12 +93,12 @@ public class BridgeCollector {
         }
 
         public Builder idealVoltageSource(int n1, int n2, double voltage) {
-            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(n2, pos), new ElectricalProperties(10e+11d, voltage, 0, true, false));
+            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(n2, pos), new ElectricalProperties(10e+11d, voltage, 0, true));
             return this;
         }
 
         public Builder idealCurrentSource(int n1, int n2, double current) {
-            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(n2, pos), new ElectricalProperties(10e+11d, 0, current, false, true));
+            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(n2, pos), new ElectricalProperties(10e+11d, 0, current, false));
             return this;
         }
 
@@ -133,13 +133,13 @@ public class BridgeCollector {
         }
 
         public Builder idealVoltageSource(InWorldNode n1, InWorldNode n2, double voltage) {
-            collector.bridge(n1, n2, new ElectricalProperties(10e+11d, voltage, 0, true, false));
+            collector.bridge(n1, n2, new ElectricalProperties(10e+11d, voltage, 0, true));
             collector.defaultZeroPotential(voltage > 0 ? n1 : n2, 100);
             return this;
         }
 
         public Builder idealCurrentSource(InWorldNode n1, InWorldNode n2, double current) {
-            collector.bridge(n1, n2, new ElectricalProperties(10e+11d, 0, current, false, true));
+            collector.bridge(n1, n2, new ElectricalProperties(10e+11d, 0, current, false));
             collector.defaultZeroPotential(current > 0 ? n1 : n2, 100);
             return this;
         }

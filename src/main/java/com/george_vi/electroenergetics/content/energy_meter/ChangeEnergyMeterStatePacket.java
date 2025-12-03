@@ -36,7 +36,7 @@ public record ChangeEnergyMeterStatePacket(boolean reset, boolean disconnect, Bl
 
         if (reset)
             dataHolder.totalEnergy = 0;
-        dataHolder.isClosed ^= true;
+        dataHolder.isClosed = !disconnect;
         be.disconnected = disconnect;
         be.sendData();
 

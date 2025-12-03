@@ -98,7 +98,7 @@ public class TransformerBehaviour {
         public double load;
 
         public TransformerBehaviourDataHolder() {
-            averageWindowSize = 20;
+            averageWindowSize = 22;
             lastPrimaryVoltages = new double[averageWindowSize];
             lastSecondaryVoltages = new double[averageWindowSize];
         }
@@ -147,10 +147,12 @@ public class TransformerBehaviour {
             lastSecondaryVoltages[averagePointer] = secondaryVoltage;
 
             averagePrimaryVoltage = 0;
-            for (double voltage : lastPrimaryVoltages) averagePrimaryVoltage += (voltage / averageWindowSize);
+            for (double voltage : lastPrimaryVoltages) averagePrimaryVoltage += voltage;
+            averagePrimaryVoltage /= averageWindowSize;
 
             averageSecondaryVoltage = 0;
-            for (double voltage : lastSecondaryVoltages) averageSecondaryVoltage += (voltage / averageWindowSize);
+            for (double voltage : lastSecondaryVoltages) averageSecondaryVoltage += voltage;
+            averageSecondaryVoltage /= averageWindowSize;
         }
 
     }

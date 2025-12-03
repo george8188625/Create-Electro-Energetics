@@ -3,24 +3,22 @@ package com.george_vi.electroenergetics.simulation.simulator;
 import java.util.Objects;
 
 public class ElectricalProperties {
-    private final double resistance;
-    private final double voltageSource;
-    private final double currentSource;
-    private final boolean isForcedVoltageSource;
-    private final boolean isForcedCurrentSource;
+    public double resistance;
+    public double voltageSource;
+    public double currentSource;
+    public boolean isForcedVoltageSource;
 
     public ElectricalProperties(double resistance, double voltageSource, double currentSource) {
-        this(resistance, voltageSource, currentSource, false, false);
+        this(resistance, voltageSource, currentSource, false);
     }
 
-    public ElectricalProperties(double resistance, double voltageSource, double currentSource, boolean isForcedVoltageSource, boolean isForcedCurrentSource) {
+    public ElectricalProperties(double resistance, double voltageSource, double currentSource, boolean isForcedVoltageSource) {
         if (resistance == 0)
             throw new IllegalArgumentException("Resistance can't be zero!");
         this.resistance = resistance;
         this.voltageSource = voltageSource;
         this.currentSource = currentSource;
         this.isForcedVoltageSource = isForcedVoltageSource;
-        this.isForcedCurrentSource = isForcedCurrentSource;
     }
 
     public static ElectricalProperties resistor(double resistance) {
@@ -28,18 +26,15 @@ public class ElectricalProperties {
     }
 
     public ElectricalProperties invert() {
-        return new ElectricalProperties(resistance, -voltageSource, -currentSource, isForcedVoltageSource, isForcedCurrentSource);
+        return new ElectricalProperties(resistance, voltageSource == 0 ? 0 : -voltageSource, currentSource == 0 ? 0 : -currentSource, isForcedVoltageSource);
     }
 
     @Override
     public String toString() {
-        return "{" +
-                "resistance=" + resistance +
-                ", voltageSource=" + voltageSource +
-                ", currentSource=" + currentSource +
-                ", forceVoltageSource=" + isForcedVoltageSource +
-                ", forceCurrentSource=" + isForcedCurrentSource +
-                '}';
+        return "{ " +
+                (conductance() != 0 ? "R=" + resistance + " " : "") +
+                (isVoltageSource() ? "Vs=" + voltageSource + " " : "") +
+                (isCurrentSource() ? "Is=" + currentSource + " }" : "}");
     }
 
     public double resistance() {
@@ -65,7 +60,7 @@ public class ElectricalProperties {
     }
 
     public boolean isCurrentSource() {
-        return currentSource != 0 || isForcedCurrentSource;
+        return currentSource != 0;
     }
 
     @Override
@@ -76,17 +71,21 @@ public class ElectricalProperties {
         return Double.doubleToLongBits(this.resistance) == Double.doubleToLongBits(that.resistance) &&
                 Double.doubleToLongBits(this.voltageSource) == Double.doubleToLongBits(that.voltageSource) &&
                 Double.doubleToLongBits(this.currentSource) == Double.doubleToLongBits(that.currentSource) &&
-                this.isForcedCurrentSource == that.isForcedCurrentSource && this.isForcedVoltageSource == that.isForcedVoltageSource;
+                this.isForcedVoltageSource == that.isForcedVoltageSource;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(resistance, voltageSource, currentSource, isForcedCurrentSource, isForcedVoltageSource);
+        return Objects.hash(resistance, voltageSource, currentSource, isForcedVoltageSource);
     }
 
 
-    public ElectricalProperties add(ElectricalProperties properties) {
-        double addedConductance = (properties.conductance() + conductance());
-        return new ElectricalProperties(addedConductance == 0 ? 1e+11d : 1 / addedConductance, properties.voltageSource() + voltageSource(), properties.currentSource() + currentSource(), properties.isForcedVoltageSource || isForcedVoltageSource, properties.isForcedCurrentSource || isForcedCurrentSource);
+//    public ElectricalProperties add(ElectricalProperties properties) {
+//        double addedConductance = (properties.conductance() + conductance());
+//        return new ElectricalProperties(addedConductance == 0 ? 1e+11d : 1 / addedConductance, properties.voltageSource() + voltageSource(), properties.currentSource() + currentSource(), properties.isForcedVoltageSource || isForcedVoltageSource);
+//    }
+
+    public boolean isSimpleResistor() {
+        return !isCurrentSource() && !isVoltageSource();
     }
 }

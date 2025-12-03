@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "electroenergetics:block/creative_battery_negative",
+    "east": "electroenergetics:block/creative_battery_side",
+    "north": "electroenergetics:block/creative_battery_side_signs_ac",
+    "particle": "electroenergetics:block/creative_battery_negative",
+    "south": "electroenergetics:block/creative_battery_side_signs_ac",
+    "up": "electroenergetics:block/creative_battery_positive",
+    "west": "electroenergetics:block/creative_battery_side"
+  }
+}

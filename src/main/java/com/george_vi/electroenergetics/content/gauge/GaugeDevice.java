@@ -25,7 +25,7 @@ public class GaugeDevice extends SimulatedDevice<GaugeDevice.DataHolder> {
         if (!level.isLoaded(pos))
             return;
 
-        double vd = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
+        double vd = results.getVoltageAt(pos, 0, 1);
 
         if (extraData.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ElectricGaugeBlockEntity be)

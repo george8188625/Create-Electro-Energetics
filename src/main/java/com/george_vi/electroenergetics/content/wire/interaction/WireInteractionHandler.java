@@ -140,7 +140,7 @@ public class WireInteractionHandler {
         if (pos1 == null || pos2 == null)
             return;
 
-        bestPosition = QuadraticWireHelper.posAt(pos1, pos2, targetedPoint.point());
+        bestPosition = QuadraticWireHelper.posAt(pos1, pos2, targetedPoint.point(), bestWireType.getSag());
         WireInteractionBehaviour.DisplayType displayType = behaviour.getWireDisplayType(targetedPoint, mc.level, mc.player, stackInHand);
         if (displayType == WireInteractionBehaviour.DisplayType.DOT) {
             Outliner.getInstance().chaseAABB("cee_wire_interaction_point", AABB.ofSize(bestPosition, 0.01, 0.01, 0.01))

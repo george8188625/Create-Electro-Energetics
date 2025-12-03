@@ -11,7 +11,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
-import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.Train;
@@ -125,7 +125,7 @@ public class CatenaryHandler {
                 InWorldNode startNode = new InWorldNode(0, connection.getFirst());
                 InWorldNode endNode = new InWorldNode(0, connection.getSecond());
                 float totalProgress = 0.01f;
-                double totalResistance = SimulationTicker.getWireResistance(startNode, endNode, CEEWireTypes.COPPER.get());
+                double totalResistance = MicroTickedSimulationTicker.getWireResistance(startNode, endNode, CEEWireTypes.COPPER.get());
                 Node lastNode = startNode;
 
 
@@ -148,7 +148,7 @@ public class CatenaryHandler {
             } else {
                 InWorldNode node1 = new InWorldNode(0, connection.getFirst());
                 InWorldNode node2 = new InWorldNode(0, connection.getSecond());
-                event.builder.connect(node1, node2, ElectricalProperties.resistor(SimulationTicker.getWireResistance(node1, node2, CEEWireTypes.COPPER.get())));
+                event.builder.connect(node1, node2, ElectricalProperties.resistor(MicroTickedSimulationTicker.getWireResistance(node1, node2, CEEWireTypes.COPPER.get())));
             }
         }
 

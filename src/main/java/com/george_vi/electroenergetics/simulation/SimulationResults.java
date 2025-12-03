@@ -18,12 +18,17 @@ public class SimulationResults {
     Object2DoubleMap<DirectionalNodeConnection> sourceAmps;
     CircuitBuilder circuitBuilder;
     InfrastructureSavedData sd;
+    final int microTicks;
+    final int microTickBits;
 
-    public SimulationResults(double[] voltages, Object2DoubleMap<DirectionalNodeConnection> sourceAmps, CircuitBuilder circuitBuilder, InfrastructureSavedData sd) {
+
+    public SimulationResults(double[] voltages, int microTicks, int microTickBits, Object2DoubleMap<DirectionalNodeConnection> sourceAmps, CircuitBuilder circuitBuilder, InfrastructureSavedData sd) {
         this.voltages = voltages;
         this.sourceAmps = sourceAmps;
         this.circuitBuilder = circuitBuilder;
         this.sd = sd;
+        this.microTicks = microTicks;
+        this.microTickBits = microTickBits;
     }
 
     public InfrastructureSavedData getInfrastructure() {
@@ -31,7 +36,16 @@ public class SimulationResults {
     }
 
     public double getVoltageAt(Node node) {
-        return voltages[circuitBuilder.nodeIndexes.getInt(node)];
+        if (microTickBits == 0)
+            return voltages[circuitBuilder.nodeIndexes.getInt(node)];
+
+        int i = circuitBuilder.nodeIndexes.getInt(node) << microTickBits;
+        double rms = 0;
+        for (int j = 0; j < microTicks; j++)
+            rms += voltages[i|j] * voltages[i|j];
+        rms /= microTicks;
+        rms = Math.sqrt(rms);
+        return rms;
     }
 
     public double getVoltageAt(BlockPos pos, int id) {
@@ -50,10 +64,7 @@ public class SimulationResults {
         ElectricalProperties properties = circuitBuilder.getConnectionProperties(node1, node2);
         if (properties == null || properties.resistance() == 0)
             return 0;
-        double v1 = getVoltageAt(node1);
-        double v2 = getVoltageAt(node2);
-
-        return (v1 - v2) / properties.resistance();
+        return getVoltageAt(node1, node2) / properties.resistance();
     }
 
     public double getCurrentThrough(BlockPos pos, int id1, int id2) {
@@ -100,6 +111,23 @@ public class SimulationResults {
     }
 
     public double getVoltageAt(Node n1, Node n2) {
-        return getVoltageAt(n1) - getVoltageAt(n2);
+        int id1 = circuitBuilder.nodeIndexes.getInt(n1) << microTickBits;
+        int id2 = circuitBuilder.nodeIndexes.getInt(n2) << microTickBits;
+        if (microTickBits == 0)
+            return voltages[id1] - voltages[id2];
+        double rms = 0;
+        for (int j = 0; j < microTicks; j++)
+            rms += (voltages[id1|j] - voltages[id2|j]) * (voltages[id1|j] - voltages[id2|j]);
+        rms /= microTicks;
+        rms = Math.sqrt(rms);
+        return rms;
+    }
+
+    public double[] getVoltages(Node n1) {
+        int id = circuitBuilder.nodeIndexes.getInt(n1) << microTickBits;
+        double[] r = new double[microTicks];
+        for (int j = 0; j < microTicks; j++)
+            r[j] = voltages[id|j];
+        return r;
     }
 }

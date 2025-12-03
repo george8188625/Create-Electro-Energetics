@@ -55,14 +55,13 @@ public class HVSwitchDevice extends SimulatedDevice<HVSwitchDevice.DataHolder> {
                 !((ConnectorDevice.DataHolder)instance.extraData()).isHVSwitchTarget)
             return;
 
-        double v1 = results.getVoltageAt(pos, 0);
-        double v2 = results.getVoltageAt(instance.pos(), 0);
+        double voltage = Math.abs(results.getVoltageAt(new InWorldNode(0, pos), new InWorldNode(0, instance.pos())));
         double current = Math.abs(results.getCurrentThrough(new InWorldNode(0, pos), new InWorldNode(0, instance.pos())));
 
         if (extraData.progress > 0.9)
             extraData.state = SwitchState.CONNECTED;
         else if (extraData.state == SwitchState.MOVING && extraData.progress >= 0.6) {
-            if (Math.abs(v1 - v2) > Mth.lerp((extraData.progress - 0.6) * 2.5, 50000, 1)) {
+            if (voltage > Mth.lerp((extraData.progress - 0.6) * 2.5, 50000, 1)) {
                 extraData.state = SwitchState.ARCING;
                 extraData.airResistance = Mth.lerp(extraData.progress, 200000, 100);
             }
@@ -76,7 +75,7 @@ public class HVSwitchDevice extends SimulatedDevice<HVSwitchDevice.DataHolder> {
                 extraData.state = SwitchState.DISCONNECTED;
         } else if (extraData.state == SwitchState.ARCING) {
             if (!extraData.isConnecting) {
-                if (Math.abs(v1 - v2) < Mth.lerp(extraData.progress, 3000, 1) ||
+                if (voltage < Mth.lerp(extraData.progress, 3000, 1) ||
                         (extraData.progress < 0.1 && level.random.nextFloat() > 0.98)) {
                     extraData.state = SwitchState.DISCONNECTED;
                 }

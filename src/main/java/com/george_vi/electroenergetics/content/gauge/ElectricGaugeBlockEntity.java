@@ -68,12 +68,6 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
         super.tick();
 
         if (level.isClientSide()) {
-            Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
-            Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
-
-            if (v1 != null && v2 != null)
-                setValue(voltmeter ? Math.abs(v1 - v2) : Math.abs(v1 - v2) / 0.1);
-
             prevDialState = dialState;
             dialState += (dialTarget - dialState) * .125f;
             if (dialState > 1 && level.random.nextFloat() < 1 / 2f)
@@ -92,21 +86,15 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         CreateLang.translate("gui.gauge.info_header")
                 .forGoggles(tooltip);
-        Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
-        Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
-
-        if (v1 == null || v2 == null) {
-            v1 = 0d;
-            v2 = 0d;
-        }
 
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .translate(voltmeter ? "generic.voltage" : "generic.current")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        float v = Math.round(Math.abs(v1 - v2) / (voltmeter ? 1 : 0.01));
-        if (v <= 1)
-            v = (float) (Math.abs(v1 - v2) / (voltmeter ? 1 : 0.01));
+
+        double v = dialTarget * (voltmeter ? 1000 : 40);
+        if (v  > 1)
+            v = Math.round(v);
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .text(TooltipHelper.makeProgressBar(3, dialState < 0.01 ? 0 : dialState < 0.33 ? 1 : dialState < 0.66 ? 2 : 3))
                 .space()
@@ -149,5 +137,6 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
 
     public void setValue(double v) {
         dialTarget = (float) Mth.clamp(voltmeter ? v / 1000 : v / 40, 0, 1);
+        sendData();
     }
 }
