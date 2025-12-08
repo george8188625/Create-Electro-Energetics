@@ -102,5 +102,10 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.addToTag(AllCreatePonderTags.TRAIN_RELATED)
                 .add(CEEBlocks.PANTOGRAPH.getId())
                 .add(CEEBlocks.CATENARY_HOLDER.getId());
+
+        helper.addToTag(AllCreatePonderTags.DISPLAY_SOURCES)
+                .add(CEEBlocks.AMMETER.getId())
+                .add(CEEBlocks.VOLTMETER.getId())
+                .add(CEEBlocks.ENERGY_METER.getId());
     }
 }

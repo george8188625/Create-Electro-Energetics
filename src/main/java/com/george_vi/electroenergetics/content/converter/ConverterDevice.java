@@ -74,6 +74,7 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
         dataHolder.voltage = tag.getDouble("Voltage");
         dataHolder.resistance = tag.getDouble("Resistance");
         dataHolder.storedEnergy = tag.getDouble("StoredEnergy");
+        dataHolder.isSource = tag.getBoolean("Source");
         return dataHolder;
     }
 
