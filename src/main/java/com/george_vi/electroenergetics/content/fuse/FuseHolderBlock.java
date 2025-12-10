@@ -63,6 +63,9 @@ public class FuseHolderBlock extends DirectionalRolledDeviceBlock implements IBE
         if (roll)
             firstSlot = !firstSlot;
 
+        if (facing.getAxis().isVertical())
+            firstSlot = !firstSlot;
+
         if (stack.isEmpty() && hand == InteractionHand.MAIN_HAND) {
             if (level.getBlockEntity(pos) instanceof FuseHolderBlockEntity be) {
                 Pair<FuseHoldable, CompoundTag> fuse = firstSlot ? be.firstFuse : be.secondFuse;

@@ -23,6 +23,13 @@ public class FuseHolderRenderer extends SmartBlockEntityRenderer<FuseHolderBlock
         boolean roll = blockEntity.getBlockState().getValue(DirectionalRolledDeviceBlock.ROLL);
         Direction facing = blockEntity.getBlockState().getValue(DirectionalRolledDeviceBlock.FACING);
 
+        if (facing.getAxis().isVertical()) {
+            Pair<FuseHoldable, CompoundTag> temp = firstFuse;
+            firstFuse = secondFuse;
+            secondFuse = temp;
+        }
+
+
         if (firstFuse != null) {
             ms.pushPose();
             TransformStack.of(ms)

@@ -83,8 +83,8 @@ public class FuseHolderBlockEntity extends SmartBlockEntity {
             }
 
             if (secondFuse != null) {
-                dataHolder.firstFuse = secondFuse.getFirst();
-                dataHolder.firstData = secondFuse.getSecond();
+                dataHolder.secondFuse = secondFuse.getFirst();
+                dataHolder.secondData = secondFuse.getSecond();
             } else {
                 dataHolder.secondFuse = null;
                 dataHolder.secondData = null;
