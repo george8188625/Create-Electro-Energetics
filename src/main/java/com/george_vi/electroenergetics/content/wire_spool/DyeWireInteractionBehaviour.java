@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEEWireTypes;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;

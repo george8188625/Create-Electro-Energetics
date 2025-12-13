@@ -13,8 +13,8 @@ import net.minecraft.world.level.Level;
 public class ClampMeterWireInteractionBehaviour extends WireInteractionBehaviour {
     @Override
     public void interactWire(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
+        player.releaseUsingItem();
         stack.set(CEEDataComponents.NODE_CONNECTION, new NodeConnection(point.node1(), point.node2()));
-        player.stopUsingItem();
         player.startUsingItem(InteractionHand.MAIN_HAND);
     }
 

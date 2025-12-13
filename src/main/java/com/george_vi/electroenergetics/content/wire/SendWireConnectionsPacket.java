@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPackets;
+import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireData;

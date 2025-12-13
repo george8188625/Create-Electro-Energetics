@@ -37,6 +37,8 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
                 extraData.be = null;
             else {
                 extraData.be.power = Math.abs(power);
+                extraData.be.primaryVoltage = extraData.transformerData.lastPrimaryVoltage;
+                extraData.be.secondaryVoltage = extraData.transformerData.lastSecondaryVoltage;
             }
         }
 

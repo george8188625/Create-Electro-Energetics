@@ -10,6 +10,7 @@ import com.george_vi.electroenergetics.content.wire.SendWireParticlesPacket;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;
 import com.george_vi.electroenergetics.content.wire.SendWireConnectionsPacket;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.simulation.RequestVoltageDataPacket;
 import com.george_vi.electroenergetics.simulation.SendVoltageDataPacket;
 import net.createmod.catnip.net.base.BasePacketPayload;
 import net.createmod.catnip.net.base.CatnipPacketRegistry;
@@ -30,8 +31,9 @@ public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     UPDATE_ELECTRIC_TRAIN_SOUND(UpdateElectricTrainSoundPacket.class, UpdateElectricTrainSoundPacket.STREAM_CODEC),
     SEND_SPARK(SendSparkPacket.class, SendSparkPacket.STREAM_CODEC),
     SEND_WIRE_PARTICLE(SendWireParticlesPacket.class, SendWireParticlesPacket.STREAM_CODEC),
-    SEND_QUADRATIC_PARTICLES(SendQuadraticParticlesPacket.class, SendQuadraticParticlesPacket.STREAM_CODEC);
-
+    SEND_QUADRATIC_PARTICLES(SendQuadraticParticlesPacket.class, SendQuadraticParticlesPacket.STREAM_CODEC),
+    REQUEST_VOLTAGE_DATA(RequestVoltageDataPacket.class, RequestVoltageDataPacket.STREAM_CODEC),
+    ;
 
     private final CatnipPacketRegistry.PacketType<?> type;
 

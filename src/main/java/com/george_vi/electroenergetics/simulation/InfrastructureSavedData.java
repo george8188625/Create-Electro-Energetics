@@ -44,6 +44,7 @@ public class InfrastructureSavedData extends SavedData {
     ServerLevel level;
 
     WireConnectionManager wireConnectionManager;
+    public SimulationResults lastResults;
 
     public static final Logger LOGGER = LogUtils.getLogger();
 

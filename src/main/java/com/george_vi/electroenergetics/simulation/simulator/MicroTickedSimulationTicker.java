@@ -166,18 +166,19 @@ public class MicroTickedSimulationTicker {
 
         profiler.pop();
 
-        profiler.push("postTick");
-        for (SimulatedDeviceInstance device : sd.getDevices()) {
-            SimulationResults results = new SimulationResults(allVoltages, microTicks, microTickBits, sourceAmps.getOrDefault(device.pos(), Object2DoubleMaps.emptyMap()), circuitBuilder, sd);
-            device.simulatedDevice().postTick(device.pos(), level, results, device.extraData());
-        }
-        profiler.popPush("finish");
-
-
         Object2DoubleMap<DirectionalNodeConnection> allSourceAmps = new Object2DoubleOpenHashMap<>();
         for (Object2DoubleMap<DirectionalNodeConnection> v : sourceAmps.values())
             allSourceAmps.putAll(v);
+
         SimulationResults allSimulationResults = new SimulationResults(allVoltages, microTicks, microTickBits, allSourceAmps, circuitBuilder, sd);
+
+        profiler.push("postTick");
+
+        for (SimulatedDeviceInstance device : sd.getDevices())
+            device.simulatedDevice().postTick(device.pos(), level, allSimulationResults, device.extraData());
+
+        profiler.popPush("finish");
+
         sd.getWireConnectionManager().finish(allSimulationResults);
 
         NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(allSimulationResults, level, sd));
@@ -186,7 +187,8 @@ public class MicroTickedSimulationTicker {
             sd.setDirty();
 
         profiler.push("syncVoltages");
-        VoltageSync.finishSimulation(sd, level);
+        VoltageSync.finishSimulation(sd, level, allSimulationResults);
+        sd.lastResults = allSimulationResults;
 
         profiler.pop();
         profiler.pop();

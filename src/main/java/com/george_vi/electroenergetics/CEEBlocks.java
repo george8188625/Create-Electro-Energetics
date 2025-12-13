@@ -42,7 +42,7 @@ import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
 import com.george_vi.electroenergetics.content.transformer.TransformerCoreBlock;
 import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlock;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.foundation.ElectricStatsTooltipModifier;
+import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.kinetics.gauge.GaugeGenerator;
 import com.simibubi.create.foundation.data.AssetLookup;

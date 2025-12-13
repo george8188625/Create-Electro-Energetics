@@ -2,9 +2,8 @@ package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
-import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
@@ -42,7 +41,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,10 +55,8 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
     protected double power;
     protected double lastSentPower = -1;
     protected double heatDissipationFactor = 0;
-
-    List<Float> primaryVoltages = new ArrayList<>();
-    List<Float> secondaryVoltages = new ArrayList<>();
-    float avgVoltage = 0;
+    protected double primaryVoltage;
+    protected double secondaryVoltage;
 
     @OnlyIn(Dist.CLIENT)
     protected ElectricHumSoundInstance soundInstance;
@@ -153,29 +149,18 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
 
         if (facing.getAxisDirection() == Direction.AxisDirection.NEGATIVE)
             return;
-        if (primaryVoltages.isEmpty())
-            avgVoltage = 0;
-        else
-            avgVoltage = primaryVoltages.stream().reduce(Float::sum).orElse(0f) / primaryVoltages.size();
 
-        Double vp1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, worldPosition));
-        Double vp2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, worldPosition));
-        Double vs1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, otherPos));
-        Double vs2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, otherPos));
-        if (vp1 != null && vp2 != null && vs1 != null && vs2 != null) {
-            setPrimaryVoltage((float) Math.abs(vp1 - vp2));
-            setSecondaryVoltage((float) Math.abs(vs1 - vs2));
-            if (avgVoltage > 10) {
-                if (soundInstance == null || soundInstance.isStopped())
-                    Minecraft.getInstance()
-                            .getSoundManager()
-                            .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
-                else if (soundInstance != null) {
-                    soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.125));
-                    soundInstance.keepAlive();
-                }
-            } else if (soundInstance != null);
-        }
+        if (power > 100) {
+            if (soundInstance == null || soundInstance.isStopped())
+                Minecraft.getInstance()
+                        .getSoundManager()
+                        .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
+            else if (soundInstance != null) {
+                soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.125));
+                soundInstance.keepAlive();
+            }
+        } else if (soundInstance != null);
+
     }
 
     @Override
@@ -188,13 +173,7 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
             else
                 return false;
         }
-        Double vp1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, worldPosition));
-        Double vp2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, worldPosition));
-        Double vs1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, otherPos));
-        Double vs2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, otherPos));
 
-        if (vp1 == null || vp2 == null || vs1 == null || vs2 == null)
-            return false;
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .translate("gui.goggles.electric_stats")
                 .forGoggles(tooltip);
@@ -203,7 +182,7 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(vp1 - vp2))))
+                .text(LangNumberFormat.format(Math.round(Math.abs(primaryVoltage))))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
@@ -213,7 +192,7 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(vs1 - vs2))))
+                .text(LangNumberFormat.format(Math.round(Math.abs(secondaryVoltage))))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
@@ -262,33 +241,26 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
 
     }
 
-    private void setPrimaryVoltage(float voltage) {
-        if (primaryVoltages.size() >= 28)
-            primaryVoltages.remove(0);
-        primaryVoltages.add(voltage);
-    }
-
-    private void setSecondaryVoltage(float voltage) {
-        if (secondaryVoltages.size() >= 28)
-            secondaryVoltages.remove(0);
-        secondaryVoltages.add(voltage);
-    }
-
-
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
         tag.putDouble("HeatDissipationFactor", heatDissipationFactor);
-        if (clientPacket)
+        if (clientPacket) {
             tag.putDouble("Power", power);
+            tag.putDouble("PV", primaryVoltage);
+            tag.putDouble("SV", secondaryVoltage);
+        }
     }
 
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         heatDissipationFactor = tag.getDouble("HeatDissipationFactor");
-        if (clientPacket)
+        if (clientPacket) {
             power = tag.getDouble("Power");
+            primaryVoltage = tag.getDouble("PV");
+            secondaryVoltage = tag.getDouble("SV");
+        }
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {

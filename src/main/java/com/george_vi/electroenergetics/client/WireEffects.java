@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.wire;
+package com.george_vi.electroenergetics.client;
 
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;

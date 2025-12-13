@@ -42,11 +42,6 @@ public class GaugeDevice extends SimulatedDevice<GaugeDevice.DataHolder> {
     }
 
     @Override
-    public int sendVoltagesDistance() {
-        return 80;
-    }
-
-    @Override
     public DataHolder read(CompoundTag tag) {
         return new DataHolder();
     }

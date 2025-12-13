@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.rotor;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
@@ -10,6 +10,8 @@ import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -21,6 +23,7 @@ import java.util.List;
 public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
 
     List<AlternatorRotorBlockEntity> rotors = new ArrayList<>();
+    float voltage;
     public AlternatorBrushesBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
     }
@@ -30,8 +33,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
         super.tick();
         if (rotors.size() < 16)
             getRotors();
-        for (int i = 0; i < rotors.size(); i++) {
-            AlternatorRotorBlockEntity rotor = rotors.get(i);
+        for (AlternatorRotorBlockEntity rotor : rotors) {
             if (rotor.isRemoved()) {
                 getRotors();
                 break;
@@ -39,11 +41,8 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
         }
 
         float totalStress = 0;
-        int magnets = 0;
-        for (int i = 0; i < rotors.size(); i++) {
-            AlternatorRotorBlockEntity rotor = rotors.get(i);
+        for (AlternatorRotorBlockEntity rotor : rotors) {
             totalStress += rotor.magnets * 48 * Math.abs(rotor.getSpeed());
-            magnets += rotor.magnets;
         }
 
         if (!(level instanceof ServerLevel sl))
@@ -67,10 +66,6 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
             totalStress += rotor.magnets * 48 * Math.abs(rotor.getSpeed());
         }
 
-        Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
-        Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
-        if (v1 == null || v2 == null)
-            return false;
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .translate("gui.goggles.electric_stats")
                 .forGoggles(tooltip);
@@ -92,7 +87,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
                 .forGoggles(tooltip);
 
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(v1 - v2))))
+                .text(LangNumberFormat.format(Math.round(voltage)))
                 .translate("generic.volts")
                 .text(" / " + LangNumberFormat.format(Math.round(totalStress / 100)))
                 .translate("generic.volts")
@@ -109,5 +104,19 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
             rotors.add(be);
         }
         this.rotors = rotors;
+    }
+
+    @Override
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
+        if (clientPacket)
+            tag.putFloat("V", voltage);
+    }
+
+    @Override
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
+        if (clientPacket)
+            voltage = tag.getFloat("V");
     }
 }

@@ -45,7 +45,7 @@ public class ElectricMotorDevice extends SimulatedDevice<ElectricMotorDevice.Dat
             if (extraData.be.isRemoved())
                 extraData.be = null;
             else {
-                extraData.be.setVoltage((float) vd);
+                extraData.be.averageVoltage.add(vd);
             }
         }
     }

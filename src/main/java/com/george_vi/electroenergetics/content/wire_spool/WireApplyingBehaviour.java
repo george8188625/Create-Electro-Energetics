@@ -3,20 +3,24 @@ package com.george_vi.electroenergetics.content.wire_spool;
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
+import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.*;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
+import com.george_vi.electroenergetics.simulation.RequestVoltageDataPacket;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.simibubi.create.AllSpecialTextures;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.lang.FontHelper;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.outliner.Outliner;
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -88,7 +92,10 @@ public class WireApplyingBehaviour {
             }
 
             if (hoveredNode != null) {
-                ElectricPropertiesOverlay.INSTANCE.setHoveredNode(WireRenderer.getAllVoltages().getOrDefault(hoveredNode, 0d), hoveredNode);
+
+                CatnipServices.NETWORK.sendToServer(new RequestVoltageDataPacket(hoveredNode));
+
+                ElectricPropertiesOverlay.INSTANCE.setHoveredNode(NodeVoltageHolder.getVoltageEntry(hoveredNode), hoveredNode);
             }
         }
 

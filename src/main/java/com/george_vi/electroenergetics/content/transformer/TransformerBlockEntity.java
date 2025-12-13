@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
@@ -51,22 +51,16 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
     protected ScrollValueBehaviour ratio;
     protected double power;
     protected double lastSentPower = -1;
+    protected double primaryVoltage;
+    protected double secondaryVoltage;
 
-    List<Float> primaryVoltages = new ArrayList<>();
-    List<Float> secondaryVoltages = new ArrayList<>();
-    float avgVoltage = 0;
 
     @OnlyIn(Dist.CLIENT)
     protected ElectricHumSoundInstance soundInstance;
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        Double vp1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
-        Double vp2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
-        Double vs1 = WireRenderer.getAllVoltages().get(new InWorldNode(2, getBlockPos()));
-        Double vs2 = WireRenderer.getAllVoltages().get(new InWorldNode(3, getBlockPos()));
-        if (vp1 == null || vp2 == null || vs1 == null || vs2 == null)
-            return false;
+
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .translate("gui.goggles.electric_stats")
                 .forGoggles(tooltip);
@@ -75,7 +69,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(vp1 - vp2))))
+                .text(LangNumberFormat.format(Math.round(Math.abs(primaryVoltage))))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
@@ -85,7 +79,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(vs1 - vs2))))
+                .text(LangNumberFormat.format(Math.round(Math.abs(secondaryVoltage))))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
@@ -129,40 +123,17 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
 
     @OnlyIn(Dist.CLIENT)
     protected void tickAudio() {
-        if (primaryVoltages.isEmpty())
-            avgVoltage = 0;
-        else
-            avgVoltage = primaryVoltages.stream().reduce(Float::sum).orElse(0f) / primaryVoltages.size();
-        Double vp1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
-        Double vp2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
-        Double vs1 = WireRenderer.getAllVoltages().get(new InWorldNode(2, getBlockPos()));
-        Double vs2 = WireRenderer.getAllVoltages().get(new InWorldNode(3, getBlockPos()));
-        if (vp1 != null && vp2 != null && vs1 != null && vs2 != null) {
-            setPrimaryVoltage((float) Math.abs(vp1 - vp2));
-            setSecondaryVoltage((float) Math.abs(vs1 - vs2));
-            if (avgVoltage > 10) {
-                if (soundInstance == null || soundInstance.isStopped())
-                    Minecraft.getInstance()
-                            .getSoundManager()
-                            .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
-                else if (soundInstance != null) {
-                    soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.25));
-                    soundInstance.keepAlive();
-                }
-            } else if (soundInstance != null);
-        }
-    }
 
-    private void setPrimaryVoltage(float voltage) {
-        if (primaryVoltages.size() >= 28)
-            primaryVoltages.remove(0);
-        primaryVoltages.add(voltage);
-    }
-
-    private void setSecondaryVoltage(float voltage) {
-        if (secondaryVoltages.size() >= 28)
-            secondaryVoltages.remove(0);
-        secondaryVoltages.add(voltage);
+        if (power > 100) {
+            if (soundInstance == null || soundInstance.isStopped())
+                Minecraft.getInstance()
+                        .getSoundManager()
+                        .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
+            else if (soundInstance != null) {
+                soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.25));
+                soundInstance.keepAlive();
+            }
+        } else if (soundInstance != null);
     }
 
     @Override
@@ -220,15 +191,21 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-        if (clientPacket)
+        if (clientPacket) {
             tag.putDouble("Power", power);
+            tag.putDouble("PV", primaryVoltage);
+            tag.putDouble("SV", secondaryVoltage);
+        }
     }
 
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-        if (clientPacket)
+        if (clientPacket) {
             power = tag.getDouble("Power");
+            primaryVoltage = tag.getDouble("PV");
+            secondaryVoltage = tag.getDouble("SV");
+        }
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {

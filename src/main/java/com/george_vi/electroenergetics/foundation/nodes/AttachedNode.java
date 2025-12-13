@@ -15,7 +15,6 @@ public class AttachedNode extends Node {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         AttachedNode that = (AttachedNode) o;
         return Objects.equals(ownerID, that.ownerID) && Objects.equals(id, that.id);
     }

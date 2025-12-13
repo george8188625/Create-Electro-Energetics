@@ -1,7 +1,9 @@
 package com.george_vi.electroenergetics.content.rotor;
 
+import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
 import com.george_vi.electroenergetics.foundation.base.GeneratingDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
+import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +18,27 @@ public class AlternatorBrushesDevice extends GeneratingDevice<AlternatorBrushesD
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
         if (level.isLoaded(pos))
             super.preTick(pos, level, bridges, extraData);
+    }
+
+    @Override
+    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
+        super.postTick(pos, level, results, extraData);
+
+        if (extraData.be == null && level.isLoaded(pos))
+            if (level.getBlockEntity(pos) instanceof AlternatorBrushesBlockEntity be)
+                extraData.be = be;
+
+        if (extraData.be != null) {
+            if (extraData.be.isRemoved())
+                extraData.be = null;
+            else {
+                float v = (float) results.getVoltageAt(pos, 0, 1);
+                if (Math.abs(extraData.be.voltage - v) > 2) {
+                    extraData.be.voltage = v;
+                    extraData.be.sendData();
+                }
+            }
+        }
     }
 
     @Override
@@ -49,5 +72,6 @@ public class AlternatorBrushesDevice extends GeneratingDevice<AlternatorBrushesD
     public static class DataHolder extends GeneratingDevice.DataHolder {
         public float voltage;
         public float stress;
+        public AlternatorBrushesBlockEntity be;
     }
 }

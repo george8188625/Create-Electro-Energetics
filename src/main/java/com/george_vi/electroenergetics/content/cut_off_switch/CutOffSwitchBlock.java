@@ -4,8 +4,7 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
+import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
@@ -77,18 +76,6 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
             if (device != null && device.extraData() instanceof CutOffSwitchDevice.DataHolder dataHolder)
                 dataHolder.isClosed = !state.getValue(CLOSED);
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
-        } else {
-            Vec3 pPos = Vec3.atCenterOf(pos);
-            pPos = pPos.subtract(Vec3.atLowerCornerOf(state.getValue(FACING).getNormal()).multiply(0.25, 0.25, 0.25));
-            if (state.getValue(CLOSED)) {
-                for (int l : isDouble ? Iterate.zeroAndOne : new int[]{0}) {
-                    Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(l, pos));
-                    Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode((isDouble ? 2 : 1) + l, pos));
-                    if (v1 != null && v2 != null && Math.abs(v1 - v2) > 0.0003)
-                        for (int i = 0; i < Math.min(30, Math.abs(v1 - v2) * 10) + 1; i++)
-                            level.addParticle(ParticleTypes.BUBBLE_POP, pPos.offsetRandom(level.random, 0.3f).x, pPos.offsetRandom(level.random, 0.3f).y, pPos.offsetRandom(level.random, 0.3f).z, 0, 0, 0);
-                }
-            }
         }
         level.setBlockAndUpdate(pos, state.cycle(CLOSED));
         return ItemInteractionResult.SUCCESS;

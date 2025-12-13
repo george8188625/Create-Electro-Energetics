@@ -1,10 +1,11 @@
 package com.george_vi.electroenergetics.content.electric_motor;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.RMSHolder;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
@@ -39,16 +40,16 @@ import java.util.List;
 
 public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
-    float voltage = 0;
-    List<Float> voltages = new ArrayList<>();
-    float avgVoltage = 0;
     float load = 0;
-    float voltageBeforeLastChange = 0;
+    double voltageBeforeLastChange = 0;
 
     protected ScrollValueBehaviour generatedSpeed;
 
+    RMSHolder averageVoltage = new RMSHolder(16);
+
     @OnlyIn(Dist.CLIENT)
     protected ElectricHumSoundInstance soundInstance;
+
 
     public ElectricMotorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -58,20 +59,14 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
         tag.putFloat("Load", load);
-        tag.putFloat("Voltage", voltage);
-        tag.put("Voltages", NBTHelper.writeCompoundList(voltages, (v) -> {
-            CompoundTag t = new CompoundTag();
-            t.putFloat("V", v);
-            return t;
-        }));
+        averageVoltage.write(tag, "Voltage");
     }
 
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         load = tag.getFloat("Load");
-        voltage = tag.getFloat("Voltage");
-        voltages = NBTHelper.readCompoundList(tag.getList("Voltages", Tag.TAG_COMPOUND), t -> t.getFloat("V"));
+        averageVoltage.read(tag, "Voltage");
     }
 
     @Override
@@ -88,14 +83,12 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        if (Math.abs(avgVoltage) < 0.1)
-            return false;
         super.addToGoggleTooltip(tooltip, isPlayerSneaking);
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .translate("gui.goggles.energy_consumption")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        float wattage = Math.round(avgVoltage * avgVoltage /
+        float wattage = Math.round(averageVoltage.get() * averageVoltage.get() /
                 (0.8 * Math.min(CEEConfigs.server().resistanceValues.motorResistance.get() * 3, CEEConfigs.server().resistanceValues.motorResistance.get() / Mth.clamp(load, 0.1, 3))));
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .add(CEELang.formatPower(wattage))
@@ -108,35 +101,25 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
         return true;
     }
 
-    int tick = 0;
     @Override
     public void tick() {
-        if (voltages.isEmpty())
-            avgVoltage = 0;
-        else
-            avgVoltage = voltages.stream().reduce(Float::sum).orElse(0f) / voltages.size();
-        if (Math.abs(avgVoltage - voltageBeforeLastChange) > 10) {
-            voltageBeforeLastChange = avgVoltage;
+        if (Math.abs(averageVoltage.get() - voltageBeforeLastChange) > 10) {
+            voltageBeforeLastChange = averageVoltage.get();
             reActivateSource = true;
         }
         super.tick();
-        tick++;
     }
 
     @OnlyIn(Dist.CLIENT)
     public void tickAudio() {
-        Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
-        Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
-        if (v1 != null && v2 != null)
-            setVoltage((float) (v1 - v2));
-        if (Math.abs(avgVoltage) > 60) {
+        if (averageVoltage.get() > 60) {
             if (soundInstance == null || soundInstance.isStopped()) {
                 Minecraft.getInstance()
                         .getSoundManager()
                         .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
             } else if (soundInstance != null) {
                 soundInstance.keepAlive();
-                soundInstance.setVolume((Math.abs(voltage) / (Math.abs(avgVoltage) + 1) > 1.3) || isOverStressed() ? 0.2f : 0.05f);
+                soundInstance.setVolume((averageVoltage.get() / (averageVoltage.get() + 1) > 1.3) || isOverStressed() ? 0.2f : 0.05f);
             }
         }
     }
@@ -144,21 +127,14 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public float calculateAddedStressCapacity() {
         float speed = Math.abs(generatedSpeed.getValue());
-        float capacity = speed == 0 ? 0 : (float) ((avgVoltage * avgVoltage) / CEEConfigs.server().resistanceValues.motorResistance.get()) / speed;
+        float capacity = speed == 0 ? 0 : (float) ((averageVoltage.get() * averageVoltage.get()) / CEEConfigs.server().resistanceValues.motorResistance.get()) / speed;
         this.lastCapacityProvided = capacity;
         return capacity;
     }
 
     @Override
     public float getGeneratedSpeed() {
-        return convertToDirection(Math.abs(avgVoltage) < 80 ? 0 : generatedSpeed.getValue(), getBlockState().getValue(ElectricMotorBlock.FACING));
-    }
-
-    public void setVoltage(float voltage) {
-        if (voltages.size() >= 10)
-            voltages.remove(0);
-        voltages.add(voltage);
-        this.voltage = voltage;
+        return convertToDirection(averageVoltage.get() < 80 ? 0 : generatedSpeed.getValue(), getBlockState().getValue(ElectricMotorBlock.FACING));
     }
 
     @Override

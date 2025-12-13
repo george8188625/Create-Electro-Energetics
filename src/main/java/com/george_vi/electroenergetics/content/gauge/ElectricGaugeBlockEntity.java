@@ -3,8 +3,6 @@ package com.george_vi.electroenergetics.content.gauge;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
-import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;

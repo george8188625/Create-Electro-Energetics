@@ -71,9 +71,11 @@ jobs:
         tag_name: autobuild-${{ github.run_number }}
         name: Auto Release ${{ github.run_number }}
         body: |
-          These builds are auto generated on every commit. There is no guarantee these will be stable.
+          > [!CAUTION]
+          > These builds are auto generated on every commit. There is no guarantee these will be stable.
+          > It is recommended to do a backup of your worlds before adding or updating the mod.
           
-          **Version ${{ steps.version_update.outputs.version }} - Changelog:**
+          **Changelog:**
           
           ${{ github.event.head_commit.message }}
           ${{ steps.commit_info.outputs.body }}

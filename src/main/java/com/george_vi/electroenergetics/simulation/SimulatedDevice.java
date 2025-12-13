@@ -36,14 +36,6 @@ public abstract class SimulatedDevice<T> {
      */
     public void postTick(BlockPos pos, Level level, SimulationResults results, T extraData) {}
 
-    /**
-     * Returns the maximum distance at which the server will send node voltages to clients.
-     * @return maximum distance for node voltage transmission
-     */
-    public int sendVoltagesDistance() {
-        return 20;
-    }
-
     public abstract T read(CompoundTag tag);
 
     public abstract CompoundTag write(T extraData);

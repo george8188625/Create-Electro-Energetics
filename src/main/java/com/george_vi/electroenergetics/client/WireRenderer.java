@@ -1,9 +1,10 @@
-package com.george_vi.electroenergetics.content.wire;
+package com.george_vi.electroenergetics.client;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
@@ -39,7 +40,6 @@ import java.util.Map;
 public class WireRenderer {
     public static List<Pair<NodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
     public static List<Couple<BlockPos>> CATENARY = new ArrayList<>();
-    public static Map<InWorldNode, Double> NODE_VOLTAGES = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     public static void render(LevelRenderer levelRenderer, PoseStack pose, Camera camera) {
@@ -97,7 +97,7 @@ public class WireRenderer {
             float distance = (float) start.distanceTo(topEnd);
 
 
-            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 200f * (0.05f / distance), 3);
+            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 200f * (0.05f / distance), 4);
 
             for (int i = 0; i < upperWirePoints.size(); i++) {
                 Vec3 point = upperWirePoints.get(i);
@@ -120,7 +120,11 @@ public class WireRenderer {
                                 Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
                         .renderInto(pose, buffer.getBuffer(RenderType.solid()));
-
+                if (i == 0)
+                    continue;
+                if (i == upperWirePoints.size() - 1)
+                    if (point.distanceToSqr(topEnd) < 1.3)
+                        continue;
                 Vec3 closest;
                 Vec3 ab = end.subtract(start);
                 Vec3 ap = point.subtract(start);
@@ -137,10 +141,11 @@ public class WireRenderer {
                         .translate(point)
                         .rotateY((float) Math.atan2(closest.x() - point.x(), closest.z() - point.z()))
                         .rotateX(-(float) Math.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
-                        .scale(catenaryWidth, catenaryWidth, (float) (point.distanceTo(closest) * 2) + 0.02f)
+                        .scale(catenaryWidth * 0.66f, catenaryWidth * 0.66f, (float) (point.distanceTo(closest) * 2) + 0.02f)
                         .light(BlockPos.containing(point).equals(BlockPos.containing(closest)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(closest).multiply(0.5, 0.5, 0.5))) :
                                 Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(mc.level, BlockPos.containing(closest))))
+                        .rotateZDegrees(45)
                         .renderInto(pose, buffer.getBuffer(RenderType.solid()));
             }
         }
@@ -318,22 +323,8 @@ public class WireRenderer {
 
     public static void removeVoltageData(InWorldNode node) {
         synchronized ("get_node_voltages") {
-            NODE_VOLTAGES.remove(node);
+            NodeVoltageHolder.NODE_VOLTAGES.remove(node);
         }
     }
 
-    public static Map<InWorldNode, Double> getAllVoltages() {
-        synchronized ("get_node_voltages") {
-            return NODE_VOLTAGES;
-        }
-    }
-
-    public static void addVoltageData(InWorldNode node, double voltage) {
-        synchronized ("get_node_voltages") {
-            if (!NODE_VOLTAGES.containsKey(node))
-                NODE_VOLTAGES.put(node, voltage);
-            else
-                NODE_VOLTAGES.replace(node, voltage);
-        }
-    }
 }

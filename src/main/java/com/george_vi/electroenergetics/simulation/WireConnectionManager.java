@@ -22,6 +22,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -29,6 +31,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -70,7 +73,9 @@ public class WireConnectionManager {
         Map<NodeConnection, List<CutWireEntry>> electrocutionCuts = new Object2ObjectOpenHashMap<>();
         if (CEEConfigs.server().enableElectrocution.get())
             for (Entity entity : ((ServerLevel) level).getAllEntities()) {
-                if (!(entity instanceof Mob || entity instanceof Player))
+                if (!(entity instanceof Mob || entity instanceof Player p))
+                    continue;
+                if (entity instanceof ServerPlayer p && (p.gameMode.getGameModeForPlayer() == GameType.CREATIVE || p.gameMode.getGameModeForPlayer() == GameType.SPECTATOR))
                     continue;
                 AABB bb1 = entity.getBoundingBox();
                 int xChunkPos = entity.chunkPosition().x;
@@ -191,7 +196,7 @@ public class WireConnectionManager {
                 float totalProgress = 0;
                 Node lastNode = connection.node1();
                 for (CutWireEntry cut : cuts) {
-                    builder.addNode(cut.node);
+//                    builder.addNode(cut.node);
                     float progress = cut.point - totalProgress + 0.0001f;
                     builder.connect(lastNode, cut.node, ElectricalProperties.resistor(resistance * progress));
                     lastNode = cut.node;

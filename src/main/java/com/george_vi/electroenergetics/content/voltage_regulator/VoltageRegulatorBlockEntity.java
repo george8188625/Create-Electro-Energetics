@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.voltage_regulator;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
-import com.george_vi.electroenergetics.content.wire.WireRenderer;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
@@ -49,21 +49,15 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
     protected ScrollValueBehaviour voltage;
     protected double power;
     protected double lastSentPower = -1;
-
-    List<Float> voltages = new ArrayList<>();
-    float avgVoltage = 0;
+    protected double primaryVoltage;
+    protected double secondaryVoltage;
 
     @OnlyIn(Dist.CLIENT)
     protected ElectricHumSoundInstance soundInstance;
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        Double vp1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
-        Double vp2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
-        Double vs1 = WireRenderer.getAllVoltages().get(new InWorldNode(2, getBlockPos()));
-        Double vs2 = WireRenderer.getAllVoltages().get(new InWorldNode(3, getBlockPos()));
-        if (vp1 == null || vp2 == null || vs1 == null || vs2 == null)
-            return false;
+
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .translate("gui.goggles.electric_stats")
                 .forGoggles(tooltip);
@@ -72,7 +66,7 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(vp1 - vp2))))
+                .text(LangNumberFormat.format(Math.round(Math.abs(primaryVoltage))))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
@@ -82,7 +76,7 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(vs1 - vs2))))
+                .text(LangNumberFormat.format(Math.round(Math.abs(secondaryVoltage))))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
@@ -124,32 +118,16 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
 
     @OnlyIn(Dist.CLIENT)
     protected void tickAudio() {
-        if (voltages.isEmpty())
-            avgVoltage = 0;
-        else
-            avgVoltage = voltages.stream().reduce(Float::sum).orElse(0f) / voltages.size();
-
-        Double v1 = WireRenderer.getAllVoltages().get(new InWorldNode(0, getBlockPos()));
-        Double v2 = WireRenderer.getAllVoltages().get(new InWorldNode(1, getBlockPos()));
-        if (v1 != null && v2 != null) {
-            setVoltage((float) (v1 - v2));
-            if (avgVoltage > 10) {
-                if (soundInstance == null || soundInstance.isStopped())
-                    Minecraft.getInstance()
-                            .getSoundManager()
-                            .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
-                else if (soundInstance != null) {
-                    soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.25));
-                    soundInstance.keepAlive();
-                }
+        if (power > 100) {
+            if (soundInstance == null || soundInstance.isStopped())
+                Minecraft.getInstance()
+                        .getSoundManager()
+                        .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
+            else if (soundInstance != null) {
+                soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.25));
+                soundInstance.keepAlive();
             }
         }
-    }
-
-    private void setVoltage(float voltage) {
-        if (voltages.size() >= 3)
-            voltages.remove(0);
-        voltages.add(voltage);
     }
 
     @Override
@@ -172,15 +150,21 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-        if (clientPacket)
+        if (clientPacket) {
             tag.putDouble("Power", power);
+            tag.putDouble("PV", primaryVoltage);
+            tag.putDouble("SV", secondaryVoltage);
+        }
     }
 
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-        if (clientPacket)
+        if (clientPacket) {
             power = tag.getDouble("Power");
+            primaryVoltage = tag.getDouble("PV");
+            secondaryVoltage = tag.getDouble("SV");
+        }
     }
 
     private void updateVoltage() {
