@@ -152,7 +152,7 @@ public class GameEvents {
         if (event.getSpawnType() != MobSpawnType.NATURAL || event.getResult() == MobSpawnEvent.SpawnPlacementCheck.Result.FAIL)
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(event.getLevel().getLevel());
-        boolean foundBulb = sd.getDevices().stream().filter(d -> d.simulatedDevice() instanceof BulbDevice && d.pos().getCenter().distanceTo(event.getPos().getCenter()) <= 20).anyMatch(d -> true);
+        boolean foundBulb = sd.getDevices().stream().filter(d -> d.simulatedDevice() instanceof BulbDevice && d.pos().getCenter().distanceToSqr(event.getPos().getCenter()) <= 400).anyMatch(d -> true);
         if (foundBulb)
             event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
     }

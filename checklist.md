@@ -9,7 +9,7 @@
 - [ ] accumulators on trains
 - [x] colored bulbs
 - [ ] variacs
-- [ ] potentiometers
+- [x] potentiometers
 - [ ] variable buzzer pitch
 - [x] multi-block transformers
 - [ ] floodlights

@@ -32,7 +32,7 @@ public class AlternatorBrushesDevice extends GeneratingDevice<AlternatorBrushesD
             if (extraData.be.isRemoved())
                 extraData.be = null;
             else {
-                float v = (float) results.getVoltageAt(pos, 0, 1);
+                float v = (float) results.getVoltageAt(pos, 1, 0);
                 if (Math.abs(extraData.be.voltage - v) > 2) {
                     extraData.be.voltage = v;
                     extraData.be.sendData();

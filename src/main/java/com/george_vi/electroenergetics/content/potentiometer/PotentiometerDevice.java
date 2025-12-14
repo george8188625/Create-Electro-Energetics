@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.electronic_components.resistor;
+package com.george_vi.electroenergetics.content.potentiometer;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
@@ -6,31 +6,33 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
-public class ResistorDevice extends SimulatedDevice<ResistorDevice.DataHolder> {
-    public ResistorDevice(ResourceLocation id) {
+public class PotentiometerDevice extends SimulatedDevice<PotentiometerDevice.DataHolder> {
+    public PotentiometerDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+        double resistance = extraData.resistance + 0.0001;
+
         bridges.builder(pos)
-                .connect(0, 1, extraData.properties);
+                .resistor(0, 1, Math.max(0.001, extraData.progress * resistance))
+                .resistor(1, 2, Math.max(0.001, (1 - extraData.progress) * resistance));
     }
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
         float loss = (float) results.getHeatLoss(pos, 0, 1);
+        loss += (float) results.getHeatLoss(pos, 1, 2);
         extraData.temp = updateTemp(extraData.temp, Math.min(loss, 10000));
 
         if (!CEEConfigs.server().componentDamage.get())
@@ -51,21 +53,24 @@ public class ResistorDevice extends SimulatedDevice<ResistorDevice.DataHolder> {
     @Override
     public DataHolder read(CompoundTag tag) {
         DataHolder dataHolder = new DataHolder();
-        dataHolder.properties = ElectricalProperties.resistor(Mth.clamp(tag.getDouble("Resistance"), 0.01, 1_000_000));
+        dataHolder.resistance = tag.getDouble("Resistance");
         dataHolder.temp = tag.getFloat("Temp");
+        dataHolder.progress = tag.getFloat("Progress");
         return dataHolder;
     }
 
     @Override
     public CompoundTag write(DataHolder extraData) {
         CompoundTag tag = new CompoundTag();
-        tag.putDouble("Resistance", extraData.properties.resistance);
+        tag.putDouble("Resistance", extraData.resistance);
         tag.putFloat("Temp", extraData.temp);
+        tag.putFloat("Progress", extraData.progress);
         return tag;
     }
 
     public static class DataHolder {
+        public double resistance;
+        public float progress;
         public float temp;
-        public ElectricalProperties properties;
     }
 }

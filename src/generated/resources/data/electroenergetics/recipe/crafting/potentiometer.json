@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "S": {
+      "item": "create:shaft"
+    },
+    "c": {
+      "item": "minecraft:coal"
+    }
+  },
+  "pattern": [
+    " S ",
+    "ccc",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:potentiometer"
+  }
+}

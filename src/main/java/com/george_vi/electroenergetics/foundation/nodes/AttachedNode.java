@@ -21,6 +21,9 @@ public class AttachedNode extends Node {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ownerID, id);
+        int result = id;
+        result = 31 * result + ownerID.hashCode();
+        result ^= (result >>> 16);
+        return result;
     }
 }

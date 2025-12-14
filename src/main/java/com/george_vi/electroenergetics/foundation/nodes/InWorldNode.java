@@ -105,7 +105,12 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sourcePos);
+        int hash = 17;
+        hash = hash * 31 + id;
+        hash = hash * 31 + sourcePos.getX();
+        hash = hash * 31 + sourcePos.getY();
+        hash = hash * 31 + sourcePos.getZ();
+        return hash;
     }
 
     @Override

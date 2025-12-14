@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-19T23:27:19.2997418	Recipes
+// 1.21.1	2025-12-14T20:05:42.1622471	Recipes
 e4558ff2c12de196a56a9f67ffe27050cdfe38f7 data/electroenergetics/advancement/recipes/decorations/stonecutting/electric_shock_sign.json
 1e443110466e17eb3a8f102e9fc77c86fc29380e data/electroenergetics/advancement/recipes/decorations/stonecutting/grounding_sign.json
 e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/recipes/decorations/stonecutting/high_voltage_sign.json
@@ -44,6 +44,7 @@ c09b186a9a6be775ee12bdbe2a37ab1a38698668 data/electroenergetics/advancement/reci
 9bac3354642e0be526bc9ccb2f2ce098b8a7051b data/electroenergetics/advancement/recipes/misc/crafting/momentary_switch.json
 11c463616ad19f5a3b7120a98e701687b08fc763 data/electroenergetics/advancement/recipes/misc/crafting/pantograph.json
 a66142b6fbe3b298ef738d3cf4de5d93e9ccc25d data/electroenergetics/advancement/recipes/misc/crafting/pole_mount.json
+caa57b4913678170e53f40d9291187c0d94956d5 data/electroenergetics/advancement/recipes/misc/crafting/potentiometer.json
 450dd9bee53f1d94c5091fddaf8787e7a8891b81 data/electroenergetics/advancement/recipes/misc/crafting/quad_connector.json
 50a193ba6ea520872c58e0af45afa67b1e9a6893 data/electroenergetics/advancement/recipes/misc/crafting/quad_connector_from_double.json
 3e0977bf9c5682c20f56a218c4239bd336e79a20 data/electroenergetics/advancement/recipes/misc/crafting/radiator_panel.json
@@ -99,6 +100,7 @@ aec2fe44c55e4325101d39ddff948a04ac687b8a data/electroenergetics/recipe/crafting/
 9a21b48a0f2b911170abd54033199b8ac1c617f7 data/electroenergetics/recipe/crafting/momentary_switch.json
 5b0bb4074bf368958633114cf4976b2b5888192a data/electroenergetics/recipe/crafting/pantograph.json
 63ee99c66d7c83e0bfd86fccd1bdb52bc7e3887c data/electroenergetics/recipe/crafting/pole_mount.json
+3c005d4545fe8833e0a61ae58032fe12df391f9a data/electroenergetics/recipe/crafting/potentiometer.json
 b96377e2e31d96b4d6835bd05cbf1ae1179139e7 data/electroenergetics/recipe/crafting/quad_connector.json
 94026d88a737a3b44a35d8e29f99f0330d5cae78 data/electroenergetics/recipe/crafting/quad_connector_from_double.json
 d7e8d1afc6917336636c212e8e2681c57a9cee54 data/electroenergetics/recipe/crafting/radiator_panel.json

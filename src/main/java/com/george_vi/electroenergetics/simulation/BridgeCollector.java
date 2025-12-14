@@ -4,6 +4,8 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import net.minecraft.core.BlockPos;
 
+import java.util.List;
+
 public class BridgeCollector {
     final InfrastructureSavedData sd;
     final CircuitBuilder circuitBuilder;

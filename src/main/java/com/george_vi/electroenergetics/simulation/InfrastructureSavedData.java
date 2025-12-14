@@ -245,7 +245,7 @@ public class InfrastructureSavedData extends SavedData {
                 .computeIfAbsent(new Factory<>(() -> new InfrastructureSavedData(level), (compoundTag, provider) -> InfrastructureSavedData.load(level, compoundTag, provider)), "electroenergetics_infrastructure");
     }
 
-    public<T> void addDevice(BlockPos pos, SimulatedDevice<T> device, CompoundTag extraData, List<Integer> nodeIDs) {
+    public <T> void addDevice(BlockPos pos, SimulatedDevice<T> device, CompoundTag extraData, List<Integer> nodeIDs) {
         List<InWorldNode> nodes = nodeIDs.stream().map(id -> new InWorldNode(id, pos)).toList();
 
         if (DEVICES.containsKey(pos)) {

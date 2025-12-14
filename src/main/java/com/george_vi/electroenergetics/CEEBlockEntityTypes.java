@@ -11,6 +11,8 @@ import com.george_vi.electroenergetics.content.fuse.FuseHolderBlockEntity;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderRenderer;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockEntity;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbRenderer;
+import com.george_vi.electroenergetics.content.potentiometer.PotentiometerBlockEntity;
+import com.george_vi.electroenergetics.content.potentiometer.PotentiometerRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
@@ -141,6 +143,11 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<IndicatorBulbBlockEntity> INDICATOR_BULB = REGISTRATE.blockEntity("indicator_bulb", IndicatorBulbBlockEntity::new)
             .validBlock(CEEBlocks.INDICATOR_BULB::get)
             .renderer(() -> IndicatorBulbRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<PotentiometerBlockEntity> POTENTIOMETER = REGISTRATE.blockEntity("potentiometer", PotentiometerBlockEntity::new)
+            .validBlock(CEEBlocks.POTENTIOMETER::get)
+            .renderer(() -> PotentiometerRenderer::new)
             .register();
 
 

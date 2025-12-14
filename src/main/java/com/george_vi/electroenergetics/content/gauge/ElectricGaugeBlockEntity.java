@@ -51,6 +51,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
         compound.putFloat("Value", dialTarget);
         compound.putInt("Color", color);
+        compound.putDouble("Voltage", voltage);
         super.write(compound, registries, clientPacket);
     }
 
@@ -58,6 +59,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
         dialTarget = compound.getFloat("Value");
         color = compound.getInt("Color");
+        voltage = compound.getDouble("Voltage");
         super.read(compound, registries, clientPacket);
     }
 
@@ -90,7 +92,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 
-        double v = dialTarget * (voltmeter ? 1000 : 40);
+        double v = voltmeter ? voltage : voltage / 0.01;
         if (v  > 1)
             v = Math.round(v);
         Lang.builder(CreateElecrtoEnergetics.ID)

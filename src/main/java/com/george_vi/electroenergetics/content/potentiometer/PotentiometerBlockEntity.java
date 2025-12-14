@@ -1,21 +1,26 @@
-package com.george_vi.electroenergetics.content.electronic_components.resistor;
+package com.george_vi.electroenergetics.content.potentiometer;
 
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
+import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
+import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorDevice;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import com.google.common.collect.ImmutableList;
-import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
+import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatter;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
+import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -25,12 +30,15 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public class ResistorBlockEntity extends SmartBlockEntity {
-    public ResistorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state);
-    }
+public class PotentiometerBlockEntity extends KineticBlockEntity {
 
     protected ScrollValueBehaviour resistance;
+    protected float progress;
+    protected LerpedFloat smoothProgress = LerpedFloat.linear();
+
+    public PotentiometerBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
+        super(typeIn, pos, state);
+    }
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
@@ -46,6 +54,23 @@ public class ResistorBlockEntity extends SmartBlockEntity {
         resistance.withFormatter(v -> CEELang.formatResistance(indexToResistance(v)).string());
         resistance.withCallback(i -> this.updateResistance());
         behaviours.add(resistance);
+    }
+
+    @Override
+    public void tick() {
+        if (level instanceof ServerLevel sl) {
+            float prevProgress = progress;
+            progress = Mth.clamp(progress + getSpeed() / 1000, 0, 1);
+            if (prevProgress != progress) {
+                InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+                SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(worldPosition);
+                if (deviceInstance != null && deviceInstance.extraData() instanceof PotentiometerDevice.DataHolder dataHolder)
+                    dataHolder.progress = progress;
+                sendData();
+            }
+        } else {
+            smoothProgress.tickChaser();
+        }
     }
 
     double indexToResistance(int i) {
@@ -73,16 +98,36 @@ public class ResistorBlockEntity extends SmartBlockEntity {
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
         SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof ResistorDevice.DataHolder dataHolder) {
-            dataHolder.properties.resistance = Math.max(0.01, indexToResistance(resistance.value));
+        if (deviceInstance != null && deviceInstance.extraData() instanceof PotentiometerDevice.DataHolder dataHolder) {
+            dataHolder.resistance = Math.max(0.01, indexToResistance(resistance.value));
         }
+    }
+
+    @Override
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
+        progress = tag.getFloat("Progress");
+        if (clientPacket)
+            smoothProgress.chase(progress, 0.1, LerpedFloat.Chaser.LINEAR);
+    }
+
+    @Override
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
+        tag.putFloat("Progress", progress);
+    }
+
+    @Override
+    public int getFlickerScore() {
+        // Makes create not destroy the block when it's speed is repeatedly changed.
+        return 0;
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {
 
         @Override
         protected Vec3 getSouthLocation() {
-            return VecHelper.voxelSpace(8, 8, 4);
+            return VecHelper.voxelSpace(8, 2, 14);
         }
 
         @Override
@@ -92,7 +137,7 @@ public class ResistorBlockEntity extends SmartBlockEntity {
 
         @Override
         protected boolean isSideActive(BlockState state, Direction direction) {
-            return state.getValue(CreativeBatteryBlock.FACING).equals(direction);
+            return direction.getAxis().isHorizontal() && !state.getValue(PotentiometerBlock.HORIZONTAL_FACING).equals(direction);
         }
     }
 }
