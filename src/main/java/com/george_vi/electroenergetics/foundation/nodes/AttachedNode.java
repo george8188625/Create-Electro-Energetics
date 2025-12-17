@@ -26,4 +26,9 @@ public class AttachedNode extends Node {
         result ^= (result >>> 16);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "N" + id + "@" + ownerID;
+    }
 }

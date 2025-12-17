@@ -164,7 +164,7 @@ public class WireConnectionManager {
                                     }
                                     return ee;
                                 });
-                            AttachedNode cutNode = new AttachedNode(cutElectrocutionNodeID, "CEEElectrocutionCut");
+                            AttachedNode cutNode = new AttachedNode(cutElectrocutionNodeID++, "CEEElectrocutionCut");
                             electrocutionEntry.nodes.put(cutNode, bestResistance);
                             electrocutionEntry.positions.put(cutNode, bestPoint);
                             electrocutionCuts.computeIfAbsent(connection, k -> new ArrayList<>()).add(new CutWireEntry(bestProgress, cutNode, null, null));
@@ -197,6 +197,8 @@ public class WireConnectionManager {
                 Node lastNode = connection.node1();
                 for (CutWireEntry cut : cuts) {
 //                    builder.addNode(cut.node);
+                    if (cut.node.equals(lastNode))
+                        continue;
                     float progress = cut.point - totalProgress + 0.0001f;
                     builder.connect(lastNode, cut.node, ElectricalProperties.resistor(resistance * progress));
                     lastNode = cut.node;
