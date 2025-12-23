@@ -7,6 +7,7 @@
 - [ ] train sound selection
 - [ ] electric train signals
 - [ ] accumulators on trains
+- [ ] pantograph sparks
 - [x] colored bulbs
 - [ ] variacs
 - [x] potentiometers

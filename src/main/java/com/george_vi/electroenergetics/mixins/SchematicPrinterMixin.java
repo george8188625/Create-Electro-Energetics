@@ -44,25 +44,25 @@ public class SchematicPrinterMixin {
     @Inject(method = "advanceCurrentPos", at=@At("RETURN"), remap = false, cancellable = true)
     public void advanceCurrentPos(CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue() && (ServerLevelAccessor)blockReader instanceof ISchematicInfrastructureList sl) {
-            if (sl.electroEnergetics$getWireConnections().isEmpty())
+            if (sl.getWireConnections().isEmpty())
                 return;
             electroEnergetics$wirePhase = true;
             InfrastructureSavedData sd = InfrastructureSavedData.load(blockReader.getLevel());
 
-            for (Map.Entry<NodeConnection, WireData> e : sl.electroEnergetics$getWireConnections().entrySet()) {
+            for (Map.Entry<NodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
                 NodeConnection connection = e.getKey();
                 WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
                 if (sd.getDevice(node1.sourcePos()) == null) {
-                    SimulatedDeviceInstance<?> di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
+                    SimulatedDeviceInstance<?> di = sl.getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
                     if (di == null)
                         continue;
                     sd.addDevice(node1.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
                 }
 
                 if (sd.getDevice(node2.sourcePos()) == null) {
-                    SimulatedDeviceInstance<?> di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
+                    SimulatedDeviceInstance<?> di = sl.getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
                     if (di == null)
                         continue;
                     sd.addDevice(node2.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
@@ -82,11 +82,11 @@ public class SchematicPrinterMixin {
     @Inject(method = "getCurrentRequirement", at = @At("HEAD"), remap = false, cancellable = true)
     public void getCurrentRequirement(CallbackInfoReturnable<ItemRequirement> cir) {
         if (electroEnergetics$wirePhase && blockReader instanceof ISchematicInfrastructureList sl) {
-            if (sl.electroEnergetics$getWireConnections().isEmpty())
+            if (sl.getWireConnections().isEmpty())
                 return;
             InfrastructureSavedData sd = InfrastructureSavedData.load(this.blockReader.getLevel());
 
-            for (Map.Entry<NodeConnection, WireData> e : sl.electroEnergetics$getWireConnections().entrySet()) {
+            for (Map.Entry<NodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
                 NodeConnection connection = e.getKey();
                 WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
@@ -109,7 +109,7 @@ public class SchematicPrinterMixin {
         if (world instanceof ServerLevel level && blockReader instanceof ISchematicInfrastructureList sl) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(level);
 
-            for (Map.Entry<NodeConnection, WireData> e : sl.electroEnergetics$getWireConnections().entrySet()) {
+            for (Map.Entry<NodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
                 NodeConnection connection = e.getKey();
                 WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
@@ -129,23 +129,23 @@ public class SchematicPrinterMixin {
     @Inject(method = "handleCurrentTarget", at = @At("HEAD"), remap = false, cancellable = true)
     public void handleCurrentTarget(SchematicPrinter.BlockTargetHandler blockHandler, SchematicPrinter.EntityTargetHandler entityHandler, CallbackInfo ci) {
         if (electroEnergetics$wirePhase && (ServerLevelAccessor)blockReader instanceof ISchematicInfrastructureList sl) {
-            if (sl.electroEnergetics$getWireConnections().isEmpty())
+            if (sl.getWireConnections().isEmpty())
                 return;
             InfrastructureSavedData sd = InfrastructureSavedData.load(blockReader.getLevel());
-            for (Map.Entry<NodeConnection, WireData> e : sl.electroEnergetics$getWireConnections().entrySet()) {
+            for (Map.Entry<NodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
                 NodeConnection connection = e.getKey();
                 WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
                 if (sd.getDevice(node1.sourcePos()) == null) {
-                    SimulatedDeviceInstance<?> di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
+                    SimulatedDeviceInstance<?> di = sl.getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
                     if (di == null)
                         continue;
                     sd.addDevice(node1.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
                 }
 
                 if (sd.getDevice(node2.sourcePos()) == null) {
-                    SimulatedDeviceInstance<?> di = sl.electroEnergetics$getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
+                    SimulatedDeviceInstance<?> di = sl.getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
                     if (di == null)
                         continue;
                     sd.addDevice(node2.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
@@ -153,7 +153,7 @@ public class SchematicPrinterMixin {
 
                 if (!sd.getConnections(node1).contains(connection)) {
                     sd.setConnectionData(sd.connect(node1, node2, wireData.wireType()), wireData);
-                    sl.electroEnergetics$getWireConnections().remove(connection);
+                    sl.getWireConnections().remove(connection);
                     currentPos = BlockPos.containing(QuadraticWireHelper.posAt(node1.sourcePos().getCenter(), node2.sourcePos().getCenter(), 0.5f));
                     ci.cancel();
                     return;

@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.railway_electrification.sound_effects;
 
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundBehaviour;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ModernElectricTrainSoundBehaviour;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.trains.entity.Train;
@@ -32,7 +33,7 @@ public class ElectricTrainSounds {
             }
             ElectricTrainSoundBehaviour soundBehaviour = sounds.get(carriagePair);
             if (soundBehaviour == null)
-                sounds.put(carriagePair, soundBehaviour = new ModernElectricTrainSoundBehaviour());
+                sounds.put(carriagePair, soundBehaviour = e.getValue().type().soundBehaviour.get());
 
             soundBehaviour.pos = e.getValue().pos();
             soundBehaviour.trainSpeed = e.getValue().speed();
@@ -40,7 +41,7 @@ public class ElectricTrainSounds {
 
             if (e.getValue().ticks() > 0) {
                 soundBehaviour.tick();
-                soundProperties.replace(carriagePair, new ElectricTrainSoundEntry(e.getValue().pos(), e.getValue().speed(), e.getValue().acceleration(), e.getValue().active(), e.getValue().ticks() - 1));
+                soundProperties.replace(carriagePair, new ElectricTrainSoundEntry(e.getValue().pos(), e.getValue().speed(), e.getValue().acceleration(), e.getValue().active(), e.getValue().ticks() - 1, e.getValue().type()));
             } else
                 soundProperties.remove(carriagePair);
         }

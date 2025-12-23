@@ -94,8 +94,9 @@ public class WireApplyingBehaviour {
             if (hoveredNode != null) {
 
                 CatnipServices.NETWORK.sendToServer(new RequestVoltageDataPacket(hoveredNode));
-
-                ElectricPropertiesOverlay.INSTANCE.setHoveredNode(NodeVoltageHolder.getVoltageEntry(hoveredNode), hoveredNode);
+                NodeVoltageHolder.VoltageEntry ve = NodeVoltageHolder.getVoltageEntryOrNull(hoveredNode);
+                if (ve != null)
+                    ElectricPropertiesOverlay.INSTANCE.setHoveredNode(ve, hoveredNode);
             }
         }
 

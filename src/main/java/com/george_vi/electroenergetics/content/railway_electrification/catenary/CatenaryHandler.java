@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.railway_electrification.catenary;
 
+import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
@@ -9,6 +10,7 @@ import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
+import com.george_vi.electroenergetics.mixin_interfaces.ICEETrainExtension;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
@@ -177,6 +179,8 @@ public class CatenaryHandler {
         List<Train> visitedTrains = new ArrayList<>();
         for (Pair<Train, Couple<AttachedNode>> e : trains) {
             Train train = e.getFirst();
+            if (!(train instanceof ICEETrainExtension trainExtension))
+                continue;
             visitedTrains.add(train);
 
             AttachedNode node1 = e.getSecond().getFirst();
@@ -207,7 +211,7 @@ public class CatenaryHandler {
                 Vec3 pos = ce.getValue();
 
                 CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                        100, new UpdateElectricTrainSoundPacket(train.id, carriageID, pos, (float) trainSpeed, acceleration, active));
+                        100, new UpdateElectricTrainSoundPacket(train.id, carriageID, pos, (float) trainSpeed, acceleration, active, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getId(trainExtension.getSoundType())));
             }
             if (active)
                 if (train.fuelTicks <= 1) {
@@ -220,6 +224,9 @@ public class CatenaryHandler {
 
         for (Train train : trainSpeeds.keySet().stream().toList()) {
             if (visitedTrains.contains(train))
+                continue;
+
+            if (!(train instanceof ICEETrainExtension trainExtension))
                 continue;
 
             Map<Integer, Vec3> positions = new HashMap<>();
@@ -241,7 +248,7 @@ public class CatenaryHandler {
                 Vec3 pos = ce.getValue();
 
                 CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                        100, new UpdateElectricTrainSoundPacket(train.id, carriageID, pos, 0, 0, false));
+                        100, new UpdateElectricTrainSoundPacket(train.id, carriageID, pos, 0, 0, false, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getId(trainExtension.getSoundType())));
             }
 
             trainSpeeds.remove(train);

@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.railway_electrification.sound_effects;
+package com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types;
 
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;

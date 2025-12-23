@@ -1,8 +1,10 @@
 package com.george_vi.electroenergetics.commands;
 
+import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
 import com.george_vi.electroenergetics.simulation.simulator.SimulatorProfiler;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -18,9 +20,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.world.level.Level;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.UnaryOperator;
 
 public class CEECommands {
@@ -40,6 +45,10 @@ public class CEECommands {
                 Commands.literal("performance")
                       .requires(cs -> cs.hasPermission(2))
                       .executes(CEECommands::performance)
+            ).then(
+                Commands.literal("stats")
+                        .requires(cs -> cs.hasPermission(2))
+                        .executes(CEECommands::stats)
             ).then(
                 Commands.literal("device_data")
                         .requires(cs -> cs.hasPermission(2))
@@ -76,12 +85,51 @@ public class CEECommands {
             float percentage = (float) entry.timeTookNanos / totalTime;
             float parentPercentage = (float) entry.timeTookNanos / parentTime;
             source.sendSuccess(() -> Component.literal("|  ".repeat(Math.max(0, depth - 1)) + "⊢ ").withStyle(blue)
-                    .append(Component.literal(entry.id.toString() + " ").withStyle(bright))
-                    .append(Component.literal(String.valueOf((entry.timeTookNanos / 1000))).append(" μs ").append(Component.literal(String.format("%.2f", percentage * 100) + " % ").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - percentage, 3) * 0.32f), 0.6f, 1f).getRGB()))))
-                    .append(Component.literal(String.format("%.2f", parentPercentage * 100) + " %").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - parentPercentage, 3) * 0.32f), 0.6f, 1f).getRGB())))
+                            .append(Component.literal(entry.id.toString() + " ").withStyle(bright))
+                            .append(Component.literal(String.valueOf((entry.timeTookNanos / 1000))).append(" μs ").append(Component.literal(String.format("%.2f", percentage * 100) + " % ").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - percentage, 3) * 0.32f), 0.6f, 1f).getRGB()))))
+                            .append(Component.literal(String.format("%.2f", parentPercentage * 100) + " %").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - parentPercentage, 3) * 0.32f), 0.6f, 1f).getRGB())))
                     , false);
             listResults(depth + 1, entry.children, source, totalTime, entry.timeTookNanos);
         }
+    }
+
+    public static int stats(CommandContext<CommandSourceStack> ctx) {
+        CommandSourceStack source = ctx.getSource();
+        source.sendSuccess(() -> Component.literal("-+------<< Simulation Stats >>-------------+-"), false);
+        for (Map.Entry<Level, SimulationStats> entry : MicroTickedSimulationTicker.stats.entrySet()) {
+            Level level = entry.getKey();
+            SimulationStats stats = entry.getValue();
+            source.sendSuccess(() -> Component.literal("totalNodes: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalNodes)).withStyle(orange)), false);
+            Arrays.sort(stats.totalSeparatedNodes);
+            Arrays.sort(stats.totalOptimizedNodes);
+            source.sendSuccess(() -> Component.literal("perNetwork:").withStyle(blue), false);
+            for (int i = stats.totalSeparatedNodes.length - 1; i >= 0; i--) {
+                if (stats.totalSeparatedNodes.length - 1 - i >= 4) {
+                    source.sendSuccess(() -> Component.literal("  ...").withStyle(blue), false);
+                    break;
+                }
+
+                int finalI = i;
+                source.sendSuccess(() -> Component.literal(" ⊢ ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalSeparatedNodes[finalI])).withStyle(orange)), false);
+            }
+
+            source.sendSuccess(() -> Component.literal("optimized:").withStyle(blue), false);
+            for (int i = stats.totalOptimizedNodes.length - 1; i >= 0; i--) {
+                if (stats.totalOptimizedNodes.length - 1 - i >= 4) {
+                    source.sendSuccess(() -> Component.literal("  ...").withStyle(blue), false);
+                    break;
+                }
+
+                int finalI = i;
+                source.sendSuccess(() -> Component.literal(" ⊢ ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalOptimizedNodes[finalI])).withStyle(orange)), false);
+            }
+            source.sendSuccess(() -> Component.literal("totalDevices: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalDevices)).withStyle(orange)), false);
+            source.sendSuccess(() -> Component.literal("totalMicroTickers: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalMicroTickers)).withStyle(orange)), false);
+
+        }
+
+        source.sendSuccess(() -> Component.literal("-+------------------------------------+-"), false);
+        return 1;
     }
 
     public static int deviceData(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

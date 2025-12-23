@@ -16,7 +16,7 @@ public class AttachedNode extends Node {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AttachedNode that = (AttachedNode) o;
-        return Objects.equals(ownerID, that.ownerID) && Objects.equals(id, that.id);
+        return id == that.id && ownerID.equals(that.ownerID);
     }
 
     @Override

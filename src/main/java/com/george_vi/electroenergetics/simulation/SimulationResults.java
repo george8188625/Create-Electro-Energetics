@@ -57,10 +57,10 @@ public class SimulationResults {
         node1 = fc.node1();
         node2 = fc.node2();
 
-        if (sourceAmps.containsKey(new DirectionalNodeConnection(node1, node2)))
-            return sourceAmps.getDouble(new DirectionalNodeConnection(node1, node2));
-        if (sourceAmps.containsKey(new DirectionalNodeConnection(node2, node1)))
-            return -sourceAmps.getDouble(new DirectionalNodeConnection(node2, node1));
+        if (sourceAmps.containsKey(fc))
+            return sourceAmps.getDouble(fc);
+        if (sourceAmps.containsKey(fc.invert()))
+            return -sourceAmps.getDouble(fc.invert());
         ElectricalProperties properties = circuitBuilder.getConnectionProperties(node1, node2);
         if (properties == null || properties.resistance() == 0)
             return 0;
@@ -87,12 +87,14 @@ public class SimulationResults {
 
         // the reason this is here, is when a device creates a non-ideal voltage source, it adds a node in the middle.
         // this just returns the real connection, so that the device doesn't have to worry about these nodes.
+
         WrappedIndexedNode indexedNode1 = circuitBuilder.getNode(circuitBuilder.nodeIndexes.getInt(node1));
         WrappedIndexedNode indexedNode2 = circuitBuilder.getNode(circuitBuilder.nodeIndexes.getInt(node2));
+        if (indexedNode1.adjacency.containsKey(indexedNode2.ordinal))
+            return new DirectionalNodeConnection(node1, node2);
+
         IntSet node1connections = indexedNode1.adjacency.keySet();
         IntSet node2connections = indexedNode2.adjacency.keySet();
-        if (node1connections.contains(indexedNode2.ordinal))
-            return new DirectionalNodeConnection(node1, node2);
 
         List<Node> nodesInTheMiddle = new ArrayList<>();
         for (int node1connection : node1connections) {

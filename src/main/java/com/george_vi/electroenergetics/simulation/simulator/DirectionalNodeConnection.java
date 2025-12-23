@@ -9,6 +9,7 @@ import java.util.Objects;
 public class DirectionalNodeConnection {
     private final Node node1;
     private final Node node2;
+    private DirectionalNodeConnection inverted;
 
     public DirectionalNodeConnection(Node node1, Node node2) {
         this.node1 = node1;
@@ -24,12 +25,19 @@ public class DirectionalNodeConnection {
     }
 
     public DirectionalNodeConnection invert() {
-        return new DirectionalNodeConnection(node2, node1);
+        if (inverted == null) {
+            inverted = new DirectionalNodeConnection(node2, node1);
+            inverted.inverted = this;
+        }
+        return inverted;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(node1, node2);
+        int result = 31 + node1.hashCode();
+        result = 31 * result + node2.hashCode();
+        result ^= (result >>> 16);
+        return result;
     }
 
     @Override
@@ -37,7 +45,7 @@ public class DirectionalNodeConnection {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DirectionalNodeConnection that = (DirectionalNodeConnection) o;
-        return Objects.equals(node1, that.node1()) && Objects.equals(node2, that.node2());
+        return node1.equals(that.node1) && node2.equals(that.node2);
     }
 
     public Node node1() {

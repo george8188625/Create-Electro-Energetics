@@ -58,6 +58,7 @@ public class GameEvents {
     @SubscribeEvent
     public static void tickServer(ServerTickEvent.Pre event) {
         MicroTickedSimulationTicker.profiler.clear();
+        MicroTickedSimulationTicker.stats.clear();
     }
 
     @OnlyIn(Dist.CLIENT)

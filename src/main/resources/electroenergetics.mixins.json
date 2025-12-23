@@ -17,6 +17,7 @@
     "FluidPropagatorMixin",
     "SchematicLevelMixin",
     "SchematicPrinterMixin",
-    "StructureTemplateMixin"
+    "StructureTemplateMixin",
+    "TrainMixin"
   ]
 }

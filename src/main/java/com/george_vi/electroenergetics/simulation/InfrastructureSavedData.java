@@ -41,8 +41,8 @@ public class InfrastructureSavedData extends SavedData {
 
     // NOT PERSISTENT
     Object2DoubleMap<InWorldNode> VOLTAGES = new Object2DoubleOpenHashMap<>();
-    ServerLevel level;
 
+    ServerLevel level;
     WireConnectionManager wireConnectionManager;
     public SimulationResults lastResults;
 

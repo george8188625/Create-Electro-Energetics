@@ -24,6 +24,7 @@ public class CircuitBuilder {
     public CircuitBuilder(Set<InWorldNode> nodes) {
         allIndexedNodes = new ArrayList<>(nodes.size() * 2);
         nodeIndexes = new Object2IntOpenHashMap<>();
+        nodeIndexes.defaultReturnValue(-1);
         defaultZeroPotentials = new Int2IntOpenHashMap();
         for (Node node : nodes) {
             WrappedIndexedNode indexedNode = new WrappedIndexedNode(node, id);
@@ -77,11 +78,15 @@ public class CircuitBuilder {
     }
 
     public void connect(Node n1, Node n2, ElectricalProperties properties) {
-        if (!nodeIndexes.containsKey(n1))
-            addNode(n1);
-        if (!nodeIndexes.containsKey(n2))
-            addNode(n2);
-        connect(nodeIndexes.getInt(n1), nodeIndexes.getInt(n2), properties);
+        int i1 = nodeIndexes.getInt(n1);
+        if (i1 == -1)
+            i1 = addNode(n1).ordinal;
+
+        int i2 = nodeIndexes.getInt(n2);
+        if (i2 == -1)
+            i2 = addNode(n2).ordinal;
+
+        connect(i1, i2, properties);
     }
 
     public void ground(int node, double conductance) {

@@ -26,6 +26,17 @@ public class NodeVoltageHolder {
         return e;
     }
 
+    public static VoltageEntry getVoltageEntryOrNull(InWorldNode node) {
+        VoltageEntry e = NODE_VOLTAGES.get(node);
+        if (e == null)
+            return null;
+        if (e.invalid()) {
+            NODE_VOLTAGES.remove(node);
+            return null;
+        }
+        return e;
+    }
+
     public static void addVoltageData(InWorldNode node, VoltageEntry e) {
         NODE_VOLTAGES.put(node, e);
     }

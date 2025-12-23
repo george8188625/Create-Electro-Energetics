@@ -8,7 +8,7 @@ public abstract class MicroTickingElectricalProperties extends ElectricalPropert
 
     public abstract void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2);
 
-    public void firstTick(int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
+    public void firstTick(int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
 
     }
 

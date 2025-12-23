@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ISchematicInfrastructureList {
-    Map<NodeConnection, WireData> electroEnergetics$getWireConnections();
+    Map<NodeConnection, WireData> getWireConnections();
 
-    List<SimulatedDeviceInstance> electroEnergetics$getDevices();
+    List<SimulatedDeviceInstance> getDevices();
 }

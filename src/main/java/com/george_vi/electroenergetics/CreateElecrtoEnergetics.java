@@ -47,6 +47,7 @@ public class CreateElecrtoEnergetics
         CEECreativeTab.register(modEventBus);
         CEEDataComponents.register(modEventBus);
         CEEWireAttachments.register(modEventBus);
+        CEEElectricTrainSoundTypes.register(modEventBus);
         CEEWireInteractionBehaviours.register(modEventBus);
         CEEConfigs.register(modLoadingContext, modContainer);
 

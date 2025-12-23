@@ -40,7 +40,7 @@ public class DiodeDevice extends SimulatedDevice<DiodeDevice.DataHolder> {
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
-        extraData.voltage = results.getVoltageAt(pos, 1, 0);
+//        extraData.voltage = results.getVoltageAt(pos, 1, 0);
     }
 
     @Override
@@ -90,11 +90,11 @@ public class DiodeDevice extends SimulatedDevice<DiodeDevice.DataHolder> {
         private void tickDiode(int totalMicroTicks) {
             // Thanks, ChatGPT
             double iS = 10e-10d;
-            double vT = 0.046d;
+            double vT = 0.050;
 
             extraData.voltage = Mth.clamp(extraData.voltage, -0.8, 0.8);
 
-            double Cj = 1e-12d;
+            double Cj = 1e-11d;
             double gCap = Cj / (0.05 / totalMicroTicks);
             double iEqCap = gCap * extraData.voltage;
 

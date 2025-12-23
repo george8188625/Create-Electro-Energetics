@@ -9,7 +9,6 @@ import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
-import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,16 +37,16 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     public boolean electroEnergetics$hasMotor = false;
 
     @Accessor("assemblyDirection")
-    abstract Direction electroEnergetics$getAssemblyDirection();
+    abstract Direction getAssemblyDirection();
 
     @Inject(method = "capture", at=@At("TAIL"), remap = false)
-    public void electroEnergetics$assemble(Level level, BlockPos pos, CallbackInfoReturnable<oshi.util.tuples.Pair<StructureTemplate.StructureBlockInfo, BlockEntity>> cir) {
+    public void capture(Level level, BlockPos pos, CallbackInfoReturnable<oshi.util.tuples.Pair<StructureTemplate.StructureBlockInfo, BlockEntity>> cir) {
         BlockState state = level.getBlockState(pos);
 
         if (CEEBlocks.PANTOGRAPH.has(state) && level.getBlockEntity(pos) instanceof PantographBlockEntity be) {
 
             Direction facing = state.getValue(PantographBlock.FACING);
-            Direction assemblyDirection = this.electroEnergetics$getAssemblyDirection();
+            Direction assemblyDirection = this.getAssemblyDirection();
             if (facing.getAxis() != assemblyDirection.getAxis())
                 electroEnergetics$sidewaysPantograph = true;
             else {

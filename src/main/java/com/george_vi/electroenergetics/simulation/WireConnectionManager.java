@@ -61,6 +61,11 @@ public class WireConnectionManager {
     Long2ObjectMap<List<NodeConnection>> chunks = new Long2ObjectRBTreeMap<>();
     int nodeID = 0;
 
+    static String cutWireString = "CEECutWire";
+    static String electrocutionCutString = "CEEElectrocutionCut";
+    static String electrocutionString = "ElectrocutionNode";
+    static String electrocutionGroundString = "ElectrocutionGroundNode";
+
     public WireConnectionManager(InfrastructureSavedData sd, Level level) {
         this.sd = sd;
         this.level = level;
@@ -154,9 +159,9 @@ public class WireConnectionManager {
                         if (bestPoint != null) {
                             if (electrocutionEntry == null)
                                 electrocutionEntry = electrocutions.computeIfAbsent(entity, k -> {
-                                    ElectrocutionEntry ee = new ElectrocutionEntry(new AttachedNode(electrocutionNodeID.getAndIncrement(), "ElectrocutionNode"), new Object2DoubleArrayMap<>(16), new Object2ObjectArrayMap<>(16));
+                                    ElectrocutionEntry ee = new ElectrocutionEntry(new AttachedNode(electrocutionNodeID.getAndIncrement(), electrocutionString), new Object2DoubleArrayMap<>(16), new Object2ObjectArrayMap<>(16));
                                     if (entity.onGround()) {
-                                        PositionedAttachedNode groundNode = new PositionedAttachedNode(electrocutionNodeID.getAndIncrement(), "ElectrocutionGroundNode", entity.position());
+                                        PositionedAttachedNode groundNode = new PositionedAttachedNode(electrocutionNodeID.getAndIncrement(), electrocutionGroundString, entity.position());
                                         ee.nodes.put(groundNode, 10);
                                         ee.positions().put(groundNode, entity.position());
                                         builder.connect(ee.centralNode, groundNode, ElectricalProperties.resistor(10));
@@ -164,7 +169,7 @@ public class WireConnectionManager {
                                     }
                                     return ee;
                                 });
-                            AttachedNode cutNode = new AttachedNode(cutElectrocutionNodeID++, "CEEElectrocutionCut");
+                            AttachedNode cutNode = new AttachedNode(cutElectrocutionNodeID++, electrocutionCutString);
                             electrocutionEntry.nodes.put(cutNode, bestResistance);
                             electrocutionEntry.positions.put(cutNode, bestPoint);
                             electrocutionCuts.computeIfAbsent(connection, k -> new ArrayList<>()).add(new CutWireEntry(bestProgress, cutNode, null, null));
@@ -571,14 +576,14 @@ public class WireConnectionManager {
     record ElectrocutionEntry(AttachedNode centralNode, Object2DoubleMap<AttachedNode> nodes, Map<AttachedNode, Vec3> positions) { }
 
     private static AttachedNode createNode(int id) {
-        return new AttachedNode(id, "CEECutWire");
+        return new AttachedNode(id, cutWireString);
     }
 
     private static AttachedNode createFirstNode(long packed) {
-        return new AttachedNode((int) ((packed >> 32) & 0xFFFFFFFFL), "CEECutWire");
+        return new AttachedNode((int) ((packed >> 32) & 0xFFFFFFFFL), cutWireString);
     }
 
     private static AttachedNode createSecondNode(long packed) {
-        return new AttachedNode((int) (packed & 0xFFFFFFFFL), "CEECutWire");
+        return new AttachedNode((int) (packed & 0xFFFFFFFFL), cutWireString);
     }
 }

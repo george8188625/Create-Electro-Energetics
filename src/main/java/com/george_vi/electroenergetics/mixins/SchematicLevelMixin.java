@@ -22,12 +22,12 @@ public class SchematicLevelMixin implements ISchematicInfrastructureList {
     List<SimulatedDeviceInstance> electroEnergetics$devices = new ArrayList<>();
 
     @Override
-    public Map<NodeConnection, WireData> electroEnergetics$getWireConnections() {
+    public Map<NodeConnection, WireData> getWireConnections() {
         return electroEnergetics$wireConnections;
     }
 
     @Override
-    public List<SimulatedDeviceInstance> electroEnergetics$getDevices() {
+    public List<SimulatedDeviceInstance> getDevices() {
         return electroEnergetics$devices;
     }
 }

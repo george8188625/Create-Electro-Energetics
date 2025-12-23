@@ -79,17 +79,17 @@ public class LUSolver {
     public static double[] solve(SparseMatrix A, double[] b) {
         int n = b.length;
         int[] pivot = new int[n];
-
+        double[] tempIK = new double[n];
         for (int i = 0; i < n; i++) pivot[i] = i;
 
-        // Apply the same swaps to b that you apply to A
         for (int k = 0; k < n; k++) {
 
-            // pivot search
             int max = k;
             double pivotMaxValue = Math.abs(A.getValue(k, k));
             for (int i = k + 1; i < n; i++) {
-                double val = Math.abs(A.getValue(i, k));
+                double v = A.getValue(i, k);
+                tempIK[i] = v;
+                double val = Math.abs(v);
                 if (val > pivotMaxValue) {
                     max = i;
                     pivotMaxValue = val;
@@ -98,25 +98,22 @@ public class LUSolver {
 
             if (pivotMaxValue < 1e-12)
                 return new double[n];
+            if (k != max)
+                A.swapRows(k, max);
 
-            // swap rows A[k] <-> A[max]
-            A.swapRows(k, max);
 
-            // swap b[k] <-> b[max]
             double tb = b[k];
             b[k] = b[max];
             b[max] = tb;
 
-            // swap pivot indices (optional but kept)
             int tp = pivot[k];
             pivot[k] = pivot[max];
             pivot[max] = tp;
 
-            // elimination
-
             Int2DoubleMap rowK = A.getRow(k);
             for (int i = k + 1; i < n; i++) {
-                double aik = A.getValue(i,k);
+                // If the rows weren't swapped, use the values from the previous loop that did an A[i][k] lookup. This reduces map lookups.
+                double aik = k == max ? tempIK[i] : A.getValue(i, k);
                 if (aik == 0) continue;
 
                 double m = aik / rowK.get(k);
