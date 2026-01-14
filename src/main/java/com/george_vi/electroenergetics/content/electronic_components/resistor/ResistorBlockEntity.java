@@ -75,6 +75,8 @@ public class ResistorBlockEntity extends SmartBlockEntity {
 
         if (deviceInstance != null && deviceInstance.extraData() instanceof ResistorDevice.DataHolder dataHolder) {
             dataHolder.properties.resistance = Math.max(0.01, indexToResistance(resistance.value));
+        } else if (deviceInstance != null && deviceInstance.extraData() instanceof CreativeResistorDevice.DataHolder dataHolder) {
+            dataHolder.properties.resistance = Math.max(0.01, indexToResistance(resistance.value));
         }
     }
 

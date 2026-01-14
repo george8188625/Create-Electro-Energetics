@@ -62,8 +62,6 @@ public class CEECommands {
             );
 
         dispatcher.register(root);
-
-
     }
 
     public static int performance(CommandContext<CommandSourceStack> ctx) {

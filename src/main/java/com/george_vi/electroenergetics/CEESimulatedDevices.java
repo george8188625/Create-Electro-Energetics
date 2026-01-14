@@ -13,6 +13,7 @@ import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorDevic
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpDevice;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorDevice;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeDevice;
+import com.george_vi.electroenergetics.content.electronic_components.resistor.CreativeResistorDevice;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorDevice;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterDevice;
 import com.george_vi.electroenergetics.content.energy_meter.TriPolarEnergyMeterDevice;
@@ -63,6 +64,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice<?> HV_SWITCH = register(new HVSwitchDevice(CreateElecrtoEnergetics.rl("high_voltage_switch")));
     public static final SimulatedDevice<?> DIODE = register(new DiodeDevice(CreateElecrtoEnergetics.rl("diode")));
     public static final SimulatedDevice<?> RESISTOR = register(new ResistorDevice(CreateElecrtoEnergetics.rl("resistor")));
+    public static final SimulatedDevice<?> CREATIVE_RESISTOR = register(new CreativeResistorDevice(CreateElecrtoEnergetics.rl("creative_resistor")));
     public static final SimulatedDevice<?> FUSE_HOLDER = register(new FuseHolderDevice(CreateElecrtoEnergetics.rl("fuse_holder")));
     public static final SimulatedDevice<?> BUZZER = register(new BuzzerDevice(CreateElecrtoEnergetics.rl("buzzer")));
     public static final SimulatedDevice<?> RELAY = register(new RelayDevice(CreateElecrtoEnergetics.rl("relay")));

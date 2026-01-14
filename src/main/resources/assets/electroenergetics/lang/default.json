@@ -122,5 +122,8 @@
   "electroenergetics.display_source.energy_meter": "Total Energy",
   "electroenergetics.display_source.wattmeter": "Active Power",
   "electroenergetics.display_source.voltage": "Voltage",
-  "electroenergetics.display_source.amperage": "Amperage"
+  "electroenergetics.display_source.amperage": "Amperage",
+
+  "electroenergetics.electric_train_sound.modern": "Modern",
+  "electroenergetics.electric_train_sound.dc": "Old DC"
 }

@@ -107,14 +107,12 @@ public class HVSwitchBlock extends SimpleDeviceBlock implements IBE<HVSwitchBloc
         if (state.getValue(POWERED) != powered) {
             level.setBlockAndUpdate(pos, state.setValue(POWERED, powered));
 
-            if (!powered)
-                return;
             if (level instanceof ServerLevel serverLevel) {
                 SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
                 if (device != null && device.extraData() instanceof HVSwitchDevice.DataHolder dataHolder) {
                     if (level.getBlockEntity(pos) instanceof HVSwitchBlockEntity be) {
-                        dataHolder.isConnecting = !be.connected;
-                        be.connected = !be.connected;
+                        dataHolder.isConnecting = !powered;
+                        be.connected = !powered;
                         be.sendData();
                     }
                 }

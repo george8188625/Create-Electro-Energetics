@@ -1,12 +1,15 @@
 package com.george_vi.electroenergetics.content.railway_electrification.sound_effects;
 
+import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundBehaviour;
-import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ModernElectricTrainSoundBehaviour;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.trains.entity.Train;
 import net.createmod.catnip.data.Pair;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,4 +50,13 @@ public class ElectricTrainSounds {
         }
     }
 
+    @Unique
+    public static void addSMBlock(Block block, Set<TrainSoundModifier> smBlocks) {
+        for (ElectricTrainSoundType soundType : CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE) {
+            if (soundType.validBlocks.get().containsKey(block)) {
+                smBlocks.add(new TrainSoundModifier(block, soundType.validBlocks.get().getInt(block), soundType));
+                return;
+            }
+        }
+    }
 }

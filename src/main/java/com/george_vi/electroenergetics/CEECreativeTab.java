@@ -72,6 +72,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.CAPACITOR.asStack());
                         output.accept(CEEBlocks.POTENTIOMETER.asStack());
                         output.accept(CEEBlocks.RESISTOR.asStack());
+                        output.accept(CEEBlocks.CREATIVE_RESISTOR.asStack());
                         output.accept(CEEBlocks.HIGH_VOLTAGE_SIGN.asStack());
                         output.accept(CEEBlocks.ELECTRIC_SHOCK_SIGN.asStack());
                         output.accept(CEEBlocks.GROUNDING_SIGN.asStack());

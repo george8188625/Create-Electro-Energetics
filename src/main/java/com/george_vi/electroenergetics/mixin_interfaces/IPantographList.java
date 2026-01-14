@@ -1,15 +1,20 @@
 package com.george_vi.electroenergetics.mixin_interfaces;
 
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
 
-import java.util.List;
+import java.util.*;
 
 public interface IPantographList {
     void setPantographList(List<TrainPantographEntry> newPantographList);
 
     List<TrainPantographEntry> getPantographList();
+
+    Set<TrainSoundModifier> getSoundModifyingBlocks();
+
 
     default void changePantographState(BlockPos localPos, boolean active) {
         List<TrainPantographEntry> pantographList = getPantographList();
@@ -30,4 +35,5 @@ public interface IPantographList {
     boolean hasElectricMotor();
 
     void setElectricMotor(boolean v);
+
 }

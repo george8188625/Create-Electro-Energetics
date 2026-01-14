@@ -123,10 +123,7 @@ public class MicroTickedSimulationTicker {
             for (Long2ObjectMap.Entry<MicroTickingElectricalProperties> entry : circuitBuilder.microTickers.long2ObjectEntrySet()) {
                 int first = DataPacker.unpackFirstI(entry.getLongKey());
                 int second = DataPacker.unpackSecondI(entry.getLongKey());
-                if (i != 0)
-                    entry.getValue().tick(allVoltages, i, microTickBits, microTicks, first, second);
-                else
-                    entry.getValue().firstTick(i, microTickBits, microTicks, first, second);
+                entry.getValue().tick(allVoltages, i, microTickBits, microTicks, first, second);
             }
             for (Network network : allNetworks) {
                 network.formMatrix();

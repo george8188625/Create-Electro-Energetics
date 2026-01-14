@@ -35,6 +35,7 @@
     "electroenergetics:pantograph",
     "electroenergetics:diode",
     "electroenergetics:resistor",
+    "electroenergetics:creative_resistor",
     "electroenergetics:fuse_holder",
     "electroenergetics:buzzer",
     "electroenergetics:relay",

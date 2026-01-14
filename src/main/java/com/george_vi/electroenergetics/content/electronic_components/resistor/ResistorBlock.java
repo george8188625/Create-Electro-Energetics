@@ -20,13 +20,16 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.Map;
 
 public class ResistorBlock extends DirectionalRolledDeviceBlock implements IBE<ResistorBlockEntity> {
-    public ResistorBlock(Properties properties) {
+    public final boolean creative;
+
+    public ResistorBlock(Properties properties, boolean creative) {
         super(properties);
+        this.creative = creative;
     }
 
     @Override
     protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.RESISTOR;
+        return creative ? CEESimulatedDevices.CREATIVE_RESISTOR : CEESimulatedDevices.RESISTOR;
     }
 
     @Override

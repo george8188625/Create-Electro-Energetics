@@ -409,6 +409,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<AlternatorBrushesBlock> ALTERNATOR_BRUSHES = REGISTRATE.block("alternator_brushes", AlternatorBrushesBlock::new)
+            .tag(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_sound_modifier")))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(BlockStateGen.directionalBlockProvider(true))
@@ -471,7 +472,7 @@ public class CEEBlocks {
             .build()
             .register();
 
-    public static final BlockEntry<ResistorBlock> RESISTOR = REGISTRATE.block("resistor", ResistorBlock::new)
+    public static final BlockEntry<ResistorBlock> RESISTOR = REGISTRATE.block("resistor", properties -> new ResistorBlock(properties, false))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/resistor")))
@@ -480,6 +481,17 @@ public class CEEBlocks {
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/resistor")))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addMaxPower(() -> 1300)))
+            .build()
+            .register();
+
+    public static final BlockEntry<ResistorBlock> CREATIVE_RESISTOR = REGISTRATE.block("creative_resistor", properties -> new ResistorBlock(properties, true))
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_PURPLE))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/creative_resistor")))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/creative_resistor")))
+            .properties(p -> p.rarity(Rarity.EPIC))
             .build()
             .register();
 

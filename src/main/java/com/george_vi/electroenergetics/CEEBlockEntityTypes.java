@@ -123,7 +123,7 @@ public class CEEBlockEntityTypes {
             .register();
 
     public static final BlockEntityEntry<ResistorBlockEntity> RESISTOR = REGISTRATE.blockEntity("resistor", ResistorBlockEntity::new)
-            .validBlock(CEEBlocks.RESISTOR::get)
+            .validBlocks(CEEBlocks.RESISTOR::get, CEEBlocks.CREATIVE_RESISTOR::get)
             .renderer(() -> ResistorRenderer::new)
             .register();
 

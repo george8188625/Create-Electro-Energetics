@@ -5,6 +5,8 @@ import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.contraptions.Contraption;
@@ -25,12 +27,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Mixin(CarriageContraption.class)
 public abstract class CarriageContraptionMixin extends Contraption implements IPantographList {
     @Unique
     public List<TrainPantographEntry> electroEnergetics$pantographs = new ArrayList<>();
+    @Unique
+    public Set<TrainSoundModifier> electroEnergetics$soundModifyingBlocks = new HashSet<>();
     @Unique
     public boolean electroEnergetics$sidewaysPantograph = false;
     @Unique
@@ -59,6 +65,7 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
         }
         if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_electric_motor"))))
             electroEnergetics$hasMotor = true;
+        ElectricTrainSounds.addSMBlock(state.getBlock(), electroEnergetics$soundModifyingBlocks);
     }
 
     @Override
@@ -79,5 +86,10 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     @Override
     public void setElectricMotor(boolean v) {
         electroEnergetics$hasMotor = v;
+    }
+
+    @Override
+    public Set<TrainSoundModifier> getSoundModifyingBlocks() {
+        return electroEnergetics$soundModifyingBlocks;
     }
 }

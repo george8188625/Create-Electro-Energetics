@@ -33,7 +33,7 @@ public class DiodeDevice extends SimulatedDevice<DiodeDevice.DataHolder> {
 //        double currentSource = iS * (Math.exp(extraData.voltage / vT) - 1) - g * extraData.voltage;
 //
         bridges.builder(pos)
-                .connect(0, 1, new DiodeProperties(extraData));
+                .connect(0, 1, extraData.properties);
 //                .resistor(0, 1, resistance)
 //                .idealCurrentSource(0, 1, -currentSource - iEqCap);
     }
@@ -48,6 +48,7 @@ public class DiodeDevice extends SimulatedDevice<DiodeDevice.DataHolder> {
         DataHolder dataHolder = new DataHolder();
         dataHolder.voltage = tag.getDouble("Voltage");
         dataHolder.temp = tag.getFloat("Temp");
+        dataHolder.properties = new DiodeProperties(dataHolder);
         return dataHolder;
     }
 
@@ -62,6 +63,7 @@ public class DiodeDevice extends SimulatedDevice<DiodeDevice.DataHolder> {
     public static class DataHolder {
         public double voltage;
         public float temp;
+        public DiodeProperties properties;
     }
 
     public static class DiodeProperties extends MicroTickingElectricalProperties {
@@ -70,11 +72,6 @@ public class DiodeDevice extends SimulatedDevice<DiodeDevice.DataHolder> {
         public DiodeProperties(DataHolder dataHolder) {
             super();
             this.extraData = dataHolder;
-        }
-
-        @Override
-        public void firstTick(int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
-            tickDiode(totalMicroTicks);
         }
 
         @Override
@@ -104,8 +101,6 @@ public class DiodeDevice extends SimulatedDevice<DiodeDevice.DataHolder> {
             double currentSource = iS * (Math.exp(extraData.voltage / vT) - 1) - g * extraData.voltage;
             this.resistance = resistance;
             this.currentSource = -currentSource - iEqCap;
-//            this.currentSource = 0;
-//            this.resistance = extraData.voltage > 0 ? 1 : 9999999;
         }
     }
 }

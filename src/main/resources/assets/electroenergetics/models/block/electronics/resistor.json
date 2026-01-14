@@ -1,10 +1,9 @@
 {
 	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
-	"texture_size": [32, 32],
 	"textures": {
-		"0": "electroenergetics:block/electronic_components",
-		"particle": "electroenergetics:block/electronic_components"
+		"0": "electroenergetics:block/resistor",
+		"particle": "electroenergetics:block/resistor"
 	},
 	"elements": [
 		{
@@ -12,12 +11,12 @@
 			"to": [13, 4, 10],
 			"rotation": {"angle": 0, "axis": "y", "origin": [9, 0, 6]},
 			"faces": {
-				"north": {"uv": [0, 0, 5, 2], "texture": "#0"},
-				"east": {"uv": [5, 0, 7, 2], "texture": "#0"},
-				"south": {"uv": [5, 0, 0, 2], "texture": "#0"},
-				"west": {"uv": [5, 0, 7, 2], "texture": "#0"},
-				"up": {"uv": [5, 0, 0, 2], "texture": "#0"},
-				"down": {"uv": [5, 0, 0, 2], "texture": "#0"}
+				"north": {"uv": [0, 0, 10, 4], "texture": "#0"},
+				"east": {"uv": [10, 0, 14, 4], "texture": "#0"},
+				"south": {"uv": [10, 4, 0, 0], "texture": "#0"},
+				"west": {"uv": [10, 0, 14, 4], "texture": "#0"},
+				"up": {"uv": [10, 0, 0, 4], "texture": "#0"},
+				"down": {"uv": [10, 0, 0, 4], "texture": "#0"}
 			}
 		},
 		{
@@ -25,12 +24,12 @@
 			"to": [3, 3, 9],
 			"rotation": {"angle": 0, "axis": "y", "origin": [6, 8, 14]},
 			"faces": {
-				"north": {"uv": [5, 2.5, 6, 3.5], "texture": "#0"},
-				"east": {"uv": [5, 2.5, 6, 3.5], "texture": "#0"},
-				"south": {"uv": [5, 2.5, 6, 3.5], "texture": "#0"},
-				"west": {"uv": [5, 2.5, 6, 3.5], "texture": "#0"},
-				"up": {"uv": [5, 2.5, 6, 3.5], "rotation": 270, "texture": "#0"},
-				"down": {"uv": [5, 2.5, 6, 3.5], "rotation": 90, "texture": "#0"}
+				"north": {"uv": [0, 9, 2, 11], "texture": "#0"},
+				"east": {"uv": [0, 9, 2, 11], "texture": "#0"},
+				"south": {"uv": [0, 9, 2, 11], "texture": "#0"},
+				"west": {"uv": [0, 9, 2, 11], "texture": "#0"},
+				"up": {"uv": [0, 9, 2, 11], "rotation": 270, "texture": "#0"},
+				"down": {"uv": [0, 9, 2, 11], "rotation": 90, "texture": "#0"}
 			}
 		},
 		{
@@ -38,12 +37,12 @@
 			"to": [15, 3, 9],
 			"rotation": {"angle": 0, "axis": "y", "origin": [18, 8, 14]},
 			"faces": {
-				"north": {"uv": [5, 2.5, 6, 3.5], "texture": "#0"},
-				"east": {"uv": [5, 2.5, 6, 3.5], "texture": "#0"},
-				"south": {"uv": [5, 2.5, 6, 3.5], "texture": "#0"},
-				"west": {"uv": [5, 2.5, 6, 3.5], "texture": "#0"},
-				"up": {"uv": [5, 2.5, 6, 3.5], "rotation": 270, "texture": "#0"},
-				"down": {"uv": [5, 2.5, 6, 3.5], "rotation": 90, "texture": "#0"}
+				"north": {"uv": [0, 9, 2, 11], "texture": "#0"},
+				"east": {"uv": [0, 9, 2, 11], "texture": "#0"},
+				"south": {"uv": [0, 9, 2, 11], "texture": "#0"},
+				"west": {"uv": [0, 9, 2, 11], "texture": "#0"},
+				"up": {"uv": [0, 9, 2, 11], "rotation": 270, "texture": "#0"},
+				"down": {"uv": [0, 9, 2, 11], "rotation": 90, "texture": "#0"}
 			}
 		}
 	],

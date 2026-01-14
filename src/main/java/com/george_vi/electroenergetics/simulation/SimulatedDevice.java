@@ -8,6 +8,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * This is a type class for devices.
+ * Devices are data structures for blocks with electric behaviour that allows them to tick, even tho they are unloaded.
+ * Devices use a separate object for storing data.
+ * @param <T> the data holder class type
+ */
 public abstract class SimulatedDevice<T> {
     final ResourceLocation id;
     public SimulatedDevice(ResourceLocation id) {
@@ -36,8 +42,19 @@ public abstract class SimulatedDevice<T> {
      */
     public void postTick(BlockPos pos, Level level, SimulationResults results, T extraData) {}
 
+    /**
+     * Reads the data for this device from an nbt format.
+     * @param tag the serialized data
+     * @return the data holder object for this device
+     */
     public abstract T read(CompoundTag tag);
 
+
+    /**
+     * Writes the data for this device into an nbt format.
+     * @param extraData the data holder object for this device
+     * @return the serialized data
+     */
     public abstract CompoundTag write(T extraData);
 
     protected void showOverheatingParticles(Level level, BlockPos pos) {
@@ -62,6 +79,9 @@ public abstract class SimulatedDevice<T> {
      * @return new temp value in abstract units
      */
     protected float updateTemp(float temp, float heat) {
+        if (Float.isNaN(temp))
+            temp = 0;
+
         float newTemp = heat + 30f;
         newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
         newTemp = Math.max(temp - 33.3f + newTemp, 0);

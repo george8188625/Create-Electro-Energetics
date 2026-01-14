@@ -46,6 +46,32 @@
     ],
     "subtitle": "electroenergetics.subtitle.electric_train"
   },
+  "dc_train": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:dc_train"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train_relay": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train_relay"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.train_relay"
+  },
+  "dc_train_start": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:dc_train_start"
+      }
+    ]
+  },
   "buzzer": {
     "sounds": [
       {

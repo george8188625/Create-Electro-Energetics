@@ -57,13 +57,12 @@ public class CreativeBatteryDevice extends SimulatedDevice<CreativeBatteryDevice
         double voltage;
 
         public ACSource(double voltage) {
-            this.voltageSource = voltage;
             this.voltage = voltage;
         }
 
         @Override
         public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
-            this.voltageSource = Math.sin((microTick / (totalMicroTicks - 1f)) * Mth.TWO_PI) * voltage;
+            this.voltageSource = Math.cos(((double) microTick / (totalMicroTicks)) * Mth.TWO_PI) * voltage;
         }
     }
 }

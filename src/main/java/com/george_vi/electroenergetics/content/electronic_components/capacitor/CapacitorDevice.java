@@ -26,7 +26,7 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
         bridges.builder(pos)
                 .node(2)
-                .connect(0, 2, new CapacitorProperties(extraData))
+                .connect(0, 2, extraData.properties)
                 .resistor(1, 2, 0.1);
     }
 
@@ -57,6 +57,7 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
         dataHolder.lastVoltage = tag.getDouble("LastVoltage");
         dataHolder.capacitance = tag.getDouble("Capacitance");
         dataHolder.temp = tag.getFloat("Temp");
+        dataHolder.properties = new CapacitorProperties(dataHolder);
         return dataHolder;
     }
 
@@ -73,6 +74,7 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
         public double lastVoltage;
         public double capacitance;
         public float temp;
+        public CapacitorProperties properties;
     }
 
     static class CapacitorProperties extends MicroTickingElectricalProperties {
@@ -80,11 +82,6 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
 
         CapacitorProperties(DataHolder extraData) {
             this.extraData = extraData;
-        }
-
-        @Override
-        public void firstTick(int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
-            tickCapacitor(totalMicroTicks);
         }
 
         @Override

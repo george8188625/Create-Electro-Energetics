@@ -1,10 +1,9 @@
 {
 	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
-	"texture_size": [32, 32],
 	"textures": {
-		"0": "electroenergetics:block/electronic_components",
-		"particle": "electroenergetics:block/electronic_components"
+		"0": "electroenergetics:block/resistor",
+		"particle": "electroenergetics:block/resistor"
 	},
 	"elements": [
 		{
@@ -12,10 +11,10 @@
 			"to": [12, 4.1, 10.1],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 6]},
 			"faces": {
-				"north": {"uv": [11.5, 0, 12, 2], "texture": "#0"},
-				"south": {"uv": [12, 0, 11.5, 2], "texture": "#0"},
-				"up": {"uv": [12, 0, 11.5, 2], "texture": "#0"},
-				"down": {"uv": [12, 0, 11.5, 2], "texture": "#0"}
+				"north": {"uv": [15, 0, 16, 4], "texture": "#0"},
+				"south": {"uv": [16, 0, 15, 4], "texture": "#0"},
+				"up": {"uv": [16, 0, 15, 4], "texture": "#0"},
+				"down": {"uv": [16, 0, 15, 4], "texture": "#0"}
 			}
 		}
 	],

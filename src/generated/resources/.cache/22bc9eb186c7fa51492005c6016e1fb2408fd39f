@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-14T20:05:42.1542506	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-01-11T19:13:38.9243433	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -13,6 +13,7 @@ b793a6b89e2676a1eddf656d88e9bcb6169db8ec assets/electroenergetics/blockstates/bu
 8e6bf7948c266c6716de53ce64432b1455dfaa9b assets/electroenergetics/blockstates/connector.json
 111f7a1d3d317e469b5f845f8ec43c17156d0ff6 assets/electroenergetics/blockstates/converter.json
 0c00844e273dc7e253ba71c93d39a1b27892e08b assets/electroenergetics/blockstates/creative_battery.json
+81bfdf658c703f4a15c78ff911a7d2b3825c0b81 assets/electroenergetics/blockstates/creative_resistor.json
 7a91c60a2b82a797df9673afb3038750aab05079 assets/electroenergetics/blockstates/cut_off_switch.json
 bffa4f2344c47f7897ce938e353c84ed5357aa4d assets/electroenergetics/blockstates/diode.json
 ac02f30e421facb60a8ecb82196b35d71753b573 assets/electroenergetics/blockstates/double_connector.json
@@ -45,8 +46,8 @@ ac08b8dc235db72e444198001cd4f366b1a89eee assets/electroenergetics/blockstates/tr
 d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tri_polar_energy_meter.json
 1890500dc4c769a55aeb82cabdc670382dddad47 assets/electroenergetics/blockstates/voltage_regulator.json
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
-c61576d849723893ec0f16dc288c4aad561c56cd assets/electroenergetics/lang/en_ud.json
-b847e1f5d4e35115a26fb0f9768e1f3f21b65d74 assets/electroenergetics/lang/en_us.json
+ba61904bc8bdbf80331f3c89808a0c62f1eded84 assets/electroenergetics/lang/en_ud.json
+7a6417209e6d3085317fb8a1e9c5b3e8694b0878 assets/electroenergetics/lang/en_us.json
 765c328111edefba08ab581cf90002ac3163c985 assets/electroenergetics/models/block/creative_battery.json
 41220aad614f77bd1e09d645e147029acb992cf5 assets/electroenergetics/models/block/creative_battery_ac.json
 f2a0a8c7269e5b0a9318f61027d189a0c74da680 assets/electroenergetics/models/block/magnet.json
@@ -67,6 +68,7 @@ c7d07f24bab67c649ff40b57d6501614ef6cbcee assets/electroenergetics/models/item/cl
 aed7b310df6ccbc8c6c8fd919262df0be3e70030 assets/electroenergetics/models/item/copper_wire.json
 ab88ff9547f3ff78983f37331879910dbf4fc387 assets/electroenergetics/models/item/copper_wire_spool.json
 84e8a57ec6cfff927926de7ef5d2e45ac5d2ad55 assets/electroenergetics/models/item/creative_battery.json
+e49b9d0a2169c5305de638fd5489ad37982826f6 assets/electroenergetics/models/item/creative_resistor.json
 d580c44ec158271b7a9b7c54369413ee54bc36a2 assets/electroenergetics/models/item/creative_wire_spool.json
 748a3dd0bf573782516495006cd275a5f9b76101 assets/electroenergetics/models/item/cut_off_switch.json
 dd1ca09e01400dd037f629c3e39c86357004615e assets/electroenergetics/models/item/diode.json
@@ -127,6 +129,7 @@ fa50eb47147fa7e1fcb82f92b96592128a4e853f data/electroenergetics/loot_table/block
 6e77adadff5e7670eba32084b814220f559f3a10 data/electroenergetics/loot_table/blocks/connector.json
 3e6804c454d879c8319e9d189a1a3f7a51bc98da data/electroenergetics/loot_table/blocks/converter.json
 ae82471c7de0ba6cb72264881a1b328f52e4fb09 data/electroenergetics/loot_table/blocks/creative_battery.json
+86b519d848b64904cf26958b722001e1b8c69e82 data/electroenergetics/loot_table/blocks/creative_resistor.json
 41990f236e3dce7706971dfdc203574da14d8c8d data/electroenergetics/loot_table/blocks/cut_off_switch.json
 3aca07842c3968b8e5bd8383b7312e6dc9d34b00 data/electroenergetics/loot_table/blocks/diode.json
 28fb564036ec39b54390f44193707d150a34cf7a data/electroenergetics/loot_table/blocks/double_connector.json
@@ -160,4 +163,5 @@ f3eee256afdc2c974db137095ff397fb1d928acc data/electroenergetics/loot_table/block
 2c47b9045a3f3a0393378164ab96e5df3a4d96af data/electroenergetics/loot_table/blocks/voltage_regulator.json
 cebbbb548b3077845ff201773a97a64bd08ed537 data/electroenergetics/loot_table/blocks/voltmeter.json
 98bbd0520dae6a99af74617611f47379d90ede27 data/electroenergetics/tags/block/train_electric_motor.json
-7deafa619681ecdf20aa0e31d1b8917c3d1fbfd5 data/minecraft/tags/block/mineable/pickaxe.json
+af1733004e15bdb5fa0f7f5cbdd270426e541bf2 data/electroenergetics/tags/block/train_sound_modifier.json
+c9aedcbc4002280870ecb9ead2140f77e17d09c7 data/minecraft/tags/block/mineable/pickaxe.json

@@ -31,11 +31,9 @@ public class ConcretePoleDevice extends SimulatedDevice<ConcretePoleDevice.DataH
         }
 
         if (extraData.bottom) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
-
             int length = 0;
             for (int i = 1; i + pos.getY() < level.getMaxBuildHeight(); i++) {
-                SimulatedDeviceInstance<?> di = sd.getDevice(pos.above(i));
+                SimulatedDeviceInstance<?> di = bridges.getSD().getDevice(pos.above(i));
                 if (di == null || di.simulatedDevice() != CEESimulatedDevices.CONCRETE_POLE || !(di.extraData() instanceof DataHolder dataHolder))
                     return;
                 else if (dataHolder.top) {
