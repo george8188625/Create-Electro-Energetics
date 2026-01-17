@@ -43,7 +43,7 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     public boolean electroEnergetics$hasMotor = false;
 
     @Accessor("assemblyDirection")
-    abstract Direction getAssemblyDirection();
+    abstract Direction electroEnergetics$getAssemblyDirection();
 
     @Inject(method = "capture", at=@At("TAIL"), remap = false)
     public void capture(Level level, BlockPos pos, CallbackInfoReturnable<oshi.util.tuples.Pair<StructureTemplate.StructureBlockInfo, BlockEntity>> cir) {
@@ -52,7 +52,7 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
         if (CEEBlocks.PANTOGRAPH.has(state) && level.getBlockEntity(pos) instanceof PantographBlockEntity be) {
 
             Direction facing = state.getValue(PantographBlock.FACING);
-            Direction assemblyDirection = this.getAssemblyDirection();
+            Direction assemblyDirection = this.electroEnergetics$getAssemblyDirection();
             if (facing.getAxis() != assemblyDirection.getAxis())
                 electroEnergetics$sidewaysPantograph = true;
             else {
