@@ -1,5 +1,9 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
+/**
+ * MicroTickingEP May NEVER access ANY blocks, BEs, entites, levels, etc.
+ * This is because electrical simulation is multithreaded.
+ */
 public abstract class MicroTickingElectricalProperties extends ElectricalProperties {
     MicroTickingInvertedElectricalProperties inverted = null;
     public MicroTickingElectricalProperties() {

@@ -15,7 +15,6 @@ import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -51,14 +50,12 @@ public class GameEvents {
 
     @SubscribeEvent
     public static void tickLevel(LevelTickEvent.Pre event) {
-        if (event.getLevel() instanceof ServerLevel level)
-            MicroTickedSimulationTicker.tick(level);
+//        if (event.getLevel() instanceof ServerLevel level)
+//            MicroTickedSimulationTicker.tick(level);
     }
 
     @SubscribeEvent
     public static void tickServer(ServerTickEvent.Pre event) {
-        MicroTickedSimulationTicker.profiler.clear();
-        MicroTickedSimulationTicker.stats.clear();
     }
 
     @OnlyIn(Dist.CLIENT)

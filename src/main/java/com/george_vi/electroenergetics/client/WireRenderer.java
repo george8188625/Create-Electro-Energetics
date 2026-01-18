@@ -48,7 +48,7 @@ public class WireRenderer {
         if (!(levelRenderer instanceof LevelRendererAccessor acc))
             return;
 
-        MultiBufferSource buffer = acc.getRenderBuffers().bufferSource();
+        MultiBufferSource buffer = acc.electroEnergetics$getRenderBuffers().bufferSource();
 
         Map<InWorldNode, List<Vec3>> outerInsulatorJumpers = new HashMap<>();
 

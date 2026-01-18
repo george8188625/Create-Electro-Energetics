@@ -26,7 +26,7 @@ import java.util.Set;
 @Mixin(FluidPropagator.class)
 public class FluidPropagatorMixin {
     @Inject(method = "propagateChangedPipe", at=@At("TAIL"), remap = false)
-    private static void propagateChangedPipe(LevelAccessor world, BlockPos pipePos, BlockState pipeState, CallbackInfo ci) {
+    private static void electroEnergetics$propagateChangedPipe(LevelAccessor world, BlockPos pipePos, BlockState pipeState, CallbackInfo ci) {
         // Create decided it was a good idea to hardcode the default mechanical pump here, so had to do this for electrical pumps to work
 
         List<Pair<Integer, BlockPos>> frontier = new ArrayList<>();

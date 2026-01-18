@@ -15,6 +15,7 @@
     "CarriageContraptionMixin",
     "CarriageMixin",
     "FluidPropagatorMixin",
+    "MinecraftServerMixin",
     "SchematicLevelMixin",
     "SchematicPrinterMixin",
     "StructureTemplateMixin",

@@ -4,10 +4,15 @@ import java.util.*;
 
 
 public class SimulatorProfiler {
-    private final ResultEntry root = new ResultEntry("(root)");
+    private final ResultEntry root = new ResultEntry("r");
     private final Deque<ResultEntry> entryStack = new ArrayDeque<>();
     private final Deque<Long> startTimes = new ArrayDeque<>();
     private long profilerOverheadNanos = 0L;
+    private long threadedNanos = 0L;
+
+    public SimulatorProfiler() {
+
+    }
 
     public void push(String id) {
         long t0 = System.nanoTime();
@@ -43,10 +48,21 @@ public class SimulatorProfiler {
         entryStack.clear();
         startTimes.clear();
         profilerOverheadNanos = 0L;
+        threadedNanos = 0L;
     }
 
     public List<ResultEntry> getResults() {
         return root.childrenList();
+    }
+
+    public long getThreadedNanos() {
+        return threadedNanos;
+    }
+
+    public void addThreadedNanos(long n) {
+        synchronized (this) { // I don't know if this is required, but I think this is safer.
+            threadedNanos += n;
+        }
     }
 
     public long getProfilerOverheadNanos() {

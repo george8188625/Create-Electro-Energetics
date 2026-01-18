@@ -45,7 +45,7 @@ public class CarriageMixin implements IPantographList {
     private Train train;
 
     @Inject(method = "read(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/HolderLookup$Provider;Lcom/simibubi/create/content/trains/graph/TrackGraph;Lcom/simibubi/create/content/trains/graph/DimensionPalette;)Lcom/simibubi/create/content/trains/entity/Carriage;", at=@At("RETURN"), remap = false)
-    private static void read(CompoundTag tag, HolderLookup.Provider registries, TrackGraph graph, DimensionPalette dimensions, CallbackInfoReturnable<Carriage> cir) {
+    private static void electroEnergetics$read(CompoundTag tag, HolderLookup.Provider registries, TrackGraph graph, DimensionPalette dimensions, CallbackInfoReturnable<Carriage> cir) {
         Carriage carriage = cir.getReturnValue();
         List<TrainPantographEntry> pantographs = new ArrayList<>();
         NBTHelper.iterateCompoundList(tag.getList("CEEPantographs", Tag.TAG_COMPOUND), pt -> {
@@ -60,7 +60,7 @@ public class CarriageMixin implements IPantographList {
     }
 
     @Inject(method = "setContraption", at=@At("TAIL"), remap = false)
-    public void setContraption(Level level, CarriageContraption contraption, CallbackInfo ci) {
+    public void electroEnergetics$setContraption(Level level, CarriageContraption contraption, CallbackInfo ci) {
         this.electroEnergetics$pantographs = ((IPantographList)contraption).getPantographList();
         this.electroEnergetics$hasMotor = ((IPantographList)contraption).hasElectricMotor();
         this.electroEnergetics$soundModifyingBlocks = ((IPantographList)contraption).getSoundModifyingBlocks();
@@ -80,7 +80,7 @@ public class CarriageMixin implements IPantographList {
     }
 
     @Inject(method = "write(Lcom/simibubi/create/content/trains/graph/DimensionPalette;Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/nbt/CompoundTag;", at=@At("RETURN"), remap = false)
-    public void write(DimensionPalette dimensions, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
+    public void electroEnergetics$write(DimensionPalette dimensions, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
         CompoundTag tag = cir.getReturnValue();
         ListTag pantographTag = new ListTag();
         for (TrainPantographEntry e : List.copyOf(electroEnergetics$pantographs)) {
@@ -95,22 +95,6 @@ public class CarriageMixin implements IPantographList {
         tag.putBoolean("CEEHasElectricMotor", electroEnergetics$hasMotor);
     }
 
-//
-//    @Inject(method = "setTrain", at=@At("HEAD"), remap = false)
-//    public void setTrain(Train train, CallbackInfo ci) {
-//        if (electroEnergetics$soundModifyingBlocks.isEmpty())
-//            return;
-//        Set<TrainSoundModifier> trainSMBlocks = ((ICEETrainExtension)train).getSoundModifyingBlocks();
-//        trainSMBlocks.addAll(electroEnergetics$soundModifyingBlocks);
-//        TrainSoundModifier choice = null;
-//        for (TrainSoundModifier sm : trainSMBlocks) {
-//            if (choice == null || choice.priority() < sm.priority())
-//                choice = sm;
-//        }
-//
-//        if (choice != null)
-//            ((ICEETrainExtension) train).setSoundType(choice.soundType());
-//    }
 
     @Override
     public void setPantographList(List<TrainPantographEntry> newPantographList) {

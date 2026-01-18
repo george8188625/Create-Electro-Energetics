@@ -10,6 +10,9 @@ import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
+import com.george_vi.electroenergetics.simulation.simulator.SimulatorProfiler;
+import com.george_vi.electroenergetics.simulation.util.WorkerThread;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
@@ -28,6 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.Future;
 
 public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, SimulatedDeviceInstance<?>> DEVICES = new TreeMap<>();
@@ -45,6 +49,12 @@ public class InfrastructureSavedData extends SavedData {
     ServerLevel level;
     WireConnectionManager wireConnectionManager;
     public SimulationResults lastResults;
+    public CircuitBuilder circuitBuilder;
+    public SimulationStats stats;
+    public List<SimulatorProfiler.ResultEntry> lastProfilerResults;
+    public SimulationStats lastStats;
+
+    public Future<SimulationResults> future = null;
 
     public static final Logger LOGGER = LogUtils.getLogger();
 

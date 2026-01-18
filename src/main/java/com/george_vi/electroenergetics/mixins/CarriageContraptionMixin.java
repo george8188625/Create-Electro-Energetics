@@ -46,7 +46,7 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     abstract Direction electroEnergetics$getAssemblyDirection();
 
     @Inject(method = "capture", at=@At("TAIL"), remap = false)
-    public void capture(Level level, BlockPos pos, CallbackInfoReturnable<oshi.util.tuples.Pair<StructureTemplate.StructureBlockInfo, BlockEntity>> cir) {
+    public void electroEnergetics$capture(Level level, BlockPos pos, CallbackInfoReturnable<oshi.util.tuples.Pair<StructureTemplate.StructureBlockInfo, BlockEntity>> cir) {
         BlockState state = level.getBlockState(pos);
 
         if (CEEBlocks.PANTOGRAPH.has(state) && level.getBlockEntity(pos) instanceof PantographBlockEntity be) {

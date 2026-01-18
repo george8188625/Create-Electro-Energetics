@@ -42,7 +42,7 @@ public class SchematicPrinterMixin {
     private BlockPos currentPos;
 
     @Inject(method = "advanceCurrentPos", at=@At("RETURN"), remap = false, cancellable = true)
-    public void advanceCurrentPos(CallbackInfoReturnable<Boolean> cir) {
+    public void electroEnergetics$advanceCurrentPos(CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue() && (ServerLevelAccessor)blockReader instanceof ISchematicInfrastructureList sl) {
             if (sl.getWireConnections().isEmpty())
                 return;
@@ -80,7 +80,7 @@ public class SchematicPrinterMixin {
     }
 
     @Inject(method = "getCurrentRequirement", at = @At("HEAD"), remap = false, cancellable = true)
-    public void getCurrentRequirement(CallbackInfoReturnable<ItemRequirement> cir) {
+    public void electroEnergetics$getCurrentRequirement(CallbackInfoReturnable<ItemRequirement> cir) {
         if (electroEnergetics$wirePhase && blockReader instanceof ISchematicInfrastructureList sl) {
             if (sl.getWireConnections().isEmpty())
                 return;
@@ -105,7 +105,7 @@ public class SchematicPrinterMixin {
     }
 
     @Inject(method = "markAllBlockRequirements", at = @At("RETURN"), remap = false)
-    public void markAllBlockRequirements(MaterialChecklist checklist, Level world, SchematicPrinter.PlacementPredicate predicate, CallbackInfoReturnable<Integer> cir) {
+    public void electroEnergetics$markAllBlockRequirements(MaterialChecklist checklist, Level world, SchematicPrinter.PlacementPredicate predicate, CallbackInfoReturnable<Integer> cir) {
         if (world instanceof ServerLevel level && blockReader instanceof ISchematicInfrastructureList sl) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(level);
 
@@ -127,7 +127,7 @@ public class SchematicPrinterMixin {
     }
 
     @Inject(method = "handleCurrentTarget", at = @At("HEAD"), remap = false, cancellable = true)
-    public void handleCurrentTarget(SchematicPrinter.BlockTargetHandler blockHandler, SchematicPrinter.EntityTargetHandler entityHandler, CallbackInfo ci) {
+    public void electroEnergetics$handleCurrentTarget(SchematicPrinter.BlockTargetHandler blockHandler, SchematicPrinter.EntityTargetHandler entityHandler, CallbackInfo ci) {
         if (electroEnergetics$wirePhase && (ServerLevelAccessor)blockReader instanceof ISchematicInfrastructureList sl) {
             if (sl.getWireConnections().isEmpty())
                 return;

@@ -47,14 +47,14 @@ public class TrainMixin implements ICEETrainExtension {
     }
 
     @Inject(method = "write", at=@At("RETURN"), remap = false)
-    public void write(DimensionPalette dimensions, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
+    public void electroEnergetics$write(DimensionPalette dimensions, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
         ResourceLocation id = CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getKey(electroenergetics$soundType);
         if (id != null)
             cir.getReturnValue().putString("CEETrainSoundType", id.toString());
     }
 
     @Inject(method = "read", at=@At("RETURN"), remap = false)
-    private static void write(CompoundTag tag, HolderLookup.Provider registries, Map<UUID, TrackGraph> trackNetworks, DimensionPalette dimensions, CallbackInfoReturnable<Train> cir) {
+    private static void electroEnergetics$write(CompoundTag tag, HolderLookup.Provider registries, Map<UUID, TrackGraph> trackNetworks, DimensionPalette dimensions, CallbackInfoReturnable<Train> cir) {
         String id = tag.getString("CEETrainSoundType");
         ResourceLocation location = ResourceLocation.tryParse(id);
         ElectricTrainSoundType soundType = null;
