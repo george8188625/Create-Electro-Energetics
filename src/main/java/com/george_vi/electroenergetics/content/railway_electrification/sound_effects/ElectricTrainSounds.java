@@ -49,14 +49,4 @@ public class ElectricTrainSounds {
                 soundProperties.remove(carriagePair);
         }
     }
-
-    @Unique
-    public static void addSMBlock(Block block, Set<TrainSoundModifier> smBlocks) {
-        for (ElectricTrainSoundType soundType : CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE) {
-            if (soundType.validBlocks.get().containsKey(block)) {
-                smBlocks.add(new TrainSoundModifier(block, soundType.validBlocks.get().getInt(block), soundType));
-                return;
-            }
-        }
-    }
 }

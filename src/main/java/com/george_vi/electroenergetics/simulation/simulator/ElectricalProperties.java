@@ -1,8 +1,12 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
+import net.neoforged.fml.loading.FMLEnvironment;
+
 import java.util.Objects;
 
 public class ElectricalProperties {
+    public static final ElectricalProperties ZERO_CONDUCTANCE = ElectricalProperties.resistor(1e+11d);
+
     public double resistance;
     public double voltageSource;
     public double currentSource;
@@ -14,7 +18,10 @@ public class ElectricalProperties {
 
     public ElectricalProperties(double resistance, double voltageSource, double currentSource, boolean isForcedVoltageSource) {
         if (resistance == 0)
-            throw new IllegalArgumentException("Resistance can't be zero!");
+            if (FMLEnvironment.production)
+                resistance = 0.001;
+            else
+                throw new IllegalArgumentException("Resistance can't be zero!");
         this.resistance = resistance;
         this.voltageSource = voltageSource;
         this.currentSource = currentSource;

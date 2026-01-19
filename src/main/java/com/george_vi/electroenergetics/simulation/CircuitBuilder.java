@@ -47,7 +47,11 @@ public class CircuitBuilder {
     }
 
     public ElectricalProperties getConnectionProperties(Node n1, Node n2) {
-        return getConnectionProperties(nodeIndexes.getInt(n1), nodeIndexes.getInt(n2));
+        int nodeId1 = nodeIndexes.getInt(n1);
+        int nodeId2 = nodeIndexes.getInt(n2);
+        if (nodeId1 == -1 || nodeId2 == -1)
+            return ElectricalProperties.ZERO_CONDUCTANCE;
+        return getConnectionProperties(nodeId1, nodeId2);
     }
 
     public void connect(int n1, int n2, ElectricalProperties properties) {

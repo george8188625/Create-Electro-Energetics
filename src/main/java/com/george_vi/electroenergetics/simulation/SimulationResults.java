@@ -36,10 +36,13 @@ public class SimulationResults {
     }
 
     public double getVoltageAt(Node node) {
+        int nodeID = circuitBuilder.nodeIndexes.getInt(node);
+        if (nodeID == -1)
+            return 0;
         if (microTickBits == 0)
-            return voltages[circuitBuilder.nodeIndexes.getInt(node)];
+            return voltages[nodeID];
 
-        int i = circuitBuilder.nodeIndexes.getInt(node) << microTickBits;
+        int i = nodeID << microTickBits;
         double rms = 0;
         for (int j = 0; j < microTicks; j++)
             rms += voltages[i|j] * voltages[i|j];
@@ -87,9 +90,13 @@ public class SimulationResults {
 
         // the reason this is here, is when a device creates a non-ideal voltage source, it adds a node in the middle.
         // this just returns the real connection, so that the device doesn't have to worry about these nodes.
+        int nodeId1 = circuitBuilder.nodeIndexes.getInt(node1);
+        int nodeId2 = circuitBuilder.nodeIndexes.getInt(node2);
+        if (nodeId1 == -1 || nodeId2 == -1)
+            return new DirectionalNodeConnection(node1, node2);
 
-        WrappedIndexedNode indexedNode1 = circuitBuilder.getNode(circuitBuilder.nodeIndexes.getInt(node1));
-        WrappedIndexedNode indexedNode2 = circuitBuilder.getNode(circuitBuilder.nodeIndexes.getInt(node2));
+        WrappedIndexedNode indexedNode1 = circuitBuilder.getNode(nodeId1);
+        WrappedIndexedNode indexedNode2 = circuitBuilder.getNode(nodeId2);
         if (indexedNode1.adjacency.containsKey(indexedNode2.ordinal))
             return new DirectionalNodeConnection(node1, node2);
 
@@ -113,8 +120,12 @@ public class SimulationResults {
     }
 
     public double getVoltageAt(Node n1, Node n2) {
-        int id1 = circuitBuilder.nodeIndexes.getInt(n1) << microTickBits;
-        int id2 = circuitBuilder.nodeIndexes.getInt(n2) << microTickBits;
+        int nodeId1 = circuitBuilder.nodeIndexes.getInt(n1);
+        int nodeId2 = circuitBuilder.nodeIndexes.getInt(n2);
+        if (nodeId1 == -1 || nodeId2 == -1)
+            return 0;
+        int id1 = nodeId1 << microTickBits;
+        int id2 = nodeId2 << microTickBits;
         if (microTickBits == 0)
             return voltages[id1] - voltages[id2];
         double rms = 0;
@@ -126,7 +137,10 @@ public class SimulationResults {
     }
 
     public double[] getVoltages(Node n1) {
-        int id = circuitBuilder.nodeIndexes.getInt(n1) << microTickBits;
+        int nodeID = circuitBuilder.nodeIndexes.getInt(n1);
+        if (nodeID == -1)
+            return new double[0];
+        int id = nodeID << microTickBits;
         double[] r = new double[microTicks];
         for (int j = 0; j < microTicks; j++)
             r[j] = voltages[id|j];

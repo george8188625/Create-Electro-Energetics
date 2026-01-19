@@ -1,5 +1,7 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
+import net.neoforged.fml.loading.FMLEnvironment;
+
 import java.util.*;
 
 
@@ -26,12 +28,15 @@ public class SimulatorProfiler {
 
     public void pop() {
         if (startTimes.isEmpty() || entryStack.isEmpty())
-            throw new IllegalStateException("Mismatched push/pop");
+            if (FMLEnvironment.production)
+                return;
+            else
+                throw new IllegalStateException("Mismatched push/pop");
 
         long before = System.nanoTime();
         long start = startTimes.pop();
         long now = System.nanoTime();
-        long diff = now - start;                 // safe in long
+        long diff = now - start;
         ResultEntry node = entryStack.pop();
         node.timeTookNanos += diff;
 

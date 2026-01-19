@@ -1,12 +1,14 @@
 package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.contraptions.Contraption;
@@ -15,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -65,7 +68,18 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
         }
         if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_electric_motor"))))
             electroEnergetics$hasMotor = true;
-        ElectricTrainSounds.addSMBlock(state.getBlock(), electroEnergetics$soundModifyingBlocks);
+        electroEnergetics$addSMBlock(state.getBlock(), electroEnergetics$soundModifyingBlocks);
+    }
+
+
+    @Unique
+    private static void electroEnergetics$addSMBlock(Block block, Set<TrainSoundModifier> smBlocks) {
+        for (ElectricTrainSoundType soundType : CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE) {
+            if (soundType.validBlocks.get().containsKey(block)) {
+                smBlocks.add(new TrainSoundModifier(block, soundType.validBlocks.get().getInt(block), soundType));
+                return;
+            }
+        }
     }
 
     @Override
