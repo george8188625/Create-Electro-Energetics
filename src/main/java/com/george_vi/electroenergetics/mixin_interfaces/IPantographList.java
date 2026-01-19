@@ -15,6 +15,10 @@ public interface IPantographList {
 
     Set<TrainSoundModifier> getSoundModifyingBlocks();
 
+    int getAccumulators();
+
+    void setAccumulators(int value);
+
 
     default void changePantographState(BlockPos localPos, boolean active) {
         List<TrainPantographEntry> pantographList = getPantographList();

@@ -1,0 +1,7 @@
+{
+  "values": [
+    "electroenergetics:accumulator",
+
+    { "id": "createaddition:accumulator", "required": false }
+  ]
+}

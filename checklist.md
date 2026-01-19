@@ -1,61 +1,61 @@
 **CHECKLIST**
 
-**features:**
-- [x] train sounds out of multiple carriages
-- [ ] train lights
-- [ ] ^ maybe so that they even work with dynamic lights, and emit a beam of light
-- [ ] train sound selection
-- [ ] electric train signals
-- [ ] accumulators on trains
-- [ ] pantograph sparks
-- [x] colored bulbs
-- [ ] variacs
-- [x] potentiometers
-- [ ] variable buzzer pitch
-- [x] multi-block transformers
-- [ ] floodlights
-- [ ] more light types
-- [x] lights prevent mob spawning even when they are off
-- [ ] energy meters on trains
-- [x] resistance / voltage tooltips
+**Features:**
+- [x] Train sounds out of multiple carriages
+- [ ] Electric train lights
+- [x] Train sound selection
+- [ ] Electric train signals
+- [x] Accumulators on trains
+- [ ] Pantograph sparks
+- [x] Colored bulbs
+- [ ] Variacs
+- [x] Potentiometers
+- [ ] Variable buzzer pitch
+- [x] Multi-block transformers
+- [ ] Floodlights
+- [ ] More light types
+- [x] Lights prevent mob spawning even when they are off
+- [ ] Energy meters on trains
+- [x] Resistance / voltage tooltips
 - [ ] DC motors (~12V, direction depends on voltage, useful for controlling fluid valves, variacs, etc)
-- [ ] transistors
-- [ ] logic chips (adders, logic gates, etc.)
-- [ ] small alternators
-- [ ] directional ammeters
-- [ ] galvanic basin recipes
-- [x] electrocution
-- [x] uninsulated wire shorts
-- [ ] zipline hook (like IE skyhook)
-- [x] infrastructureSD saved in schematics (wires, devices, etc.)
-- [ ] advancements
-- [ ] surge protection
+- [ ] Transistors
+- [ ] Logic chips (adders, logic gates, etc.)
+- [ ] Small alternators
+- [ ] Directional ammeters
+- [ ] Galvanic basin recipes
+- [x] Electrocution
+- [x] Uninsulated wire shorts
+- [ ] Zipline hook (like IE skyhook)
+- [x] InfrastructureSD saved in schematics (wires, devices, etc.)
+- [ ] Advancements
+- [ ] Surge protection
 - [x] fix transformers
-- [ ] some way of reading voltage / current into an analog signal
-- [ ] electric doors (buzz in door)
-- [ ] some special behaviour when cables go through walls
-- [x] display sources
-- [ ] some coil-gun-like weapon
-- [ ] more CC integration
-- [ ] some kind of electric blaze burner
-- [ ] solenoid valves
-- [ ] a pipe that detects a presence of a fluid inside of it by shorting the connectors when its filled. I have no idea what to name it
-- [ ] electromagnets
+- [ ] Some way of reading voltage / current into an analog signal
+- [ ] Electric doors (buzz in door)
+- [ ] Some special behaviour when cables go through walls
+- [x] Display sources
+- [ ] Some coil-gun-like weapon
+- [ ] More CC integration
+- [ ] Electric basin heater
+- [ ] Solenoid valves
+- [ ] A pipe that detects a presence of a fluid inside of it by shorting the connectors when its filled. I have no idea what to name it
+- [ ] Electromagnets
+- [ ] AC
 
-**ponders:**
-- [x] voltage
-- [ ] amperage
-- [ ] resistance
-- [ ] voltage divider
-- [ ] capacitor
-- [ ] potentiometer
-- [ ] variac
-- [ ] faults
-- [ ] protection (fuses)
-- [ ] switch
+**Ponders:**
+- [x] Voltage
+- [x] Current
+- [ ] Resistance
+- [ ] Voltage divider
+- [ ] Capacitor
+- [ ] Potentiometer
+- [ ] Variac
+- [ ] Faults
+- [ ] Protection (fuses)
+- [ ] Switch
 - [ ] HV switch
-- [ ] relays
-- [ ] energy meters
-- [ ] grounding
-- [ ] multi-block transformer
+- [ ] Relays
+- [ ] Energy meters
+- [ ] Grounding
+- [ ] Multi-block transformer
 

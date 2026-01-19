@@ -17,6 +17,8 @@ public class CServer extends ConfigBase {
     public final ConfigBool saveInfrastructureInSchematics = b(true, "saveInfrastructureSDInSchematics");
     public final CResistances resistanceValues = nested(1, CResistances::new, "Resistance Values");
     public final CVoltages voltageValues = nested(1, CVoltages::new, "Voltage Values");
+    public final ConfigInt ticksPerAccumulatorOnTrain = i(1200, 1, "trainAccumulatorTime", "[in Ticks / one Accumulator]");
+    public final ConfigInt ticksPerAccumulatorChargeOnTrain = i(1200, 1, "trainAccumulatorChargeTime", "[in Ticks / one Accumulator]");
 
     @Override
     public String getName() {

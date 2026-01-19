@@ -29,6 +29,12 @@ public class TrainMixin implements ICEETrainExtension {
     ElectricTrainSoundType electroenergetics$soundType;
 
     @Unique
+    int electroenergetics$accumulators = 0;
+
+    @Unique
+    double electroenergetics$accumulatorCharge = 0;
+
+    @Unique
     public Set<TrainSoundModifier> electroEnergetics$soundModifyingBlocks = new HashSet<>();
 
     @Override
@@ -46,15 +52,38 @@ public class TrainMixin implements ICEETrainExtension {
         return electroEnergetics$soundModifyingBlocks;
     }
 
+    @Override
+    public int getAccumulators() {
+        return electroenergetics$accumulators;
+    }
+
+    @Override
+    public void setAccumulators(int value) {
+        electroenergetics$accumulators = value;
+    }
+
+    @Override
+    public double getAccumulatorCharge() {
+        return electroenergetics$accumulatorCharge;
+    }
+
+    @Override
+    public void setAccumulatorCharge(double value) {
+        electroenergetics$accumulatorCharge = value;
+    }
+
     @Inject(method = "write", at=@At("RETURN"), remap = false)
     public void electroEnergetics$write(DimensionPalette dimensions, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
         ResourceLocation id = CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getKey(electroenergetics$soundType);
+        CompoundTag tag = cir.getReturnValue();
         if (id != null)
-            cir.getReturnValue().putString("CEETrainSoundType", id.toString());
+            tag.putString("CEETrainSoundType", id.toString());
+        tag.putInt("CEEAccumulators", electroenergetics$accumulators);
+        tag.putDouble("CEEAccumulatorCharge", electroenergetics$accumulatorCharge);
     }
 
     @Inject(method = "read", at=@At("RETURN"), remap = false)
-    private static void electroEnergetics$write(CompoundTag tag, HolderLookup.Provider registries, Map<UUID, TrackGraph> trackNetworks, DimensionPalette dimensions, CallbackInfoReturnable<Train> cir) {
+    private static void electroEnergetics$read(CompoundTag tag, HolderLookup.Provider registries, Map<UUID, TrackGraph> trackNetworks, DimensionPalette dimensions, CallbackInfoReturnable<Train> cir) {
         String id = tag.getString("CEETrainSoundType");
         ResourceLocation location = ResourceLocation.tryParse(id);
         ElectricTrainSoundType soundType = null;
@@ -63,8 +92,10 @@ public class TrainMixin implements ICEETrainExtension {
         if (soundType == null)
             soundType = CEEElectricTrainSoundTypes.MODERN.get();
 
-        ((ICEETrainExtension)cir.getReturnValue()).setSoundType(soundType);
-
+        ICEETrainExtension train = (ICEETrainExtension) cir.getReturnValue();
+        train.setSoundType(soundType);
+        train.setAccumulators(tag.getInt("CEEAccumulators"));
+        train.setAccumulatorCharge(tag.getDouble("CEEAccumulatorCharge"));
     }
 
 }

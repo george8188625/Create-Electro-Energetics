@@ -38,15 +38,31 @@ import java.util.Set;
 public abstract class CarriageContraptionMixin extends Contraption implements IPantographList {
     @Unique
     public List<TrainPantographEntry> electroEnergetics$pantographs = new ArrayList<>();
+
     @Unique
     public Set<TrainSoundModifier> electroEnergetics$soundModifyingBlocks = new HashSet<>();
+
     @Unique
     public boolean electroEnergetics$sidewaysPantograph = false;
+
     @Unique
     public boolean electroEnergetics$hasMotor = false;
 
+    @Unique
+    int electroenergetics$accumulators = 0;
+
     @Accessor("assemblyDirection")
     abstract Direction electroEnergetics$getAssemblyDirection();
+
+    @Override
+    public int getAccumulators() {
+        return electroenergetics$accumulators;
+    }
+
+    @Override
+    public void setAccumulators(int value) {
+        electroenergetics$accumulators = value;
+    }
 
     @Inject(method = "capture", at=@At("TAIL"), remap = false)
     public void electroEnergetics$capture(Level level, BlockPos pos, CallbackInfoReturnable<oshi.util.tuples.Pair<StructureTemplate.StructureBlockInfo, BlockEntity>> cir) {
@@ -68,6 +84,8 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
         }
         if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_electric_motor"))))
             electroEnergetics$hasMotor = true;
+        if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_accumulator"))))
+            electroenergetics$accumulators++;
         electroEnergetics$addSMBlock(state.getBlock(), electroEnergetics$soundModifyingBlocks);
     }
 

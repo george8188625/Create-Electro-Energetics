@@ -39,6 +39,7 @@ public class CatenaryHandler {
         Map<Train, List<Pair<Float, Couple<BlockPos>>>> catenaryConnections = new HashMap<>();
         Map<Couple<BlockPos>, Integer> cutConnections = new HashMap<>();
         List<Couple<BlockPos>> allCatenaryConnections = event.sd.getAllCatenaryConnections();
+        Map<Train, List<AttachedNode>> trainPantographs = new HashMap<>();
 
         for (Train train : Create.RAILWAYS.trains.values()) {
             for (Carriage carriage : train.carriages) {
@@ -104,11 +105,13 @@ public class CatenaryHandler {
                         }
                     }
                 }
+
+                if (((ICEETrainExtension)train).getAccumulatorCharge() > 0)
+                    trainPantographs.put(train, new ArrayList<>());
             }
         }
 
         int i = 0;
-        Map<Train, List<AttachedNode>> trainPantographs = new HashMap<>();
         for (Couple<BlockPos> connection : allCatenaryConnections) {
             if (cutConnections.containsKey(connection)) {
 
@@ -165,8 +168,11 @@ public class CatenaryHandler {
             event.builder.addNode(groundNode);
             event.builder.addNode(trainNode);
             event.builder.ground(groundNode, 10);
-            event.builder.connect(groundNode, trainNode, ElectricalProperties.resistor(Math.abs(train.speed) > 0.01 ?
-                    acceleration > 0.001 ? CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() : CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get() : 9999));
+            double trainResistance = Math.abs(train.speed) > 0.01 ?
+                    acceleration > 0.001 ? CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() : CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get() : 9999;
+            if (((ICEETrainExtension) train).getAccumulatorCharge() < ((ICEETrainExtension) train).getAccumulators())
+                trainResistance = 1 / (1 / CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() + 1 / trainResistance);
+            event.builder.connect(groundNode, trainNode, ElectricalProperties.resistor(trainResistance));
 
             for (AttachedNode node : e.getValue())
                 event.builder.connect(node, trainNode, ElectricalProperties.resistor(CEEConfigs.server().resistanceValues.wireResistance.get()));
@@ -188,8 +194,17 @@ public class CatenaryHandler {
 
             double voltage = Math.abs(event.results.getVoltageAt(node1, node2));
             boolean active = voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
-
             double trainSpeed = Math.abs(train.speed);
+
+            if (!active) {
+                if (trainExtension.getAccumulatorCharge() > 0) {
+                    if (trainSpeed > 0.001)
+                        trainExtension.setAccumulatorCharge(Math.max(0d, trainExtension.getAccumulatorCharge() - 1d / CEEConfigs.server().ticksPerAccumulatorOnTrain.get()));
+                    active = true;
+                }
+            } else
+                if (trainExtension.getAccumulatorCharge() < trainExtension.getAccumulators())
+                    trainExtension.setAccumulatorCharge(Math.min(trainExtension.getAccumulators(), trainExtension.getAccumulatorCharge() + 1d / CEEConfigs.server().ticksPerAccumulatorChargeOnTrain.get()));
 
             Map<Integer, Vec3> positions = new HashMap<>();
             for (Carriage carriage : train.carriages) {

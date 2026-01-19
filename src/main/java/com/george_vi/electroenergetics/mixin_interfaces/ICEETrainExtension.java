@@ -13,4 +13,12 @@ public interface ICEETrainExtension {
 
     Set<TrainSoundModifier> getSoundModifyingBlocks();
 
+    int getAccumulators();
+
+    void setAccumulators(int value);
+
+    double getAccumulatorCharge();
+
+    void setAccumulatorCharge(double value);
+
 }
