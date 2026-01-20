@@ -28,7 +28,7 @@ public class RailwayElectrificationScenes {
 
         Selection train = util.select().fromTo(1, 2, 2, 5, 4, 4);
         Selection tracks = util.select().fromTo(0, 1, 0, 14, 1, 3);
-        Selection poles = util.select().fromTo(1, 1, 6, 13, 6, 6);
+        Selection poles = util.select().fromTo(1, 1, 6, 13, 7, 6);
         Selection powerSupply = util.select().fromTo(8, 1, 8, 12, 1, 9);
         BlockPos holder1 = util.grid().at(1, 6, 3);
         BlockPos holder2 = util.grid().at(13, 6, 3);

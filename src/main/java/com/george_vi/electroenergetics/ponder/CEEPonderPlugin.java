@@ -38,6 +38,8 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .addStoryBoard("diode", ElectricityBasicsScenes::diode);
         helper.forComponents(CEEBlocks.VOLTMETER.getId())
                 .addStoryBoard("voltage", ElectricityBasicsScenes::voltage);
+        helper.forComponents(CEEBlocks.HV_SWITCH.getId())
+                .addStoryBoard("hv_switch", SwitchScenes::hvSwitch);
     }
 
     @Override

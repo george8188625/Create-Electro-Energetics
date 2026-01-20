@@ -54,13 +54,13 @@ public class WirePonderElement extends AnimatedSceneElementBase {
             }
 
 
-            Vec3 topStart = pos1.add(0, 1, 0);
-            Vec3 topEnd = pos2.add(0, 1, 0);
+            Vec3 topStart = pos1.add(0, 1.5, 0);
+            Vec3 topEnd = pos2.add(0, 1.5, 0);
 
             float distance = (float) pos1.distanceTo(topEnd);
 
 
-            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 200f * (0.05f / distance), 3);
+            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 300f * (0.05f / distance), 3);
 
             for (int i = 0; i < upperWirePoints.size(); i++) {
                 Vec3 point = upperWirePoints.get(i);

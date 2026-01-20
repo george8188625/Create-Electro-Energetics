@@ -35,6 +35,7 @@ public class CEEPartialModels {
     public static final PartialModel CATENARY_HOLDER_MOUNT_6 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_6"));
     public static final PartialModel CATENARY_HOLDER_MOUNT_8 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_8"));
     public static final PartialModel CATENARY_HOLDER_MOUNT_10 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_10"));
+    public static final PartialModel CATENARY_HOLDER_CONNECTOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/connector"));
     public static final PartialModel BULB_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament"));
     public static final PartialModel BULB_FILAMENT_BRIGHT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament_bright"));
     public static final PartialModel BULB_BROKEN_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament_broken"));

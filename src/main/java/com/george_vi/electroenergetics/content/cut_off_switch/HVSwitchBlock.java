@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
 import com.george_vi.electroenergetics.*;
-import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
+import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
@@ -11,18 +11,23 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.foundation.block.IBE;
+import net.createmod.catnip.placement.IPlacementHelper;
+import net.createmod.catnip.placement.PlacementHelpers;
+import net.createmod.catnip.placement.PlacementOffset;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -39,10 +44,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class HVSwitchBlock extends SimpleDeviceBlock implements IBE<HVSwitchBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
 
     public HVSwitchBlock(Properties properties) {
         super(properties);
@@ -66,6 +73,17 @@ public class HVSwitchBlock extends SimpleDeviceBlock implements IBE<HVSwitchBloc
     }
 
     @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        BlockPos targetPos = pos.relative(state.getValue(HVSwitchBlock.FACING), 2);
+        BlockState targetState = level.getBlockState(targetPos);
+        if (CEEBlocks.CONNECTOR.has(targetState))
+            if (targetState.getValue(ConnectorBlock.STYLE) != ConnectorBlock.Style.LONG)
+                level.setBlockAndUpdate(targetPos, targetState.setValue(ConnectorBlock.STYLE, ConnectorBlock.Style.LONG));
+
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+    }
+
+    @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         return CEENodeConfigurations.HV_SWITCH.getNodes(state.getValue(FACING));
     }
@@ -82,6 +100,15 @@ public class HVSwitchBlock extends SimpleDeviceBlock implements IBE<HVSwitchBloc
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        IPlacementHelper placementHelper = PlacementHelpers.get(placementHelperId);
+        if (!player.isShiftKeyDown() && player.mayBuild()) {
+            if (placementHelper.matchesItem(stack)) {
+                placementHelper.getOffset(player, level, state, pos, hitResult)
+                        .placeInWorld(level, (BlockItem) stack.getItem(), player, hand, hitResult);
+                return ItemInteractionResult.SUCCESS;
+            }
+        }
+
         if (AllItems.WRENCH.isIn(stack) || stack.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(stack))
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
@@ -152,5 +179,29 @@ public class HVSwitchBlock extends SimpleDeviceBlock implements IBE<HVSwitchBloc
     @Override
     protected BlockState mirror(BlockState state, Mirror mirror) {
         return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
+    }
+
+    @MethodsReturnNonnullByDefault
+    private static class PlacementHelper implements IPlacementHelper {
+        @Override
+        public Predicate<ItemStack> getItemPredicate() {
+            return CEEBlocks.CONNECTOR::isIn;
+        }
+
+        @Override
+        public Predicate<BlockState> getStatePredicate() {
+            return CEEBlocks.HV_SWITCH::has;
+        }
+
+        @Override
+        public PlacementOffset getOffset(Player player, Level level, BlockState state, BlockPos pos, BlockHitResult ray) {
+            BlockPos targetPos = pos.relative(state.getValue(FACING), 2);
+            BlockState targetState = level.getBlockState(targetPos);
+
+            if (targetState.canBeReplaced()) {
+                return PlacementOffset.success(targetPos, s -> s.setValue(ConnectorBlock.STYLE, ConnectorBlock.Style.LONG).setValue(ConnectorBlock.FACING, Direction.UP));
+            } else
+                return PlacementOffset.fail();
+        }
     }
 }

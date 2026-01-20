@@ -1,18 +1,16 @@
 package com.george_vi.electroenergetics.content.rotor;
 
 import com.george_vi.electroenergetics.CEEBlocks;
-import com.simibubi.create.api.stress.BlockStressValues;
+import com.simibubi.create.content.kinetics.KineticNetwork;
 import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.waterwheel.WaterWheelBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 
 public class AlternatorRotorBlockEntity extends KineticBlockEntity {
     int magnets = 0;
@@ -38,14 +36,21 @@ public class AlternatorRotorBlockEntity extends KineticBlockEntity {
             if (CEEBlocks.MAGNET_BLOCK.has(level.getBlockState(blockPos.offset(worldPosition))))
                 magnets++;
 
+        if (this.magnets == magnets)
+            return;
+
         this.magnets = magnets;
-        if (hasNetwork())
-            getOrCreateNetwork().updateStress();
+        if (hasNetwork()) {
+            KineticNetwork network = getOrCreateNetwork();
+            network.updateStressFor(this, calculateStressApplied());
+            // For some reason when updating stress, create does something and sometimes that the client thinks the block is overstressed, when it's not on the server. This updates it.
+            sendData();
+        }
     }
 
     @Override
     public float calculateStressApplied() {
-        float impact = magnets * 48;
+        float impact = (magnets + 0.125f) * 48;
         this.lastStressApplied = impact;
         return impact;
     }

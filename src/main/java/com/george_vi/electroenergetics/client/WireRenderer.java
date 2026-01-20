@@ -91,13 +91,13 @@ public class WireRenderer {
             }
 
 
-            Vec3 topStart = start.add(0, 1, 0);
-            Vec3 topEnd = end.add(0, 1, 0);
+            Vec3 topStart = start.add(0, 1.5, 0);
+            Vec3 topEnd = end.add(0, 1.5, 0);
 
             float distance = (float) start.distanceTo(topEnd);
 
 
-            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 200f * (0.05f / distance), 4);
+            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 350f * (0.05f / distance), 4);
 
             for (int i = 0; i < upperWirePoints.size(); i++) {
                 Vec3 point = upperWirePoints.get(i);

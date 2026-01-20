@@ -1,15 +1,17 @@
 package com.george_vi.electroenergetics.content.connector;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
-import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlock;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,7 +22,10 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -61,7 +66,17 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return super.getStateForPlacement(context).setValue(FACING, context.getClickedFace());
+        Direction facing = context.getClickedFace();
+        BlockPos pos = context.getClickedPos();
+        if (facing == Direction.UP)
+            for (Direction direction : Iterate.horizontalDirections) {
+                BlockPos targetPos = pos.relative(direction, 2);
+                BlockState targetState = context.getLevel().getBlockState(targetPos);
+                if (CEEBlocks.HV_SWITCH.has(targetState))
+                    if (targetState.getValue(HVSwitchBlock.FACING) == direction.getOpposite())
+                        return super.getStateForPlacement(context).setValue(FACING, facing).setValue(STYLE, Style.LONG);
+            }
+        return super.getStateForPlacement(context).setValue(FACING, facing);
     }
 
     @Override

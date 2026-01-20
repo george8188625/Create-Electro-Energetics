@@ -90,6 +90,9 @@ public class CEEShapes {
     public static final VoxelShaper POTENTIOMETER = shape(2, 0, 2, 14, 4, 14)
             .add(5, 4, 5, 11, 16, 11).forDirectional();
 
+    public static final VoxelShaper CATENARY_HOLDER = shape(6, 0, 6, 10, 24, 10)
+            .forAxis();
+
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);
     }

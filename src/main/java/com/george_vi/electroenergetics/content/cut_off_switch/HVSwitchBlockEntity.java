@@ -27,7 +27,7 @@ public class HVSwitchBlockEntity extends SmartBlockEntity {
     public boolean arcing = false;
     float prevProgress = 0f;
     float progress = 0f;
-    boolean connected = false;
+    public boolean connected = false;
     int arcTimer = 0;
 
     @OnlyIn(Dist.CLIENT)
