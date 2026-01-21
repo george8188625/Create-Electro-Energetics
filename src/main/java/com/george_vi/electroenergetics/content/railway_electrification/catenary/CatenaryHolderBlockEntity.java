@@ -59,7 +59,7 @@ public class CatenaryHolderBlockEntity extends SmartBlockEntity {
     protected AABB createRenderBoundingBox() {
         if (attachedTo == null)
             return super.createRenderBoundingBox();
-        return AABB.encapsulatingFullBlocks(worldPosition, worldPosition.offset(attachedTo.getX(), 1, attachedTo.getZ()));
+        return AABB.encapsulatingFullBlocks(worldPosition.below(), worldPosition.offset(attachedTo.getX(), 1, attachedTo.getZ()));
     }
 
     boolean countsAsPole(BlockPos pos) {

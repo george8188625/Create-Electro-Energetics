@@ -32,14 +32,11 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
         if (th != pth)
             Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.TRAIN_RELAY.get(), SoundSource.NEUTRAL, 0.4f, 1f, false);
         if (prevSpeed == 0)
-            Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.DC_TRAIN_START.get(), SoundSource.NEUTRAL, 0.1f, 1f, false);
+            Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.DC_TRAIN_START.get(), SoundSource.NEUTRAL, 0.2f, 1f, false);
         mainSoundInstance.setPos(pos);
 
-        mainSoundInstance.targetPitch = Math.min(1f, trainSpeed) * 1.3f + 0.7f;
-        if (acceleration < 0)
-            mainSoundInstance.targetVolume = trainSpeed * 1.2f;
-        else
-            mainSoundInstance.targetVolume = ((acceleration == 0 ? 0.4f : (acceleration > 0 ? acceleration : acceleration / -320) * 600) + 0.2f) * Math.min(1, trainSpeed * 3) * 5;
+        mainSoundInstance.targetPitch = Math.min(0.56f, trainSpeed) * 1.3f + 0.7f;
+        mainSoundInstance.targetVolume = (trainSpeed < 0.3 ? (trainSpeed * 3) : (trainSpeed + 0.9f)) * (acceleration > 0 ? 2f : acceleration < 0 ? 0.25f : 0.125f);
 
         mainSoundInstance.keepAlive();
         this.pth = th;
