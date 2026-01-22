@@ -54,9 +54,10 @@ Then, after the first release, all remaining features from the [checklist](https
 <b>Electric train:</b>
 <img width="1798" height="910" alt="obraz" src="https://github.com/user-attachments/assets/978bb75e-9965-4f48-a5dd-422d9bbff87c" />
 Other mods used in this build:
-- Create: Deco
+- Create Deco
 - Create: Copycats+
-- Create: Bits 'n' Bobs
+- Create Bits 'n' Bobs
 - Create: Diesel Generators
-- Create: Design n' Decor
+- Create Design n' Decor
 - Create: Steam 'n' Rails (unofficial neoforge port)
+- Create Railways Navigator
