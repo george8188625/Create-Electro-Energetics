@@ -1,13 +1,27 @@
-## Create: Electro - Energetics
-Most implementations of electricity in Minecraft mods are really basic ( like a one-way fluid simulation ). This implementation is different, it **realistically simulates** current flow. Sources now induce voltage instead of generating an abstract unit called 'fe', devices don't consume these units, they allow **current flow** and use it to do things. This allows for short-circuits, voltage drops, energy losses etc.
+<div align="center">
+<img width="256" height="540" alt="rsz_cee-icon" src="https://github.com/user-attachments/assets/270cddf1-07b0-40b7-9ad0-d918386c4bdd" />
+<h1>Create: Electro - Energetics</h1>
+</div>
 
-Electricity provides a nice and elegant way of **transferring energy**. Instead of making a super long underground shaft (Obviously shafts are way more efficient but that's not the point), players can build transmission lines. Losses are as low as possible to encourage the use of electricity, even if that may not be as realistic. Additionally, electricity can be used directly with electrical components like pumps, heaters etc. Recipes requiring electricity, Forge Energy powered blocks, through a converter, and electrified railways. Yes, real working electrified railways.
+<h3>Overview:</h3>
+<p>Most implementations of electricity in Minecraft mods are really basic, like a one-way fluid simulation.</p>
+<p>This implementation is different, it <b>realistically simulates</b> current flow. Sources now induce voltage instead of generating an abstract unit called 'fe', devices don't consume these units, instead they allow <b>current flow</b> and use that current flow to do work. This allows for short-circuits, voltage drops, energy losses etc.</p>
 
-The simulation isn't based on BEs (block-entities) and stays functional **outside loaded chunks**, Most devices ( except alternators, motors, FE converters and devices requiring block interaction ) work on unloaded chunks, which may be really useful when making long transmission lines and on **multiplayer** (now that I mention that there also will be energy meters).
+<h3>Usage:</h3>
+<p>Electricity provides a nice and elegant way of <b>moving energy</b>. Additionally, electricity can be used directly with electrical components like pumps, heaters etc. Recipes requiring electricity, Forge Energy powered blocks, through a converter, and electrified railways. Yes, real working electrified railways.</p>
+<p>Since this implementation has nothing to do with FE, there is a special block to convert electricity - FE.</p>
 
-Since it has nothing to do with FE, there is a special block to convert electricity - FE.
+<h3>Technical:</h3>
+<p><b>Electricity stays functional on unloaded chunks</b>. Most electric components work on unloaded chunks, which may be really useful when making long transmission lines and on <b>multiplayer</b>.</p>
+<p>The electrical simulation also runs on a separate thread.</p>
 
-The electrical simulation also runs on a separate thread.
+## Content:
+- Transformers, alternators, motors, electrical grid equipment
+- Energy meters, electrical pumps, bulbs
+- Relays, diodes, capacitors, potentiometers
+- Electric trains
+- Electricity-related warning signs
+- FE Converter
 
 ## Download:
 
@@ -26,11 +40,23 @@ The mod will **release** after the latest version is confirmed to be stable, and
 - Placement helpers
 - Advancements
 - More info for the user for electric trains, accumulators etc.
+- Refactor CatenaryHandler
 
-Then, after the first release, all features from the [checklist](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/checklist.md) are gonna be added.
+Then, after the first release, all remaining features from the [checklist](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/checklist.md) are gonna be added.
 
 **Join the discord server:**
 <br>
 <a href="https://discord.gg/crdN2xhQP2"><img src="https://img.shields.io/discord/1121792423836799128?color=5865f2&label=Discord"></a>
 <br>
+<b>Transmission lines:</b>
 <img width="1883" height="958" alt="high voltage transmission towers" src="https://github.com/user-attachments/assets/c7e5d880-700a-4162-a627-b06d8a9c2b3f" />
+<br>
+<b>Electric train:</b>
+<img width="1798" height="910" alt="obraz" src="https://github.com/user-attachments/assets/978bb75e-9965-4f48-a5dd-422d9bbff87c" />
+Other mods used in this build:
+- Create: Deco
+- Create: Copycats+
+- Create: Bits 'n' Bobs
+- Create: Diesel Generators
+- Create: Design n' Decor
+- Create: Steam 'n' Rails (unofficial neoforge port)
