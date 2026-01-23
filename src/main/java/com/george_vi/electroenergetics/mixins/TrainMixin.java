@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.CEEElectricTrainSoundTypes;
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.content.railway_electrification.ElectricTrainData;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.mixin_interfaces.ICEETrainExtension;
@@ -11,7 +12,6 @@ import com.simibubi.create.content.trains.graph.TrackGraph;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,6 +33,9 @@ public class TrainMixin implements ICEETrainExtension {
 
     @Unique
     double electroenergetics$accumulatorCharge = 0;
+
+    @Unique
+    ElectricTrainData electroenergetics$electricTrainData = new ElectricTrainData();
 
     @Unique
     public Set<TrainSoundModifier> electroEnergetics$soundModifyingBlocks = new HashSet<>();
@@ -70,6 +73,11 @@ public class TrainMixin implements ICEETrainExtension {
     @Override
     public void setAccumulatorCharge(double value) {
         electroenergetics$accumulatorCharge = value;
+    }
+
+    @Override
+    public ElectricTrainData getElectricTrainData() {
+        return electroenergetics$electricTrainData;
     }
 
     @Inject(method = "write", at=@At("RETURN"), remap = false)

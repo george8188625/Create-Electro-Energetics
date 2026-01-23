@@ -14,25 +14,23 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
 
-public record UpdateElectricTrainSoundPacket(UUID trainUUID, int carriageID, Vec3 pos, float speed, float acceleration, boolean active, int soundType) implements ClientboundPacketPayload {
+public record UpdateElectricTrainSoundPacket(UUID trainUUID, int carriageID, float speed, float acceleration, boolean active, int soundType) implements ClientboundPacketPayload {
     public static final StreamCodec<ByteBuf, UpdateElectricTrainSoundPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public UpdateElectricTrainSoundPacket decode(ByteBuf buffer) {
             UUID uuid = UUIDUtil.STREAM_CODEC.decode(buffer);
             int carriage = buffer.readInt();
-            Vec3 vec3 = CatnipStreamCodecs.VEC3.decode(buffer);
             float speed = buffer.readFloat();
             float acceleration = buffer.readFloat();
             boolean active = buffer.readBoolean();
             int soundType = buffer.readInt();
-            return new UpdateElectricTrainSoundPacket(uuid, carriage, vec3, speed, acceleration, active, soundType);
+            return new UpdateElectricTrainSoundPacket(uuid, carriage, speed, acceleration, active, soundType);
         }
 
         @Override
         public void encode(ByteBuf buffer, UpdateElectricTrainSoundPacket p) {
             UUIDUtil.STREAM_CODEC.encode(buffer, p.trainUUID);
             buffer.writeInt(p.carriageID);
-            CatnipStreamCodecs.VEC3.encode(buffer, p.pos);
             buffer.writeFloat(p.speed);
             buffer.writeFloat(p.acceleration);
             buffer.writeBoolean(p.active);
@@ -45,7 +43,7 @@ public record UpdateElectricTrainSoundPacket(UUID trainUUID, int carriageID, Vec
         if (!active)
             ElectricTrainSounds.soundProperties.remove(Pair.of(trainUUID, carriageID));
         else
-            ElectricTrainSounds.soundProperties.put(Pair.of(trainUUID, carriageID), new ElectricTrainSoundEntry(pos, speed, acceleration, active, 6, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.byId(soundType)));
+            ElectricTrainSounds.soundProperties.put(Pair.of(trainUUID, carriageID), new ElectricTrainSoundEntry(speed, acceleration, active, 6, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.byId(soundType)));
     }
 
     @Override

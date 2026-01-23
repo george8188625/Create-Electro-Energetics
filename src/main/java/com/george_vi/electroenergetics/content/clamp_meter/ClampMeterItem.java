@@ -6,19 +6,17 @@ import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePack
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
-import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.WireData;
-import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.outliner.Outliner;
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -89,7 +87,7 @@ public class ClampMeterItem extends Item {
             if (wire == null)
                 return;
 
-            double resistance = MicroTickedSimulationTicker.getWireResistance(point.node1(), point.node2(), wire.getSecond().wireType());
+            double resistance = SimulationTicker.getWireResistance(point.node1(), point.node2(), wire.getSecond().wireType());
             CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> setMetering((float) (voltage / resistance)));
         }
     }

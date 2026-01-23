@@ -4,7 +4,6 @@
 - [x] Train sounds out of multiple carriages
 - [ ] Electric train lights
 - [x] Train sound selection
-- [ ] Electric train signals
 - [x] Accumulators on trains
 - [ ] Pantograph sparks
 - [x] Colored bulbs
@@ -53,7 +52,7 @@
 - [ ] Faults
 - [ ] Protection (fuses)
 - [ ] Switch
-- [ ] HV switch
+- [x] HV switch
 - [ ] Relays
 - [ ] Energy meters
 - [ ] Grounding

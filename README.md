@@ -1,5 +1,5 @@
 <div align="center">
-<img width="256" height="540" alt="rsz_cee-icon" src="https://github.com/user-attachments/assets/270cddf1-07b0-40b7-9ad0-d918386c4bdd" />
+<img width="256" height="256" alt="rsz_cee-icon" src="https://github.com/user-attachments/assets/270cddf1-07b0-40b7-9ad0-d918386c4bdd" />
 <h1>Create: Electro - Energetics</h1>
 </div>
 
@@ -40,7 +40,6 @@ The mod will **release** after the latest version is confirmed to be stable, and
 - Placement helpers
 - Advancements
 - More info for the user for electric trains, accumulators etc.
-- Refactor CatenaryHandler
 
 Then, after the first release, all remaining features from the [checklist](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/checklist.md) are gonna be added.
 

@@ -22,7 +22,7 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
 
         int tth = (int) Math.max(Math.floor(trainSpeed > 0.2 ? 8 * trainSpeed + 5 : 32 * trainSpeed), -1);
         if (acceleration < 0)
-            tth -= 1;
+            tth = -1;
         int th = pth;
         if (th > tth)
             th = Math.max(tth, th - 3);

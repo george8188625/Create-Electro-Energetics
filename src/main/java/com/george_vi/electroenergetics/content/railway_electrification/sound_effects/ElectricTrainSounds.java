@@ -4,9 +4,13 @@ import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundBehaviour;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.simibubi.create.CreateClient;
+import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.Train;
 import net.createmod.catnip.data.Pair;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,13 +42,25 @@ public class ElectricTrainSounds {
             if (soundBehaviour == null)
                 sounds.put(carriagePair, soundBehaviour = e.getValue().type().soundBehaviour.get());
 
-            soundBehaviour.pos = e.getValue().pos();
             soundBehaviour.trainSpeed = e.getValue().speed();
             soundBehaviour.acceleration = e.getValue().acceleration();
+            soundBehaviour.pos = null;
+            if (train.carriages.size() >= Math.abs(carriageID) - 1) {
+                Carriage.DimensionalCarriageEntity dimensional = train.carriages.get(Math.abs(carriageID) - 1).getDimensional(Minecraft.getInstance().level);
+                Vec3 leading = dimensional.leadingAnchor();
+                Vec3 trailing = dimensional.trailingAnchor();
+                if (carriageID > 0) {
+                    if (leading != null)
+                        soundBehaviour.pos = leading;
+                } else if (trailing != null)
+                    soundBehaviour.pos = trailing;
+            }
+
 
             if (e.getValue().ticks() > 0) {
-                soundBehaviour.tick();
-                soundProperties.replace(carriagePair, new ElectricTrainSoundEntry(e.getValue().pos(), e.getValue().speed(), e.getValue().acceleration(), e.getValue().active(), e.getValue().ticks() - 1, e.getValue().type()));
+                if (soundBehaviour.pos != null)
+                    soundBehaviour.tick();
+                soundProperties.replace(carriagePair, new ElectricTrainSoundEntry(e.getValue().speed(), e.getValue().acceleration(), e.getValue().active(), e.getValue().ticks() - 1, e.getValue().type()));
             } else
                 soundProperties.remove(carriagePair);
         }

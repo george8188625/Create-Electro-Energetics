@@ -14,6 +14,7 @@ import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
 import com.george_vi.electroenergetics.simulation.simulator.SimulatorProfiler;
 import com.george_vi.electroenergetics.simulation.util.WorkerThread;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import net.createmod.catnip.data.Couple;
@@ -448,6 +449,13 @@ public class InfrastructureSavedData extends SavedData {
         CONNECTION_DATA.computeIfPresent(connection, (k, v) -> new WireData(v.wireType(), temp, v.attachments()));
     }
 
+    public float updateConnectionTemperature(NodeConnection connection, Float2FloatFunction function) {
+        WireData wireData = CONNECTION_DATA.computeIfPresent(connection, (k, v) -> new WireData(v.wireType(), function.get(v.temperature()), v.attachments()));
+        if (wireData == null)
+            return 0;
+        return wireData.temperature();
+    }
+
     public WireData getConnectionData(NodeConnection connection) {
         return CONNECTION_DATA.get(connection);
     }
@@ -528,5 +536,4 @@ public class InfrastructureSavedData extends SavedData {
     public WireConnectionManager getWireConnectionManager() {
         return wireConnectionManager;
     }
-
 }

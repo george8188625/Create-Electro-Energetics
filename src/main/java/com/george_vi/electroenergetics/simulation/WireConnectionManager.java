@@ -10,7 +10,7 @@ import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.PositionedAttachedNode;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
-import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.*;
@@ -23,7 +23,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -181,7 +180,7 @@ public class WireConnectionManager {
 
         for (Map.Entry<NodeConnection, WireType> e : originalConnections.entrySet()) {
             NodeConnection connection = e.getKey();
-            double resistance = MicroTickedSimulationTicker.getWireResistance(connection.node1(), connection.node2(), e.getValue());
+            double resistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), e.getValue());
             List<CutWireEntry> cuts = cutConnections.get(connection);
             if (cuts != null)
                 cuts = new ArrayList<>(cuts);
@@ -321,7 +320,7 @@ public class WireConnectionManager {
     }
 
     public void finish(SimulationResults results) {
-        MicroTickedSimulationTicker.profiler.push("updateWireTemperature");
+        SimulationTicker.profiler.push("updateWireTemperature");
 
         // Wire breaking
         if (CEEConfigs.server().wiresBreak.get()) {
@@ -334,7 +333,7 @@ public class WireConnectionManager {
 
                 List<CutWireEntry> cuts = cutConnections.get(connection);
                 double current = 0;
-                double wholeWireResistance = MicroTickedSimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType);
+                double wholeWireResistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType);
                 if (cuts == null) {
                     double vd = Math.abs(results.getVoltageAt(connection.node1(), connection.node2()));
                     current = vd / wholeWireResistance;
@@ -350,12 +349,14 @@ public class WireConnectionManager {
                     }
                 }
 
-                float temp = sd.getConnectionTemperature(connection);
 
-                float newTemp = (float) (Math.min(current, 1000));
-                newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
-                newTemp = Math.max(temp - 33.3f + newTemp, 0);
-                sd.setConnectionTemperature(connection, newTemp);
+                double finalCurrent = current;
+                float newTemp = sd.updateConnectionTemperature(connection, temp -> {
+                    float nTemp = (float) (Math.min(finalCurrent, 1000));
+                    nTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
+                    nTemp = Math.max(temp - 33.3f + nTemp, 0);
+                    return nTemp;
+                });
 
                 if (newTemp > wireType.getMaxTemperature() * 0.6 && level.isLoaded(connection.node1().sourcePos())) {
                     // Smoke particles
@@ -369,15 +370,14 @@ public class WireConnectionManager {
                         longestWireTypeToBreak = wireType;
 
                     }
-                    else if (MicroTickedSimulationTicker.getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < MicroTickedSimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType)) {
+                    else if (SimulationTicker.getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType)) {
                         longestWireToBreak = connection;
                         longestWireTypeToBreak = wireType;
                     }
-                    increase = newTemp > temp;
                 }
 
             }
-            if (longestWireToBreak != null && increase && sd.level.random.nextFloat() > 0.96f) {
+            if (longestWireToBreak != null && sd.level.random.nextFloat() > 0.96f) {
                 WireType replaceWith = longestWireTypeToBreak.replaceOverheatedWith();
                 if (replaceWith == null) {
                     sd.removeConnection(longestWireToBreak);
@@ -391,7 +391,7 @@ public class WireConnectionManager {
                 }
             }
         }
-        MicroTickedSimulationTicker.profiler.popPush("showWireShorts");
+        SimulationTicker.profiler.popPush("showWireShorts");
 
         for (long packedConnection : interWireShorts.keySet()) {
             AttachedNode node1 = createFirstNode(packedConnection);
@@ -407,11 +407,11 @@ public class WireConnectionManager {
         }
 
         if (electrocutions.isEmpty() || !CEEConfigs.server().enableElectrocution.get()) {
-            MicroTickedSimulationTicker.profiler.pop();
+            SimulationTicker.profiler.pop();
             return;
         }
 
-        MicroTickedSimulationTicker.profiler.popPush("electrocute");
+        SimulationTicker.profiler.popPush("electrocute");
 
         Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
         DamageSource damageSource = new DamageSource(registry.getHolderOrThrow(CEEDamageTypes.ELECTROCUTION));
@@ -445,7 +445,7 @@ public class WireConnectionManager {
             }
         }
 
-        MicroTickedSimulationTicker.profiler.pop();
+        SimulationTicker.profiler.pop();
     }
 
     public void wireRemoved(NodeConnection connection) {

@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.mixins;
 
-import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,25 +15,25 @@ public class MinecraftServerMixin {
 
     @Inject(method = "tickServer", at = @At(value = "HEAD"), remap = false)
     public void electroEnergetics$tickServerPre(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
-        MicroTickedSimulationTicker.profiler.clear();
-        MicroTickedSimulationTicker.allStats.clear();
+        SimulationTicker.profiler.clear();
+        SimulationTicker.allStats.clear();
         for (ServerLevel level : ((MinecraftServer)(Object)this).getAllLevels())
-            MicroTickedSimulationTicker.tick(level);
+            SimulationTicker.tick(level);
     }
 
     @Inject(method = "tickServer", at = @At(value = "TAIL"), remap = false)
     public void electroEnergetics$tickServerPost(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
         for (ServerLevel level : ((MinecraftServer)(Object)this).getAllLevels())
-            MicroTickedSimulationTicker.endTick(level);
+            SimulationTicker.endTick(level);
     }
 
     @Inject(method = "runServer", at = @At(value = "HEAD"), remap = false)
     public void electroEnergetics$runServer(CallbackInfo ci) {
-        MicroTickedSimulationTicker.runServer();
+        SimulationTicker.runServer();
     }
 
     @Inject(method = "runServer", at = @At(value = "TAIL"), remap = false)
     public void electroEnergetics$stopServer(CallbackInfo ci) {
-        MicroTickedSimulationTicker.stopServer();
+        SimulationTicker.stopServer();
     }
 }

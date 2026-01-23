@@ -75,10 +75,10 @@ public class CEENodeConfigurations {
             .simple(Direction.NORTH);
 
     public static final NodeConfigurator CONCRETE_POLE = new NodeConfigurator.Builder()
-            .add(new Vec3(8/16f, 14/16f, 3/16f))
-            .add(new Vec3(8/16f, 14/16f, 13/16f))
-            .add(new Vec3(3/16f, 14/16f, 8/16f))
-            .add(new Vec3(13/16f, 14/16f, 8/16f))
+            .add(new Vec3(8/16f, 14/16f, 4/16f))
+            .add(new Vec3(8/16f, 14/16f, 12/16f))
+            .add(new Vec3(4/16f, 14/16f, 8/16f))
+            .add(new Vec3(12/16f, 14/16f, 8/16f))
             .simple();
 
     public static final NodeConfigurator TRANSFORMER = new NodeConfigurator.Builder()

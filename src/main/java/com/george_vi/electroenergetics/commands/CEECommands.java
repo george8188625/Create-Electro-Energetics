@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.commands;
 
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
 import com.george_vi.electroenergetics.simulation.simulator.SimulatorProfiler;
 import com.mojang.brigadier.CommandDispatcher;
@@ -66,11 +66,11 @@ public class CEECommands {
     public static int performance(CommandContext<CommandSourceStack> ctx) {
         CommandSourceStack source = ctx.getSource();
         source.sendSuccess(() -> Component.literal("-+------<< Simulation Performance: >>------+-"), false);
-        List<SimulatorProfiler.ResultEntry> results = List.copyOf(MicroTickedSimulationTicker.profiler.getResults());
+        List<SimulatorProfiler.ResultEntry> results = List.copyOf(SimulationTicker.profiler.getResults());
         long totalTime = results.stream().mapToLong(re -> re.timeTookNanos).sum();
         listResults(1, results, source, totalTime == 0 ? 1 : totalTime, totalTime);
-        source.sendSuccess(() -> Component.literal("profiler: " + MicroTickedSimulationTicker.profiler.getProfilerOverheadNanos() / 1000 + " μs").withStyle(blue), false);
-        source.sendSuccess(() -> Component.literal("threadedSimulation: " + MicroTickedSimulationTicker.profiler.getThreadedNanos() / 1000 + " μs").withStyle(blue), false);
+        source.sendSuccess(() -> Component.literal("profiler: " + SimulationTicker.profiler.getProfilerOverheadNanos() / 1000 + " μs").withStyle(blue), false);
+        source.sendSuccess(() -> Component.literal("threadedSimulation: " + SimulationTicker.profiler.getThreadedNanos() / 1000 + " μs").withStyle(blue), false);
         source.sendSuccess(() -> Component.literal("-+------------------------------------+-"), false);
         return 1;
     }
@@ -93,7 +93,7 @@ public class CEECommands {
     public static int stats(CommandContext<CommandSourceStack> ctx) {
         CommandSourceStack source = ctx.getSource();
         source.sendSuccess(() -> Component.literal("-+------<< Simulation Stats >>-------------+-"), false);
-        for (Map.Entry<Level, SimulationStats> entry : MicroTickedSimulationTicker.allStats.entrySet()) {
+        for (Map.Entry<Level, SimulationStats> entry : SimulationTicker.allStats.entrySet()) {
             Level level = entry.getKey();
             SimulationStats stats = entry.getValue();
             source.sendSuccess(() -> Component.literal("totalNodes: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalNodes)).withStyle(orange)), false);

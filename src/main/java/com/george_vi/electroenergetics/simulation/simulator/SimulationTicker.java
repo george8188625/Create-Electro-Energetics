@@ -21,7 +21,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-public class MicroTickedSimulationTicker {
+public class SimulationTicker {
 
     public static SimulatorProfiler profiler = new SimulatorProfiler();
     public static Map<Level, SimulationStats> allStats = new Object2ObjectArrayMap<>();
@@ -238,7 +238,7 @@ public class MicroTickedSimulationTicker {
         profiler.pop();
         profiler.pop();
 
-        MicroTickedSimulationTicker.allStats.put(level, sd.stats);
+        SimulationTicker.allStats.put(level, sd.stats);
     }
 
     public static double getWireResistance(InWorldNode node1, InWorldNode node2, WireType wireType) {

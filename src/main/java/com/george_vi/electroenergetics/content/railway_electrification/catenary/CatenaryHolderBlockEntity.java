@@ -71,10 +71,8 @@ public class CatenaryHolderBlockEntity extends SmartBlockEntity {
         BlockState state = level.getBlockState(pos);
         if (state.getBlock() instanceof FenceBlock)
             return 4;
-        if (state.getBlock() instanceof GirderBlock || state.getBlock() instanceof WallBlock)
+        if (state.getBlock() instanceof GirderBlock || state.getBlock() instanceof WallBlock || state.getBlock() instanceof ConcretePoleBlock)
             return 8;
-        if (state.getBlock() instanceof ConcretePoleBlock)
-            return 10;
         return 0;
     }
 

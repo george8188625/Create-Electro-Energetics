@@ -20,8 +20,17 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
 
         backgroundSoundInstance.setPos(pos);
         if (trainSpeed != 0) {
+            if (trainSpeed < 0.4) {
+                mainSoundInstance.targetPitch = Math.min(0.34f, trainSpeed) * 1.5f + 0.4f;
+            } else if (prevTrainSpeed < 0.4) {
+                mainSoundInstance.setPitchImmediately(Math.min(0.6f, trainSpeed) * 1.3f + 0.5f);
+            } else if (trainSpeed < 0.6) {
+             mainSoundInstance.targetPitch = Math.min(0.6f, trainSpeed) * 1.3f + 0.5f;
+            } else if (prevTrainSpeed < 0.6) {
+                mainSoundInstance.setPitchImmediately(Math.min(0.9f, trainSpeed) * 1.3f + 0.0f);
+            } else
+                mainSoundInstance.targetPitch = Math.min(0.7f, trainSpeed) * 1.3f + 0.0f;
             mainSoundInstance.setPos(pos);
-            mainSoundInstance.targetPitch = Math.min(0.7f, trainSpeed) * 1.3f + 0.4f;
             mainSoundInstance.targetVolume = trainSpeed > 0.01 ? ((acceleration == 0 ? 0.4f : (acceleration > 0 ? acceleration : acceleration / -8) * 600) + 0.2f) / (1 + trainSpeed * 3) : 0;
             mainSoundInstance.targetVolume /= 2;
             mainSoundInstance.keepAlive();

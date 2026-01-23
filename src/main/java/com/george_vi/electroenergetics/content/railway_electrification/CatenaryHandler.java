@@ -1,8 +1,9 @@
-package com.george_vi.electroenergetics.content.railway_electrification.catenary;
+package com.george_vi.electroenergetics.content.railway_electrification;
 
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.railway_electrification.ElectricTrainData;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
@@ -13,7 +14,7 @@ import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.mixin_interfaces.ICEETrainExtension;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
-import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.Train;
@@ -30,18 +31,19 @@ import java.util.*;
 
 public class CatenaryHandler {
 
-    static List<Pair<Train, Couple<AttachedNode>>> trains = new ArrayList<>();
-    static Map<Train, Double> trainSpeeds = new HashMap<>();
 
     public static void addToGraph(AddToElectricGraphEvent event) {
-        trains.clear();
 
         Map<Train, List<Pair<Float, Couple<BlockPos>>>> catenaryConnections = new HashMap<>();
         Map<Couple<BlockPos>, Integer> cutConnections = new HashMap<>();
         List<Couple<BlockPos>> allCatenaryConnections = event.sd.getAllCatenaryConnections();
-        Map<Train, List<AttachedNode>> trainPantographs = new HashMap<>();
+//        Map<Train, List<AttachedNode>> trainPantographs = new HashMap<>();
 
         for (Train train : Create.RAILWAYS.trains.values()) {
+            ICEETrainExtension trainExtension = (ICEETrainExtension)train;
+            ElectricTrainData trainData = trainExtension.getElectricTrainData();
+            trainData.pantographNodes.clear();
+
             for (Carriage carriage : train.carriages) {
                 List<TrainPantographEntry> pantographs = ((IPantographList)carriage).getPantographList();
                 if (carriage.presentInMultipleDimensions() ||
@@ -98,17 +100,16 @@ public class CatenaryHandler {
                         distance = VecHelper.rotate(distance, -pitch, Direction.Axis.X);
 
                         if (!(Math.abs(distance.z()) > 2) && !(Math.abs(distance.x()) > 0.5) && !(Math.abs(distance.y()) > 1.75)) {
-                            catenaryConnections.computeIfAbsent(train, k -> new ArrayList<>());
-                            catenaryConnections.get(train).add(Pair.of((float) t, connection));
+                            catenaryConnections.computeIfAbsent(train, k -> new ArrayList<>())
+                                    .add(Pair.of((float) t, connection));
                             cutConnections.compute(connection, (k, v) -> v == null ? 1 : v + 1);
                             break;
                         }
                     }
                 }
-
-                if (((ICEETrainExtension)train).getAccumulatorCharge() > 0)
-                    trainPantographs.put(train, new ArrayList<>());
             }
+
+
         }
 
         int i = 0;
@@ -130,20 +131,20 @@ public class CatenaryHandler {
                 InWorldNode startNode = new InWorldNode(0, connection.getFirst());
                 InWorldNode endNode = new InWorldNode(0, connection.getSecond());
                 float totalProgress = 0.01f;
-                double totalResistance = MicroTickedSimulationTicker.getWireResistance(startNode, endNode, CEEWireTypes.COPPER.get());
+                double totalResistance = SimulationTicker.getWireResistance(startNode, endNode, CEEWireTypes.COPPER.get());
                 Node lastNode = startNode;
 
 
                 for (Pair<Float, Train> e : connectedTrains.stream().sorted(Comparator.comparingDouble(Pair::getFirst)).toList()) {
                     float progress = e.getFirst();
                     Train train = e.getSecond();
+                    ICEETrainExtension trainExtension = (ICEETrainExtension)train;
+                    ElectricTrainData trainData = trainExtension.getElectricTrainData();
+
                     double resistance = totalResistance * (progress - totalProgress);
-                    AttachedNode pantographNode = new AttachedNode(i, "CeePantographNode");
+                    AttachedNode pantographNode = new AttachedNode(i, "CEEPantographNode");
                     event.builder.addNode(pantographNode);
-                    if (!trainPantographs.containsKey(train))
-                        trainPantographs.put(train, new ArrayList<>(List.of(pantographNode)));
-                    else
-                        trainPantographs.get(train).add(pantographNode);
+                    trainData.pantographNodes.add(pantographNode);
                     i++;
                     event.builder.connect(lastNode, pantographNode, ElectricalProperties.resistor(resistance));
                     lastNode = pantographNode;
@@ -153,18 +154,22 @@ public class CatenaryHandler {
             } else {
                 InWorldNode node1 = new InWorldNode(0, connection.getFirst());
                 InWorldNode node2 = new InWorldNode(0, connection.getSecond());
-                event.builder.connect(node1, node2, ElectricalProperties.resistor(MicroTickedSimulationTicker.getWireResistance(node1, node2, CEEWireTypes.COPPER.get())));
+                event.builder.connect(node1, node2, ElectricalProperties.resistor(SimulationTicker.getWireResistance(node1, node2, CEEWireTypes.COPPER.get())));
             }
         }
 
         // Create train circuit, all pantographs merge into one node, that node is connected to ground through a resistance
         i = 0;
-        for (Map.Entry<Train, List<AttachedNode>> e : trainPantographs.entrySet()) {
-            Train train = e.getKey();
+        for (Train train : Create.RAILWAYS.trains.values()) {
+            ICEETrainExtension trainExtension = (ICEETrainExtension)train;
+            ElectricTrainData trainData = trainExtension.getElectricTrainData();
+            if (trainData.pantographNodes.isEmpty() && trainExtension.getAccumulatorCharge() <= 0.001)
+                continue;
             double trainSpeed = Math.abs(train.speed);
-            float acceleration = (float) (trainSpeed - trainSpeeds.getOrDefault(train, trainSpeed));
-            AttachedNode groundNode = new AttachedNode(i, "CeePantographGroundNode");
-            AttachedNode trainNode = new AttachedNode(i, "CEETrainNode");
+            float acceleration = (float) (trainSpeed - trainData.lastSpeed);
+
+            AttachedNode groundNode = trainData.groundNode = new AttachedNode(i, "CEEPantographGroundNode");
+            AttachedNode trainNode = trainData.trainNode = new AttachedNode(i, "CEETrainNode");
             event.builder.addNode(groundNode);
             event.builder.addNode(trainNode);
             event.builder.ground(groundNode, 10);
@@ -174,25 +179,25 @@ public class CatenaryHandler {
                 trainResistance = 1 / (1 / CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() + 1 / trainResistance);
             event.builder.connect(groundNode, trainNode, ElectricalProperties.resistor(trainResistance));
 
-            for (AttachedNode node : e.getValue())
+            for (AttachedNode node : trainExtension.getElectricTrainData().pantographNodes)
                 event.builder.connect(node, trainNode, ElectricalProperties.resistor(CEEConfigs.server().resistanceValues.wireResistance.get()));
-            trains.add(Pair.of(train, Couple.create(trainNode, groundNode)));
         }
 
     }
 
     public static void finishSimulation(FinishElectricSimulationEvent event) {
-        List<Train> visitedTrains = new ArrayList<>();
-        for (Pair<Train, Couple<AttachedNode>> e : trains) {
-            Train train = e.getFirst();
-            if (!(train instanceof ICEETrainExtension trainExtension))
-                continue;
-            visitedTrains.add(train);
+        for (Train train : Create.RAILWAYS.trains.values()) {
 
-            AttachedNode node1 = e.getSecond().getFirst();
-            AttachedNode node2 = e.getSecond().getSecond();
+            ICEETrainExtension trainExtension = (ICEETrainExtension)train;
+            ElectricTrainData trainData = trainExtension.getElectricTrainData();
 
-            double voltage = Math.abs(event.results.getVoltageAt(node1, node2));
+            AttachedNode node1 = trainData.groundNode;
+            AttachedNode node2 = trainData.trainNode;
+            double voltage;
+            if (node1 != null && node2 != null)
+                voltage = Math.abs(event.results.getVoltageAt(node1, node2));
+            else
+                voltage = 0;
             boolean active = voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
             double trainSpeed = Math.abs(train.speed);
 
@@ -211,62 +216,29 @@ public class CatenaryHandler {
                 if (((IPantographList)carriage).hasElectricMotor()) {
                     Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(event.level);
 
+                    int carriageIndex = train.carriages.indexOf(carriage);
                     if (carriage.isOnTwoBogeys()) {
-                        positions.put(carriage.id, dce.trailingAnchor());
-                        positions.put(-carriage.id, dce.leadingAnchor());
+                        positions.put(carriageIndex + 1, dce.trailingAnchor());
+                        positions.put(-carriageIndex - 1, dce.leadingAnchor());
                     } else
-                        positions.put(carriage.id, dce.trailingAnchor());
+                        positions.put(carriageIndex + 1, dce.trailingAnchor());
                 }
             }
-            float acceleration = (float) (trainSpeed - trainSpeeds.getOrDefault(train, trainSpeed));
+            float acceleration = (float) (trainSpeed - trainData.lastSpeed);
 
-            trainSpeeds.put(train, trainSpeed);
+            trainData.lastSpeed = trainSpeed;
             for (Map.Entry<Integer, Vec3> ce : positions.entrySet()) {
                 Integer carriageID = ce.getKey();
                 Vec3 pos = ce.getValue();
 
                 CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                        100, new UpdateElectricTrainSoundPacket(train.id, carriageID, pos, (float) trainSpeed, acceleration, active, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getId(trainExtension.getSoundType())));
+                        100, new UpdateElectricTrainSoundPacket(train.id, carriageID, (float) trainSpeed, acceleration, active, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getId(trainExtension.getSoundType())));
             }
             if (active)
                 if (train.fuelTicks <= 1) {
                     train.fuelTicks = 10;
                 }
 
-        }
-
-        // When the train is disconnected from power, the code above isn't executed, this makes sure the train stops its sounds.
-
-        for (Train train : trainSpeeds.keySet().stream().toList()) {
-            if (visitedTrains.contains(train))
-                continue;
-
-            if (!(train instanceof ICEETrainExtension trainExtension))
-                continue;
-
-            Map<Integer, Vec3> positions = new HashMap<>();
-            for (Carriage carriage : train.carriages) {
-                if (((IPantographList)carriage).hasElectricMotor()) {
-                    Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(event.level);
-
-                    if (carriage.isOnTwoBogeys()) {
-                        positions.put(carriage.id, dce.trailingAnchor());
-                        positions.put(carriage.id, dce.leadingAnchor());
-                    } else
-                        positions.put(carriage.id, dce.trailingAnchor());
-                    break;
-                }
-            }
-
-            for (Map.Entry<Integer, Vec3> ce : positions.entrySet()) {
-                Integer carriageID = ce.getKey();
-                Vec3 pos = ce.getValue();
-
-                CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
-                        100, new UpdateElectricTrainSoundPacket(train.id, carriageID, pos, 0, 0, false, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getId(trainExtension.getSoundType())));
-            }
-
-            trainSpeeds.remove(train);
         }
     }
 }

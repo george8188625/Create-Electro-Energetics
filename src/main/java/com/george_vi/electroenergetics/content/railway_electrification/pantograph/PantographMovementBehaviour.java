@@ -35,7 +35,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
         if (targetExtensionState == 0)
             currentExtensionState = Mth.lerp(0.1f, currentExtensionState, targetExtensionState);
         else
-            currentExtensionState = Mth.lerp(0.5f, currentExtensionState, targetExtensionState);
+            currentExtensionState = Mth.lerp(1f, currentExtensionState, targetExtensionState);
         if (Math.abs(currentExtensionState - targetExtensionState) < 0.01)
              currentExtensionState = targetExtensionState;
 

@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.commands.CEECommands;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
-import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHandler;
+import com.george_vi.electroenergetics.content.railway_electrification.CatenaryHandler;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.client.WireEffects;
@@ -13,7 +13,7 @@ import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionB
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.simulator.MicroTickedSimulationTicker;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -133,16 +133,16 @@ public class GameEvents {
 
     @SubscribeEvent
     public static void addToElectricGraph(AddToElectricGraphEvent event) {
-        MicroTickedSimulationTicker.profiler.push("catenaryStuff");
+        SimulationTicker.profiler.push("catenaryStuff");
         CatenaryHandler.addToGraph(event);
-        MicroTickedSimulationTicker.profiler.pop();
+        SimulationTicker.profiler.pop();
     }
 
     @SubscribeEvent
     public static void finishElectricSimulation(FinishElectricSimulationEvent event) {
-        MicroTickedSimulationTicker.profiler.push("catenaryStuff");
+        SimulationTicker.profiler.push("catenaryStuff");
         CatenaryHandler.finishSimulation(event);
-        MicroTickedSimulationTicker.profiler.pop();
+        SimulationTicker.profiler.pop();
     }
 
     @SubscribeEvent

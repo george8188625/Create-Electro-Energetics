@@ -23,7 +23,7 @@ public class CircuitBuilder {
 
     public CircuitBuilder(Set<InWorldNode> nodes) {
         allIndexedNodes = new ArrayList<>(nodes.size() * 2);
-        nodeIndexes = new Object2IntOpenHashMap<>();
+        nodeIndexes = new Object2IntOpenHashMap<>(nodes.size() * 2);
         nodeIndexes.defaultReturnValue(-1);
         defaultZeroPotentials = new Int2IntOpenHashMap();
         for (Node node : nodes) {
