@@ -6,7 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class CEEShapes {
+public class    CEEShapes {
     public static final VoxelShaper CONNECTOR = shape(6,0, 6,10,10,10).forDirectional();
 
     public static final VoxelShaper CONNECTOR_SHORT = shape(6,0, 6,10,7,10).forDirectional();
@@ -91,6 +91,9 @@ public class CEEShapes {
             .add(5, 4, 5, 11, 16, 11).forDirectional();
 
     public static final VoxelShaper CATENARY_HOLDER = shape(6, 0, 6, 10, 24, 10)
+            .forAxis();
+
+    public static final VoxelShaper CATENARY_HOLDER_LOW = shape(6, 0, 6, 10, 4, 10)
             .forAxis();
 
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {

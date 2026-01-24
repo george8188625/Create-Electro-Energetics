@@ -49,7 +49,15 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     public boolean electroEnergetics$hasMotor = false;
 
     @Unique
+    public boolean electroEnergetics$hasCreativeSource = false;
+
+    @Unique
     int electroenergetics$accumulators = 0;
+
+    @Override
+    public boolean hasCreativeElectricalSource() {
+        return electroEnergetics$hasCreativeSource;
+    }
 
     @Accessor("assemblyDirection")
     abstract Direction electroEnergetics$getAssemblyDirection();
@@ -86,6 +94,8 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
             electroEnergetics$hasMotor = true;
         if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_accumulator"))))
             electroenergetics$accumulators++;
+        if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_creative_source"))))
+            electroEnergetics$hasCreativeSource = true;
         electroEnergetics$addSMBlock(state.getBlock(), electroEnergetics$soundModifyingBlocks);
     }
 

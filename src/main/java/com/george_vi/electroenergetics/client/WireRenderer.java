@@ -1,9 +1,11 @@
 package com.george_vi.electroenergetics.client;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
@@ -58,6 +60,8 @@ public class WireRenderer {
         float baseCatenaryWidth = 0.66f;
 
         for (Couple<BlockPos> connection : List.copyOf(CATENARY)) {
+            BlockState startingState = mc.level.getBlockState(connection.getFirst());
+            BlockState endingState = mc.level.getBlockState(connection.getSecond());
             AABB bb = AABB.encapsulatingFullBlocks(connection.getFirst(), connection.getSecond());
             if (!levelRenderer.getFrustum().isVisible(bb))
                 continue;
@@ -89,7 +93,10 @@ public class WireRenderer {
                                         LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
                         .renderInto(pose, buffer.getBuffer(RenderType.solid()));
             }
-
+            boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+            boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+            if (isStartingLow || isEndingLow)
+                continue;
 
             Vec3 topStart = start.add(0, 1.5, 0);
             Vec3 topEnd = end.add(0, 1.5, 0);

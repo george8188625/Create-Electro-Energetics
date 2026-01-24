@@ -163,7 +163,7 @@ public class CatenaryHandler {
         for (Train train : Create.RAILWAYS.trains.values()) {
             ICEETrainExtension trainExtension = (ICEETrainExtension)train;
             ElectricTrainData trainData = trainExtension.getElectricTrainData();
-            if (trainData.pantographNodes.isEmpty() && trainExtension.getAccumulatorCharge() <= 0.001)
+            if (trainData.pantographNodes.isEmpty() && trainData.accumulatorCharge <= 0.001)
                 continue;
             double trainSpeed = Math.abs(train.speed);
             float acceleration = (float) (trainSpeed - trainData.lastSpeed);
@@ -175,7 +175,7 @@ public class CatenaryHandler {
             event.builder.ground(groundNode, 10);
             double trainResistance = Math.abs(train.speed) > 0.01 ?
                     acceleration > 0.001 ? CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() : CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get() : 9999;
-            if (((ICEETrainExtension) train).getAccumulatorCharge() < ((ICEETrainExtension) train).getAccumulators())
+            if (trainData.accumulatorCharge < trainData.accumulators)
                 trainResistance = 1 / (1 / CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() + 1 / trainResistance);
             event.builder.connect(groundNode, trainNode, ElectricalProperties.resistor(trainResistance));
 
@@ -198,18 +198,18 @@ public class CatenaryHandler {
                 voltage = Math.abs(event.results.getVoltageAt(node1, node2));
             else
                 voltage = 0;
-            boolean active = voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
+            boolean active = trainData.hasCreativeSource || voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
             double trainSpeed = Math.abs(train.speed);
 
             if (!active) {
-                if (trainExtension.getAccumulatorCharge() > 0) {
+                if (trainData.accumulatorCharge > 0) {
                     if (trainSpeed > 0.001)
-                        trainExtension.setAccumulatorCharge(Math.max(0d, trainExtension.getAccumulatorCharge() - 1d / CEEConfigs.server().ticksPerAccumulatorOnTrain.get()));
+                        trainData.accumulatorCharge = Math.max(0d, trainData.accumulatorCharge - 1d / CEEConfigs.server().ticksPerAccumulatorOnTrain.get());
                     active = true;
                 }
             } else
-                if (trainExtension.getAccumulatorCharge() < trainExtension.getAccumulators())
-                    trainExtension.setAccumulatorCharge(Math.min(trainExtension.getAccumulators(), trainExtension.getAccumulatorCharge() + 1d / CEEConfigs.server().ticksPerAccumulatorChargeOnTrain.get()));
+                if (trainData.accumulatorCharge < trainData.accumulators)
+                    trainData.accumulatorCharge = Math.min(trainData.accumulators, trainData.accumulatorCharge + 1d / CEEConfigs.server().ticksPerAccumulatorChargeOnTrain.get());
 
             Map<Integer, Vec3> positions = new HashMap<>();
             for (Carriage carriage : train.carriages) {

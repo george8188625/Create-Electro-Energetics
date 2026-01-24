@@ -1,7 +1,16 @@
 {
   "variants": {
-    "": {
+    "style=low": {
+      "model": "electroenergetics:block/catenary_holder/block_low"
+    },
+    "style=standard": {
       "model": "electroenergetics:block/catenary_holder/block"
+    },
+    "style=weathered": {
+      "model": "electroenergetics:block/catenary_holder/block"
+    },
+    "style=weathered_low": {
+      "model": "electroenergetics:block/catenary_holder/block_low"
     }
   }
 }

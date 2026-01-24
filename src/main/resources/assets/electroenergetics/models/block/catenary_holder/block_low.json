@@ -1,0 +1,47 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "electroenergetics:block/catenary_holder",
+		"particle": "electroenergetics:block/catenary_holder"
+	},
+	"elements": [
+		{
+			"from": [6, 0, 6],
+			"to": [10, 2, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 0, 6]},
+			"faces": {
+				"north": {"uv": [0, 2, 2, 3], "texture": "#0"},
+				"east": {"uv": [0, 2, 2, 3], "texture": "#0"},
+				"south": {"uv": [0, 2, 2, 3], "texture": "#0"},
+				"west": {"uv": [0, 2, 2, 3], "texture": "#0"},
+				"up": {"uv": [2, 0, 4, 2], "texture": "#0"},
+				"down": {"uv": [0, 0, 2, 2], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, -135, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [30, -135, 0],
+			"translation": [0, -1.66, 0],
+			"scale": [0.625, 0.41667, 0.625]
+		},
+		"fixed": {
+			"translation": [0, -2.66, 0],
+			"scale": [1, 0.66, 1]
+		}
+	}
+}

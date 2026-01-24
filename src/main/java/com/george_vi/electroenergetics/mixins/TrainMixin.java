@@ -29,12 +29,6 @@ public class TrainMixin implements ICEETrainExtension {
     ElectricTrainSoundType electroenergetics$soundType;
 
     @Unique
-    int electroenergetics$accumulators = 0;
-
-    @Unique
-    double electroenergetics$accumulatorCharge = 0;
-
-    @Unique
     ElectricTrainData electroenergetics$electricTrainData = new ElectricTrainData();
 
     @Unique
@@ -56,26 +50,6 @@ public class TrainMixin implements ICEETrainExtension {
     }
 
     @Override
-    public int getAccumulators() {
-        return electroenergetics$accumulators;
-    }
-
-    @Override
-    public void setAccumulators(int value) {
-        electroenergetics$accumulators = value;
-    }
-
-    @Override
-    public double getAccumulatorCharge() {
-        return electroenergetics$accumulatorCharge;
-    }
-
-    @Override
-    public void setAccumulatorCharge(double value) {
-        electroenergetics$accumulatorCharge = value;
-    }
-
-    @Override
     public ElectricTrainData getElectricTrainData() {
         return electroenergetics$electricTrainData;
     }
@@ -86,8 +60,8 @@ public class TrainMixin implements ICEETrainExtension {
         CompoundTag tag = cir.getReturnValue();
         if (id != null)
             tag.putString("CEETrainSoundType", id.toString());
-        tag.putInt("CEEAccumulators", electroenergetics$accumulators);
-        tag.putDouble("CEEAccumulatorCharge", electroenergetics$accumulatorCharge);
+        tag.putInt("CEEAccumulators", electroenergetics$electricTrainData.accumulators);
+        tag.putDouble("CEEAccumulatorCharge", electroenergetics$electricTrainData.accumulatorCharge);
     }
 
     @Inject(method = "read", at=@At("RETURN"), remap = false)
@@ -102,8 +76,8 @@ public class TrainMixin implements ICEETrainExtension {
 
         ICEETrainExtension train = (ICEETrainExtension) cir.getReturnValue();
         train.setSoundType(soundType);
-        train.setAccumulators(tag.getInt("CEEAccumulators"));
-        train.setAccumulatorCharge(tag.getDouble("CEEAccumulatorCharge"));
+        train.getElectricTrainData().accumulators = tag.getInt("CEEAccumulators");
+        train.getElectricTrainData().accumulatorCharge = tag.getDouble("CEEAccumulatorCharge");
     }
 
 }

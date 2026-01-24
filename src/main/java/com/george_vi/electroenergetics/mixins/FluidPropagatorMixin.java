@@ -37,7 +37,7 @@ public class FluidPropagatorMixin {
 
         // Visit all connected pumps to update their network
         while (!frontier.isEmpty()) {
-            Pair<Integer, BlockPos> pair = frontier.remove(0);
+            Pair<Integer, BlockPos> pair = frontier.removeFirst();
             BlockPos currentPos = pair.getSecond();
             if (visited.contains(currentPos))
                 continue;

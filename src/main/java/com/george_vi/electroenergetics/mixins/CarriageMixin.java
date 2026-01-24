@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.CEEElectricTrainSoundTypes;
+import com.george_vi.electroenergetics.content.railway_electrification.ElectricTrainData;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
@@ -56,6 +57,11 @@ public class CarriageMixin implements IPantographList {
     public void setAccumulators(int value) {
     }
 
+    @Override
+    public boolean hasCreativeElectricalSource() {
+        return false;
+    }
+
     @Inject(method = "read(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/HolderLookup$Provider;Lcom/simibubi/create/content/trains/graph/TrackGraph;Lcom/simibubi/create/content/trains/graph/DimensionPalette;)Lcom/simibubi/create/content/trains/entity/Carriage;", at=@At("RETURN"), remap = false)
     private static void electroEnergetics$read(CompoundTag tag, HolderLookup.Provider registries, TrackGraph graph, DimensionPalette dimensions, CallbackInfoReturnable<Carriage> cir) {
         Carriage carriage = cir.getReturnValue();
@@ -81,7 +87,10 @@ public class CarriageMixin implements IPantographList {
         if (train == null)
             return;
         ICEETrainExtension trainExtension = (ICEETrainExtension) train;
-        trainExtension.setAccumulators(trainExtension.getAccumulators() + contraptionExtension.getAccumulators());
+        ElectricTrainData trainData = trainExtension.getElectricTrainData();
+        trainData.accumulators += contraptionExtension.getAccumulators();
+        trainData.hasCreativeSource = contraptionExtension.hasCreativeElectricalSource();
+
 
         if (electroEnergetics$soundModifyingBlocks.isEmpty())
             return;

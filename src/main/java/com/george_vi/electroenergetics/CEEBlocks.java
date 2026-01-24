@@ -443,7 +443,7 @@ public class CEEBlocks {
     public static final BlockEntry<CatenaryHolderBlock> CATENARY_HOLDER = REGISTRATE.block("catenary_holder", CatenaryHolderBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate((c, p) -> BlockStateGen.simpleBlock(c, p, s -> AssetLookup.partialBaseModel(c, p)))
+            .blockstate((c, p) -> BlockStateGen.simpleBlock(c, p, s -> s.getValue(CatenaryHolderBlock.STYLE).isLow() ? AssetLookup.partialBaseModel(c, p, "low") : AssetLookup.partialBaseModel(c, p)))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))

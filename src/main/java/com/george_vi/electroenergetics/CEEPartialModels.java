@@ -36,6 +36,13 @@ public class CEEPartialModels {
     public static final PartialModel CATENARY_HOLDER_MOUNT_8 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_8"));
     public static final PartialModel CATENARY_HOLDER_MOUNT_10 = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/mount_10"));
     public static final PartialModel CATENARY_HOLDER_CONNECTOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/connector"));
+    public static final PartialModel CATENARY_HOLDER_INSULATOR_WEATHERED = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/weathered_insulator"));
+    public static final PartialModel CATENARY_HOLDER_LONG_ROD_WEATHERED = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/weathered_long_rod"));
+    public static final PartialModel CATENARY_HOLDER_SHORT_ROD_WEATHERED = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/weathered_short_rod"));
+    public static final PartialModel CATENARY_HOLDER_MOUNT_4_WEATHERED = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/weathered_mount_4"));
+    public static final PartialModel CATENARY_HOLDER_MOUNT_6_WEATHERED = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/weathered_mount_6"));
+    public static final PartialModel CATENARY_HOLDER_MOUNT_8_WEATHERED = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/weathered_mount_8"));
+    public static final PartialModel CATENARY_HOLDER_MOUNT_10_WEATHERED = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/weathered_mount_10"));
     public static final PartialModel BULB_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament"));
     public static final PartialModel BULB_FILAMENT_BRIGHT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament_bright"));
     public static final PartialModel BULB_BROKEN_FILAMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/bulb/filament_broken"));

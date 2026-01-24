@@ -19,6 +19,8 @@ public interface IPantographList {
 
     void setAccumulators(int value);
 
+    boolean hasCreativeElectricalSource();
+
 
     default void changePantographState(BlockPos localPos, boolean active) {
         List<TrainPantographEntry> pantographList = getPantographList();
