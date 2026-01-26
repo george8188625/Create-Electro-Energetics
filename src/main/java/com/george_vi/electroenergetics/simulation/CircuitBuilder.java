@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 import java.util.*;
 
@@ -57,8 +58,12 @@ public class CircuitBuilder {
     public void connect(int n1, int n2, ElectricalProperties properties) {
         checkOutOfBounds(n1);
         checkOutOfBounds(n2);
-        if (n1 == n2)
-            throw new IllegalArgumentException("Tried to create an electrical connection between a single node: " + allIndexedNodes.get(n1).node);
+        if (n1 == n2) {
+            if (FMLEnvironment.production)
+                return;
+            else
+                throw new IllegalArgumentException("Tried to create an electrical connection between a single node: " + allIndexedNodes.get(n1).node);
+        }
         if (Double.isNaN(properties.resistance()) || Double.isNaN(properties.voltageSource()) || Double.isNaN(properties.currentSource()))
             return;
 

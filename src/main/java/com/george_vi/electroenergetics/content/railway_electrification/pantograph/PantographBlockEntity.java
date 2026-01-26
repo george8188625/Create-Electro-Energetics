@@ -16,7 +16,7 @@ import java.util.List;
 public class PantographBlockEntity extends SmartBlockEntity {
     public float prevExtensionState = 0;
     public float currentExtensionState = 0;
-    public float targetExtensionState = 0.75f;
+    public float targetExtensionState = 0.85f;
     public DyeColor color = DyeColor.WHITE;
 
 

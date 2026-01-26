@@ -27,15 +27,15 @@ public interface IPantographList {
 
         for (int i = 0; i < pantographList.size(); i++) {
             TrainPantographEntry e = pantographList.get(i);
-            if (e.originalPos().equals(localPos)) {
-                pantographList.set(i, new TrainPantographEntry(e.originalPos(), e.rotatedPos(), e.type(), active, e.facingForward()));
+            if (e.originalPos.equals(localPos)) {
+                e.active = active;
                 break;
             }
         }
     }
 
     default TrainPantographEntry getPantographState(BlockPos localPos) {
-        return getPantographList().stream().filter(e -> e.originalPos().equals(localPos)).findFirst().orElse(null);
+        return getPantographList().stream().filter(e -> e.originalPos.equals(localPos)).findFirst().orElse(null);
     }
 
     boolean hasElectricMotor();

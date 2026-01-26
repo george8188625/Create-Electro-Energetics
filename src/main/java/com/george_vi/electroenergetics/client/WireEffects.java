@@ -1,5 +1,7 @@
 package com.george_vi.electroenergetics.client;
 
+import com.george_vi.electroenergetics.CEESoundEvents;
+import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
@@ -9,6 +11,7 @@ import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -77,5 +80,41 @@ public class WireEffects {
                     mc.level.addParticle(ParticleTypes.DRIPPING_WATER, pos.x(), pos.y() - 0.1, pos.z(), 0, 0, 0);
             }
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void showSmallSpark(Vec3 pos) {
+        Minecraft mc = Minecraft.getInstance();
+        Level level = mc.level;
+        for (int i = 0; i < 15; i++) {
+            Vec3 vel = Vec3.ZERO.offsetRandom(level.random, 0.06f);
+            level.addParticle(ParticleTypes.BUBBLE_POP, pos.x, pos.y, pos.z, vel.z, vel.y, vel.z);
+        }
+
+        level.addParticle(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, 0, 0);
+        level.addParticle(ParticleTypes.ELECTRIC_SPARK, pos.x, pos.y, pos.z, 0, 0, 0);
+        ElectricHumSoundInstance instance = new ElectricHumSoundInstance(CEESoundEvents.ARC.get(), BlockPos.containing(pos));
+        Minecraft.getInstance()
+                .getSoundManager()
+                .play(instance);
+        instance.setVolume(0.3f);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void showMediumSpark(Vec3 pos) {
+        Minecraft mc = Minecraft.getInstance();
+        Level level = mc.level;
+        for (int i = 0; i < 15; i++) {
+            Vec3 vel = Vec3.ZERO.offsetRandom(level.random, 0.1f);
+            level.addParticle(ParticleTypes.BUBBLE_POP, pos.x, pos.y, pos.z, vel.z, vel.y, vel.z);
+        }
+
+        level.addParticle(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, 0, 0);
+        level.addParticle(ParticleTypes.ELECTRIC_SPARK, pos.x, pos.y, pos.z, 0, 0, 0);
+        ElectricHumSoundInstance instance = new ElectricHumSoundInstance(CEESoundEvents.ARC.get(), BlockPos.containing(pos));
+        Minecraft.getInstance()
+                .getSoundManager()
+                .play(instance);
+        instance.setVolume(1f);
     }
 }

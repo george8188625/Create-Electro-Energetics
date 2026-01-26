@@ -12,19 +12,19 @@ import net.minecraft.network.codec.StreamCodec;
 
 import java.util.List;
 
-public record SendCatenaryPacket(List<Couple<BlockPos>> connections) implements ClientboundPacketPayload {
+public record SendCatenaryPacket(List<CatenaryConnection> connections) implements ClientboundPacketPayload {
     public static final StreamCodec<ByteBuf, SendCatenaryPacket> STREAM_CODEC = StreamCodec.composite(
-            CatnipStreamCodecBuilders.list(Couple.streamCodec(BlockPos.STREAM_CODEC)), SendCatenaryPacket::connections,
+            CatnipStreamCodecBuilders.list(CatenaryConnection.STREAM_CODEC), SendCatenaryPacket::connections,
             SendCatenaryPacket::new
     );
 
-    public static SendCatenaryPacket connectWire(Couple<BlockPos> connection) {
+    public static SendCatenaryPacket connectWire(CatenaryConnection connection) {
         return new SendCatenaryPacket(List.of(connection));
     }
 
     @Override
     public void handle(LocalPlayer player) {
-        for (Couple<BlockPos> connection : connections())
+        for (CatenaryConnection connection : connections())
             WireRenderer.addCatenary(connection);
     }
 

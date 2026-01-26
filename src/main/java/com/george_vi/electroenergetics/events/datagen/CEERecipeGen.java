@@ -477,6 +477,17 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/momentary_switch"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.EMERGENCY_STOP_BUTTON)
+                .pattern(" R ")
+                .pattern(" B ")
+                .pattern("CAC")
+                .define('C', CEEBlocks.CONNECTOR)
+                .define('R', Items.RED_CONCRETE)
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('B', ItemTags.BUTTONS)
+                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/emergency_stop_button"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.RESISTOR)
                 .pattern(" S ")
                 .pattern("CcC")

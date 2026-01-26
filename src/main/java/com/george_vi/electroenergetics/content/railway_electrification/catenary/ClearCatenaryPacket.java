@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public record ClearCatenaryPacket(List<Couple<BlockPos>> connections, boolean all) implements ClientboundPacketPayload {
+public record ClearCatenaryPacket(List<CatenaryConnection> connections, boolean all) implements ClientboundPacketPayload {
 
     public static final StreamCodec<ByteBuf, ClearCatenaryPacket> STREAM_CODEC = StreamCodec.composite(
-            CatnipStreamCodecBuilders.list(Couple.streamCodec(BlockPos.STREAM_CODEC)), ClearCatenaryPacket::connections,
+            CatnipStreamCodecBuilders.list(CatenaryConnection.STREAM_CODEC), ClearCatenaryPacket::connections,
             ByteBufCodecs.BOOL, ClearCatenaryPacket::all,
             ClearCatenaryPacket::new
     );
@@ -28,7 +28,7 @@ public record ClearCatenaryPacket(List<Couple<BlockPos>> connections, boolean al
         return new ClearCatenaryPacket(Collections.emptyList(), true);
     }
 
-    public static ClearCatenaryPacket clearWire(Couple<BlockPos> connection) {
+    public static ClearCatenaryPacket clearWire(CatenaryConnection connection) {
         return new ClearCatenaryPacket(List.of(connection), false);
     }
 
@@ -39,7 +39,7 @@ public record ClearCatenaryPacket(List<Couple<BlockPos>> connections, boolean al
             return;
         }
 
-        for (Couple<BlockPos> connection : connections()) {
+        for (CatenaryConnection connection : connections()) {
             WireRenderer.removeCatenary(connection);
         }
     }

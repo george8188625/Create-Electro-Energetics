@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "B": {
+      "tag": "minecraft:buttons"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "R": {
+      "item": "minecraft:red_concrete"
+    }
+  },
+  "pattern": [
+    " R ",
+    " B ",
+    "CAC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:emergency_stop_button"
+  }
+}

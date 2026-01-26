@@ -1,7 +1,11 @@
 package com.george_vi.electroenergetics.content.railway_electrification.pantograph;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
+import com.george_vi.electroenergetics.client.WireEffects;
 import com.george_vi.electroenergetics.client.WireRenderer;
+import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
@@ -34,47 +38,48 @@ public class PantographMovementBehaviour implements MovementBehaviour {
         float targetExtensionState = context.blockEntityData.getFloat("ExtensionState");
         float currentExtensionState = context.data.getFloat("CurrentExtensionState");
         float prevExtensionState = currentExtensionState;
-        if (targetExtensionState == 0)
-            currentExtensionState = Mth.lerp(0.1f, currentExtensionState, targetExtensionState);
-        else
-            currentExtensionState = Mth.lerp(1f, currentExtensionState, targetExtensionState);
+        currentExtensionState = currentExtensionState < targetExtensionState ? Math.min(targetExtensionState, currentExtensionState + 0.05f) : Math.max(targetExtensionState, currentExtensionState - 0.05f);
         if (Math.abs(currentExtensionState - targetExtensionState) < 0.01)
              currentExtensionState = targetExtensionState;
 
         boolean isDouble = context.state.getValue(PantographBlock.DOUBLE);
 
-        if (context.contraption.entity instanceof CarriageContraptionEntity e) {
-            boolean prevDisabled = context.data.getBoolean("Disabled");
-            if (!context.data.contains("Forward")) {
-                TrainPantographEntry pantographState = ((IPantographList) e.getCarriage()).getPantographState(context.localPos);
-                if (pantographState != null)
-                    context.data.putBoolean("Forward", pantographState.facingForward());
+        if (!(context.contraption.entity instanceof CarriageContraptionEntity e))
+            return;
+
+        boolean prevDisabled = context.data.getBoolean("Disabled");
+        if (!context.data.contains("Forward")) {
+            TrainPantographEntry pantographState = ((IPantographList) e.getCarriage()).getPantographState(context.localPos);
+            if (pantographState != null)
+                context.data.putBoolean("Forward", pantographState.facingForward);
+        }
+        if (context.disabled) {
+            if (!prevDisabled) {
+                ((IPantographList) e.getCarriage()).changePantographState(context.localPos, false);
+                targetExtensionState = context.state.getValue(PantographBlock.DOUBLE) ? 0.3f : 0f;
             }
-            if (context.disabled) {
-                if (!prevDisabled) {
-                    ((IPantographList) e.getCarriage()).changePantographState(context.localPos, false);
-                    targetExtensionState = context.state.getValue(PantographBlock.DOUBLE) ? 0.3f : 0f;
-                }
-            } else {
-                if (prevDisabled) {
-                    ((IPantographList) e.getCarriage()).changePantographState(context.localPos, true);
-                    targetExtensionState = 0.75f;
-                }
+        } else {
+            if (prevDisabled) {
+                ((IPantographList) e.getCarriage()).changePantographState(context.localPos, true);
+                targetExtensionState = 0.75f;
             }
         }
+
+
 
         // Look for the connection point, and try to adjust the pantographs extension state to fit that point
 
         if (context.world.isClientSide && !context.disabled) {
-            Vec3 pantographPos = new Vec3(context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.5 : -0.5, (isDouble ? 1.5f : 1.75f), 0);
+            double pantographX = context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.5 : -0.5;
+            Vec3 pantographPos = new Vec3(context.state.getValue(FACING).getAxis() == Direction.Axis.X ? pantographX : 0, (isDouble ? 1.75f : 1.625f), context.state.getValue(FACING).getAxis() == Direction.Axis.Z ? pantographX : 0);
             pantographPos = context.rotation.apply(pantographPos);
             pantographPos = pantographPos.add(context.position);
 
-            List<Couple<BlockPos>> allCatenaryConnections = List.copyOf(WireRenderer.CATENARY);
+            List<CatenaryConnection> allCatenaryConnections = WireRenderer.CATENARY;
             Vec3 connectionPoint = null;
-            for (Couple<BlockPos> connection : allCatenaryConnections) {
-                Vec3 start = connection.getFirst().getBottomCenter();
-                Vec3 end = connection.getSecond().getBottomCenter();
+            for (CatenaryConnection connection : allCatenaryConnections) {
+                Vec3 start = connection.pos1.getBottomCenter();
+                Vec3 end = connection.pos2.getBottomCenter();
 
                 double t = 0;
 
@@ -90,15 +95,14 @@ public class PantographMovementBehaviour implements MovementBehaviour {
 
                 Vec3 distance = pantographPos.subtract(closest);
                 context.rotation.apply(distance).multiply(0, 0, 0);
-
-                if (Math.abs(distance.z()) < 1.5 && Math.abs(distance.x()) < 0.5 && Math.abs(distance.y()) < (isDouble ? 1.5f : 1.75f)) {
+//                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, pantographPos.x, pantographPos.y, pantographPos.z, 0, 0, 0);
+                if (Math.abs(distance.z()) < 1.5 && Math.abs(distance.x()) < 0.5 && Math.abs(distance.y()) < (isDouble ? 1.75f : 1.625f)) {
                     connectionPoint = closest;
                     break;
                 }
             }
 
             if (connectionPoint != null) {
-                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, connectionPoint.x, connectionPoint.y, connectionPoint.z, 0, 0, 0);
                 float lo = 0;
                 float hi = 2.2f;
                 for (int i = 0; i < 20; i++) {
@@ -110,6 +114,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                         lo = m1;
                 }
                 targetExtensionState = (lo + hi) / 2;
+                currentExtensionState = targetExtensionState;
             }
 
         }

@@ -100,7 +100,7 @@ public class CarriageMixin implements IPantographList {
         ElectricTrainData trainData = trainExtension.getElectricTrainData();
         trainData.accumulators += contraptionExtension.getAccumulators();
         trainData.hasCreativeSource = contraptionExtension.hasCreativeElectricalSource();
-
+        trainData.pantographs.addAll(this.electroEnergetics$pantographs);
 
         if (electroEnergetics$soundModifyingBlocks.isEmpty())
             return;
@@ -122,17 +122,29 @@ public class CarriageMixin implements IPantographList {
         ListTag pantographTag = new ListTag();
         for (TrainPantographEntry e : List.copyOf(electroEnergetics$pantographs)) {
             CompoundTag pt = new CompoundTag();
-            pt.put("Pos", NbtUtils.writeBlockPos(e.rotatedPos()));
-            pt.put("OriginalPos", NbtUtils.writeBlockPos(e.originalPos()));
-            pt.putBoolean("Forward", e.facingForward());
-            pt.putBoolean("Active", e.active());
-            ResourceLocation key = CEERegistries.PANTOGRAPH_TYPE.getKey(e.type());
+            pt.put("Pos", NbtUtils.writeBlockPos(e.rotatedPos));
+            pt.put("OriginalPos", NbtUtils.writeBlockPos(e.originalPos));
+            pt.putBoolean("Forward", e.facingForward);
+            pt.putBoolean("Active", e.active);
+            ResourceLocation key = CEERegistries.PANTOGRAPH_TYPE.getKey(e.type);
             if (key != null)
                 pt.putString("TypeID", key.toString());
             pantographTag.add(pt);
         }
         tag.put("CEEPantographs", pantographTag);
         tag.putBoolean("CEEHasElectricMotor", electroEnergetics$hasMotor);
+    }
+
+    @Inject(method = "setTrain", at=@At("TAIL"), remap = false)
+    public void setElectroEnergetics$setTrain(Train train, CallbackInfo ci) {
+        ICEETrainExtension trainExtension = (ICEETrainExtension) train;
+        ElectricTrainData trainData = trainExtension.getElectricTrainData();
+        List<TrainPantographEntry> toAdd = new ArrayList<>();
+        for (TrainPantographEntry pantograph : this.electroEnergetics$pantographs) {
+            if (!trainData.pantographs.contains(pantograph))
+                toAdd.add(pantograph);
+        }
+        trainData.pantographs.addAll(toAdd);
     }
 
 

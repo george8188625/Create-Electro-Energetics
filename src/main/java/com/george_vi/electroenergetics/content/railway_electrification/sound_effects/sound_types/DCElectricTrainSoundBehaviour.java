@@ -36,7 +36,7 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
         mainSoundInstance.setPos(pos);
 
         mainSoundInstance.targetPitch = Math.min(0.56f, trainSpeed) * 1.3f + 0.7f;
-        mainSoundInstance.targetVolume = (trainSpeed < 0.3 ? (trainSpeed * 3) : (trainSpeed + 0.9f)) * (acceleration > 0 ? 2f : acceleration < 0 ? 0.25f : 0.125f);
+        mainSoundInstance.targetVolume = 2 * (trainSpeed < 0.3 ? (trainSpeed * 3) : (trainSpeed + 0.9f)) * (acceleration > 0 ? 2f : acceleration < 0 ? 0.25f : 0.125f);
 
         mainSoundInstance.keepAlive();
         this.pth = th;

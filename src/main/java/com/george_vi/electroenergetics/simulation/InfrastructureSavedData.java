@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
@@ -416,7 +417,7 @@ public class InfrastructureSavedData extends SavedData {
             throw new IllegalArgumentException("Tried to connect a wire between a single node: " + node1);
 
         if (!(NODES.containsKey(node1) && NODES.containsKey(node2)))
-            throw new IllegalArgumentException("Node: " + (NODES.containsKey(node2) ? node1.toString() : node1) + "doesn't exist.");
+            throw new IllegalArgumentException("Node: " + (NODES.containsKey(node2) ? node1.toString() : node2.toString()) + "doesn't exist.");
         NODES.compute(node1, (node, nodes) -> {
             nodes.add(node2);
             return nodes;
@@ -521,14 +522,14 @@ public class InfrastructureSavedData extends SavedData {
         LoadedWireManager.handleCatenaryRemoved(pos1, pos2, level);
     }
 
-    public List<Couple<BlockPos>> getAllCatenaryConnections() {
-        List<Couple<BlockPos>> connections = new ArrayList<>();
+    public List<CatenaryConnection> getAllCatenaryConnections() {
+        List<CatenaryConnection> connections = new ArrayList<>();
         Map<BlockPos, List<BlockPos>> catenary = Map.copyOf(CATENARY);
         for (Map.Entry<BlockPos, List<BlockPos>> e : catenary.entrySet()) {
             BlockPos from = e.getKey();
             for (BlockPos to : e.getValue())
-                if (!connections.contains(Couple.create(to, from)))
-                    connections.add(Couple.create(from, to));
+                if (!connections.contains(new CatenaryConnection(from, to)))
+                    connections.add(new CatenaryConnection(from, to));
         }
         return connections;
     }

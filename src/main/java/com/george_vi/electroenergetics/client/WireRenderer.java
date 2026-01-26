@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
@@ -41,7 +42,7 @@ import java.util.Map;
 
 public class WireRenderer {
     public static List<Pair<NodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
-    public static List<Couple<BlockPos>> CATENARY = new ArrayList<>();
+    public static List<CatenaryConnection> CATENARY = new ArrayList<>();
 
     @OnlyIn(Dist.CLIENT)
     public static void render(LevelRenderer levelRenderer, PoseStack pose, Camera camera) {
@@ -59,15 +60,15 @@ public class WireRenderer {
 
         float baseCatenaryWidth = 0.66f;
 
-        for (Couple<BlockPos> connection : List.copyOf(CATENARY)) {
-            BlockState startingState = mc.level.getBlockState(connection.getFirst());
-            BlockState endingState = mc.level.getBlockState(connection.getSecond());
-            AABB bb = AABB.encapsulatingFullBlocks(connection.getFirst(), connection.getSecond());
+        for (CatenaryConnection connection : List.copyOf(CATENARY)) {
+            BlockState startingState = mc.level.getBlockState(connection.pos1);
+            BlockState endingState = mc.level.getBlockState(connection.pos2);
+            AABB bb = AABB.encapsulatingFullBlocks(connection.pos1, connection.pos2);
             if (!levelRenderer.getFrustum().isVisible(bb))
                 continue;
 
-            Vec3 start = Vec3.atCenterOf(connection.getFirst()).add(0, -0.5, 0);
-            Vec3 end = Vec3.atCenterOf(connection.getSecond()).add(0, -0.5, 0);
+            Vec3 start = Vec3.atCenterOf(connection.pos1).add(0, -0.5, 0);
+            Vec3 end = Vec3.atCenterOf(connection.pos2).add(0, -0.5, 0);
 
             List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(start, end, 0, 10);
 
@@ -318,12 +319,12 @@ public class WireRenderer {
         WIRE_CONNECTIONS.add(Pair.of(newConnection, data));
     }
 
-    public static void addCatenary(Couple<BlockPos> connection) {
+    public static void addCatenary(CatenaryConnection connection) {
         if (!CATENARY.contains(connection.swap()))
             CATENARY.add(connection);
     }
 
-    public static void removeCatenary(Couple<BlockPos> connection) {
+    public static void removeCatenary(CatenaryConnection connection) {
         CATENARY.removeIf(c -> c.equals(connection.swap()));
         CATENARY.removeIf(c -> c.equals(connection));
     }
