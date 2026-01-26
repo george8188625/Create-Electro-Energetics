@@ -84,3 +84,29 @@ jobs:
         files: build/libs/*.jar
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Send announcement to Discord
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      run: |
+        curl -H "Content-Type: application/json" \
+           -X POST \
+           -d '{
+           "content": "New **Create: Electro Energetics** build published! <@&1465492367061684490>",
+           "embeds": [
+              {
+                "title": "New build published!",
+                "description": "Create: Electro Energetics\n\n**Changelog:**\n```${{ github.event.head_commit.message }}\n${{ steps.commit_info.outputs.body }}```\n```❗ It is recommended to do a backup of your worlds before adding or updating the mod.```",
+                "url": "https://github.com/george8188625/Create-Electro-Energetics/releases",
+                "color": 565479,
+                "thumbnail": {
+                  "url": "https://github.com/user-attachments/assets/270cddf1-07b0-40b7-9ad0-d918386c4bdd"
+                }
+              }
+           ],
+           "allowed_mentions": {
+             "roles": ["1465492367061684490"]
+           }
+           }' \
+           $DISCORD_WEBHOOK
+
