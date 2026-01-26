@@ -33,13 +33,17 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .addStoryBoard("transformer", TransformerScenes::transformer)
                 .addStoryBoard("transformer_losses", TransformerScenes::losses);
         helper.forComponents(CEEBlocks.PANTOGRAPH.getId(), CEEBlocks.CATENARY_HOLDER.getId())
-                .addStoryBoard("railway_electrification", RailwayElectrificationScenes::setup);
+                .addStoryBoard("railway_electrification", RailwayElectrificationScenes::setup)
+                .addStoryBoard("electric_train_sounds", RailwayElectrificationScenes::sounds);
         helper.forComponents(CEEBlocks.DIODE.getId())
                 .addStoryBoard("diode", ElectricityBasicsScenes::diode);
         helper.forComponents(CEEBlocks.VOLTMETER.getId())
                 .addStoryBoard("voltage", ElectricityBasicsScenes::voltage);
         helper.forComponents(CEEBlocks.HV_SWITCH.getId())
                 .addStoryBoard("hv_switch", SwitchScenes::hvSwitch);
+
+        helper.forComponents(CEEBlocks.ALTERNATOR_BRUSHES.getId())
+                .addStoryBoard("electric_train_sounds", RailwayElectrificationScenes::sounds);
     }
 
     @Override
@@ -66,6 +70,13 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .item(CEEBlocks.DIODE, true, false)
                 .title("Electricity Basics")
                 .description("How electricity works")
+                .register();
+
+        helper.registerTag(CreateElecrtoEnergetics.rl("electric_train_sound_changing"))
+                .addToIndex()
+                .item(CEEBlocks.DIODE, true, false)
+                .title("Electric Train Sound Changers")
+                .description("These blocks change electric train sounds.")
                 .register();
 
         helper.addToTag(CreateElecrtoEnergetics.rl("electrical"))
@@ -107,6 +118,9 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.RESISTOR.getId())
                 .add(CEEBlocks.CAPACITOR.getId())
                 .add(CEEBlocks.RESISTOR.getId());
+
+        helper.addToTag(CreateElecrtoEnergetics.rl("electric_train_sound_changing"))
+                .add(CEEBlocks.ALTERNATOR_BRUSHES.getId());
 
         helper.addToTag(AllCreatePonderTags.TRAIN_RELATED)
                 .add(CEEBlocks.PANTOGRAPH.getId())

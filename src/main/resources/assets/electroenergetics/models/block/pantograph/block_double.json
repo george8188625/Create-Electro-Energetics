@@ -5,7 +5,6 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "electroenergetics:block/pantograph",
-		"1": "electroenergetics:block/double_pantograph",
 		"particle": "electroenergetics:block/pantograph"
 	},
 	"elements": [
@@ -59,32 +58,6 @@
 				"west": {"uv": [14, 0, 16, 2.5], "texture": "#0"},
 				"up": {"uv": [6, 0, 8, 2], "texture": "#0"},
 				"down": {"uv": [6, 0, 8, 2], "texture": "#0"}
-			}
-		},
-		{
-			"from": [14, 5, 0],
-			"to": [16, 7, 16],
-			"rotation": {"angle": 0, "axis": "y", "origin": [16, 5, 0]},
-			"faces": {
-				"north": {"uv": [10, 12.5, 9, 13.5], "texture": "#1"},
-				"east": {"uv": [9, 3, 10, 11], "rotation": 270, "texture": "#1"},
-				"south": {"uv": [9, 12.5, 10, 13.5], "texture": "#1"},
-				"west": {"uv": [9, 3, 10, 11], "rotation": 90, "texture": "#1"},
-				"up": {"uv": [9, 3, 10, 11], "texture": "#1"},
-				"down": {"uv": [10, 3, 9, 11], "texture": "#1"}
-			}
-		},
-		{
-			"from": [0, 5, 0],
-			"to": [2, 7, 16],
-			"rotation": {"angle": 0, "axis": "y", "origin": [2, 5, 0]},
-			"faces": {
-				"north": {"uv": [10, 12.5, 9, 13.5], "texture": "#1"},
-				"east": {"uv": [9, 3, 10, 11], "rotation": 270, "texture": "#1"},
-				"south": {"uv": [9, 12.5, 10, 13.5], "texture": "#1"},
-				"west": {"uv": [9, 3, 10, 11], "rotation": 90, "texture": "#1"},
-				"up": {"uv": [9, 3, 10, 11], "texture": "#1"},
-				"down": {"uv": [10, 3, 9, 11], "texture": "#1"}
 			}
 		}
 	],
@@ -148,8 +121,6 @@
 					"children": []
 				}
 			]
-		},
-		4,
-		5
+		}
 	]
 }

@@ -2,12 +2,17 @@ package com.george_vi.electroenergetics.content.railway_electrification.pantogra
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEEPantographTypes;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -26,7 +31,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class PantographBlock extends Block implements IBE<PantographBlockEntity> {
+public class PantographBlock extends Block implements IBE<PantographBlockEntity>, IPantographBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty DOUBLE = BooleanProperty.create("double");
 
@@ -57,7 +62,7 @@ public class PantographBlock extends Block implements IBE<PantographBlockEntity>
         if (level.getBlockEntity(pos) instanceof PantographBlockEntity be) {
             extended = be.targetExtensionState <= 0.325f;
             if (extended)
-                be.targetExtensionState = 0.75f;
+                be.targetExtensionState = state.getValue(DOUBLE) ? 1.7f : 0.85f;
             else
                 be.targetExtensionState = state.getValue(DOUBLE) ? 0.3f : 0f;
         }
@@ -65,7 +70,7 @@ public class PantographBlock extends Block implements IBE<PantographBlockEntity>
         if (state.getValue(DOUBLE)) {
             if (level.getBlockEntity(pos.relative(state.getValue(FACING).getOpposite())) instanceof PantographBlockEntity be) {
                 if (extended)
-                    be.targetExtensionState = 0.75f;
+                    be.targetExtensionState = 1.7f;
                 else
                     be.targetExtensionState = 0.3f;
             }
@@ -101,6 +106,30 @@ public class PantographBlock extends Block implements IBE<PantographBlockEntity>
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!(stack.getItem() instanceof DyeItem di))
+            return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+
+        if (level.getBlockEntity(pos) instanceof PantographBlockEntity be) {
+            be.color = di.getDyeColor();
+
+            if (!level.isClientSide)
+                be.sendData();
+        }
+
+        if (state.getValue(DOUBLE)) {
+            if (level.getBlockEntity(pos.relative(state.getValue(FACING).getOpposite())) instanceof PantographBlockEntity be) {
+                be.color = di.getDyeColor();
+
+                if (!level.isClientSide)
+                    be.sendData();
+            }
+        }
+
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
     public Class<PantographBlockEntity> getBlockEntityClass() {
         return PantographBlockEntity.class;
     }
@@ -118,5 +147,10 @@ public class PantographBlock extends Block implements IBE<PantographBlockEntity>
     @Override
     public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
+    }
+
+    @Override
+    public PantographType getPantographType(BlockState state) {
+        return state.getValue(DOUBLE) ? CEEPantographTypes.DOUBLE.get() : CEEPantographTypes.STANDARD.get();
     }
 }

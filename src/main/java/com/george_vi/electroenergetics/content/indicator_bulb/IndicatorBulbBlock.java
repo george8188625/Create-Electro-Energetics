@@ -1,7 +1,6 @@
 package com.george_vi.electroenergetics.content.indicator_bulb;
 
 import com.george_vi.electroenergetics.*;
-import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchDevice;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConfigurator;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
@@ -121,7 +120,6 @@ public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock implements 
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!(stack.getItem() instanceof DyeItem di))
             return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
-        int side = state.getValue(SIDE);
         boolean clickedOnFirst = clickedOnFirst(state, hitResult.getLocation().subtract(Vec3.atLowerCornerOf(pos)));
 
         if (level.getBlockEntity(pos) instanceof IndicatorBulbBlockEntity be) {

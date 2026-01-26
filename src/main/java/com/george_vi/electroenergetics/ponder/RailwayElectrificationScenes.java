@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.catnip.math.Pointing;
@@ -15,6 +16,8 @@ import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Items;
 
 public class RailwayElectrificationScenes {
 
@@ -156,14 +159,82 @@ public class RailwayElectrificationScenes {
         connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(10, 1, 9)),
                 new InWorldNode(0, util.grid().at(8, 1, 9)), 1, -1, true);
 
-//        connections.createCurrentVisualization(util.vector().of(8/16f, 12/16f, 8/16f).add(13, 6, 3),
-//                util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, true);
-//        connections.createCurrentVisualization(util.vector().of(8/16f, 2/16f, 8/16f).add(13, 6, 3),
-//                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3), 0, 1, true);
-//
-//        connections.createCurrentVisualization(util.vector().of(0/16f, 2/16f, 8/16f).add(13, 6, 3),
-//                util.vector().of(0/16f, 2/16f, 8/16f).add(13, 0, 3), 0, 1, true);
+        scene.idle(60);
+
+        scene.overlay().showText(70)
+                .text("Pantographs can be dyed")
+                .pointAt(util.vector().topOf(13, 3, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
+
+        scene.overlay().showControls(util.vector().topOf(13, 3, 3), Pointing.DOWN, 20)
+                .withItem(Items.RED_DYE.getDefaultInstance())
+                .rightClick();
+
+        scene.idle(40);
+
+        scene.world().modifyBlockEntity(util.grid().at(4, 4, 3), PantographBlockEntity.class, be -> be.color = DyeColor.RED);
 
         scene.idle(60);
     }
+
+    public static void sounds(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+        scene.title("electric_train_sounds", "Changing the electric train sound");
+        scene.configureBasePlate(0, 0, 9);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+        scene.scaleSceneView(0.75f);
+
+        Selection train = util.select().fromTo(0, 2, 3, 3, 4, 5);
+        Selection fullTrain = util.select().fromTo(0, 2, 3, 4, 4, 5);
+        Selection additionalBlock = util.select().position(4, 2, 4);
+        Selection tracks = util.select().fromTo(0, 1, 1, 8, 1, 4);
+        Selection poles = util.select().fromTo(1, 1, 7, 7, 7, 7);
+        BlockPos holder1 = util.grid().at(0, 6, 4);
+        BlockPos holder2 = util.grid().at(8, 6, 4);
+
+        scene.world().showSection(tracks, Direction.EAST);
+        scene.idle(20);
+
+        scene.world().showSection(util.select().fromTo(holder1, holder2), Direction.DOWN);
+        scene.world().showSection(poles, Direction.DOWN);
+        connections.createCatenaryConnection(holder1, holder2, CEEWireTypes.STANDARD.get(), 0);
+        scene.idle(20);
+
+        scene.world().showSection(train, Direction.DOWN);
+        scene.idle(20);
+
+        scene.overlay().showText(100)
+                .text("Electric trains emit a different sound when powered")
+                .pointAt(util.vector().topOf(1, 3, 4))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(130);
+
+        scene.world().showSection(additionalBlock, Direction.DOWN);
+        scene.idle(20);
+
+        scene.overlay().showText(100)
+                .text("Attaching certain blocks can change this sound to a different style")
+                .pointAt(util.vector().topOf(4, 2, 4))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(130);
+
+        ElementLink<WorldSectionElement> trainElement = scene.world().makeSectionIndependent(fullTrain);
+
+        ElementLink<ParrotElement> birb =
+                scene.special().createBirb(util.vector().centerOf(1, 3, 4), ParrotPose.FacePointOfInterestPose::new);
+        scene.idle(20);
+
+        scene.world().moveSection(trainElement, util.vector().of(4, 0, 0), 60);
+        scene.world().animateBogey(util.grid().at(2, 2, 4), -4, 60);
+        scene.special().moveParrot(birb, util.vector().of(4, 0, 0), 60);
+
+
+        scene.idle(60);
+    }
+
 }

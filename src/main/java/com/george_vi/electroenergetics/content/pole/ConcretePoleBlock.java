@@ -4,7 +4,9 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.contraptions.piston.PistonExtensionPoleBlock;
@@ -18,6 +20,8 @@ import net.createmod.catnip.placement.PlacementOffset;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -122,8 +126,37 @@ public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterl
         }
 
         updateWater(level, state, pos);
-        return state.setValue(BOTTOM, !CEEBlocks.CONCRETE_POLE.has(below))
-                .setValue(TOP, !CEEBlocks.CONCRETE_POLE.has(above));
+
+        boolean bottom = !CEEBlocks.CONCRETE_POLE.has(below);
+        boolean top = !CEEBlocks.CONCRETE_POLE.has(above);
+        if (level instanceof ServerLevel sl) {
+            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+            SimulatedDeviceInstance<?> device = sd.getDevice(pos);
+            if (device != null && device.extraData() instanceof ConcretePoleDevice.DataHolder dataHolder) {
+                dataHolder.top = top;
+                dataHolder.bottom = bottom;
+            }
+        }
+
+        return state.setValue(BOTTOM, bottom)
+                .setValue(TOP, top);
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        super.tick(state, level, pos, random);
+        BlockState below = level.getBlockState(pos.below());
+        BlockState above = level.getBlockState(pos.above());
+
+        boolean bottom = !CEEBlocks.CONCRETE_POLE.has(below);
+        boolean top = !CEEBlocks.CONCRETE_POLE.has(above);
+
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        SimulatedDeviceInstance<?> device = sd.getDevice(pos);
+        if (device != null && device.extraData() instanceof ConcretePoleDevice.DataHolder dataHolder) {
+            dataHolder.top = top;
+            dataHolder.bottom = bottom;
+        }
     }
 
     @Override

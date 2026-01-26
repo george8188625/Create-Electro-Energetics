@@ -18,7 +18,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
@@ -38,6 +40,8 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             currentExtensionState = Mth.lerp(1f, currentExtensionState, targetExtensionState);
         if (Math.abs(currentExtensionState - targetExtensionState) < 0.01)
              currentExtensionState = targetExtensionState;
+
+        boolean isDouble = context.state.getValue(PantographBlock.DOUBLE);
 
         if (context.contraption.entity instanceof CarriageContraptionEntity e) {
             boolean prevDisabled = context.data.getBoolean("Disabled");
@@ -62,7 +66,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
         // Look for the connection point, and try to adjust the pantographs extension state to fit that point
 
         if (context.world.isClientSide && !context.disabled) {
-            Vec3 pantographPos = new Vec3(0, 1, 0);
+            Vec3 pantographPos = new Vec3(context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.5 : -0.5, (isDouble ? 1.5f : 1.75f), 0);
             pantographPos = context.rotation.apply(pantographPos);
             pantographPos = pantographPos.add(context.position);
 
@@ -87,16 +91,16 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                 Vec3 distance = pantographPos.subtract(closest);
                 context.rotation.apply(distance).multiply(0, 0, 0);
 
-                if (!(Math.abs(distance.z()) > 1.5) && !(Math.abs(distance.x()) > 0.5) && !(Math.abs(distance.y()) > 1.75)) {
+                if (Math.abs(distance.z()) < 1.5 && Math.abs(distance.x()) < 0.5 && Math.abs(distance.y()) < (isDouble ? 1.5f : 1.75f)) {
                     connectionPoint = closest;
                     break;
                 }
             }
 
             if (connectionPoint != null) {
-//                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, connectionPoint.x, connectionPoint.y, connectionPoint.z, 0, 0, 0);
+                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, connectionPoint.x, connectionPoint.y, connectionPoint.z, 0, 0, 0);
                 float lo = 0;
-                float hi = 2f;
+                float hi = 2.2f;
                 for (int i = 0; i < 20; i++) {
                     float m1 = lo + (hi - lo) / 3;
                     float m2 = hi - (hi - lo) / 3;
@@ -118,10 +122,25 @@ public class PantographMovementBehaviour implements MovementBehaviour {
     }
 
     Vec3 getConnectorPos(float extensionState, MovementContext context) {
-        double armHingePosY = Math.cos((-75+extensionState*30)*Math.PI/180)*1.5;
-        double armHingePosX = Math.sin((-75+extensionState*30)*Math.PI/180)*1.5;
+        if (context.state.getValue(PantographBlock.DOUBLE)) {
+            float lowerArmRadians = (-90 + extensionState * 27) * Mth.DEG_TO_RAD;
+            double armHingePosY = Mth.cos(lowerArmRadians) * 1.5;
+            double armHingePosX = Mth.sin(lowerArmRadians) * 1.5;
 
-        Vec3 connectorPlatePos = new Vec3(0, armHingePosY, armHingePosX).add(0, Math.cos((89-extensionState*30)*Math.PI/180)*1.5, Math.sin((89-extensionState*30)*Math.PI/180)*1.5);
+            float upperArmRadians = (89 - extensionState * 30) * Mth.DEG_TO_RAD;
+            Vec3 connectorPlatePos = new Vec3(0, armHingePosY, armHingePosX)
+                    .add(0, Mth.cos(upperArmRadians) * 1.5 + 0.3f, Mth.sin(upperArmRadians) * 1.9);
+            connectorPlatePos = context.rotation.apply(connectorPlatePos);
+            connectorPlatePos = connectorPlatePos.add(context.position);
+            return connectorPlatePos;
+        }
+        float lowerArmRadians = (-75 + extensionState * 30) * Mth.DEG_TO_RAD;
+
+        double armHingePosY = Mth.cos(lowerArmRadians) * 1.875;
+        double armHingePosX = Mth.sin(lowerArmRadians) * 1.875;
+
+        float upperArmRadians = (89 - extensionState * 50) * Mth.DEG_TO_RAD;
+        Vec3 connectorPlatePos = new Vec3(0, armHingePosY, armHingePosX).add(0, Mth.cos(upperArmRadians) * 1.9, Mth.sin(upperArmRadians) * 1.9);
         connectorPlatePos = context.rotation.apply(connectorPlatePos);
         connectorPlatePos = connectorPlatePos.add(context.position);
         return connectorPlatePos;
@@ -148,20 +167,31 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             yRot += 180;
 
         int light = LevelRenderer.getLightColor(renderWorld, context.localPos);
-
+        int color = DyeColor.byName(context.blockEntityData.getString("Color"), DyeColor.WHITE).getTextureDiffuseColor();
         if (state.getValue(PantographBlock.DOUBLE)) {
             float rotationFactor = 27;
+
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_BASE_DOUBLE, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .color(color)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_LOWER_ARMS_DOUBLE, state)
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.5)
                     .rotateXDegrees(-90 + extensionState * rotationFactor)
+                    .color(color)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
-            double armHingePosY = Math.cos((-90 + extensionState * rotationFactor) * Math.PI / 180) * 1.5;
-            double armHingePosX = Math.sin((-90 + extensionState * rotationFactor) * Math.PI / 180) * 1.5;
+            float lowerArmRadians = (-90 + extensionState * rotationFactor) * Mth.DEG_TO_RAD;
+            double armHingePosY = Mth.cos(lowerArmRadians) * 1.5;
+            double armHingePosX = Mth.sin(lowerArmRadians) * 1.5;
 
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARMS_DOUBLE, state)
                     .transform(matrices.getModel())
@@ -169,6 +199,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                     .translate(0, 0.375, 0.5)
                     .translate(0, armHingePosY, armHingePosX)
                     .rotateXDegrees(83 - extensionState * rotationFactor * 0.8f)
+                    .color(color)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
@@ -177,7 +208,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 1)
-                    .translate(0, Math.cos((-75 + extensionState * 30) * Math.PI / 180) * 1.5 + Math.cos((89 - extensionState * 30) * Math.PI / 180) * 1.5, 0)
+                    .translate(0, Mth.cos((-75 + extensionState * 30) * Mth.DEG_TO_RAD) * 1.5 + Mth.cos((89 - extensionState * 30) * Mth.DEG_TO_RAD) * 1.5, 0)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
@@ -194,25 +225,35 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
         } else {
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_BASE, state)
+                    .transform(matrices.getModel())
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .color(color)
+                    .light(light)
+                    .useLevelLight(context.world, matrices.getWorld())
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_LOWER_ARM, state)
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.8125)
                     .rotateXDegrees(-75 + extensionState * 30)
+                    .color(color)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+            float lowerArmRadians = (-75 + extensionState * 30) * Mth.DEG_TO_RAD;
 
-            double armHingePosY = Math.cos((-75 + extensionState * 30) * Math.PI / 180) * 1.5;
-            double armHingePosX = Math.sin((-75 + extensionState * 30) * Math.PI / 180) * 1.5;
+            double armHingePosY = Mth.cos(lowerArmRadians) * 1.875;
+            double armHingePosX = Mth.sin(lowerArmRadians) * 1.875;
 
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM, state)
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.8125)
                     .translate(0, armHingePosY, armHingePosX)
-                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateXDegrees(-1 - extensionState * 50)
+                    .color(color)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
@@ -220,10 +261,11 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM_ARM, state)
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
-                    .translate(9/16f, 0.375, 0.8125)
+                    .translate(12/16f, 0.375, 0.8125)
                     .translate(0, armHingePosY, armHingePosX)
-                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateXDegrees(-1 - extensionState * 50)
                     .rotateYDegrees(12.5f)
+                    .color(color)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
@@ -231,20 +273,22 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM_ARM, state)
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
-                    .translate(7/16f, 0.375, 0.8125)
+                    .translate(4/16f, 0.375, 0.8125)
                     .translate(0, armHingePosY, armHingePosX)
-                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateXDegrees(-1 - extensionState * 50)
                     .rotateYDegrees(-12.5f)
+                    .color(color)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
+            float upperArmRadians = (89 - extensionState * 50) * Mth.DEG_TO_RAD;
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_SURFACE, state)
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.8125)
                     .translate(0, armHingePosY, armHingePosX)
-                    .translate(0, Math.cos((89 - extensionState * 30) * Math.PI / 180) * 1.5, Math.sin((89 - extensionState * 30) * Math.PI / 180) * 1.5)
+                    .translate(0, Mth.cos(upperArmRadians) * 1.9, Mth.sin(upperArmRadians) * 1.9)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
@@ -264,6 +308,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.1875)
                     .rotateXDegrees(-77 + extensionState * 43)
+                    .color(color)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));

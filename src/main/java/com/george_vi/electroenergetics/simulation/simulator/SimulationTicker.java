@@ -62,9 +62,10 @@ public class SimulationTicker {
 
         Collection<SimulatedDeviceInstance<?>> devices = sd.getDevices();
         // PreTick
+        BridgeCollector bridgeCollector = new BridgeCollector(circuitBuilder, sd);
         for (SimulatedDeviceInstance deviceInstance : devices) {
             SimulatedDevice device = deviceInstance.simulatedDevice();
-            device.preTick(deviceInstance.pos(), level, new BridgeCollector(circuitBuilder, sd), deviceInstance.extraData());
+            device.preTick(deviceInstance.pos(), level, bridgeCollector, deviceInstance.extraData());
         }
 
         profiler.popPush("connectWires");

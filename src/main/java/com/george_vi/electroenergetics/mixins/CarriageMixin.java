@@ -1,19 +1,19 @@
 package com.george_vi.electroenergetics.mixins;
 
-import com.george_vi.electroenergetics.CEEElectricTrainSoundTypes;
+import com.george_vi.electroenergetics.CEEPantographTypes;
+import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.railway_electrification.ElectricTrainData;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographType;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
-import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.mixin_interfaces.ICEETrainExtension;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.graph.DimensionPalette;
 import com.simibubi.create.content.trains.graph.TrackGraph;
-import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -21,9 +21,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -71,7 +70,18 @@ public class CarriageMixin implements IPantographList {
             BlockPos originalPos = NBTHelper.readBlockPos(pt, "OriginalPos");
             boolean forward = pt.getBoolean("Forward");
             boolean active = pt.getBoolean("Active");
-            pantographs.add(new TrainPantographEntry(originalPos, pos, active, forward));
+            ResourceLocation pantographTypeId = ResourceLocation.tryParse(pt.getString("TypeID"));
+            PantographType type;
+
+            if (pantographTypeId == null)
+                type = CEEPantographTypes.STANDARD.get();
+            else {
+                type = CEERegistries.PANTOGRAPH_TYPE.get(pantographTypeId);
+                if (type == null)
+                    type = CEEPantographTypes.STANDARD.get();
+            }
+
+            pantographs.add(new TrainPantographEntry(originalPos, pos, type, active, forward));
         });
         ((IPantographList)carriage).setPantographList(pantographs);
         ((IPantographList)carriage).setElectricMotor(tag.getBoolean("CEEHasElectricMotor"));
@@ -116,6 +126,9 @@ public class CarriageMixin implements IPantographList {
             pt.put("OriginalPos", NbtUtils.writeBlockPos(e.originalPos()));
             pt.putBoolean("Forward", e.facingForward());
             pt.putBoolean("Active", e.active());
+            ResourceLocation key = CEERegistries.PANTOGRAPH_TYPE.getKey(e.type());
+            if (key != null)
+                pt.putString("TypeID", key.toString());
             pantographTag.add(pt);
         }
         tag.put("CEEPantographs", pantographTag);

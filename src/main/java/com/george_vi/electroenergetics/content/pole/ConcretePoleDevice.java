@@ -22,20 +22,22 @@ public class ConcretePoleDevice extends SimulatedDevice<ConcretePoleDevice.DataH
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
-        if (level.isLoaded(pos)) {
-            BlockState state = level.getBlockState(pos);
-            if (!CEEBlocks.CONCRETE_POLE.has(state))
-                return;
-            extraData.top = state.getValue(ConcretePoleBlock.TOP);
-            extraData.bottom = state.getValue(ConcretePoleBlock.BOTTOM);
-        }
-
         if (extraData.bottom) {
             int length = 0;
-            for (int i = 1; i + pos.getY() < level.getMaxBuildHeight(); i++) {
+            // Incremented by 2
+            // The reason this can be done is that there is no possible way to skip an end of a pole if it's in a correct state.
+            // If it skips the top-most device of a pole, then it just goes back one.
+            // If it lands in the right place, it lands in the right place.
+            // A pole always ends with a top-most pole state.
+            for (int i = 1; i + pos.getY() < level.getMaxBuildHeight(); i += 2) {
                 SimulatedDeviceInstance<?> di = bridges.getSD().getDevice(pos.above(i));
-                if (di == null || di.simulatedDevice() != CEESimulatedDevices.CONCRETE_POLE || !(di.extraData() instanceof DataHolder dataHolder))
-                    return;
+                if (di == null || di.simulatedDevice() != CEESimulatedDevices.CONCRETE_POLE || !(di.extraData() instanceof DataHolder dataHolder)) {
+                    length = i - 1;
+                    SimulatedDeviceInstance<?> ndi = bridges.getSD().getDevice(pos.above(length));
+                    if (ndi == null || ndi.simulatedDevice() != CEESimulatedDevices.CONCRETE_POLE || !(ndi.extraData() instanceof DataHolder dataHolder && dataHolder.top))
+                        return;
+                    break;
+                }
                 else if (dataHolder.top) {
                     length = i;
                     break;

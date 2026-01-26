@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 
 import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
@@ -22,7 +23,8 @@ public class PantographRenderer extends SmartBlockEntityRenderer<PantographBlock
     protected void renderSafe(PantographBlockEntity blockEntity, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         BlockState state = blockEntity.getBlockState();
         float extensionState = Mth.lerp(partialTicks, blockEntity.prevExtensionState, blockEntity.currentExtensionState);
-//        extensionState = 1;
+
+        int color = blockEntity.color.getTextureDiffuseColor();
 
         float yRot = state.getValue(FACING).toYRot();
         if (state.getValue(FACING).getAxis() == Direction.Axis.Z)
@@ -30,28 +32,37 @@ public class PantographRenderer extends SmartBlockEntityRenderer<PantographBlock
 
         if (state.getValue(PantographBlock.DOUBLE)) {
             float rotationFactor = 27;
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_BASE_DOUBLE, state)
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .color(color)
+                    .light(light)
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_LOWER_ARMS_DOUBLE, state)
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.5)
                     .rotateXDegrees(-90 + extensionState * rotationFactor)
+                    .color(color)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
-            double armHingePosY = Math.cos((-90 + extensionState * rotationFactor) * Math.PI / 180) * 1.5;
-            double armHingePosX = Math.sin((-90 + extensionState * rotationFactor) * Math.PI / 180) * 1.5;
+            float lowerArmRadians = (-90 + extensionState * rotationFactor) * Mth.DEG_TO_RAD;
+            double armHingePosY = Mth.cos(lowerArmRadians) * 1.5;
+            double armHingePosX = Mth.sin(lowerArmRadians) * 1.5;
 
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARMS_DOUBLE, state)
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.5)
                     .translate(0, armHingePosY, armHingePosX)
                     .rotateXDegrees(83 - extensionState * rotationFactor * 0.8f)
+                    .color(color)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_SURFACE_DOUBLE, state)
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 1)
-                    .translate(0, Math.cos((-75 + extensionState * 30) * Math.PI / 180) * 1.5 + Math.cos((89 - extensionState * 30) * Math.PI / 180) * 1.5, 0)
+                    .translate(0, Mth.cos((-75 + extensionState * 30) * Mth.DEG_TO_RAD) * 1.5 + Mth.cos((89 - extensionState * 30) * Mth.DEG_TO_RAD) * 1.5, 0)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
@@ -65,47 +76,59 @@ public class PantographRenderer extends SmartBlockEntityRenderer<PantographBlock
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
         } else {
+            CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_BASE, state)
+                    .center().rotateYDegrees(yRot).uncenter()
+                    .color(color)
+                    .light(light)
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_LOWER_ARM, state)
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.8125)
                     .rotateXDegrees(-75 + extensionState * 30)
+                    .color(color)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+            float lowerArmRadians = (-75 + extensionState * 30) * Mth.DEG_TO_RAD;
 
-            double armHingePosY = Math.cos((-75 + extensionState * 30) * Math.PI / 180) * 1.5;
-            double armHingePosX = Math.sin((-75 + extensionState * 30) * Math.PI / 180) * 1.5;
+            double armHingePosY = Mth.cos(lowerArmRadians) * 1.875;
+            double armHingePosX = Mth.sin(lowerArmRadians) * 1.875;
 
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM, state)
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.8125)
                     .translate(0, armHingePosY, armHingePosX)
-                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateXDegrees(-1 - extensionState * 50)
+                    .color(color)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM_ARM, state)
                     .center().rotateYDegrees(yRot).uncenter()
-                    .translate(9/16f, 0.375, 0.8125)
+                    .translate(12/16f, 0.375, 0.8125)
                     .translate(0, armHingePosY, armHingePosX)
-                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateXDegrees(-1 - extensionState * 50)
                     .rotateYDegrees(12.5f)
+                    .color(color)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARM_ARM, state)
                     .center().rotateYDegrees(yRot).uncenter()
-                    .translate(7/16f, 0.375, 0.8125)
+                    .translate(4/16f, 0.375, 0.8125)
                     .translate(0, armHingePosY, armHingePosX)
-                    .rotateXDegrees(-1 - extensionState * 30)
+                    .rotateXDegrees(-1 - extensionState * 50)
                     .rotateYDegrees(-12.5f)
+                    .color(color)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
+            float upperArmRadians = (89 - extensionState * 50) * Mth.DEG_TO_RAD;
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_SURFACE, state)
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.8125)
                     .translate(0, armHingePosY, armHingePosX)
-                    .translate(0, Math.cos((89 - extensionState * 30) * Math.PI / 180) * 1.5, Math.sin((89 - extensionState * 30) * Math.PI / 180) * 1.5)
+                    .translate(0, Mth.cos(upperArmRadians) * 1.9, Mth.sin(upperArmRadians) * 1.9)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
@@ -121,6 +144,7 @@ public class PantographRenderer extends SmartBlockEntityRenderer<PantographBlock
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.1875)
                     .rotateXDegrees(-77 + extensionState * 43)
+                    .color(color)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
         }

@@ -1,19 +1,37 @@
 {
-	"format_version": "1.21.11",
+	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
+	"render_type": "cutout",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "electroenergetics:block/pantograph",
+		"1": "electroenergetics:block/double_pantograph",
 		"particle": "electroenergetics:block/pantograph"
 	},
 	"elements": [
 		{
-			"from": [8, 0, -1],
-			"to": [8, 23, 1],
-			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 0]},
+			"from": [14, 5, 0],
+			"to": [16, 7, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [16, 5, 0]},
 			"faces": {
-				"east": {"uv": [7, 3, 8, 14.5], "texture": "#0"},
-				"west": {"uv": [8, 3, 7, 14.5], "texture": "#0"}
+				"north": {"uv": [10, 12.5, 9, 13.5], "texture": "#1"},
+				"east": {"uv": [9, 3, 10, 11], "rotation": 270, "texture": "#1"},
+				"south": {"uv": [9, 12.5, 10, 13.5], "texture": "#1"},
+				"west": {"uv": [9, 3, 10, 11], "rotation": 90, "texture": "#1"},
+				"up": {"uv": [9, 3, 10, 11], "texture": "#1"},
+				"down": {"uv": [10, 3, 9, 11], "texture": "#1"}
+			}
+		},
+		{
+			"from": [0, 5, 0],
+			"to": [2, 7, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 5, 0]},
+			"faces": {
+				"north": {"uv": [10, 12.5, 9, 13.5], "texture": "#1"},
+				"east": {"uv": [9, 3, 10, 11], "rotation": 270, "texture": "#1"},
+				"south": {"uv": [9, 12.5, 10, 13.5], "texture": "#1"},
+				"west": {"uv": [9, 3, 10, 11], "rotation": 90, "texture": "#1"},
+				"up": {"uv": [9, 3, 10, 11], "texture": "#1"},
+				"down": {"uv": [10, 3, 9, 11], "texture": "#1"}
 			}
 		}
 	],
@@ -55,7 +73,6 @@
 		}
 	},
 	"groups": [
-		0,
 		{
 			"name": "group",
 			"origin": [18, 30, 12],
@@ -74,6 +91,8 @@
 					"children": []
 				}
 			]
-		}
+		},
+		0,
+		1
 	]
 }

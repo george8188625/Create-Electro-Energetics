@@ -90,4 +90,16 @@ public abstract class WireInteractionBehaviour {
     public enum DisplayType {
         DOT, LINE;
     }
+
+    public static class Empty extends WireInteractionBehaviour {
+        @Override
+        public void interactWire(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
+
+        }
+
+        @Override
+        public boolean isActiveFor(ItemStack stack) {
+            return false;
+        }
+    }
 }

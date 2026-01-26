@@ -35,4 +35,26 @@ public abstract class WireAttachmentType {
     public List<ItemStack> getItemRequirements(WireAttachment attachment) {
         return List.of(ItemStack.EMPTY);
     }
+
+    public static class Empty extends WireAttachmentType {
+        @Override
+        public float getWidth(WireAttachment attachment) {
+            return 0;
+        }
+
+        @Override
+        public float getHeight(WireAttachment attachment) {
+            return 0;
+        }
+
+        @Override
+        public void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
+
+        }
+
+        @Override
+        public List<ItemStack> getDrops(WireAttachment attachment, Level level) {
+            return List.of();
+        }
+    }
 }

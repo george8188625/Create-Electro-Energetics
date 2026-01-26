@@ -16,6 +16,7 @@ public class CEEWireInteractionBehaviours {
     private static final DeferredRegister<WireInteractionBehaviour> WIRE_INTERACTION_BEHAVIOURS =
             DeferredRegister.create(CEERegistries.WIRE_INTERACTION_BEHAVIOUR, CreateElecrtoEnergetics.ID);
 
+    public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> EMPTY = WIRE_INTERACTION_BEHAVIOURS.register("empty", WireInteractionBehaviour.Empty::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> BANNER = WIRE_INTERACTION_BEHAVIOURS.register("banner", BannerWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> BUNTING = WIRE_INTERACTION_BEHAVIOURS.register("bunting", BuntingWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> EMPTY_SPOOL = WIRE_INTERACTION_BEHAVIOURS.register("empty_spool", EmptySpoolWireInteractionBehaviour::new);

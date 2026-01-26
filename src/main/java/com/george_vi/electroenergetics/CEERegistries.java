@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics;
 
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographType;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.content.wire.WireAttachmentType;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
@@ -12,7 +13,7 @@ public class CEERegistries {
 
     public static final Registry<WireType> WIRE_TYPE = new RegistryBuilder<WireType>(ResourceKey.createRegistryKey(CreateElecrtoEnergetics.rl("wire_type")))
             .sync(true)
-            .defaultKey(CreateElecrtoEnergetics.rl("empty"))
+            .defaultKey(CreateElecrtoEnergetics.rl("standard"))
             .create();
 
     public static final Registry<WireAttachmentType> WIRE_ATTACHMENT_TYPE = new RegistryBuilder<WireAttachmentType>(ResourceKey.createRegistryKey(CreateElecrtoEnergetics.rl("wire_attachment_type")))
@@ -29,4 +30,10 @@ public class CEERegistries {
             .sync(true)
             .defaultKey(CreateElecrtoEnergetics.rl("modern"))
             .create();
+
+    public static final Registry<PantographType> PANTOGRAPH_TYPE = new RegistryBuilder<PantographType>(ResourceKey.createRegistryKey(CreateElecrtoEnergetics.rl("pantograph_type")))
+            .sync(true)
+            .defaultKey(CreateElecrtoEnergetics.rl("standard"))
+            .create();
+
 }

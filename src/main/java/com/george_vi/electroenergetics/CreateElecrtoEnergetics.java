@@ -43,6 +43,7 @@ public class CreateElecrtoEnergetics
         CEEDisplaySources.register();
         CEEBlockEntityTypes.register();
         CEEWireTypes.register(modEventBus);
+        CEEPantographTypes.register(modEventBus);
         CEESoundEvents.register(modEventBus);
         CEECreativeTab.register(modEventBus);
         CEEDataComponents.register(modEventBus);

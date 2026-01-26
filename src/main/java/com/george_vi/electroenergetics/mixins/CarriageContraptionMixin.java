@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.mixins;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.IPantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
@@ -76,7 +77,7 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     public void electroEnergetics$capture(Level level, BlockPos pos, CallbackInfoReturnable<oshi.util.tuples.Pair<StructureTemplate.StructureBlockInfo, BlockEntity>> cir) {
         BlockState state = level.getBlockState(pos);
 
-        if (CEEBlocks.PANTOGRAPH.has(state) && level.getBlockEntity(pos) instanceof PantographBlockEntity be) {
+        if (state.getBlock() instanceof IPantographBlock pb && level.getBlockEntity(pos) instanceof PantographBlockEntity be) {
 
             Direction facing = state.getValue(PantographBlock.FACING);
             Direction assemblyDirection = this.electroEnergetics$getAssemblyDirection();
@@ -87,7 +88,7 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
                         assemblyDirection == Direction.NORTH ? Rotation.COUNTERCLOCKWISE_90 :
                         assemblyDirection == Direction.EAST ? Rotation.CLOCKWISE_180 :
                         assemblyDirection == Direction.SOUTH ? Rotation.CLOCKWISE_90 : Rotation.NONE
-                ), true, facing == assemblyDirection));
+                ), pb.getPantographType(state), true, facing == assemblyDirection));
             }
         }
         if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_electric_motor"))))

@@ -37,7 +37,6 @@ public class CatenaryHandler {
         Map<Train, List<Pair<Float, Couple<BlockPos>>>> catenaryConnections = new HashMap<>();
         Map<Couple<BlockPos>, Integer> cutConnections = new HashMap<>();
         List<Couple<BlockPos>> allCatenaryConnections = event.sd.getAllCatenaryConnections();
-//        Map<Train, List<AttachedNode>> trainPantographs = new HashMap<>();
 
         for (Train train : Create.RAILWAYS.trains.values()) {
             ICEETrainExtension trainExtension = (ICEETrainExtension)train;
@@ -72,7 +71,7 @@ public class CatenaryHandler {
 
                     // Here, all active pantographs are checked if they touch a catenary wire.
 
-                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.rotatedPos()).add(pantograph.facingForward() ? 0.5 : -0.5, 1.5, 0);
+                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.rotatedPos()).add(pantograph.facingForward() ? 0.5 : -0.5, pantograph.type().reach() / 2, 0);
 
                     pantographPos = VecHelper.rotate(pantographPos, -pitch, Direction.Axis.Z);
                     pantographPos = VecHelper.rotate(pantographPos, -yaw + 180, Direction.Axis.Y);
@@ -99,7 +98,7 @@ public class CatenaryHandler {
                         distance = VecHelper.rotate(distance, yaw + 180, Direction.Axis.Y);
                         distance = VecHelper.rotate(distance, -pitch, Direction.Axis.X);
 
-                        if (!(Math.abs(distance.z()) > 2) && !(Math.abs(distance.x()) > 0.5) && !(Math.abs(distance.y()) > 1.75)) {
+                        if (Math.abs(distance.z()) < 2 && Math.abs(distance.x()) < 0.5 && Math.abs(distance.y()) < pantograph.type().reach() / 2) {
                             catenaryConnections.computeIfAbsent(train, k -> new ArrayList<>())
                                     .add(Pair.of((float) t, connection));
                             cutConnections.compute(connection, (k, v) -> v == null ? 1 : v + 1);

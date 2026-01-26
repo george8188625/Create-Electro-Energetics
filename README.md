@@ -37,9 +37,6 @@ Latest stable version: [Build 35](https://github.com/george8188625/Create-Electr
 
 The mod will **release** after the latest version is confirmed to be stable, and the following features are implemented:
 - All ponders
-- Placement helpers
-- Advancements
-- More info for the user for electric trains, accumulators etc.
 
 Then, after the first release, all remaining features from the [checklist](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/checklist.md) are gonna be added.
 

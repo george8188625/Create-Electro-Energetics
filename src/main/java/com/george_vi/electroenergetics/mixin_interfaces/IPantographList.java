@@ -28,7 +28,7 @@ public interface IPantographList {
         for (int i = 0; i < pantographList.size(); i++) {
             TrainPantographEntry e = pantographList.get(i);
             if (e.originalPos().equals(localPos)) {
-                pantographList.set(i, new TrainPantographEntry(e.originalPos(), e.rotatedPos(), active, e.facingForward()));
+                pantographList.set(i, new TrainPantographEntry(e.originalPos(), e.rotatedPos(), e.type(), active, e.facingForward()));
                 break;
             }
         }

@@ -13,6 +13,7 @@ public class CEEWireAttachments {
     private static final DeferredRegister<WireAttachmentType> WIRE_TYPES =
             DeferredRegister.create(CEERegistries.WIRE_ATTACHMENT_TYPE, CreateElecrtoEnergetics.ID);
 
+    public static final DeferredHolder<WireAttachmentType, WireAttachmentType> EMPTY = WIRE_TYPES.register("empty", WireAttachmentType.Empty::new);
     public static final DeferredHolder<WireAttachmentType, WireAttachmentType> BANNER = WIRE_TYPES.register("banner", BannerAttachmentType::new);
     public static final DeferredHolder<WireAttachmentType, WireAttachmentType> BUNTING = WIRE_TYPES.register("bunting", BuntingAttachmentType::new);
     public static final DeferredHolder<WireAttachmentType, WireAttachmentType> DAMPER = WIRE_TYPES.register("damper", DamperAttachmentType::new);

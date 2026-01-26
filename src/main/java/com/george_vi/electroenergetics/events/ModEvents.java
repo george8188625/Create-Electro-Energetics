@@ -90,6 +90,7 @@ public class ModEvents {
         event.register(CEERegistries.WIRE_ATTACHMENT_TYPE);
         event.register(CEERegistries.WIRE_INTERACTION_BEHAVIOUR);
         event.register(CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE);
+        event.register(CEERegistries.PANTOGRAPH_TYPE);
     }
 
     @SubscribeEvent
