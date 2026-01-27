@@ -91,12 +91,12 @@ jobs:
       run: |
         curl -H "Content-Type: application/json" \
            -X POST \
-           -d '{
+           --data-binary '{
            "content": "New **Create: Electro Energetics** build published! <@&1465492367061684490>",
            "embeds": [
               {
                 "title": "New build published!",
-                "description": "Create: Electro Energetics\n\n**Changelog:**\n```${{ github.event.head_commit.message }}\n${{ steps.commit_info.outputs.body }}```\n```❗ It is recommended to do a backup of your worlds before adding or updating the mod.```",
+                "description": "Create: Electro Energetics\n\n**Changelog:**\n```'"${{ github.event.head_commit.message }}"'\n'"${{ steps.commit_info.outputs.body }}"'```\n```❗ It is recommended to do a backup of your worlds before adding or updating the mod.```",
                 "url": "https://github.com/george8188625/Create-Electro-Energetics/releases",
                 "color": 565479,
                 "thumbnail": {

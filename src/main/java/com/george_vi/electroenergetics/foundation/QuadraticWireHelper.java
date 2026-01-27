@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.foundation;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -18,8 +19,9 @@ public class QuadraticWireHelper {
         float a = (0.05f / distance) * dip;
         float yOffset = a * x * (x - resolution);
 
-        Vec3 linear = pos1.add(pos2.subtract(pos1).multiply(point, point, point));
-
+        Vec3 linear = pos1.add((pos2.x - pos1.x) * point,
+                               (pos2.y - pos1.y) * point,
+                               (pos2.z - pos1.z) * point);
         return linear.add(0, yOffset, 0);
     }
 
@@ -32,20 +34,23 @@ public class QuadraticWireHelper {
         float wireLength = (float) pos1.distanceTo(pos2);
 
         double resolution = (distance * 2);
+        double invResolution = 1 / resolution;
         float a = (0.05f / distance) * dip;
 
-        float shortestDistance = 9999;
+        float shortestDistanceSqr = 9999;
         for (int x = 0; x < resolution; x++) {
             float particleLevel = (float) (a * x * (x - resolution));
-            Vec3 point = pos1.add((pos2.subtract(pos1)).multiply(1 / resolution, 1 / resolution, 1 / resolution).multiply(x, x, x)).add(0, particleLevel, 0);
-            shortestDistance = (float) Math.min(shortestDistance, position.distanceTo(point));
+            double pX = (pos2.x - pos1.x) * (invResolution) * x + pos1.x;
+            double pY = (pos2.y - pos1.y) * (invResolution) * x + pos1.y + particleLevel;
+            double pZ = (pos2.z - pos1.z) * (invResolution) * x + pos1.z;
+            shortestDistanceSqr = (float) Math.min(shortestDistanceSqr, position.distanceToSqr(pX, pY, pZ));
         }
         float detail;
-        if (shortestDistance < 10 || wireLength < 10)
+        if (shortestDistanceSqr < 100 || wireLength < 10)
             detail = 1;
-        else if (shortestDistance < 20 || wireLength < 20)
+        else if (shortestDistanceSqr < 400 || wireLength < 20)
             detail = 2;
-        else if (shortestDistance < 40 || wireLength < 30)
+        else if (shortestDistanceSqr < 1600 || wireLength < 30)
             detail = 10;
         else
             detail = 20;
@@ -54,14 +59,18 @@ public class QuadraticWireHelper {
     }
 
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, float detail) {
-        List<Vec3> points = new ArrayList<>();
         float distance = (float) pos1.distanceTo(pos2);
 
         double resolution = (distance * 2) / detail;
+        double invResolution = 1 / resolution;
+        List<Vec3> points = new ArrayList<>(Mth.ceil(resolution));
         float a = (0.05f / distance) * dip * detail * detail;
         for (int x = 0; x < resolution; x++) {
             float particleLevel = (float) (a * x * (x - resolution));
-            Vec3 point = pos1.add((pos2.subtract(pos1)).multiply(1 / resolution, 1 / resolution, 1 / resolution).multiply(x, x, x)).add(0, particleLevel, 0);
+            double pX = (pos2.x - pos1.x) * (invResolution) * x + pos1.x;
+            double pY = (pos2.y - pos1.y) * (invResolution) * x + pos1.y + particleLevel;
+            double pZ = (pos2.z - pos1.z) * (invResolution) * x + pos1.z;
+            Vec3 point = new Vec3(pX, pY, pZ);
             points.add(point);
         }
         return points;
@@ -77,7 +86,7 @@ public class QuadraticWireHelper {
         double dz = directionVector.z;
 
         double horizontalDistance = Math.sqrt(dx * dx + dz * dz);
-        return (float) Math.toDegrees(Math.atan2(dy, horizontalDistance));
+        return (float) Mth.atan2(dy, horizontalDistance) * Mth.RAD_TO_DEG;
     }
 
     public static float pointElevationInDegrees(Vec3 pos1, Vec3 pos2, float point) {

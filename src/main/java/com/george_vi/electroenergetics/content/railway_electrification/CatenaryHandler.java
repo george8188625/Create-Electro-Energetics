@@ -64,8 +64,8 @@ public class CatenaryHandler {
                 double diffY = positionVec.y - coupledVec.y;
                 double diffZ = positionVec.z - coupledVec.z;
 
-                float yaw = (float) (Mth.atan2(diffZ, diffX) * 180 / Math.PI) + 180;
-                float pitch = (float) (Math.atan2(diffY, Math.sqrt(diffX * diffX + diffZ * diffZ)) * 180 / Math.PI) * -1;
+                float yaw = (float) (Mth.atan2(diffZ, diffX) * Mth.DEG_TO_RAD) + 180;
+                float pitch = (float) (Mth.atan2(diffY, Math.sqrt(diffX * diffX + diffZ * diffZ)) * Mth.DEG_TO_RAD) * -1;
 
                 Vec3 pivotPosition = carriage.isOnTwoBogeys() ? positionVec : VecHelper.lerp(0.5f, positionVec, coupledVec);
 
@@ -95,7 +95,7 @@ public class CatenaryHandler {
                         double denom = ab.lengthSqr();
                         if (denom != 0) {
                             t = ap.dot(ab) / denom;
-                            t = Math.max(0, Math.min(1, t));
+                            t = Mth.clamp(t, 0, 1);
                         }
 
                         Vec3 closest = VecHelper.lerp((float) t, start, end);

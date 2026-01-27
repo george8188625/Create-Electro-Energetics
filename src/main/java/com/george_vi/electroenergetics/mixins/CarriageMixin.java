@@ -99,7 +99,7 @@ public class CarriageMixin implements IPantographList {
         ICEETrainExtension trainExtension = (ICEETrainExtension) train;
         ElectricTrainData trainData = trainExtension.getElectricTrainData();
         trainData.accumulators += contraptionExtension.getAccumulators();
-        trainData.hasCreativeSource = contraptionExtension.hasCreativeElectricalSource();
+        trainData.hasCreativeSource |= contraptionExtension.hasCreativeElectricalSource();
         trainData.pantographs.addAll(this.electroEnergetics$pantographs);
 
         if (electroEnergetics$soundModifyingBlocks.isEmpty())
