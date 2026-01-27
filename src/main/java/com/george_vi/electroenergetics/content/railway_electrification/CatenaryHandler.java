@@ -264,6 +264,9 @@ public class CatenaryHandler {
                 Integer carriageID = ce.getKey();
                 Vec3 pos = ce.getValue();
 
+                if (pos == null)
+                    continue;
+
                 CatnipServices.NETWORK.sendToClientsAround(event.level, pos,
                         100, new UpdateElectricTrainSoundPacket(train.id, carriageID, (float) trainSpeed, acceleration, active, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getId(trainExtension.getSoundType())));
             }
