@@ -14,6 +14,7 @@ import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionH
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -48,14 +49,10 @@ public class GameEvents {
         ElectricTrainSounds.tick();
     }
 
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public static void tickLevel(LevelTickEvent.Pre event) {
-//        if (event.getLevel() instanceof ServerLevel level)
-//            MicroTickedSimulationTicker.tick(level);
-    }
-
-    @SubscribeEvent
-    public static void tickServer(ServerTickEvent.Pre event) {
+    public static void tickClientLevel(ClientTickEvent.Pre event) {
+        WireRenderer.tick();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -153,6 +150,12 @@ public class GameEvents {
         boolean foundBulb = sd.getDevices().stream().filter(d -> d.simulatedDevice() instanceof BulbDevice && d.pos().getCenter().distanceToSqr(event.getPos().getCenter()) <= 400).anyMatch(d -> true);
         if (foundBulb)
             event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void reloadLevelRenderer(ReloadLevelRendererEvent event) {
+        WireRenderer.recreateVisuals();
     }
 
 }

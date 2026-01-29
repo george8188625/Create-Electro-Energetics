@@ -35,7 +35,7 @@ public record ClearCatenaryPacket(List<CatenaryConnection> connections, boolean 
     @Override
     public void handle(LocalPlayer player) {
         if (all) {
-            WireRenderer.CATENARY = new ArrayList<>();
+            WireRenderer.clearAllCatenaryConnections();
             return;
         }
 

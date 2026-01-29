@@ -12,7 +12,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,7 +39,7 @@ public record ClearWireConnectionsPacket(List<Pair<InWorldNode, InWorldNode>> co
     @Override
     public void handle(LocalPlayer player) {
         if (all) {
-            WireRenderer.WIRE_CONNECTIONS = new ArrayList<>();
+            WireRenderer.clearAllWireConnections();
             return;
         }
 
