@@ -50,27 +50,6 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             pos1 = connection.node1().sourcePos().getCenter();
             pos2 = connection.node2().sourcePos().getCenter();
         }
-        pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
-        pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
-        prevPos1 = pos1;
-        prevPos2 = pos2;
-
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireType.getSag());
-
-        for (int i = 0; i < points.size(); i++) {
-            Vec3 point = points.get(i);
-            Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
-            TransformedInstance instance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
-                    .createInstance();
-            instance.translate(point)
-                    .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
-                    .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                    .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                            Math.max(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
-                                    LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))));
-            instances.add(instance);
-        }
 
         lightSections = new LongOpenHashSet();
 
@@ -85,6 +64,15 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             for (int y = minSectionY; y <= maxSectionY; y++)
                 for (int z = minSectionZ; z <= maxSectionZ; z++)
                     lightSections.add(SectionPos.asLong(x, y, z));
+
+        pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
+        pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
+        prevPos1 = pos1;
+        prevPos2 = pos2;
+
+        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireType.getSag());
+
+        createWire(visualizationContext, wireType, points, pos2, level);
 
     }
 
@@ -113,20 +101,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         instances.clear();
         List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireType.getSag());
 
-        for (int i = 0; i < points.size(); i++) {
-            Vec3 point = points.get(i);
-            Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
-            TransformedInstance instance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
-                    .createInstance();
-            instance.translate(point)
-                    .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
-                    .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                    .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                            Math.max(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
-                                    LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))));
-            instances.add(instance);
-        }
+        createWire(visualizationContext, wireType, points, pos2, level);
     }
 
     @Override
@@ -166,16 +141,39 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
             TransformedInstance instance = useOld ? instances.get(i).setIdentityTransform() : visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
                     .createInstance();
+            BlockPos pointBlockPos = BlockPos.containing(point).offset(visualizationContext.renderOrigin());
+            BlockPos nextBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
+            BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
             instance.translate(point)
                     .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                            Math.max(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
-                                    LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))));
+                    .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
+                            Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                                    LevelRenderer.getLightColor(level, nextBlockPos)));
             instance.setChanged();
             if (!useOld)
                 instances.add(instance);
+        }
+    }
+
+    private void createWire(VisualizationContext visualizationContext, WireType wireType, List<Vec3> points, Vec3 pos2, ClientLevel level) {
+        for (int i = 0; i < points.size(); i++) {
+            Vec3 point = points.get(i);
+            Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
+            TransformedInstance instance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
+                    .createInstance();
+            BlockPos pointBlockPos = BlockPos.containing(point).offset(visualizationContext.renderOrigin());
+            BlockPos nextBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
+            BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
+            instance.translate(point)
+                    .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                    .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                    .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                    .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
+                            Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                                    LevelRenderer.getLightColor(level, nextBlockPos)));
+            instances.add(instance);
         }
     }
 

@@ -4,7 +4,6 @@ import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
-import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
@@ -27,9 +26,7 @@ import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
@@ -64,8 +61,8 @@ public class CatenaryHandler {
                 double diffY = positionVec.y - coupledVec.y;
                 double diffZ = positionVec.z - coupledVec.z;
 
-                float yaw = (float) (Mth.atan2(diffZ, diffX) * Mth.DEG_TO_RAD) + 180;
-                float pitch = (float) (Mth.atan2(diffY, Math.sqrt(diffX * diffX + diffZ * diffZ)) * Mth.DEG_TO_RAD) * -1;
+                float yaw = (float) (Mth.atan2(diffZ, diffX) * Mth.RAD_TO_DEG) + 180;
+                float pitch = (float) (Mth.atan2(diffY, Math.sqrt(diffX * diffX + diffZ * diffZ)) * Mth.RAD_TO_DEG) * -1;
 
                 Vec3 pivotPosition = carriage.isOnTwoBogeys() ? positionVec : VecHelper.lerp(0.5f, positionVec, coupledVec);
 

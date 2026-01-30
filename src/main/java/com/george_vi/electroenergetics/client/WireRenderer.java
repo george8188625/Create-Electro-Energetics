@@ -64,8 +64,8 @@ public class WireRenderer {
         pose.translate(-camera.getPosition().x(), -camera.getPosition().y(), -camera.getPosition().z());
 
         float baseCatenaryWidth = 0.66f;
-        boolean renderSlowly = !VisualizationManager.supportsVisualization(mc.level);
-        if (renderSlowly)
+        boolean renderImmediately = !VisualizationManager.supportsVisualization(mc.level);
+        if (renderImmediately)
             for (CatenaryConnection connection : List.copyOf(CATENARY)) {
                 BlockState startingState = mc.level.getBlockState(connection.pos1);
                 BlockState endingState = mc.level.getBlockState(connection.pos2);
@@ -212,12 +212,12 @@ public class WireRenderer {
             }
             mc.getProfiler().popPush("renderWires");
 
-            if (isBlock1Outer || isBlock2Outer || renderSlowly) {
+            if (isBlock1Outer || isBlock2Outer || renderImmediately) {
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag());
                 List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag(), mc.gameRenderer.getMainCamera().getPosition()) :
                         QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag());
 
-                if (renderSlowly)
+                if (renderImmediately)
                     renderWire(renderedPoints, pos1, pos2, pose, buffer, levelRenderer, wireData.wireType());
 
                 if (points.size() >= 10) {
@@ -333,11 +333,12 @@ public class WireRenderer {
             }
         }
         WIRE_CONNECTIONS.add(Pair.of(newConnection, data));
-        if (!WIRE_EFFECTS.containsKey(newConnection)) {
-            WireEffect we = new WireEffect(Minecraft.getInstance().level, newConnection, data.wireType());
-            VisualizationHelper.queueAdd(we);
-            WIRE_EFFECTS.put(newConnection, we);
-        }
+        WireEffect we = new WireEffect(Minecraft.getInstance().level, newConnection, data.wireType());
+        WireEffect owe = WIRE_EFFECTS.put(newConnection, we);
+        if (owe != null)
+            VisualizationHelper.queueRemove(owe);
+        VisualizationHelper.queueAdd(we);
+        WIRE_EFFECTS.put(newConnection, we);
     }
 
     public static void clearAllWireConnections() {
