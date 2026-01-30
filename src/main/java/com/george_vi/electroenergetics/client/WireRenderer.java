@@ -304,10 +304,6 @@ public class WireRenderer {
 
     @OnlyIn(Dist.CLIENT)
     public static void tick() {
-        for (WireEffect we : WIRE_EFFECTS.values())
-            VisualizationHelper.queueUpdate(we);
-        for (WireEffect we : CATENARY_EFFECTS.values())
-            VisualizationHelper.queueUpdate(we);
     }
 
     public static void removeConnections(NodeConnection toRemove) {
@@ -387,8 +383,21 @@ public class WireRenderer {
 
     public static void recreateVisuals() {
         for (WireEffect we : CATENARY_EFFECTS.values())
-            VisualizationHelper.queueAdd(we);
+            VisualizationHelper.queueRemove(we);
         for (WireEffect we : WIRE_EFFECTS.values())
+            VisualizationHelper.queueRemove(we);
+        CATENARY_EFFECTS.clear();
+        WIRE_EFFECTS.clear();
+        for (CatenaryConnection connection : CATENARY) {
+            WireEffect we = new WireEffect(Minecraft.getInstance().level, connection, CEEWireTypes.STANDARD.get());
             VisualizationHelper.queueAdd(we);
+            CATENARY_EFFECTS.put(connection, we);
+        }
+
+        for (Pair<NodeConnection, WireData> connection : WIRE_CONNECTIONS) {
+            WireEffect we = new WireEffect(Minecraft.getInstance().level, connection.getFirst(), connection.getSecond().wireType());
+            VisualizationHelper.queueAdd(we);
+            WIRE_EFFECTS.put(connection.getFirst(), we);
+        }
     }
 }

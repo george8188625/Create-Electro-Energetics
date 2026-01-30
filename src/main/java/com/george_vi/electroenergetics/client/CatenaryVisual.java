@@ -11,6 +11,7 @@ import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
+import dev.engine_room.flywheel.lib.visual.SimpleTickableVisual;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.client.Minecraft;
@@ -25,7 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVisual {
+public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVisual, SimpleTickableVisual {
     private final CatenaryConnection connection;
     private final WireType wireType;
     private final VisualizationContext visualizationContext;
@@ -44,8 +45,8 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
         float messengerWidth = 0.35f;
 
         ClientLevel level = Minecraft.getInstance().level;
-        Vec3 start = Vec3.atBottomCenterOf(connection.pos1);
-        Vec3 end = Vec3.atBottomCenterOf(connection.pos2);
+        Vec3 start = Vec3.atBottomCenterOf(connection.pos1.subtract(visualizationContext.renderOrigin()));
+        Vec3 end = Vec3.atBottomCenterOf(connection.pos2.subtract(visualizationContext.renderOrigin()));
 
         List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(start, end, 0, 10);
 
@@ -215,8 +216,11 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
     public void delete() {
         for (TransformedInstance instance : lowerInstances)
             instance.delete();
-
         lowerInstances.clear();
+
+        for (TransformedInstance instance : upperInstances)
+            instance.delete();
+        upperInstances.clear();
     }
 
     @Override
@@ -286,5 +290,10 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
     @Override
     public void setSectionCollector(SectionCollector collector) {
         collector.sections(lightSections);
+    }
+
+    @Override
+    public void tick(Context context) {
+        update(0);
     }
 }

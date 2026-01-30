@@ -32,8 +32,6 @@ import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = CreateElecrtoEnergetics.ID)
 public class GameEvents {
@@ -47,12 +45,6 @@ public class GameEvents {
         WireInteractionHandler.tick();
         WireEffects.tick();
         ElectricTrainSounds.tick();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void tickClientLevel(ClientTickEvent.Pre event) {
-        WireRenderer.tick();
     }
 
     @OnlyIn(Dist.CLIENT)
