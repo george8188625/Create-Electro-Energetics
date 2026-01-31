@@ -7,7 +7,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
 import com.george_vi.electroenergetics.simulation.*;
 import net.createmod.catnip.data.Pair;
@@ -47,7 +47,7 @@ public class StructureTemplateMixin {
     List<SimulatedDeviceInstance> electroEnergetics$allDevices = new ArrayList<>();
 
     @Unique
-    List<Pair<NodeConnection, WireData>> electroEnergetics$allWireConnections = new ArrayList<>();
+    List<Pair<InWorldNodeConnection, WireData>> electroEnergetics$allWireConnections = new ArrayList<>();
 
     @Inject(method = "fillFromWorld(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Vec3i;ZLnet/minecraft/world/level/block/Block;)V", at=@At("HEAD"), remap = false)
     public void fillFromWorld(Level level, BlockPos pos, Vec3i size, boolean withEntities, @Nullable Block toIgnore, CallbackInfo ci) {
@@ -69,25 +69,25 @@ public class StructureTemplateMixin {
             Set<InWorldNode> allNodes = sd.getNodes().stream().filter(d -> d.sourcePos().getX() >= pos.getX() && d.sourcePos().getX() < pos.getX() + size.getX() &&
                     d.sourcePos().getY() >= pos.getY() && d.sourcePos().getY() < pos.getY() + size.getY() &&
                     d.sourcePos().getZ() >= pos.getZ() && d.sourcePos().getZ() < pos.getZ() + size.getZ()).collect(Collectors.toSet());
-            Set<NodeConnection> visitedConnections = new HashSet<>();
+            Set<InWorldNodeConnection> visitedConnections = new HashSet<>();
             for (InWorldNode node : allNodes) {
-                for (NodeConnection connection : sd.getConnections(node)) {
+                for (InWorldNodeConnection connection : sd.getConnections(node)) {
                     if (visitedConnections.contains(connection) || !allNodes.contains(connection.node2()))
                         continue;
                     visitedConnections.add(connection);
                     WireData connectionData = sd.getConnectionData(connection);
                     if (connectionData == null)
                         continue;
-                    electroEnergetics$allWireConnections.add(Pair.of(new NodeConnection(new InWorldNode(connection.node1().id(), connection.node1().sourcePos().subtract(pos)),
+                    electroEnergetics$allWireConnections.add(Pair.of(new InWorldNodeConnection(new InWorldNode(connection.node1().id(), connection.node1().sourcePos().subtract(pos)),
                             new InWorldNode(connection.node2().id(), connection.node2().sourcePos().subtract(pos))), connectionData));
                 }
             }
 
         } else {
-            Set<NodeConnection> visitedConnections = new HashSet<>();
+            Set<InWorldNodeConnection> visitedConnections = new HashSet<>();
             Set<BlockPos> devicePositions = new HashSet<>();
-            for (Pair<NodeConnection, WireData> wireDataPair : WireRenderer.getAllConnections()) {
-                NodeConnection connection = wireDataPair.getFirst();
+            for (Pair<InWorldNodeConnection, WireData> wireDataPair : WireRenderer.getAllConnections()) {
+                InWorldNodeConnection connection = wireDataPair.getFirst();
                 WireData wireData = wireDataPair.getSecond();
                 if (visitedConnections.contains(connection))
                     continue;
@@ -104,7 +104,7 @@ public class StructureTemplateMixin {
                     devicePositions.add(node1.sourcePos());
                     devicePositions.add(node2.sourcePos());
 
-                    electroEnergetics$allWireConnections.add(Pair.of(new NodeConnection(new InWorldNode(node1.id(), node1.sourcePos().subtract(pos)),
+                    electroEnergetics$allWireConnections.add(Pair.of(new InWorldNodeConnection(new InWorldNode(node1.id(), node1.sourcePos().subtract(pos)),
                             new InWorldNode(node2.id(), node2.sourcePos().subtract(pos))), wireData));
                 }
             }
@@ -144,7 +144,7 @@ public class StructureTemplateMixin {
         ceeTag.put("Devices", deviceList);
 
         ListTag connectionList = new ListTag();
-        for (Pair<NodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
+        for (Pair<InWorldNodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
             CompoundTag connectionTag = new CompoundTag();
 
             InWorldNode node1 = wireDataPair.getFirst().node1();
@@ -213,7 +213,7 @@ public class StructureTemplateMixin {
                 attachments.add(Pair.of(point, attachment));
             });
 
-            electroEnergetics$allWireConnections.add(Pair.of(new NodeConnection(node1, node2), new WireData(wireType, connectionTag.getFloat("Temperature"), attachments)));
+            electroEnergetics$allWireConnections.add(Pair.of(new InWorldNodeConnection(node1, node2), new WireData(wireType, connectionTag.getFloat("Temperature"), attachments)));
         });
     }
 
@@ -234,11 +234,11 @@ public class StructureTemplateMixin {
                         slm.getDevices().add(new SimulatedDeviceInstance(deviceInstance.simulatedDevice(), StructureTemplate.calculateRelativePosition(settings, deviceInstance.pos()).offset(offset), deviceInstance.extraData(), deviceInstance.nodes()));
                 }
 
-                for (Pair<NodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
+                for (Pair<InWorldNodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
                     InWorldNode node1 = new InWorldNode(wireDataPair.getFirst().node1().id(), StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node1().sourcePos()).offset(offset));
                     InWorldNode node2 = new InWorldNode(wireDataPair.getFirst().node2().id(), StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node2().sourcePos()).offset(offset));
                     WireData wireData = wireDataPair.getSecond();
-                    slm.getWireConnections().put(new NodeConnection(node1, node2), wireData);
+                    slm.getWireConnections().put(new InWorldNodeConnection(node1, node2), wireData);
                 }
             }
             return;
@@ -252,7 +252,7 @@ public class StructureTemplateMixin {
                 sd.addDevice(StructureTemplate.calculateRelativePosition(settings, deviceInstance.pos()).offset(offset), deviceInstance.simulatedDevice(), deviceInstance.write(), deviceInstance.nodes().stream().map(InWorldNode::id).toList());
         }
 
-        for (Pair<NodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
+        for (Pair<InWorldNodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
             InWorldNode node1 = new InWorldNode(wireDataPair.getFirst().node1().id(), StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node1().sourcePos()).offset(offset));
             InWorldNode node2 = new InWorldNode(wireDataPair.getFirst().node2().id(), StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node2().sourcePos()).offset(offset));
             WireData wireData = wireDataPair.getSecond();

@@ -26,13 +26,14 @@ import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
 public class CatenaryHandler {
-
 
     public static void addToGraph(AddToElectricGraphEvent event) {
 
@@ -73,7 +74,7 @@ public class CatenaryHandler {
 
                     // Here, all active pantographs are checked if they touch a catenary wire.
 
-                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.rotatedPos).add(pantograph.facingForward ? 0.5 : -0.5, pantograph.type.reach / 2 + 0.5f, 0);
+                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.rotatedPos).add((pantograph.facingForward ? 1 : -1) * pantograph.type.backOffset, pantograph.type.reach / 2 + 0.5f, 0);
 
                     pantographPos = VecHelper.rotate(pantographPos, -pitch, Direction.Axis.Z);
                     pantographPos = VecHelper.rotate(pantographPos, -yaw + 180, Direction.Axis.Y);
@@ -100,8 +101,8 @@ public class CatenaryHandler {
                         Vec3 distance = pantographPos.subtract(closest);
                         distance = VecHelper.rotate(distance, yaw + 180, Direction.Axis.Y);
                         distance = VecHelper.rotate(distance, -pitch, Direction.Axis.X);
-
-                        if (Math.abs(distance.z()) < 2 && Math.abs(distance.x()) < 0.5 && Math.abs(distance.y()) < pantograph.type.reach / 2) {
+                        float xTol = (float) ((distance.y + pantograph.type.reach / 2) * 0.2f + 0.125f);
+                        if (Math.abs(distance.z()) < 2 && Math.abs(distance.x()) < xTol && Math.abs(distance.y()) < pantograph.type.reach / 2) {
                             pantograph.prevPos = pantograph.pos;
                             pantograph.pos = closest;
                             catenaryConnections.computeIfAbsent(train, k -> new ArrayList<>())
@@ -210,24 +211,10 @@ public class CatenaryHandler {
             // Sparks
             for (TrainPantographEntry pantograph : trainData.pantographs) {
                 double current = Math.abs(event.results.getCurrentThrough(trainNode, pantograph.node));
-
-                if (pantograph.pos == null && pantograph.prevPos != null && pantograph.lastCurrent > 1e-2d) {
-                    CatnipServices.NETWORK.sendToClientsAround(event.level, pantograph.prevPos,
-                            40, new SendSparkPacket(pantograph.prevPos, SendSparkPacket.SparkSize.MEDIUM));
-                } else if (pantograph.pos != null && pantograph.prevPos == null && current > 1e-2d) {
-                    CatnipServices.NETWORK.sendToClientsAround(event.level, pantograph.pos,
-                            40, new SendSparkPacket(pantograph.pos, SendSparkPacket.SparkSize.MEDIUM));
-                } else if (pantograph.pos != null && current > 7 && CEEConfigs.server().trainValues.highSpeedPantographSparks.get() != 0 &&
-                    Math.abs(train.speed) > CEEConfigs.server().trainValues.highSpeedPantographSparks.get() && event.level.random.nextFloat() > 0.95) {
-                    CatnipServices.NETWORK.sendToClientsAround(event.level, pantograph.pos,
-                            40, new SendSparkPacket(pantograph.pos, SendSparkPacket.SparkSize.MEDIUM));
-                } else if (pantograph.pos != null && Math.abs(train.speed) > 0.1 && CEEConfigs.server().trainValues.winterPantographSparks.get() &&
-                        event.level.random.nextFloat() > 0.98) {
-                    BlockPos pos = BlockPos.containing(pantograph.pos);
-                    if (event.level.isLoaded(pos) && event.level.getBiome(pos).value().getBaseTemperature() < 0.15f)
-                        CatnipServices.NETWORK.sendToClientsAround(event.level, pantograph.pos,
-                                40, new SendSparkPacket(pantograph.pos, SendSparkPacket.SparkSize.MEDIUM));
-                }
+                Vec3 sparkPos = pantographSparkPosition(event.level, train, pantograph, current);
+                if (sparkPos != null)
+                    CatnipServices.NETWORK.sendToClientsAround(event.level, sparkPos,
+                            40, new SendSparkPacket(sparkPos, SendSparkPacket.SparkSize.MEDIUM));
                 pantograph.lastCurrent = current;
             }
 
@@ -273,5 +260,31 @@ public class CatenaryHandler {
                 }
 
         }
+    }
+
+    private static Vec3 pantographSparkPosition(ServerLevel level, Train train, TrainPantographEntry pantograph, double current) {
+        if (pantograph.pos == null && pantograph.prevPos != null && pantograph.lastCurrent > 1e-2d) {
+            return pantograph.prevPos;
+        } else if (pantograph.pos != null && pantograph.prevPos == null && current > 1e-2d) {
+            return pantograph.pos;
+        } else if (pantograph.pos != null && current > 7) {
+            if (CEEConfigs.server().trainValues.highSpeedPantographSparks.get() != 0 &&
+                    Math.abs(train.speed) > CEEConfigs.server().trainValues.highSpeedPantographSparks.get() &&
+                    level.random.nextFloat() < CEEConfigs.server().trainValues.highSpeedPantographSparkChance.get()) {
+                return pantograph.pos;
+            } else if (Math.abs(train.speed) > 0.1) {
+                BlockPos pos = BlockPos.containing(pantograph.pos);
+                if (CEEConfigs.server().trainValues.winterPantographSparks.get() &&
+                        level.random.nextFloat() < CEEConfigs.server().trainValues.winterPantographSparkChance.get() &&
+                        level.isLoaded(pos) && level.getBiome(pos).value().getBaseTemperature() < 0.15f) {
+                    return pantograph.pos;
+                } else if (CEEConfigs.server().trainValues.rainPantographSparks.get() &&
+                        level.random.nextFloat() < CEEConfigs.server().trainValues.rainPantographSparkChance.get() &&
+                        level.isLoaded(pos) && level.isRainingAt(pos)) {
+                    return pantograph.pos;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -1,18 +1,14 @@
 package com.george_vi.electroenergetics.client;
 
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
-import dev.engine_room.flywheel.api.task.Plan;
-import dev.engine_room.flywheel.api.task.TaskExecutor;
 import dev.engine_room.flywheel.api.visual.EffectVisual;
 import dev.engine_room.flywheel.api.visual.LightUpdatedVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
-import dev.engine_room.flywheel.lib.task.IfElsePlan;
-import dev.engine_room.flywheel.lib.task.functional.BooleanSupplierWithContext;
 import dev.engine_room.flywheel.lib.visual.SimpleTickableVisual;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -28,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual, SimpleTickableVisual {
-    private final NodeConnection connection;
+    private final InWorldNodeConnection connection;
     private final WireType wireType;
     private final VisualizationContext visualizationContext;
 
@@ -37,7 +33,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     protected final List<TransformedInstance> instances = new ArrayList<>();
     final LongSet lightSections;
 
-    public WireVisual(VisualizationContext visualizationContext, NodeConnection connection, WireType wireType) {
+    public WireVisual(VisualizationContext visualizationContext, InWorldNodeConnection connection, WireType wireType) {
         this.visualizationContext = visualizationContext;
         this.connection = connection;
         this.wireType = wireType;
@@ -149,7 +145,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                     .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
-                            Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                            WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                     LevelRenderer.getLightColor(level, nextBlockPos)));
             instance.setChanged();
             if (!useOld)
@@ -171,7 +167,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                     .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
-                            Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                            WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                     LevelRenderer.getLightColor(level, nextBlockPos)));
             instances.add(instance);
         }

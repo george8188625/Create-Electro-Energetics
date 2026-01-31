@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireData;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
@@ -27,8 +27,8 @@ public class WireEffects {
         if (mc.isPaused())
             return;
 
-        for (Pair<NodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
-            NodeConnection connection = wire.getFirst();
+        for (Pair<InWorldNodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
+            InWorldNodeConnection connection = wire.getFirst();
 
             Vec3 pos1 = null;
             Vec3 pos2 = null;

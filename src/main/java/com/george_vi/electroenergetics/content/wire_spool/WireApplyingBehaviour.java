@@ -11,7 +11,7 @@ import com.george_vi.electroenergetics.foundation.*;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.RequestVoltageDataPacket;
 import com.george_vi.electroenergetics.simulation.WireData;
@@ -162,8 +162,8 @@ public class WireApplyingBehaviour {
         }
 
         if (canConnect)
-            for (Pair<NodeConnection, WireData> connection : WireRenderer.getAllConnections())
-                if (new NodeConnection(selectedNode, hoveredNode).equals(connection.getFirst())) {
+            for (Pair<InWorldNodeConnection, WireData> connection : WireRenderer.getAllConnections())
+                if (new InWorldNodeConnection(selectedNode, hoveredNode).equals(connection.getFirst())) {
                     canConnect = false;
                     break;
                 }

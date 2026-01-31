@@ -63,7 +63,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                     .scale(wireWidth, wireWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                     .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
-                            Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                            WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                     LevelRenderer.getLightColor(level, nextBlockPos)));
             lowerInstances.add(instance);
         }
@@ -96,7 +96,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                         .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                         .scale(wireWidth, wireWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                         .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
-                                Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                                WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                         LevelRenderer.getLightColor(level, nextBlockPos)));
                 upperInstances.add(instance);
                 if (i == 0)
@@ -125,7 +125,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                         .rotateX(-(float) Mth.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
                         .scale(messengerWidth, messengerWidth, (float) (point.distanceTo(closest) * 2) + 0.02f)
                         .light(pointBlockPos.equals(closestBlockPos) ? LevelRenderer.getLightColor(level, closestMiddleBlockPos) :
-                                Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                                WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                         LevelRenderer.getLightColor(level, closestBlockPos)));
                 upperInstances.add(messengerInstance);
             }
@@ -188,7 +188,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                         .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                         .scale(wireWidth, wireWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                         .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
-                                Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                                WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                         LevelRenderer.getLightColor(level, nextBlockPos)));
                 upperInstances.add(instance);
                 if (i == 0)
@@ -217,7 +217,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                         .rotateX(-(float) Mth.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
                         .scale(wireWidth, wireWidth, (float) (point.distanceTo(closest) * 2) + 0.02f)
                         .light(pointBlockPos.equals(closestBlockPos) ? LevelRenderer.getLightColor(level, closestMiddleBlockPos) :
-                                Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                                WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                         LevelRenderer.getLightColor(level, closestBlockPos)));
                 upperInstances.add(messengerInstance);
             }
@@ -252,7 +252,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
             BlockPos nextBlockPos = BlockPos.containing(nextPoint);
             BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5));
             instance.light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
-                    Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                    WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                             LevelRenderer.getLightColor(level, nextBlockPos)));
             instance.setChanged();
         }
@@ -276,7 +276,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                 BlockPos nextBlockPos = BlockPos.containing(nextPoint);
                 BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5));
                 instance.light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
-                        Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                        WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                 LevelRenderer.getLightColor(level, nextBlockPos)));
                 instance.setChanged();
                 if (i == 0)
@@ -300,7 +300,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                 BlockPos closestBlockPos = BlockPos.containing(nextPoint);
                 BlockPos closestMiddleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5));
                 messengerInstance.light(pointBlockPos.equals(closestBlockPos) ? LevelRenderer.getLightColor(level, closestMiddleBlockPos) :
-                        Math.max(LevelRenderer.getLightColor(level, pointBlockPos),
+                        WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                 LevelRenderer.getLightColor(level, closestBlockPos)));
                 messengerInstance.setChanged();
             }

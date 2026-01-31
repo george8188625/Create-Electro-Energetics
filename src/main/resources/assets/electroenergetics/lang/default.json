@@ -125,5 +125,6 @@
   "electroenergetics.display_source.amperage": "Amperage",
 
   "electroenergetics.electric_train_sound.modern": "Modern",
-  "electroenergetics.electric_train_sound.dc": "Old DC"
+  "electroenergetics.electric_train_sound.dc": "Old DC",
+  "electroenergetics.subtitle.train_relay": "Train Relay"
 }

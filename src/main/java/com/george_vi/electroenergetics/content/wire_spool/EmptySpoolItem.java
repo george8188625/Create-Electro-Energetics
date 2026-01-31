@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireData;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
@@ -65,7 +65,7 @@ public class EmptySpoolItem extends Item {
             if ((level.getBlockState(hoveredNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock) && (level.getBlockState(originalNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock))
                 sd.removeCatenary(hoveredNode.sourcePos(), originalNode.sourcePos());
             else
-                wireData = sd.removeConnection(new NodeConnection(originalNode, hoveredNode));
+                wireData = sd.removeConnection(new InWorldNodeConnection(originalNode, hoveredNode));
 
             AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);
 

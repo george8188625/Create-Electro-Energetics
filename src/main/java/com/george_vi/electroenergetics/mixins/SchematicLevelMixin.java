@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.mixins;
 
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.WireData;
@@ -16,13 +16,13 @@ import java.util.Map;
 @Mixin(SchematicLevel.class)
 public class SchematicLevelMixin implements ISchematicInfrastructureList {
     @Unique
-    Map<NodeConnection, WireData> electroEnergetics$wireConnections = new HashMap<>();
+    Map<InWorldNodeConnection, WireData> electroEnergetics$wireConnections = new HashMap<>();
 
     @Unique
     List<SimulatedDeviceInstance> electroEnergetics$devices = new ArrayList<>();
 
     @Override
-    public Map<NodeConnection, WireData> getWireConnections() {
+    public Map<InWorldNodeConnection, WireData> getWireConnections() {
         return electroEnergetics$wireConnections;
     }
 

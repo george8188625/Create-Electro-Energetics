@@ -64,7 +64,7 @@ public class PantographBlock extends Block implements IBE<PantographBlockEntity>
             if (extended)
                 be.targetExtensionState = state.getValue(DOUBLE) ? 1.7f : 0.85f;
             else
-                be.targetExtensionState = state.getValue(DOUBLE) ? 0.3f : 0f;
+                be.targetExtensionState = 0f;
         }
 
         if (state.getValue(DOUBLE)) {
@@ -72,7 +72,7 @@ public class PantographBlock extends Block implements IBE<PantographBlockEntity>
                 if (extended)
                     be.targetExtensionState = 1.7f;
                 else
-                    be.targetExtensionState = 0.3f;
+                    be.targetExtensionState = 0f;
             }
         }
         return InteractionResult.SUCCESS;

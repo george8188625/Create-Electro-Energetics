@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
@@ -49,8 +49,8 @@ public class SchematicPrinterMixin {
             electroEnergetics$wirePhase = true;
             InfrastructureSavedData sd = InfrastructureSavedData.load(blockReader.getLevel());
 
-            for (Map.Entry<NodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
-                NodeConnection connection = e.getKey();
+            for (Map.Entry<InWorldNodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
+                InWorldNodeConnection connection = e.getKey();
                 WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
@@ -86,8 +86,8 @@ public class SchematicPrinterMixin {
                 return;
             InfrastructureSavedData sd = InfrastructureSavedData.load(this.blockReader.getLevel());
 
-            for (Map.Entry<NodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
-                NodeConnection connection = e.getKey();
+            for (Map.Entry<InWorldNodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
+                InWorldNodeConnection connection = e.getKey();
                 WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
@@ -109,13 +109,13 @@ public class SchematicPrinterMixin {
         if (world instanceof ServerLevel level && blockReader instanceof ISchematicInfrastructureList sl) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(level);
 
-            for (Map.Entry<NodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
-                NodeConnection connection = e.getKey();
+            for (Map.Entry<InWorldNodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
+                InWorldNodeConnection connection = e.getKey();
                 WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
 
-                if (!sd.getConnections(node1).contains(new NodeConnection(node1, node2))) {
+                if (!sd.getConnections(node1).contains(new InWorldNodeConnection(node1, node2))) {
                     List<ItemStack> allRequirements = new ArrayList<>();
                     for (Pair<Float, WireAttachment> attachment : wireData.attachments())
                         allRequirements.addAll(attachment.getSecond().getItemRequirement());
@@ -132,8 +132,8 @@ public class SchematicPrinterMixin {
             if (sl.getWireConnections().isEmpty())
                 return;
             InfrastructureSavedData sd = InfrastructureSavedData.load(blockReader.getLevel());
-            for (Map.Entry<NodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
-                NodeConnection connection = e.getKey();
+            for (Map.Entry<InWorldNodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
+                InWorldNodeConnection connection = e.getKey();
                 WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();

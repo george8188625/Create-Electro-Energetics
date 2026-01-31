@@ -16,6 +16,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.IntStream;
 
+/**
+ * Describes a node that is attached to a block.
+ * Each {@link InWorldNode} is identified by an ID and a block position. IDs are local to the block position.
+ * @see AttachedNode
+ */
 public class InWorldNode extends Node implements Comparable<InWorldNode> {
     public static final Codec<InWorldNode> CODEC = Codec.INT_STREAM.comapFlatMap(
             s -> Util.fixedSize(s, 4).map(a -> new InWorldNode(a[0], new BlockPos(a[1], a[2], a[3]))),

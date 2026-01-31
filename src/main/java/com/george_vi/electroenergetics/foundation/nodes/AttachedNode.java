@@ -1,7 +1,10 @@
 package com.george_vi.electroenergetics.foundation.nodes;
 
-import java.util.Objects;
-
+/**
+ * Describes a node that is not attached to a block, but is a 'free' node.
+ * You can create these nodes and use them for simulation.
+ * @see InWorldNode
+ */
 public class AttachedNode extends Node {
     public final String ownerID;
     public final int id;

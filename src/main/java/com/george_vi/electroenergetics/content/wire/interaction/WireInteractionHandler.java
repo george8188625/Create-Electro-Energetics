@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.wire.interaction;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.WireData;
@@ -53,13 +53,13 @@ public class WireInteractionHandler {
         if (hit != null)
             bestDist = hit.getLocation().distanceTo(from);
 
-        NodeConnection bestConnection = null;
+        InWorldNodeConnection bestConnection = null;
         float bestProgress = 0;
         Vec3 bestPosition = null;
         WireType bestWireType = null;
 
-        for (Pair<NodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
-            NodeConnection connection = wire.getFirst();
+        for (Pair<InWorldNodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
+            InWorldNodeConnection connection = wire.getFirst();
 
             Vec3 pos1 = null;
             Vec3 pos2 = null;

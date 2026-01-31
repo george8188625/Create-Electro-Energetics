@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.wire;
 import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.data.Pair;
@@ -32,7 +32,7 @@ public record ClearWireConnectionsPacket(List<Pair<InWorldNode, InWorldNode>> co
         return new ClearWireConnectionsPacket(List.of(Pair.of(node1, node2)), false);
     }
 
-    public static ClearWireConnectionsPacket clearWire(NodeConnection connection) {
+    public static ClearWireConnectionsPacket clearWire(InWorldNodeConnection connection) {
         return clearWire(connection.node1(), connection.node2());
     }
 
@@ -44,7 +44,7 @@ public record ClearWireConnectionsPacket(List<Pair<InWorldNode, InWorldNode>> co
         }
 
         for (Pair<InWorldNode, InWorldNode> connection : connections()) {
-            WireRenderer.removeConnections(new NodeConnection(connection.getFirst(), connection.getSecond()));
+            WireRenderer.removeConnections(new InWorldNodeConnection(connection.getFirst(), connection.getSecond()));
         }
     }
 

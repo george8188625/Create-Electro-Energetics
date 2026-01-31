@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.wire_spool;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.WireData;
@@ -37,7 +37,7 @@ public class DyeWireInteractionBehaviour extends WireInteractionBehaviour {
 
     @Override
     public DisplayType getWireDisplayType(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
-        Pair<NodeConnection, WireData> wireData = WireRenderer.getAllConnections().stream().filter(p -> p.getFirst().equals(point.connection())).findFirst().orElse(null);
+        Pair<InWorldNodeConnection, WireData> wireData = WireRenderer.getAllConnections().stream().filter(p -> p.getFirst().equals(point.connection())).findFirst().orElse(null);
         if (wireData == null ||
             (wireData.getSecond().wireType() != CEEWireTypes.STANDARD.get() &&
                     !CEEWireTypes.COLORED_WIRES.values().stream().anyMatch(w -> w.get() == wireData.getSecond().wireType())))

@@ -10,7 +10,7 @@ import com.george_vi.electroenergetics.content.railway_electrification.catenary.
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.WireData;
@@ -25,6 +25,7 @@ import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -42,9 +43,9 @@ import java.util.List;
 import java.util.Map;
 
 public class WireRenderer {
-    public static List<Pair<NodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
+    public static List<Pair<InWorldNodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
     @OnlyIn(Dist.CLIENT)
-    protected static Map<NodeConnection, WireEffect> WIRE_EFFECTS = new HashMap<>();
+    protected static Map<InWorldNodeConnection, WireEffect> WIRE_EFFECTS = new HashMap<>();
     @OnlyIn(Dist.CLIENT)
     protected static Map<CatenaryConnection, WireEffect> CATENARY_EFFECTS = new HashMap<>();
     public static List<CatenaryConnection> CATENARY = new ArrayList<>();
@@ -96,7 +97,7 @@ public class WireRenderer {
                             .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                             .scale(catenaryWidth, catenaryWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                             .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                                    Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
+                                    maxLightLevel(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                             LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
                             .renderInto(pose, buffer.getBuffer(RenderType.solid()));
                 }
@@ -131,7 +132,7 @@ public class WireRenderer {
                             .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                             .scale(catenaryWidth, catenaryWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                             .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                                    Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
+                                    maxLightLevel(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                             LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
                             .renderInto(pose, buffer.getBuffer(RenderType.solid()));
                     if (i == 0)
@@ -157,15 +158,15 @@ public class WireRenderer {
                             .rotateX(-(float) Math.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
                             .scale(catenaryWidth * 0.66f, catenaryWidth * 0.66f, (float) (point.distanceTo(closest) * 2) + 0.02f)
                             .light(BlockPos.containing(point).equals(BlockPos.containing(closest)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(closest).multiply(0.5, 0.5, 0.5))) :
-                                    Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
+                                    maxLightLevel(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                             LevelRenderer.getLightColor(mc.level, BlockPos.containing(closest))))
                             .rotateZDegrees(45)
                             .renderInto(pose, buffer.getBuffer(RenderType.solid()));
                 }
             }
 
-        for (Pair<NodeConnection, WireData> wire : getAllConnections()) {
-            NodeConnection connection = wire.getFirst();
+        for (Pair<InWorldNodeConnection, WireData> wire : getAllConnections()) {
+            InWorldNodeConnection connection = wire.getFirst();
             WireData wireData = wire.getSecond();
 
             BlockState state1 = mc.level.getBlockState(connection.node1().sourcePos());
@@ -296,36 +297,32 @@ public class WireRenderer {
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                     .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                            Math.max(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
+                            maxLightLevel(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
                                     LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
                     .renderInto(pose, buffer.getBuffer(RenderType.solid()));
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static void tick() {
-    }
-
-    public static void removeConnections(NodeConnection toRemove) {
+    public static void removeConnections(InWorldNodeConnection toRemove) {
         WIRE_CONNECTIONS.removeIf(w -> w.getFirst().equals(toRemove));
         WireEffect we = WIRE_EFFECTS.remove(toRemove);
         if (we != null)
             VisualizationHelper.queueRemove(we);
     }
 
-    public static List<Pair<NodeConnection, WireData>> getAllConnections() {
+    public static List<Pair<InWorldNodeConnection, WireData>> getAllConnections() {
        return List.copyOf(WIRE_CONNECTIONS);
     }
 
-    public static WireData getConnectionData(NodeConnection connection) {
-        for (Pair<NodeConnection, WireData> wire : getAllConnections()) {
+    public static WireData getConnectionData(InWorldNodeConnection connection) {
+        for (Pair<InWorldNodeConnection, WireData> wire : getAllConnections()) {
             if (wire.getFirst().equals(connection))
                 return wire.getSecond();
         }
         return null;
     }
 
-    public static void addConnection(NodeConnection newConnection, WireData data) {
+    public static void addConnection(InWorldNodeConnection newConnection, WireData data) {
         for (int i = 0; i < WIRE_CONNECTIONS.size(); i++) {
             if (WIRE_CONNECTIONS.get(i).getFirst().equals(newConnection)) {
                 WIRE_CONNECTIONS.remove(i);
@@ -395,10 +392,14 @@ public class WireRenderer {
             CATENARY_EFFECTS.put(connection, we);
         }
 
-        for (Pair<NodeConnection, WireData> connection : WIRE_CONNECTIONS) {
+        for (Pair<InWorldNodeConnection, WireData> connection : WIRE_CONNECTIONS) {
             WireEffect we = new WireEffect(Minecraft.getInstance().level, connection.getFirst(), connection.getSecond().wireType());
             VisualizationHelper.queueAdd(we);
             WIRE_EFFECTS.put(connection.getFirst(), we);
         }
+    }
+
+    public static int maxLightLevel(int lightColo1, int lightColor2) {
+        return LightTexture.pack(Math.max(LightTexture.block(lightColo1), LightTexture.block(lightColor2)), Math.max(LightTexture.sky(lightColo1), LightTexture.sky(lightColor2)));
     }
 }

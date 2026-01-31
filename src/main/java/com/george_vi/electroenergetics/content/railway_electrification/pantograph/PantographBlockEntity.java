@@ -5,6 +5,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -33,9 +35,10 @@ public class PantographBlockEntity extends SmartBlockEntity {
     public void tick() {
         super.tick();
         prevExtensionState = currentExtensionState;
-        currentExtensionState = Mth.lerp(0.1f, currentExtensionState, targetExtensionState);
-        if (Math.abs(currentExtensionState - targetExtensionState) < 0.01)
-            currentExtensionState = targetExtensionState;
+        currentExtensionState = currentExtensionState < targetExtensionState ? Math.min(targetExtensionState, currentExtensionState + 0.05f) : Math.max(targetExtensionState, currentExtensionState - 0.05f);
+
+        if (level.isClientSide && currentExtensionState == targetExtensionState && prevExtensionState != currentExtensionState)
+            level.playLocalSound(worldPosition.getX() + 0.5, worldPosition.getY() + 0.25, worldPosition.getZ() + 0.5, SoundEvents.CHAIN_HIT, SoundSource.NEUTRAL, 0.1f, 1f, false);
     }
 
     @Override

@@ -9,16 +9,14 @@ import com.george_vi.electroenergetics.content.railway_electrification.catenary.
 import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
-import com.george_vi.electroenergetics.simulation.simulator.SimulatorProfiler;
-import com.george_vi.electroenergetics.simulation.util.WorkerThread;
+import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
-import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
@@ -40,7 +38,7 @@ public class InfrastructureSavedData extends SavedData {
     Map<InWorldNode, List<InWorldNode>> NODES = new HashMap<>();
     Map<InWorldNode, Vec3> NODE_POSITIONS = new HashMap<>();
     Map<BlockPos, List<InWorldNode>> NODES_BY_POS = new HashMap<>();
-    Map<NodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
+    Map<InWorldNodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
 
     // TRAINS
     Map<BlockPos, List<BlockPos>> CATENARY = new HashMap<>();
@@ -105,7 +103,7 @@ public class InfrastructureSavedData extends SavedData {
 
                 subNodeTag.put("Pos", NbtUtils.writeBlockPos(node.sourcePos()));
                 subNodeTag.putInt("ID", node.id());
-                WireData connectionData = CONNECTION_DATA.get(new NodeConnection(e.getKey(), node));
+                WireData connectionData = CONNECTION_DATA.get(new InWorldNodeConnection(e.getKey(), node));
 
                 if (connectionData == null)
                     continue;
@@ -197,7 +195,7 @@ public class InfrastructureSavedData extends SavedData {
 
 
                 WireType finalWireType = wireType;
-                sd.CONNECTION_DATA.computeIfAbsent(new NodeConnection(new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")),
+                sd.CONNECTION_DATA.computeIfAbsent(new InWorldNodeConnection(new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")),
                         new InWorldNode(id, pos)), c -> new WireData(finalWireType, Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature"), attachments));
             });
             sd.NODE_POSITIONS.put(node, lastKnownPos);
@@ -218,7 +216,7 @@ public class InfrastructureSavedData extends SavedData {
             if (device == null) {
                 List<InWorldNode> nodes = sd.NODES_BY_POS.get(pos);
                 for (InWorldNode node : nodes) {
-                    for (NodeConnection connection : sd.getConnections(node))
+                    for (InWorldNodeConnection connection : sd.getConnections(node))
                         sd.removeConnection(connection);
                     sd.NODES.remove(node);
                 }
@@ -268,7 +266,7 @@ public class InfrastructureSavedData extends SavedData {
                     for (InWorldNode node : oldNodes) {
                         Vec3 newPos = node.getPosition(level);
                         if (NODE_POSITIONS.replace(node, newPos) != newPos) {
-                            for (NodeConnection connection : getConnections(node)) {
+                            for (InWorldNodeConnection connection : getConnections(node)) {
                                 wireConnectionManager.wireRemoved(connection);
                                 wireConnectionManager.wireAdded(connection, getConnectionData(connection));
                             }
@@ -292,8 +290,9 @@ public class InfrastructureSavedData extends SavedData {
                     NODES.putIfAbsent(node, new ArrayList<>());
                     NODE_POSITIONS.put(node, node.getPosition(level));
 
-                    for (NodeConnection connection : getConnections(node)) {
+                    for (InWorldNodeConnection connection : getConnections(node)) {
                         wireConnectionManager.wireRemoved(connection);
+                        if (NODES.containsKey(connection.node1()) && NODES.containsKey(connection.node2()))
                         wireConnectionManager.wireAdded(connection, getConnectionData(connection));
                     }
                 }
@@ -307,8 +306,8 @@ public class InfrastructureSavedData extends SavedData {
                     for (InWorldNode node : oldNodes) {
                         if (nodes.contains(node))
                             continue;
-                        List<NodeConnection> connections = getConnections(node);
-                        for (NodeConnection connection : connections)
+                        List<InWorldNodeConnection> connections = getConnections(node);
+                        for (InWorldNodeConnection connection : connections)
                             Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
 
                         List<BlockPos> catenaryConnections = List.copyOf(CATENARY.getOrDefault(pos, new ArrayList<>()));
@@ -351,8 +350,8 @@ public class InfrastructureSavedData extends SavedData {
         List<InWorldNode> nodes = NODES_BY_POS.get(pos);
         if (nodes != null)
             for (InWorldNode node : nodes) {
-                List<NodeConnection> connections = getConnections(node);
-                for (NodeConnection connection : connections)
+                List<InWorldNodeConnection> connections = getConnections(node);
+                for (InWorldNodeConnection connection : connections)
                     Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
 
                 List<BlockPos> catenaryConnections = List.copyOf(CATENARY.getOrDefault(pos, new ArrayList<>()));
@@ -374,17 +373,17 @@ public class InfrastructureSavedData extends SavedData {
         return DEVICES.get(pos);
     }
 
-    public List<NodeConnection> getConnections(InWorldNode node) {
+    public List<InWorldNodeConnection> getConnections(InWorldNode node) {
         List<InWorldNode> connectedNodes = NODES.get(node);
         if (connectedNodes == null)
             return Collections.emptyList();
-        List<NodeConnection> connections = new ArrayList<>();
+        List<InWorldNodeConnection> connections = new ArrayList<>();
         for (InWorldNode connectedNode : connectedNodes)
-            connections.add(new NodeConnection(node, connectedNode));
+            connections.add(new InWorldNodeConnection(node, connectedNode));
         return connections;
     }
 
-    public WireData removeConnection(NodeConnection connection) {
+    public WireData removeConnection(InWorldNodeConnection connection) {
 
         NODES.get(connection.node1()).remove(connection.node2());
         NODES.get(connection.node2()).remove(connection.node1());
@@ -408,11 +407,11 @@ public class InfrastructureSavedData extends SavedData {
         return connectionData;
     }
 
-    public Map<NodeConnection, WireData> getAllConnections() {
+    public Map<InWorldNodeConnection, WireData> getAllConnections() {
         return CONNECTION_DATA;
     }
 
-    public NodeConnection connect(InWorldNode node1, InWorldNode node2, WireType wireType) {
+    public InWorldNodeConnection connect(InWorldNode node1, InWorldNode node2, WireType wireType) {
         if (node1.equals(node2))
             throw new IllegalArgumentException("Tried to connect a wire between a single node: " + node1);
 
@@ -426,7 +425,7 @@ public class InfrastructureSavedData extends SavedData {
             nodes.add(node1);
             return nodes;
         });
-        NodeConnection connection = new NodeConnection(node1, node2);
+        InWorldNodeConnection connection = new InWorldNodeConnection(node1, node2);
         WireData data = new WireData(wireType, 0f, Collections.emptyList());
         CONNECTION_DATA.put(connection, data);
         setDirty();
@@ -441,27 +440,29 @@ public class InfrastructureSavedData extends SavedData {
         return NODES.getOrDefault(node1, Collections.emptyList()).contains(node2) || (node1.id() == 0 && node2.id() == 0 && CATENARY.getOrDefault(node1.sourcePos(), Collections.emptyList()).contains(node2.sourcePos()));
     }
 
-    public float getConnectionTemperature(NodeConnection connection) {
+    public float getConnectionTemperature(InWorldNodeConnection connection) {
         WireData data = CONNECTION_DATA.get(connection);
-        return data == null ? 0f : data.temperature();
+        return data == null ? 0f : data.temperature;
     }
 
-    public void setConnectionTemperature(NodeConnection connection, float temp) {
-        CONNECTION_DATA.computeIfPresent(connection, (k, v) -> new WireData(v.wireType(), temp, v.attachments()));
+    public void setConnectionTemperature(InWorldNodeConnection connection, float temp) {
+        WireData wireData = CONNECTION_DATA.get(connection);
+        if (wireData != null)
+            wireData.temperature = temp;
     }
 
-    public float updateConnectionTemperature(NodeConnection connection, Float2FloatFunction function) {
-        WireData wireData = CONNECTION_DATA.computeIfPresent(connection, (k, v) -> new WireData(v.wireType(), function.get(v.temperature()), v.attachments()));
+    public float updateConnectionTemperature(InWorldNodeConnection connection, Float2FloatFunction function) {
+        WireData wireData = CONNECTION_DATA.get(connection);
         if (wireData == null)
             return 0;
-        return wireData.temperature();
+        return wireData.temperature = function.get(wireData.temperature);
     }
 
-    public WireData getConnectionData(NodeConnection connection) {
+    public WireData getConnectionData(InWorldNodeConnection connection) {
         return CONNECTION_DATA.get(connection);
     }
 
-    public void setConnectionData(NodeConnection connection, WireData data) {
+    public void setConnectionData(InWorldNodeConnection connection, WireData data) {
         LoadedWireManager.handleWireAdded(connection, data, level);
         wireConnectionManager.wireRemoved(connection);
         wireConnectionManager.wireAdded(connection, data);

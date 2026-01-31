@@ -1,11 +1,12 @@
-package com.george_vi.electroenergetics.simulation.simulator;
+package com.george_vi.electroenergetics.foundation.nodes;
 
-import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.Node;
 import net.minecraft.core.BlockPos;
 
-import java.util.Objects;
-
+/**
+ * This class holds a connection between two {@link Node}.
+ * These connections are directional.
+ * @see DirectionalInWorldNodeConnection
+ */
 public class DirectionalNodeConnection {
     private final Node node1;
     private final Node node2;
@@ -58,6 +59,6 @@ public class DirectionalNodeConnection {
 
     @Override
     public String toString() {
-        return node1 + " - " + node2;
+        return node1 + " --- " + node2;
     }
 }

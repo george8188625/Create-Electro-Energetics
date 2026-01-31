@@ -5,9 +5,8 @@ import com.george_vi.electroenergetics.content.railway_electrification.catenary.
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.SendCatenaryPacket;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireData;
-import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
@@ -40,7 +39,7 @@ public class LoadedWireManager {
         List<InWorldNode> newNodes = new ArrayList<>(sd.getNodes().stream().filter(n -> newChunks.contains(new ChunkPos(n.sourcePos()))).toList());
 
         for (InWorldNode node : newNodes) {
-            for (NodeConnection connection : sd.getConnections(node)) {
+            for (InWorldNodeConnection connection : sd.getConnections(node)) {
                 if (chunks.contains(new ChunkPos(connection.node2().sourcePos())))
                     continue;
                 CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection, sd.getConnectionData(connection)));
@@ -64,9 +63,9 @@ public class LoadedWireManager {
             chunks.remove(chunkPos);
 
         List<InWorldNode> nodesToRemove = new ArrayList<>(sd.getNodes().stream().filter(n -> chunksToRemove.contains(new ChunkPos(n.sourcePos()))).toList());
-        List<NodeConnection> connectionsToRemove = new ArrayList<>();
+        List<InWorldNodeConnection> connectionsToRemove = new ArrayList<>();
         for (InWorldNode node : nodesToRemove) {
-            for (NodeConnection connection : sd.getConnections(node)) {
+            for (InWorldNodeConnection connection : sd.getConnections(node)) {
                 if (chunks.contains(new ChunkPos(connection.node2().sourcePos())))
                     continue;
                 connectionsToRemove.add(connection);
@@ -81,7 +80,7 @@ public class LoadedWireManager {
         CatnipServices.NETWORK.sendToClient(player, new ClearCatenaryPacket(catenaryToRemove, false));
     }
 
-    public static void handleWireRemoved(NodeConnection connection, ServerLevel level) {
+    public static void handleWireRemoved(InWorldNodeConnection connection, ServerLevel level) {
         ChunkPos chunk1 = new ChunkPos(connection.node1().sourcePos());
         ChunkPos chunk2 = new ChunkPos(connection.node2().sourcePos());
         for (ServerPlayer player : level.getPlayers(p -> true)) {
@@ -93,7 +92,7 @@ public class LoadedWireManager {
         }
     }
 
-    public static void handleWireAdded(NodeConnection connection, WireData data, ServerLevel level) {
+    public static void handleWireAdded(InWorldNodeConnection connection, WireData data, ServerLevel level) {
         ChunkPos chunk1 = new ChunkPos(connection.node1().sourcePos());
         ChunkPos chunk2 = new ChunkPos(connection.node2().sourcePos());
         for (ServerPlayer player : level.getPlayers(p -> true)) {

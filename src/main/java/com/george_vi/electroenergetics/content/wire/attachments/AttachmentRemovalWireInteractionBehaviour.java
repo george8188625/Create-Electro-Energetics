@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.WireData;
@@ -30,7 +30,7 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
             point = point.reverse();
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        WireData data = sd.getConnectionData(new NodeConnection(point.node1(), point.node2()));
+        WireData data = sd.getConnectionData(new InWorldNodeConnection(point.node1(), point.node2()));
         List<Pair<Float, WireAttachment>> attachments = data.attachments();
         for (int i = 0; i < attachments.size(); i++) {
             Pair<Float, WireAttachment> attachment = attachments.get(i);
@@ -44,7 +44,7 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
                 for (ItemStack drop : attachment.getSecond().getDrops(level))
                     Containers.dropItemStack(level, pos.x, pos.y, pos.z, drop);
                 attachments.remove(i);
-                sd.setConnectionData(new NodeConnection(point.node1(), point.node2()), new WireData(data.wireType(), data.temperature(), attachments));
+                sd.setConnectionData(new InWorldNodeConnection(point.node1(), point.node2()), new WireData(data.wireType(), data.temperature(), attachments));
                 return;
             }
         }
@@ -59,7 +59,7 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
     public int getWireDisplayColor(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
         if (point == null)
             return 0;
-        WireData data = WireRenderer.getConnectionData(new NodeConnection(point.node1(), point.node2()));
+        WireData data = WireRenderer.getConnectionData(new InWorldNodeConnection(point.node1(), point.node2()));
         if (data == null)
             return 0x9ede73;
 

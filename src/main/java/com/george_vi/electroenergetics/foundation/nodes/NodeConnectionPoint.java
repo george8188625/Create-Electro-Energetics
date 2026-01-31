@@ -26,7 +26,7 @@ public record NodeConnectionPoint(InWorldNode node1, InWorldNode node2, float po
         return new NodeConnectionPoint(node2, node1, 1.0f - point);
     }
 
-    public NodeConnection connection () {
-        return new NodeConnection(node1, node2);
+    public InWorldNodeConnection connection () {
+        return new InWorldNodeConnection(node1, node2);
     }
 }

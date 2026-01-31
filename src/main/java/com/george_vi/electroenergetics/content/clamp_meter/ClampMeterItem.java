@@ -6,7 +6,7 @@ import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePack
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.WireData;
@@ -76,9 +76,9 @@ public class ClampMeterItem extends Item {
             }
 
             double voltage = NodeVoltageHolder.getVoltageBetween(point.node1(), point.node2());
-            Pair<NodeConnection, WireData> wire = null;
-            for (Pair<NodeConnection, WireData> connection : WireRenderer.getAllConnections()) {
-                if (connection.getFirst().equals(new NodeConnection(point.node1(), point.node2()))) {
+            Pair<InWorldNodeConnection, WireData> wire = null;
+            for (Pair<InWorldNodeConnection, WireData> connection : WireRenderer.getAllConnections()) {
+                if (connection.getFirst().equals(new InWorldNodeConnection(point.node1(), point.node2()))) {
                     wire = connection;
                     break;
                 }
@@ -115,7 +115,7 @@ public class ClampMeterItem extends Item {
         if (point == null || Math.abs(amperage) < 1e-2d)
             return;
         Level level = Minecraft.getInstance().level;
-        WireData wireData = WireRenderer.getConnectionData(new NodeConnection(point.node1(), point.node2()));
+        WireData wireData = WireRenderer.getConnectionData(new InWorldNodeConnection(point.node1(), point.node2()));
 
         Vec3 pos1 = point.node1().getPosition(level);
         Vec3 pos2 = point.node2().getPosition(level);

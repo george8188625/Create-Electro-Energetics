@@ -43,7 +43,7 @@ public abstract class SimulatedDevice<T> {
     public void postTick(BlockPos pos, Level level, SimulationResults results, T extraData) {}
 
     /**
-     * Reads the data for this device from an nbt format.
+     * Reads the data for this device from an NBT format.
      * @param tag the serialized data
      * @return the data holder object for this device
      */
@@ -51,12 +51,15 @@ public abstract class SimulatedDevice<T> {
 
 
     /**
-     * Writes the data for this device into an nbt format.
+     * Writes the data for this device into an NBT format.
      * @param extraData the data holder object for this device
      * @return the serialized data
      */
     public abstract CompoundTag write(T extraData);
 
+    /**
+     * Shows smoking particles around the specified pos.
+     */
     protected void showOverheatingParticles(Level level, BlockPos pos) {
         if (!level.isLoaded(pos))
             return;

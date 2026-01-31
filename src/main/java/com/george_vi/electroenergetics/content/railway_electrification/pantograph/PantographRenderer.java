@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 
 import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
@@ -50,27 +49,33 @@ public class PantographRenderer extends SmartBlockEntityRenderer<PantographBlock
             double armHingePosY = Mth.cos(lowerArmRadians) * 1.5;
             double armHingePosX = Mth.sin(lowerArmRadians) * 1.5;
 
+
+            float b = (float) (-0.4f - Math.abs(armHingePosX));
+            float a = Mth.sqrt(-b * b + 2f * 2f);
+
+
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARMS_DOUBLE, state)
                     .center().rotateYDegrees(yRot).uncenter()
                     .translate(0, 0.375, 0.5)
                     .translate(0, armHingePosY, armHingePosX)
-                    .rotateXDegrees(83 - extensionState * rotationFactor * 0.8f)
+                    .rotateX((float) Mth.atan2(a, b) - Mth.HALF_PI)
                     .color(color)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_SURFACE_DOUBLE, state)
                     .center().rotateYDegrees(yRot).uncenter()
-                    .translate(0, 0.375, 1)
-                    .translate(0, Mth.cos((-75 + extensionState * 30) * Mth.DEG_TO_RAD) * 1.5 + Mth.cos((89 - extensionState * 30) * Mth.DEG_TO_RAD) * 1.5, 0)
+                    .translate(0, 0.5625 + a + armHingePosY, 1)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
+            float springHingePosY = Mth.cos(lowerArmRadians + 0.5f) * 0.425f;
+            float springHingePosX = Mth.sin(lowerArmRadians + 0.5f) * 0.425f;
+
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_SPRINGS_DOUBLE, state)
                     .center().rotateYDegrees(yRot).uncenter()
-                    .translate(0, 0.6, 0.6)
-                    .translate(0, armHingePosY * 0.2f, armHingePosX * 0.3f)
-                    .scaleZ((float) (1.0 - (0.7f + armHingePosX * 0.3f)) * 1.4f)
+                    .translate(0, springHingePosY + 0.375, springHingePosX + 0.5f)
+                    .scaleZ((-springHingePosX + 0.5f) * (16/13f))
                     .rotateXDegrees(0)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));

@@ -1,4 +1,4 @@
-// 1.21.1	2026-01-26T01:17:09.084840372	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-01-31T21:27:18.30336779	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -46,8 +46,8 @@ d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tr
 600c5f36375220f10093b0281d61f9d813217cec assets/electroenergetics/blockstates/triple_connector.json
 1890500dc4c769a55aeb82cabdc670382dddad47 assets/electroenergetics/blockstates/voltage_regulator.json
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
-e2e2765fbfb224cad66e6f58538fc5a6a3d72ca4 assets/electroenergetics/lang/en_ud.json
-b23d5573b6370c8fe665b80a5d70f613daf96eb8 assets/electroenergetics/lang/en_us.json
+1a3a59f823fee56427d2922c80fd5e263634c6b4 assets/electroenergetics/lang/en_ud.json
+e90a519b82564a7857703b8b11401bb4beedc178 assets/electroenergetics/lang/en_us.json
 765c328111edefba08ab581cf90002ac3163c985 assets/electroenergetics/models/block/creative_battery.json
 41220aad614f77bd1e09d645e147029acb992cf5 assets/electroenergetics/models/block/creative_battery_ac.json
 f2a0a8c7269e5b0a9318f61027d189a0c74da680 assets/electroenergetics/models/block/magnet.json

@@ -9,8 +9,9 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.List;
+import java.util.Objects;
 
-public record WireData(WireType wireType, float temperature, List<Pair<Float, WireAttachment>> attachments) {
+public final class WireData {
     public static StreamCodec<ByteBuf, WireData> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public WireData decode(ByteBuf buffer) {
@@ -27,8 +28,53 @@ public record WireData(WireType wireType, float temperature, List<Pair<Float, Wi
             CatnipStreamCodecBuilders.list(Pair.streamCodec(ByteBufCodecs.FLOAT, WireAttachment.STREAM_CODEC)).encode(buffer, value.attachments());
         }
     };
+    private final WireType wireType;
+    public float temperature;
+    private final List<Pair<Float, WireAttachment>> attachments;
+
+    public WireData(WireType wireType, float temperature, List<Pair<Float, WireAttachment>> attachments) {
+        this.wireType = wireType;
+        this.temperature = temperature;
+        this.attachments = attachments;
+    }
 
     public float getSag() {
         return wireType.getSag();
     }
+
+    public WireType wireType() {
+        return wireType;
+    }
+
+    public float temperature() {
+        return temperature;
+    }
+
+    public List<Pair<Float, WireAttachment>> attachments() {
+        return attachments;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (WireData) obj;
+        return Objects.equals(this.wireType, that.wireType) &&
+                Float.floatToIntBits(this.temperature) == Float.floatToIntBits(that.temperature) &&
+                Objects.equals(this.attachments, that.attachments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(wireType, temperature, attachments);
+    }
+
+    @Override
+    public String toString() {
+        return "WireData[" +
+                "wireType=" + wireType + ", " +
+                "temperature=" + temperature + ", " +
+                "attachments=" + attachments + ']';
+    }
+
 }

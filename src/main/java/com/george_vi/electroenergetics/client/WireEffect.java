@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.client;
 
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
 import dev.engine_room.flywheel.api.visual.Effect;
 import dev.engine_room.flywheel.api.visual.EffectVisual;
@@ -11,12 +11,12 @@ import net.minecraft.world.level.LevelAccessor;
 
 public class WireEffect implements Effect {
     private final LevelAccessor level;
-    private NodeConnection connection;
+    private InWorldNodeConnection connection;
     private CatenaryConnection catenaryConnection;
     private final WireType wireType;
     private final boolean catenary;
 
-    public WireEffect(LevelAccessor level, NodeConnection connection, WireType wireType) {
+    public WireEffect(LevelAccessor level, InWorldNodeConnection connection, WireType wireType) {
         this.level = level;
         this.connection = connection;
         this.wireType = wireType;

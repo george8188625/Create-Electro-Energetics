@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
-import com.george_vi.electroenergetics.simulation.simulator.SimulatorProfiler;
+import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

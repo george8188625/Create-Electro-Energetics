@@ -72,7 +72,7 @@ public class WireSpoolItem extends Item {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
             InWorldNode originalNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
 
-            if ((hoveredNode == null || originalNode == null) ||
+            if ((hoveredNode == null || originalNode == null || !sd.getNodes().contains(originalNode)) ||
                     hoveredNode.equals(originalNode) ||
                     (hoveredNode.sourcePos().equals(originalNode.sourcePos()) && !db.canSelfConnect(level, pos, state, hoveredNode.id(), originalNode.id())) ||
                     (sd.isConnected(hoveredNode, originalNode)) ||

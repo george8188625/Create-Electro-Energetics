@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.simulation.simulator;
+package com.george_vi.electroenergetics.simulation.util;
 
 import net.neoforged.fml.loading.FMLEnvironment;
 

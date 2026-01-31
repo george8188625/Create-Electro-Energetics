@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.wire.interaction;
 
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.client.WireRenderer;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.WireData;
@@ -55,7 +55,7 @@ public abstract class WireInteractionBehaviour {
             point = point.reverse();
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        WireData data = sd.getConnectionData(new NodeConnection(point.node1(), point.node2()));
+        WireData data = sd.getConnectionData(new InWorldNodeConnection(point.node1(), point.node2()));
         for (Pair<Float, WireAttachment> attachment : data.attachments()) {
             if (Math.abs(point.point() - attachment.getFirst()) * Math.sqrt(point.node1().sourcePos().distSqr(point.node2().sourcePos())) < attachment.getSecond().getWidth() / 2 + 0.25)
                 return;
@@ -63,7 +63,7 @@ public abstract class WireInteractionBehaviour {
 
         List<Pair<Float, WireAttachment>> attachments = new ArrayList<>(data.attachments());
         attachments.add(Pair.of(point.point(), toAttach));
-        sd.setConnectionData(new NodeConnection(point.node1(), point.node2()), new WireData(data.wireType(), data.temperature(), attachments));
+        sd.setConnectionData(new InWorldNodeConnection(point.node1(), point.node2()), new WireData(data.wireType(), data.temperature(), attachments));
 
         AllSoundEvents.WRENCH_ROTATE.playOnServer(level, BlockPos.containing(point.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), data.wireType().getSag())));
 
@@ -75,7 +75,7 @@ public abstract class WireInteractionBehaviour {
         NodeConnectionPoint point = WireInteractionHandler.targetedPoint;
         if (point == null)
             return 0;
-        WireData data = WireRenderer.getConnectionData(new NodeConnection(point.node1(), point.node2()));
+        WireData data = WireRenderer.getConnectionData(new InWorldNodeConnection(point.node1(), point.node2()));
         if (data == null)
             return 0x9ede73;
 

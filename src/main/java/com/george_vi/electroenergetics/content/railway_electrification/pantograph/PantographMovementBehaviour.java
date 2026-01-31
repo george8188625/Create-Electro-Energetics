@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.content.railway_electrification.catenary.
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
@@ -23,6 +24,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,8 +42,6 @@ public class PantographMovementBehaviour implements MovementBehaviour {
         float currentExtensionState = context.data.getFloat("CurrentExtensionState");
         float prevExtensionState = currentExtensionState;
         currentExtensionState = currentExtensionState < targetExtensionState ? Math.min(targetExtensionState, currentExtensionState + 0.05f) : Math.max(targetExtensionState, currentExtensionState - 0.05f);
-        if (Math.abs(currentExtensionState - targetExtensionState) < 0.01)
-             currentExtensionState = targetExtensionState;
 
         boolean isDouble = context.state.getValue(PantographBlock.DOUBLE);
 
@@ -54,10 +55,9 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                 context.data.putBoolean("Forward", pantographState.facingForward);
         }
         if (context.disabled) {
-            if (!prevDisabled) {
+            if (!prevDisabled)
                 ((IPantographList) e.getCarriage()).changePantographState(context.localPos, false);
-                targetExtensionState = context.state.getValue(PantographBlock.DOUBLE) ? 0.3f : 0f;
-            }
+            targetExtensionState = 0f;
         } else {
             if (prevDisabled) {
                 ((IPantographList) e.getCarriage()).changePantographState(context.localPos, true);
@@ -65,13 +65,19 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             }
         }
 
+        if (context.world.isClientSide && currentExtensionState == targetExtensionState && prevExtensionState != currentExtensionState)
+            context.world.playLocalSound(context.position.x, context.position.y, context.position.z, SoundEvents.CHAIN_HIT, SoundSource.NEUTRAL, 0.1f, 1f, false);
+
 
 
         // Look for the connection point, and try to adjust the pantographs extension state to fit that point
 
         if (context.world.isClientSide && !context.disabled) {
             double pantographX = context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.5 : -0.5;
-            Vec3 pantographPos = new Vec3(context.state.getValue(FACING).getAxis() == Direction.Axis.X ? pantographX : 0, (isDouble ? 1.75f : 1.625f), context.state.getValue(FACING).getAxis() == Direction.Axis.Z ? pantographX : 0);
+            if (!isDouble)
+                pantographX /= 2;
+            float halfPantoReach = isDouble ? 1.625f : 1.625f;
+            Vec3 pantographPos = new Vec3(context.state.getValue(FACING).getAxis() == Direction.Axis.X ? pantographX : 0, halfPantoReach, context.state.getValue(FACING).getAxis() == Direction.Axis.Z ? pantographX : 0);
             pantographPos = context.rotation.apply(pantographPos);
             pantographPos = pantographPos.add(context.position);
 
@@ -95,8 +101,9 @@ public class PantographMovementBehaviour implements MovementBehaviour {
 
                 Vec3 distance = pantographPos.subtract(closest);
                 context.rotation.apply(distance).multiply(0, 0, 0);
-//                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, pantographPos.x, pantographPos.y, pantographPos.z, 0, 0, 0);
-                if (Math.abs(distance.z()) < 1.5 && Math.abs(distance.x()) < 0.5 && Math.abs(distance.y()) < (isDouble ? 1.75f : 1.625f)) {
+                float xTol = (float) ((distance.y + halfPantoReach) * 0.2f + 0.125f);
+//                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, closest.x, closest.y, closest.z, 0, 0, 0);
+                if (Math.abs(distance.z) < 1.5 && Math.abs(distance.x) < xTol && Math.abs(distance.y) < halfPantoReach) {
                     connectionPoint = closest;
                     break;
                 }
@@ -104,7 +111,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
 
             if (connectionPoint != null) {
                 float lo = 0;
-                float hi = 2.2f;
+                float hi = 2.7f;
                 for (int i = 0; i < 20; i++) {
                     float m1 = lo + (hi - lo) / 3;
                     float m2 = hi - (hi - lo) / 3;
@@ -113,10 +120,36 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                     else
                         lo = m1;
                 }
-                targetExtensionState = (lo + hi) / 2;
-                currentExtensionState = targetExtensionState;
+//                context.world.addParticle(ParticleTypes.SCULK_CHARGE_POP, connectionPoint.x, connectionPoint.y, connectionPoint.z, 0, 0, 0);
+                float newExtensionState = (lo + hi) / 2;
+                if (Math.abs(currentExtensionState - newExtensionState) < 0.075 && newExtensionState != targetExtensionState)
+                    currentExtensionState = newExtensionState;
+
+                targetExtensionState = newExtensionState;
             }
 
+            if (CEEConfigs.client().debugPantographRange.get() && (AnimationTickHolder.getTicks() % 3) == 0) {
+                Vec3 cp = getConnectorPos(currentExtensionState, context);
+                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, cp.x, cp.y, cp.z, 0, 0, 0);
+
+                Vec3 pp = new Vec3(context.state.getValue(FACING).getAxis() == Direction.Axis.X ? pantographX : 0, halfPantoReach, context.state.getValue(FACING).getAxis() == Direction.Axis.Z ? pantographX : 0);
+                for (float y = -halfPantoReach; y <= halfPantoReach; y += 2 / 16f) {
+                    float v = (y + halfPantoReach) * 0.1f + 0.125f;
+                    v = v - (v % (1 / 16f));
+                    for (float x = -v; x <= v; x += 2 / 16f) {
+                        for (float z = -1.5f; z <= 1.5f; z += 2 / 16f) {
+                            boolean edgeX = x == -v || x == v;
+                            boolean edgeY = y == -halfPantoReach || y == halfPantoReach;
+                            boolean edgeZ = z == -1.5f || z == 1.5f;
+                            if ((edgeX && edgeY && !edgeZ) || (edgeX && !edgeY && edgeZ) || (!edgeX && edgeY && edgeZ)) {
+                                Vec3 pos = context.rotation.apply(pp.add(x, y - 0.25f, z)).add(context.position);
+                                context.world.addParticle(ParticleTypes.DOLPHIN, pos.x, pos.y, pos.z, 0, 0, 0);
+                            }
+
+                        }
+                    }
+                }
+            }
         }
 
         context.data.putBoolean("Disabled", context.disabled);
@@ -132,9 +165,10 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             double armHingePosY = Mth.cos(lowerArmRadians) * 1.5;
             double armHingePosX = Mth.sin(lowerArmRadians) * 1.5;
 
-            float upperArmRadians = (89 - extensionState * 30) * Mth.DEG_TO_RAD;
-            Vec3 connectorPlatePos = new Vec3(0, armHingePosY, armHingePosX)
-                    .add(0, Mth.cos(upperArmRadians) * 1.5 + 0.3f, Mth.sin(upperArmRadians) * 1.9);
+            float b = (float) (-0.4f - Math.abs(armHingePosX));
+            float a = Mth.sqrt(-b * b + 2f * 2f);
+
+            Vec3 connectorPlatePos = new Vec3(context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.5 : -0.5, 0.1875 + a + armHingePosY, 0);
             connectorPlatePos = context.rotation.apply(connectorPlatePos);
             connectorPlatePos = connectorPlatePos.add(context.position);
             return connectorPlatePos;
@@ -145,7 +179,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
         double armHingePosX = Mth.sin(lowerArmRadians) * 1.875;
 
         float upperArmRadians = (89 - extensionState * 50) * Mth.DEG_TO_RAD;
-        Vec3 connectorPlatePos = new Vec3(0, armHingePosY, armHingePosX).add(0, Mth.cos(upperArmRadians) * 1.9, Mth.sin(upperArmRadians) * 1.9);
+        Vec3 connectorPlatePos = new Vec3(context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.25 : -0.25, armHingePosY, armHingePosX).add(0, Mth.cos(upperArmRadians) * 1.9, Mth.sin(upperArmRadians) * 1.9);
         connectorPlatePos = context.rotation.apply(connectorPlatePos);
         connectorPlatePos = connectorPlatePos.add(context.position);
         return connectorPlatePos;
@@ -198,12 +232,15 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             double armHingePosY = Mth.cos(lowerArmRadians) * 1.5;
             double armHingePosX = Mth.sin(lowerArmRadians) * 1.5;
 
+            float b = (float) (-0.4f - Math.abs(armHingePosX));
+            float a = Mth.sqrt(-b * b + 2f * 2f);
+
+
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_UPPER_ARMS_DOUBLE, state)
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
-                    .translate(0, 0.375, 0.5)
-                    .translate(0, armHingePosY, armHingePosX)
-                    .rotateXDegrees(83 - extensionState * rotationFactor * 0.8f)
+                    .translate(0, armHingePosY + 0.375, armHingePosX + 0.5)
+                    .rotateX((float) Mth.atan2(a, b) - Mth.HALF_PI)
                     .color(color)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
@@ -212,18 +249,19 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_CONNECTING_SURFACE_DOUBLE, state)
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
-                    .translate(0, 0.375, 1)
-                    .translate(0, Mth.cos((-75 + extensionState * 30) * Mth.DEG_TO_RAD) * 1.5 + Mth.cos((89 - extensionState * 30) * Mth.DEG_TO_RAD) * 1.5, 0)
+                    .translate(0, 0.5625 + a + armHingePosY, 1)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
+            float springHingePosY = Mth.cos(lowerArmRadians + 0.5f) * 0.425f;
+            float springHingePosX = Mth.sin(lowerArmRadians + 0.5f) * 0.425f;
+
             CachedBuffers.partial(CEEPartialModels.PANTOGRAPH_SPRINGS_DOUBLE, state)
                     .transform(matrices.getModel())
                     .center().rotateYDegrees(yRot).uncenter()
-                    .translate(0, 0.6, 0.6)
-                    .translate(0, armHingePosY * 0.2f, armHingePosX * 0.3f)
-                    .scaleZ((float) (1.0 - (0.7f + armHingePosX * 0.3f)) * 1.4f)
+                    .translate(0, springHingePosY + 0.375, springHingePosX + 0.5f)
+                    .scaleZ((-springHingePosX + 0.5f) * (16/13f))
                     .rotateXDegrees(0)
                     .light(light)
                     .useLevelLight(context.world, matrices.getWorld())

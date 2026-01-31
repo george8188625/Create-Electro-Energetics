@@ -223,6 +223,7 @@
   "electroenergetics.subtitle.buzzer": "Buzzer Buzzes",
   "electroenergetics.subtitle.electric_train": "Electric Train Sounds",
   "electroenergetics.subtitle.hum": "Hum",
+  "electroenergetics.subtitle.train_relay": "Train Relay",
   "electroenergetics.tooltip.energy_meter.energy": "Total Energy : %1$s",
   "electroenergetics.tooltip.energy_meter.owner": "Owner : %1$s",
   "electroenergetics.tooltip.max_current": "Max Current:",

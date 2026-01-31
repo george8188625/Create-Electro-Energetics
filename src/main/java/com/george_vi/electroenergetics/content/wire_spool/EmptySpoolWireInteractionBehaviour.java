@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.wire_spool;
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.WireData;
@@ -22,7 +22,7 @@ public class EmptySpoolWireInteractionBehaviour extends WireInteractionBehaviour
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
 
-        WireData data = sd.removeConnection(new NodeConnection(point.node1(), point.node2()));
+        WireData data = sd.removeConnection(new InWorldNodeConnection(point.node1(), point.node2()));
 
         AllSoundEvents.WRENCH_REMOVE.playOnServer(level, BlockPos.containing(point.posAt(point.node1().sourcePos().getCenter(), point.node2().sourcePos().getCenter(), data.wireType().getSag())));
 

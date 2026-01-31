@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
-import com.george_vi.electroenergetics.simulation.simulator.DirectionalNodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 
 public class SimulationResults {

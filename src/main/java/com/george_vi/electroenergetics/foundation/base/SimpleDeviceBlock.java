@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.foundation.base;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.*;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
@@ -55,7 +55,7 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock, IW
         if (level instanceof ServerLevel sl && player.isCreative()) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
             for (InWorldNode node : sd.getNodesAt(pos))
-                for (NodeConnection connection : sd.getConnections(node))
+                for (InWorldNodeConnection connection : sd.getConnections(node))
                     sd.removeConnection(connection);
         }
         return super.playerWillDestroy(level, pos, state, player);
@@ -68,7 +68,7 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock, IW
         if (context.getLevel() instanceof ServerLevel sl && player != null) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
             for (InWorldNode node : sd.getNodesAt(context.getClickedPos()))
-                for (NodeConnection connection : sd.getConnections(node)) {
+                for (InWorldNodeConnection connection : sd.getConnections(node)) {
                     WireData wireData = sd.removeConnection(connection);
                     boolean found = false;
                     for (int i = 0; i < player.getInventory().items.size(); i++) {

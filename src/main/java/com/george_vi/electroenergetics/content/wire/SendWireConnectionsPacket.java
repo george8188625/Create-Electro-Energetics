@@ -2,10 +2,10 @@ package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.client.WireRenderer;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireData;
-import com.george_vi.electroenergetics.simulation.simulator.DirectionalInWorldNodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.DirectionalInWorldNodeConnection;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.data.Pair;
@@ -25,14 +25,14 @@ public record SendWireConnectionsPacket(List<Pair<DirectionalInWorldNodeConnecti
         return new SendWireConnectionsPacket(List.of(Pair.of(new DirectionalInWorldNodeConnection(node1, node2), data)));
     }
 
-    public static SendWireConnectionsPacket connectWire(NodeConnection connection, WireData data) {
+    public static SendWireConnectionsPacket connectWire(InWorldNodeConnection connection, WireData data) {
         return connectWire(connection.node1(), connection.node2(), data);
     }
 
     @Override
     public void handle(LocalPlayer player) {
         for (Pair<DirectionalInWorldNodeConnection, WireData> connection : connections())
-            WireRenderer.addConnection(new NodeConnection(connection.getFirst().node1(), connection.getFirst().node2()), connection.getSecond());
+            WireRenderer.addConnection(new InWorldNodeConnection(connection.getFirst().node1(), connection.getFirst().node2()), connection.getSecond());
     }
 
     @Override

@@ -3,20 +3,12 @@ package com.george_vi.electroenergetics.simulation;
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.foundation.nodes.NodeConnection;
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import net.createmod.catnip.data.Pair;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class VoltageSync {
 
@@ -27,7 +19,7 @@ public class VoltageSync {
                 ItemStack usedStack = player.getItemInHand(player.getUsedItemHand());
                 if (CEEItems.CLAMP_METER.isIn(usedStack)) {
                     if (usedStack.has(CEEDataComponents.NODE_CONNECTION)) {
-                        NodeConnection connection = usedStack.getOrDefault(CEEDataComponents.NODE_CONNECTION, new NodeConnection(BlockPos.ZERO, 0, 0));
+                        InWorldNodeConnection connection = usedStack.getOrDefault(CEEDataComponents.NODE_CONNECTION, new InWorldNodeConnection(BlockPos.ZERO, 0, 0));
                         SendVoltageDataPacket packet = new SendVoltageDataPacket();
                         packet.nodes = new InWorldNode[2];
                         packet.voltages = new double[2 << results.microTickBits];
