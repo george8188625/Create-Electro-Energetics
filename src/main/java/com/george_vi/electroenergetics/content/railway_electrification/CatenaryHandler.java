@@ -210,6 +210,8 @@ public class CatenaryHandler {
 
             // Sparks
             for (TrainPantographEntry pantograph : trainData.pantographs) {
+                if (pantograph.node == null || trainNode == null)
+                    continue;
                 double current = Math.abs(event.results.getCurrentThrough(trainNode, pantograph.node));
                 Vec3 sparkPos = pantographSparkPosition(event.level, train, pantograph, current);
                 if (sparkPos != null)

@@ -326,7 +326,6 @@ public class WireConnectionManager {
         if (CEEConfigs.server().wiresBreak.get()) {
             InWorldNodeConnection longestWireToBreak = null;
             WireType longestWireTypeToBreak = null;
-            boolean increase = false;
             for (Map.Entry<InWorldNodeConnection, WireType> e : originalConnections.entrySet()) {
                 InWorldNodeConnection connection = e.getKey();
                 WireType wireType = e.getValue();
@@ -378,7 +377,7 @@ public class WireConnectionManager {
 
             }
             if (longestWireToBreak != null && sd.level.random.nextFloat() > 0.96f) {
-                WireType replaceWith = longestWireTypeToBreak.replaceOverheatedWith();
+                WireType replaceWith = longestWireTypeToBreak.overheatedReplacement();
                 if (replaceWith == null) {
                     sd.removeConnection(longestWireToBreak);
                     CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),

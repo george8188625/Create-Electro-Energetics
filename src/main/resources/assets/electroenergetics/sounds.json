@@ -80,5 +80,102 @@
       }
     ],
     "subtitle": "electroenergetics.subtitle.buzzer"
+  },
+
+  "train/background/wind_rise": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/background/wind_rise"
+      }
+    ]
+  },
+  "train/background/wind_static": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/background/wind_static"
+      }
+    ]
+  },
+  "train/gto/async": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/async"
+      }
+    ]
+  },
+  "train/gto/async_rise": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/async_rise"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/gto/p1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/p1"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/gto/p3": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/p3"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/gto/p5": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/p5"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/gto/p7": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/p7"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/gto/p9": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/p9"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/gto/p11": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/p11"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/gto/p15": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/p15"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
   }
 }

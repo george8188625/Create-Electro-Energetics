@@ -15,7 +15,7 @@ public class WireType {
     final Supplier<Item> spoolItem;
     final double insulationResistance;
     final DoubleSupplier maxInsulationVoltage;
-    final Supplier<WireType> onOverheated;
+    final Supplier<WireType> overheatedReplacement;
 
     /**
      * This is the temperature at which the wire burns. It is in abstract units.
@@ -36,14 +36,14 @@ public class WireType {
     final float sag;
     final IntSupplier maxLength;
 
-    public WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage, Supplier<WireType> onOverheated, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength) {
+    public WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage, Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength) {
         this.resistance = resistance;
         this.model = model;
         this.droppedItem = droppedItem;
         this.spoolItem = spoolItem;
         this.insulationResistance = insulationResistance;
         this.maxInsulationVoltage = maxInsulationVoltage;
-        this.onOverheated = onOverheated;
+        this.overheatedReplacement = overheatedReplacement;
         this.maxTemperature = maxTemperature;
         this.sag = sag;
         this.maxLength = maxLength;
@@ -61,8 +61,8 @@ public class WireType {
         return maxTemperature.getAsDouble();
     }
 
-    public WireType replaceOverheatedWith() {
-        return onOverheated.get();
+    public WireType overheatedReplacement() {
+        return overheatedReplacement.get();
     }
 
     public double getResistance() {

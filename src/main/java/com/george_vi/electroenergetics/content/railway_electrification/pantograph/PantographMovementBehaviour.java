@@ -77,12 +77,15 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             if (!isDouble)
                 pantographX /= 2;
             float halfPantoReach = isDouble ? 1.625f : 1.625f;
-            Vec3 pantographPos = new Vec3(context.state.getValue(FACING).getAxis() == Direction.Axis.X ? pantographX : 0, halfPantoReach, context.state.getValue(FACING).getAxis() == Direction.Axis.Z ? pantographX : 0);
+            Direction.Axis axis = context.state.getValue(FACING).getAxis();
+            Vec3 pantographPos = new Vec3(axis == Direction.Axis.X ? pantographX : 0, halfPantoReach, axis == Direction.Axis.Z ? pantographX : 0);
             pantographPos = context.rotation.apply(pantographPos);
             pantographPos = pantographPos.add(context.position);
 
             List<CatenaryConnection> allCatenaryConnections = WireRenderer.CATENARY;
             Vec3 connectionPoint = null;
+            if (CEEConfigs.client().debugPantographRange.get())
+                context.world.addParticle(ParticleTypes.SCRAPE, pantographPos.x, pantographPos.y, pantographPos.z, 0, 0, 0);
             for (CatenaryConnection connection : allCatenaryConnections) {
                 Vec3 start = connection.pos1.getBottomCenter();
                 Vec3 end = connection.pos2.getBottomCenter();
@@ -132,7 +135,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                 Vec3 cp = getConnectorPos(currentExtensionState, context);
                 context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, cp.x, cp.y, cp.z, 0, 0, 0);
 
-                Vec3 pp = new Vec3(context.state.getValue(FACING).getAxis() == Direction.Axis.X ? pantographX : 0, halfPantoReach, context.state.getValue(FACING).getAxis() == Direction.Axis.Z ? pantographX : 0);
+                Vec3 pp = new Vec3(axis == Direction.Axis.X ? pantographX : 0, halfPantoReach, axis == Direction.Axis.Z ? pantographX : 0);
                 for (float y = -halfPantoReach; y <= halfPantoReach; y += 2 / 16f) {
                     float v = (y + halfPantoReach) * 0.1f + 0.125f;
                     v = v - (v % (1 / 16f));
@@ -142,7 +145,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                             boolean edgeY = y == -halfPantoReach || y == halfPantoReach;
                             boolean edgeZ = z == -1.5f || z == 1.5f;
                             if ((edgeX && edgeY && !edgeZ) || (edgeX && !edgeY && edgeZ) || (!edgeX && edgeY && edgeZ)) {
-                                Vec3 pos = context.rotation.apply(pp.add(x, y - 0.25f, z)).add(context.position);
+                                Vec3 pos = context.rotation.apply(pp.add(axis == Direction.Axis.X ? x : z, y - 0.25f, axis == Direction.Axis.X ? z : x)).add(context.position);
                                 context.world.addParticle(ParticleTypes.DOLPHIN, pos.x, pos.y, pos.z, 0, 0, 0);
                             }
 
@@ -160,6 +163,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
     }
 
     Vec3 getConnectorPos(float extensionState, MovementContext context) {
+        Direction.Axis axis = context.state.getValue(PantographBlock.FACING).getAxis();
         if (context.state.getValue(PantographBlock.DOUBLE)) {
             float lowerArmRadians = (-90 + extensionState * 27) * Mth.DEG_TO_RAD;
             double armHingePosY = Mth.cos(lowerArmRadians) * 1.5;
@@ -168,7 +172,8 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             float b = (float) (-0.4f - Math.abs(armHingePosX));
             float a = Mth.sqrt(-b * b + 2f * 2f);
 
-            Vec3 connectorPlatePos = new Vec3(context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.5 : -0.5, 0.1875 + a + armHingePosY, 0);
+            double pantographX = context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.5 : -0.5;
+            Vec3 connectorPlatePos = new Vec3(axis == Direction.Axis.X ? pantographX : 0, 0.1875 + a + armHingePosY, axis == Direction.Axis.Z ? pantographX : 0);
             connectorPlatePos = context.rotation.apply(connectorPlatePos);
             connectorPlatePos = connectorPlatePos.add(context.position);
             return connectorPlatePos;
@@ -179,7 +184,8 @@ public class PantographMovementBehaviour implements MovementBehaviour {
         double armHingePosX = Mth.sin(lowerArmRadians) * 1.875;
 
         float upperArmRadians = (89 - extensionState * 50) * Mth.DEG_TO_RAD;
-        Vec3 connectorPlatePos = new Vec3(context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.25 : -0.25, armHingePosY, armHingePosX).add(0, Mth.cos(upperArmRadians) * 1.9, Mth.sin(upperArmRadians) * 1.9);
+        double pantographX = context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.25 : -0.25;
+        Vec3 connectorPlatePos = new Vec3((axis == Direction.Axis.X ? pantographX : 0), armHingePosY, armHingePosX + (axis == Direction.Axis.Z ? pantographX : 0)).add(0, Mth.cos(upperArmRadians) * 1.9, Mth.sin(upperArmRadians) * 1.9);
         connectorPlatePos = context.rotation.apply(connectorPlatePos);
         connectorPlatePos = connectorPlatePos.add(context.position);
         return connectorPlatePos;

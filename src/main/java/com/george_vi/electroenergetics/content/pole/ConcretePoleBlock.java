@@ -138,6 +138,13 @@ public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterl
             }
         }
 
+        if (!bottom && direction == Direction.DOWN &&
+                below.getValue(AXIS) != state.getValue(AXIS))
+                level.setBlock(pos, state.cycle(AXIS), 3);
+        if (!top && direction == Direction.UP &&
+                above.getValue(AXIS) != state.getValue(AXIS))
+            level.setBlock(pos, state.cycle(AXIS), 3);
+
         return state.setValue(BOTTOM, bottom)
                 .setValue(TOP, top);
     }
