@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.railway_electrification.sound_ef
 import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSoundInstance;
 import net.minecraft.client.Minecraft;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -21,9 +22,9 @@ public abstract class ElectricTrainSoundBehaviour {
         // Wind
 
         if (trainSpeed != 0 && (windRiseSoundInstance == null || windRiseSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(windRiseSoundInstance)))
-            Minecraft.getInstance().getSoundManager().play(windRiseSoundInstance = new ElectricTrainSoundInstance(pos, CEESoundEvents.TRAIN_WIND_RISE.get()));
+            windRiseSoundInstance = playSound(pos, CEESoundEvents.TRAIN_WIND_RISE.get());
         if (trainSpeed != 0 && (windSoundInstance == null || windSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(windSoundInstance)))
-            Minecraft.getInstance().getSoundManager().play(windSoundInstance = new ElectricTrainSoundInstance(pos, CEESoundEvents.TRAIN_WIND_STATIC.get()));
+            windSoundInstance = playSound(pos, CEESoundEvents.TRAIN_WIND_STATIC.get());
 
         if (trainSpeed != 0) {
             windSoundInstance.targetVolume = trainSpeed * 3;
@@ -36,4 +37,14 @@ public abstract class ElectricTrainSoundBehaviour {
             windRiseSoundInstance.keepAlive();
         }
     };
+
+    public static ElectricTrainSoundInstance playSound(Vec3 pos, SoundEvent event) {
+        ElectricTrainSoundInstance newInstance = new ElectricTrainSoundInstance(pos, event);
+        // For some reason when you set the volume before playing the sound, it's louder from farther away??
+        newInstance.setVolumeImmediately(3f);
+        Minecraft.getInstance().getSoundManager().play(newInstance);
+        // And then you can turn it down, and it's not gonna be super quiet when it's made louder after some time??
+        newInstance.setVolumeImmediately(0f);
+        return newInstance;
+    }
 }

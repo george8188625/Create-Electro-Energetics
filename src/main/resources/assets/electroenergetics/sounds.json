@@ -30,7 +30,6 @@
     "sounds": [
       {
         "type": "file",
-        "attenuation_distance": 48,
         "name": "electroenergetics:electric_train"
       }
     ],
@@ -40,7 +39,6 @@
     "sounds": [
       {
         "type": "file",
-        "attenuation_distance": 48,
         "name": "electroenergetics:electric_train_background"
       }
     ],

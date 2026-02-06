@@ -18,9 +18,9 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
         trainSpeed *= 1.05f;
 
         if (trainSpeed != 0 && phasing == Phasing.ASYNC && (backgroundSoundInstance == null || backgroundSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(backgroundSoundInstance)))
-            Minecraft.getInstance().getSoundManager().play(backgroundSoundInstance = new ElectricTrainSoundInstance(pos, CEESoundEvents.TRAIN_GTO_ASYNC.get()));
+            backgroundSoundInstance = playSound(pos, CEESoundEvents.TRAIN_GTO_ASYNC.get());
         if (trainSpeed != 0 && (mainSoundInstance == null || mainSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(mainSoundInstance)))
-            Minecraft.getInstance().getSoundManager().play(mainSoundInstance = new ElectricTrainSoundInstance(pos, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get()));
+            mainSoundInstance = playSound(pos, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get());
 
 
         if (trainSpeed != 0) {
@@ -34,7 +34,8 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
                 mainSoundInstance.setVolumeImmediately((trainSpeedNormalized - 0.22f));
             } else {
                 mainSoundInstance.setPitchImmediately(Math.min(2, (trainSpeed * 0.5f) + 0.35f));
-                mainSoundInstance.targetVolume = trainSpeed * 4 + 0.3f;
+                mainSoundInstance.setVolumeImmediately(3f);
+//                mainSoundInstance.targetVolume = trainSpeed * 4 + 0.3f;
             }
             mainSoundInstance.setPos(pos);
             mainSoundInstance.keepAlive();
@@ -43,7 +44,7 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
         if (backgroundSoundInstance != null) {
             float trainSpeedNormalized = trainSpeed / 0.4f;
             backgroundSoundInstance.setPitchImmediately(1f);
-            backgroundSoundInstance.targetVolume = Math.min(trainSpeedNormalized * 5, 1);
+            backgroundSoundInstance.targetVolume = Math.min(trainSpeedNormalized * 5, 3);
             backgroundSoundInstance.setPos(pos);
             backgroundSoundInstance.keepAlive();
             if (phasing != Phasing.ASYNC || trainSpeed == 0) {
@@ -70,7 +71,7 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
         phasing = newPhasing;
         ElectricTrainSoundInstance newInstance = new ElectricTrainSoundInstance(pos, phasing.soundEvent);
         newInstance.setPitchImmediately(mainSoundInstance.getPitch());
-        newInstance.setVolumeImmediately(mainSoundInstance.getVolume());
+        newInstance.setVolumeImmediately(3);
         Minecraft.getInstance().getSoundManager().stop(mainSoundInstance);
         Minecraft.getInstance().getSoundManager().play(mainSoundInstance = newInstance);
 

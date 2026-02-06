@@ -18,7 +18,7 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
         }
 
         if (mainSoundInstance == null || mainSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(mainSoundInstance))
-            Minecraft.getInstance().getSoundManager().play(mainSoundInstance = new ElectricTrainSoundInstance(pos, CEESoundEvents.DC_TRAIN.get()));
+            mainSoundInstance = playSound(pos, CEESoundEvents.DC_TRAIN.get());
 
         int tth = (int) Math.max(Math.floor(trainSpeed > 0.2 ? 8 * trainSpeed + 5 : 32 * trainSpeed), -1);
         if (acceleration < 0)
@@ -36,7 +36,7 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
         mainSoundInstance.setPos(pos);
 
         mainSoundInstance.targetPitch = Math.min(0.56f, trainSpeed) * 1.3f + 0.7f;
-        mainSoundInstance.targetVolume = 2 * (trainSpeed < 0.3 ? (trainSpeed * 3) : (trainSpeed + 0.9f)) * (acceleration > 0 ? 2f : acceleration < 0 ? 0.25f : 0.125f);
+        mainSoundInstance.targetVolume = 4 * (trainSpeed < 0.3 ? (trainSpeed * 3) : (trainSpeed + 0.9f)) * (acceleration > 0 ? 2f : acceleration < 0 ? 0.25f : 0.125f);
 
         mainSoundInstance.keepAlive();
         this.pth = th;
