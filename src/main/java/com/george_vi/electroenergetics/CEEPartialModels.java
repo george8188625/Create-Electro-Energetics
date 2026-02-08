@@ -9,6 +9,7 @@ import java.util.Map;
 public class CEEPartialModels {
     public static final PartialModel WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/wire_segment"));
     public static final PartialModel COPPER_WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/copper_wire_segment"));
+    public static final PartialModel ELECTRUM_WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/electrum_wire_segment"));
     public static final PartialModel CREATIVE_WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/creative_wire_segment"));
     public static final PartialModel IRON_WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/iron_wire_segment"));
     public static final PartialModel IRON_BUS_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/iron_bus_segment"));

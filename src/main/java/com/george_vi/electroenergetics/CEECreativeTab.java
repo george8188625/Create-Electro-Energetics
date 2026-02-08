@@ -1,9 +1,12 @@
 package com.george_vi.electroenergetics;
 
 import com.simibubi.create.AllCreativeModeTabs;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -25,6 +28,8 @@ public class CEECreativeTab {
                         output.accept(CEEItems.WIRE_SPOOL.asStack());
                         output.accept(CEEItems.HEAVILY_INSULATED_WIRE_SPOOL.asStack());
                         output.accept(CEEItems.COPPER_WIRE_SPOOL.asStack());
+                        if (shouldAddElectrum())
+                            output.accept(CEEItems.ELECTRUM_WIRE_SPOOL.asStack());
                         output.accept(CEEItems.IRON_WIRE_SPOOL.asStack());
                         output.accept(CEEItems.IRON_BUS_SPOOL.asStack());
                         output.accept(CEEItems.CREATIVE_WIRE_SPOOL.asStack());
@@ -32,6 +37,8 @@ public class CEECreativeTab {
                         output.accept(CEEItems.INSULATED_WIRE.asStack());
                         output.accept(CEEItems.HEAVILY_INSULATED_WIRE.asStack());
                         output.accept(CEEItems.COPPER_WIRE.asStack());
+                        if (shouldAddElectrum())
+                            output.accept(CEEItems.ELECTRUM_WIRE.asStack());
                         output.accept(CEEItems.IRON_WIRE.asStack());
                         output.accept(CEEItems.IRON_WIRE_STRAND.asStack());
                         output.accept(CEEItems.CLAMP_METER.asStack());
@@ -78,6 +85,12 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.GROUNDING_SIGN.asStack());
                     }))
                     .build());
+
+    private static boolean shouldAddElectrum() {
+        for (Holder<Item> ignored : BuiltInRegistries.ITEM.getTagOrEmpty(CEETags.ELECTRUM_NUGGET))
+            return true;
+        return false;
+    }
 
     public static void register(IEventBus bus) {
         REGISTER.register(bus);

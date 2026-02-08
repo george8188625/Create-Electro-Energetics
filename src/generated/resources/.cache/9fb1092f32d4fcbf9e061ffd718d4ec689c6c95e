@@ -1,4 +1,4 @@
-// 1.21.1	2026-01-26T19:58:07.356617316	Recipes
+// 1.21.1	2026-02-09T00:25:07.451222489	Recipes
 e4558ff2c12de196a56a9f67ffe27050cdfe38f7 data/electroenergetics/advancement/recipes/decorations/stonecutting/electric_shock_sign.json
 1e443110466e17eb3a8f102e9fc77c86fc29380e data/electroenergetics/advancement/recipes/decorations/stonecutting/grounding_sign.json
 e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/recipes/decorations/stonecutting/high_voltage_sign.json
@@ -26,6 +26,8 @@ e554326a037ee2f363bb65d5d889c428f4bf1347 data/electroenergetics/advancement/reci
 3fb30b7a29ad541e48a1f14caeedb366d964052f data/electroenergetics/advancement/recipes/misc/crafting/double_switch.json
 eae9b379924c897b517ffacdbbadfe9946ec99f2 data/electroenergetics/advancement/recipes/misc/crafting/electric_motor.json
 9c262d352b15250e5c9988db81e107253319d034 data/electroenergetics/advancement/recipes/misc/crafting/electric_pump.json
+2d2bd42eaf0870e6f09de36d4e5d64eaaf091fd9 data/electroenergetics/advancement/recipes/misc/crafting/electrum_wire.json
+8ff65ef0c925dc2d4fcc049dcef7a3e670460d62 data/electroenergetics/advancement/recipes/misc/crafting/electrum_wire_spool.json
 1eef5cd2823b9edd369b23725f6bae8af9a8a772 data/electroenergetics/advancement/recipes/misc/crafting/emergency_stop_button.json
 83c57b00bf8e265dd41e7e6eea4d5ad4dbbdfb31 data/electroenergetics/advancement/recipes/misc/crafting/empty_spool.json
 473e9eb48290c4722c6fcd3115ea65118246467e data/electroenergetics/advancement/recipes/misc/crafting/energy_meter.json
@@ -83,6 +85,8 @@ b203cdb11ff84ae71f67fd2ba8b6d61b2b2efe44 data/electroenergetics/recipe/crafting/
 2f3b289f9fdf48379f586ae58aff8150d020ce50 data/electroenergetics/recipe/crafting/double_switch.json
 bda3d4d226b8feb2d8f5fe05d0cb315cd675f6a7 data/electroenergetics/recipe/crafting/electric_motor.json
 3c9e4e6da725fe2429e6b2866551105a01b879dd data/electroenergetics/recipe/crafting/electric_pump.json
+a5c15b1bd6461e0033e685250fbed6c4ea600e29 data/electroenergetics/recipe/crafting/electrum_wire.json
+a441c96c352d8af9b21bd34c9e9896ac299019f6 data/electroenergetics/recipe/crafting/electrum_wire_spool.json
 69db8dfb3b32c0229831adffe1c3ab8aed5fc040 data/electroenergetics/recipe/crafting/emergency_stop_button.json
 baa0fdbb2102c6b209eb385649922df5e01ca610 data/electroenergetics/recipe/crafting/empty_spool.json
 70298a9b34e226a688db864145d73f1dc2c35550 data/electroenergetics/recipe/crafting/energy_meter.json

@@ -2,23 +2,29 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.WireType;
+import com.simibubi.create.AllTags;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CEEWireTypes {
+
     private static final DeferredRegister<WireType> WIRE_TYPES =
             DeferredRegister.create(CEERegistries.WIRE_TYPE, CreateElecrtoEnergetics.ID);
 
     public static final DeferredHolder<WireType, WireType> COPPER = WIRE_TYPES.register("copper", () -> new WireType(
             CEEConfigs.server().resistanceValues.wireResistance::get,
             CEEPartialModels.COPPER_WIRE_SEGMENT,
-            CEEItems.COPPER_WIRE, CEEItems.COPPER_WIRE_SPOOL::get,
+            () -> getFromTag(CEETags.COPPER_WIRE), CEEItems.COPPER_WIRE_SPOOL::get,
             0d,
             () -> 0d, () -> null, () -> 5000,
             1f,
@@ -55,7 +61,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> IRON = WIRE_TYPES.register("iron", () -> new WireType(
             CEEConfigs.server().resistanceValues.ironWireResistance::get,
-            CEEPartialModels.IRON_WIRE_SEGMENT, CEEItems.IRON_WIRE_STRAND,
+            CEEPartialModels.IRON_WIRE_SEGMENT, () -> getFromTag(AllTags.commonItemTag("wires/iron")),
             CEEItems.IRON_WIRE_SPOOL::get,
             0,
             () -> 0d, () -> null, () -> 6000,
@@ -70,6 +76,15 @@ public class CEEWireTypes {
             () -> 0d, () -> null, () -> 10000,
             0f,
             CEEConfigs.server().maxBusWireLength::get));
+
+    public static final DeferredHolder<WireType, WireType> ELECTRUM = WIRE_TYPES.register("electrum", () -> new WireType(
+            CEEConfigs.server().resistanceValues.electrumWireResistance::get,
+            CEEPartialModels.ELECTRUM_WIRE_SEGMENT, () -> getFromTag(CEETags.ELECTRUM_WIRE),
+            CEEItems.ELECTRUM_WIRE_SPOOL::get,
+            0,
+            () -> 0d, () -> null, () -> 3540,
+            1f,
+            CEEConfigs.server().maxWireLength::get));
 
     public static final Map<DyeColor, DeferredHolder<WireType, WireType>> COLORED_WIRES = new HashMap<>();
 
@@ -89,5 +104,12 @@ public class CEEWireTypes {
 
     public static void register(IEventBus bus) {
         WIRE_TYPES.register(bus);
+    }
+
+    private static @NotNull Item getFromTag(TagKey<Item> tag) {
+        var it = BuiltInRegistries.ITEM.getTagOrEmpty(tag).iterator();
+        if (!it.hasNext())
+            return Items.AIR;
+        return it.next().value();
     }
 }

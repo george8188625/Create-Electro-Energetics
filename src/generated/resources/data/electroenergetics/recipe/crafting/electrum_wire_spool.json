@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:nuggets/electrum"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "s": {
+      "item": "electroenergetics:empty_spool"
+    },
+    "w": {
+      "tag": "c:wires/electrum"
+    }
+  },
+  "pattern": [
+    " w ",
+    "wsw",
+    " w "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:electrum_wire_spool"
+  }
+}
