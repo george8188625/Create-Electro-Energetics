@@ -14,6 +14,7 @@ import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.*;
+import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
@@ -37,27 +38,16 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.DoubleSupplier;
 
 public class WireConnectionManager {
     final InfrastructureSavedData sd;
     final Level level;
-    Map<InWorldNodeConnection, WireType> originalConnections = new HashMap<>();
-    Map<InWorldNodeConnection, List<CutWireEntry>> cutConnections = new HashMap<>();
-    // For performance, instead of Couple<AttachedNode>. A single long can hold 2 ints.
-    // these ints are for IDs, OwnerIDs are always 'CEECutWire'
-    // First -> First 4 bytes >> 32
-    // Last -> Last 4 bytes
-    Long2ObjectMap<DoubleSupplier> interWireShorts = new Long2ObjectOpenHashMap<>();
-    Long2ObjectMap<Vec3> shortPositions = new Long2ObjectOpenHashMap<>();
-    Long2DoubleMap shortDistances = new Long2DoubleOpenHashMap();
-    Map<InWorldNodeConnection, AABB> wireBBs = new HashMap<>();
+    Map<InWorldNodeConnection, ConnectionData> connections = new HashMap<>();
+
+    Map<Couple<AttachedNode>, WireShortEntry> wireShorts = new HashMap<>();
+
     Map<Entity, ElectrocutionEntry> electrocutions = new HashMap<>();
-    // Instead of a ChunkPos, which contains two ints: x and z, this is a long, which holds both of them.
-    // First -> X
-    // Second -> Z
-    // I don't know if it's going to have such a great impact on performance, but it should be better.
-    Long2ObjectMap<List<InWorldNodeConnection>> chunks = new Long2ObjectRBTreeMap<>();
+    Long2ObjectMap<List<Pair<InWorldNodeConnection, ConnectionData>>> chunks = new Long2ObjectOpenHashMap<>();
     int nodeID = 0;
 
     static String cutWireString = "CEECutWire";
@@ -72,117 +62,15 @@ public class WireConnectionManager {
 
     public void buildCircuit(CircuitBuilder builder) {
         electrocutions.clear();
-        AtomicInteger electrocutionNodeID = new AtomicInteger();
-        int cutElectrocutionNodeID = 0;
         Map<InWorldNodeConnection, List<CutWireEntry>> electrocutionCuts = new Object2ObjectOpenHashMap<>();
         if (CEEConfigs.server().enableElectrocution.get())
-            for (Entity entity : ((ServerLevel) level).getAllEntities()) {
-                if (!(entity instanceof Mob || entity instanceof Player p))
-                    continue;
-                if (entity instanceof ServerPlayer p && (p.gameMode.getGameModeForPlayer() == GameType.CREATIVE || p.gameMode.getGameModeForPlayer() == GameType.SPECTATOR))
-                    continue;
-                AABB bb1 = entity.getBoundingBox();
-                int xChunkPos = entity.chunkPosition().x;
-                int zChunkPos = entity.chunkPosition().z;
-                List<InWorldNodeConnection> wiresToCheck = new LinkedList<>();
-                List<InWorldNodeConnection> addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos + 1));
-                if (addedWires != null)
-                    wiresToCheck.addAll(addedWires);
-                addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos + 1));
-                if (addedWires != null)
-                    wiresToCheck.addAll(addedWires);
-                addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos + 1));
-                if (addedWires != null)
-                    wiresToCheck.addAll(addedWires);
-                addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos));
-                if (addedWires != null)
-                    wiresToCheck.addAll(addedWires);
-                addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos));
-                if (addedWires != null)
-                    wiresToCheck.addAll(addedWires);
-                addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos));
-                if (addedWires != null)
-                    wiresToCheck.addAll(addedWires);
-                addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos - 1));
-                if (addedWires != null)
-                    wiresToCheck.addAll(addedWires);
-                addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos - 1));
-                if (addedWires != null)
-                    wiresToCheck.addAll(addedWires);
-                addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos - 1));
-                if (addedWires != null)
-                    wiresToCheck.addAll(addedWires);
+            computeElectrocutions(builder, electrocutionCuts);
 
-                if (wiresToCheck.isEmpty())
-                    continue;
-
-                ElectrocutionEntry electrocutionEntry = null;
-                for (InWorldNodeConnection connection : wiresToCheck) {
-
-                    double lastWireVoltage = Math.max(Math.abs(sd.getVoltageAt(connection.node1())), Math.abs(sd.getVoltageAt(connection.node2())));
-                    double unsafeDistance = Mth.clamp(Math.log(0.006d * lastWireVoltage + 1) / 8.1d + 0.000011d * lastWireVoltage -0.6d, 0.1, 3);
-                    double unsafeDistanceSqr = unsafeDistance * unsafeDistance;
-                    AABB bb2 = lastWireVoltage < 1000 ? wireBBs.get(connection) : wireBBs.get(connection).inflate(unsafeDistance);
-
-                    if (!(bb1.minX <= bb2.maxX) || !(bb1.maxX >= bb2.minX) ||
-                            !(bb1.minY <= bb2.maxY) || !(bb1.maxY >= bb2.minY) ||
-                            !(bb1.minZ <= bb2.maxZ) || !(bb1.maxZ >= bb2.minZ))
-                        continue;
-
-                    Vec3 pos1 = sd.getNodePosition(connection.node1());
-                    Vec3 pos2 = sd.getNodePosition(connection.node2());
-                    WireData wireData = sd.getConnectionData(connection);
-                    if (wireData == null || wireData.wireType().maxInsulationVoltage() > lastWireVoltage)
-                        continue;
-
-                    List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag(), 0.5f);
-                    Vec3 bestPoint = null;
-                    float bestProgress = 0;
-                    double bestResistance = 1e+11d;
-                    for (int i = 0; i < points.size(); i++) {
-                        Vec3 point = points.get(i);
-                        double distanceX = Math.max(0, Math.max(bb1.minX - point.x, point.x - bb1.maxX));
-                        double distanceY = Math.max(0, Math.max(bb1.minY - point.y, point.y - bb1.maxY));
-                        double distanceZ = Math.max(0, Math.max(bb1.minZ - point.z, point.z - bb1.maxZ));
-                        double distanceSqr = (distanceX * distanceX) + (distanceY * distanceY) + (distanceZ * distanceZ);
-                        if (distanceSqr < unsafeDistanceSqr) {
-                            double resistance = wireData.wireType().insulationResistance() + 1444;
-                            if (distanceSqr > 0.1f)
-                                resistance += distanceSqr * 1000;
-                            if (resistance < bestResistance) {
-                                bestPoint = point;
-                                bestProgress = (float) i/points.size();
-                                bestResistance = resistance;
-                            }
-                        }
-                    }
-
-                    if (bestPoint != null) {
-                        if (electrocutionEntry == null)
-                            electrocutionEntry = electrocutions.computeIfAbsent(entity, k -> {
-                                ElectrocutionEntry ee = new ElectrocutionEntry(new AttachedNode(electrocutionNodeID.getAndIncrement(), electrocutionString), new Object2DoubleArrayMap<>(16), new Object2ObjectArrayMap<>(16));
-                                if (entity.onGround()) {
-                                    PositionedAttachedNode groundNode = new PositionedAttachedNode(electrocutionNodeID.getAndIncrement(), electrocutionGroundString, entity.position());
-                                    ee.nodes.put(groundNode, 10);
-                                    ee.positions().put(groundNode, entity.position());
-                                    builder.connect(ee.centralNode, groundNode, ElectricalProperties.resistor(10));
-                                    builder.ground(groundNode, 1 / 2333d);
-                                }
-                                return ee;
-                            });
-                        AttachedNode cutNode = new AttachedNode(cutElectrocutionNodeID++, electrocutionCutString);
-                        electrocutionEntry.nodes.put(cutNode, bestResistance);
-                        electrocutionEntry.positions.put(cutNode, bestPoint);
-                        electrocutionCuts.computeIfAbsent(connection, k -> new ArrayList<>()).add(new CutWireEntry(bestProgress, cutNode, null, null));
-                        builder.connect(electrocutionEntry.centralNode, cutNode, ElectricalProperties.resistor(bestResistance));
-                    }
-                }
-            }
-
-        for (Map.Entry<InWorldNodeConnection, WireType> e : originalConnections.entrySet()) {
+        for (Map.Entry<InWorldNodeConnection, ConnectionData> e : connections.entrySet()) {
             InWorldNodeConnection connection = e.getKey();
-            double resistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), e.getValue());
-            List<CutWireEntry> cuts = cutConnections.get(connection);
+            ConnectionData connectionData = e.getValue();
+            double resistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), connectionData.wireType);
+            List<CutWireEntry> cuts = connectionData.cuts;
             if (cuts != null)
                 cuts = new ArrayList<>(cuts);
 
@@ -201,7 +89,6 @@ public class WireConnectionManager {
                 float totalProgress = 0;
                 Node lastNode = connection.node1();
                 for (CutWireEntry cut : cuts) {
-//                    builder.addNode(cut.node);
                     if (cut.node.equals(lastNode))
                         continue;
                     float progress = cut.point - totalProgress + 0.0001f;
@@ -211,111 +98,208 @@ public class WireConnectionManager {
                 builder.connect(lastNode, connection.node2(), ElectricalProperties.resistor(resistance * (1.0001f - totalProgress)));
             }
         }
-        interWireShorts.forEach((packed, r) -> builder.connect(createFirstNode(packed), createSecondNode(packed), ElectricalProperties.resistor(r.getAsDouble())));
+        wireShorts.forEach((c, e) -> builder.connect(c.getFirst(), c.getSecond(), ElectricalProperties.resistor(e.resistance)));
+    }
+
+    private void computeElectrocutions(CircuitBuilder builder, Map<InWorldNodeConnection, List<CutWireEntry>> electrocutionCuts) {
+        int cutElectrocutionNodeID = 0;
+        AtomicInteger electrocutionNodeID = new AtomicInteger();
+        for (Entity entity : ((ServerLevel) level).getAllEntities()) {
+            if (!(entity instanceof Mob || entity instanceof ServerPlayer))
+                continue;
+            if (entity instanceof ServerPlayer p && (p.gameMode.getGameModeForPlayer() == GameType.CREATIVE || p.gameMode.getGameModeForPlayer() == GameType.SPECTATOR))
+                continue;
+            AABB bb1 = entity.getBoundingBox();
+            int xChunkPos = entity.chunkPosition().x;
+            int zChunkPos = entity.chunkPosition().z;
+            List<Pair<InWorldNodeConnection, ConnectionData>> wiresToCheck = new ArrayList<>();
+            List<Pair<InWorldNodeConnection, ConnectionData>> addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos + 1));
+            if (addedWires != null)
+                wiresToCheck.addAll(addedWires);
+            addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos + 1));
+            if (addedWires != null)
+                wiresToCheck.addAll(addedWires);
+            addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos + 1));
+            if (addedWires != null)
+                wiresToCheck.addAll(addedWires);
+            addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos));
+            if (addedWires != null)
+                wiresToCheck.addAll(addedWires);
+            addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos));
+            if (addedWires != null)
+                wiresToCheck.addAll(addedWires);
+            addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos));
+            if (addedWires != null)
+                wiresToCheck.addAll(addedWires);
+            addedWires = chunks.get(DataPacker.pack(xChunkPos + 1, zChunkPos - 1));
+            if (addedWires != null)
+                wiresToCheck.addAll(addedWires);
+            addedWires = chunks.get(DataPacker.pack(xChunkPos, zChunkPos - 1));
+            if (addedWires != null)
+                wiresToCheck.addAll(addedWires);
+            addedWires = chunks.get(DataPacker.pack(xChunkPos - 1, zChunkPos - 1));
+            if (addedWires != null)
+                wiresToCheck.addAll(addedWires);
+
+            if (wiresToCheck.isEmpty())
+                continue;
+
+            ElectrocutionEntry electrocutionEntry = null;
+            for (Pair<InWorldNodeConnection, ConnectionData> e : wiresToCheck) {
+                InWorldNodeConnection connection = e.getFirst();
+                ConnectionData connectionData = e.getSecond();
+
+                AABB bb2 = connectionData.dangerousBB;
+                double dangerousDistance = connectionData.dangerousDistance;
+
+                if (!(bb1.minX <= bb2.maxX) || !(bb1.maxX >= bb2.minX) ||
+                        !(bb1.minY <= bb2.maxY) || !(bb1.maxY >= bb2.minY) ||
+                        !(bb1.minZ <= bb2.maxZ) || !(bb1.maxZ >= bb2.minZ))
+                    continue;
+
+                Vec3 pos1 = sd.getNodePosition(connection.node1());
+                Vec3 pos2 = sd.getNodePosition(connection.node2());
+                WireData wireData = sd.getConnectionData(connection);
+                if (!connectionData.isOvervolted)
+                    continue;
+
+                List<Vec3> points = connectionData.points;
+                Vec3 bestPoint = null;
+                float bestProgress = 0;
+                double bestResistance = 1e+11d;
+                for (int i = 0; i < points.size(); i++) {
+                    Vec3 point = points.get(i);
+                    double distanceX = Math.max(0, Math.max(bb1.minX - point.x, point.x - bb1.maxX));
+                    double distanceY = Math.max(0, Math.max(bb1.minY - point.y, point.y - bb1.maxY));
+                    double distanceZ = Math.max(0, Math.max(bb1.minZ - point.z, point.z - bb1.maxZ));
+                    double distanceSqr = (distanceX * distanceX) + (distanceY * distanceY) + (distanceZ * distanceZ);
+                    if (distanceSqr < dangerousDistance) {
+                        double resistance = wireData.wireType().insulationResistance() + 1444;
+                        if (distanceSqr > 0.1f)
+                            resistance += distanceSqr * 1000;
+                        if (resistance < bestResistance) {
+                            bestPoint = point;
+                            bestProgress = (float) i/points.size();
+                            bestResistance = resistance;
+                        }
+                    }
+                }
+
+                if (bestPoint != null) {
+                    if (electrocutionEntry == null)
+                        electrocutionEntry = electrocutions.computeIfAbsent(entity, k -> {
+                            ElectrocutionEntry ee = new ElectrocutionEntry(new AttachedNode(electrocutionNodeID.getAndIncrement(), electrocutionString), new Object2DoubleArrayMap<>(16), new Object2ObjectArrayMap<>(16));
+                            if (entity.onGround()) {
+                                PositionedAttachedNode groundNode = new PositionedAttachedNode(electrocutionNodeID.getAndIncrement(), electrocutionGroundString, entity.position());
+                                ee.nodes.put(groundNode, 10);
+                                ee.positions().put(groundNode, entity.position());
+                                builder.connect(ee.centralNode, groundNode, ElectricalProperties.resistor(10));
+                                builder.ground(groundNode, 1 / 2333d);
+                            }
+                            return ee;
+                        });
+                    AttachedNode cutNode = new AttachedNode(cutElectrocutionNodeID++, electrocutionCutString);
+                    electrocutionEntry.nodes.put(cutNode, bestResistance);
+                    electrocutionEntry.positions.put(cutNode, bestPoint);
+                    electrocutionCuts.computeIfAbsent(connection, k -> new ArrayList<>()).add(new CutWireEntry(bestProgress, cutNode, null, null));
+                    builder.connect(electrocutionEntry.centralNode, cutNode, ElectricalProperties.resistor(bestResistance));
+                }
+            }
+        }
     }
 
     public void rebuild() {
         Map<InWorldNodeConnection, WireData> allConnections = sd.getAllConnections();
-        originalConnections.clear();
-        cutConnections.clear();
-        interWireShorts.clear();
-        shortPositions.clear();
-        wireBBs.clear();
+        connections.clear();
+        wireShorts.clear();
         chunks.clear();
-
-        // It feels sketchy coupling by index like this, but well, it should work just fine ig.
-        List<Pair<InWorldNodeConnection, List<Vec3>>> allPoints = new ArrayList<>(allConnections.size());
-        List<AABB> allWireBBs = new ArrayList<>(allConnections.size());
 
         for (Map.Entry<InWorldNodeConnection, WireData> e : allConnections.entrySet()) {
             InWorldNodeConnection connection = e.getKey();
             WireData wireData = e.getValue();
-            originalConnections.put(connection, wireData.wireType());
+
             Vec3 pos1 = sd.getNodePosition(connection.node1());
             Vec3 pos2 = sd.getNodePosition(connection.node2());
             List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag(), 0.5f);
             double miny = pos1.y;
             for (Vec3 point : points)
                 miny = Math.min(miny, point.y());
-            allPoints.add(Pair.of(connection, points));
             AABB bb = new AABB(pos1, pos2).setMinY(miny).inflate(0.25);
-            allWireBBs.add(bb);
-            wireBBs.put(connection, bb);
+            ConnectionData connectionData = new ConnectionData(bb, points, wireData.wireType());
+            connections.put(connection, connectionData);
         }
 
 
         // Check for wire shorts
         // It's slow but only done on reload
-        for (int i = 0; i < allPoints.size(); i++) {
-            InWorldNodeConnection connection1 = allPoints.get(i).getFirst();
-            List<Vec3> points1 = allPoints.get(i).getSecond();
-            AABB bb1 = allWireBBs.get(i);
-            for (int j = 0; j < i; j++) {
+        for (Map.Entry<InWorldNodeConnection, ConnectionData> e1 : connections.entrySet()) {
 
-                InWorldNodeConnection connection2 = allPoints.get(j).getFirst();
-                AABB bb2 = allWireBBs.get(j);
+            InWorldNodeConnection connection1 = e1.getKey();
+            ConnectionData data1 = e1.getValue();
+            List<Vec3> points1 = data1.points;
+            AABB bb1 = data1.bb;
+            for (Map.Entry<InWorldNodeConnection, ConnectionData> e2 : connections.entrySet()) {
 
+                InWorldNodeConnection connection2 = e2.getKey();
+                ConnectionData data2 = e2.getValue();
+                AABB bb2 = data2.bb;
 
                 // Check if the wires intersect
-                if (bb1.minX <= bb2.maxX && bb1.maxX >= bb2.minX &&
-                        bb1.minY <= bb2.maxY && bb1.maxY >= bb2.minY &&
-                        bb1.minZ <= bb2.maxZ && bb1.maxZ >= bb2.minZ) {
-                    if (sd.getConnections(connection1.node1()).contains(connection2) ||
-                            sd.getConnections(connection1.node2()).contains(connection2))
-                        continue;
-                    List<Vec3> points2 = allPoints.get(j).getSecond();
+                if (!(bb1.minX <= bb2.maxX) || !(bb1.maxX >= bb2.minX) ||
+                        !(bb1.minY <= bb2.maxY) || !(bb1.maxY >= bb2.minY) ||
+                        !(bb1.minZ <= bb2.maxZ) || !(bb1.maxZ >= bb2.minZ))
+                    continue;
+                if (sd.getConnections(connection1.node1()).contains(connection2) ||
+                        sd.getConnections(connection1.node2()).contains(connection2))
+                    continue;
 
-                    float bestPoint = 0;
-                    double bestDist = 999;
-                    Vec3 bestPos = null;
+                List<Vec3> points2 = data2.points;
 
-                    for (int k = 0; k < points1.size(); k++) {
-                        Vec3 point1 = points1.get(k);
-                        for (int l = 0; l < points2.size(); l++) {
-                            Vec3 point2 = points2.get(l);
-                            double distance = point1.distanceToSqr(point2);
-                            if (distance < bestDist) {
-                                bestPoint = k / (float) points1.size();
-                                bestDist = distance;
-                                bestPos = point1;
-                            }
+                float bestPoint = 0;
+                double bestDist = 999;
+                Vec3 bestPos1 = null;
+                Vec3 bestPos2 = null;
+
+                for (int k = 0; k < points1.size(); k++) {
+                    Vec3 point1 = points1.get(k);
+                    for (Vec3 point2 : points2) {
+                        double distance = point1.distanceToSqr(point2);
+                        if (distance < bestDist) {
+                            bestPoint = k / (float) points1.size();
+                            bestDist = distance;
+                            bestPos1 = point1;
+                            bestPos2 = point2;
                         }
                     }
+                }
 
-                    if (bestDist < 0.04) {
+                if (bestDist < 0.04) {
 
-                        WireData wireData1 = sd.getConnectionData(connection1);
-                        WireData wireData2 = sd.getConnectionData(connection2);
-                        if (wireData1 == null || wireData2 == null || wireData1.wireType().insulated() || wireData2.wireType().insulated())
-                            continue;
+                    WireData wireData1 = sd.getConnectionData(connection1);
+                    WireData wireData2 = sd.getConnectionData(connection2);
+                    if (wireData1 == null || wireData2 == null || wireData1.wireType().insulated() || wireData2.wireType().insulated())
+                        continue;
 
-                        AttachedNode attachedNode1 = createNode(nodeID++);
-                        AttachedNode attachedNode2 = createNode(nodeID++);
-                        // Wires touch
-                        cutConnections.computeIfAbsent(connection1, c -> new ArrayList<>()).add(new CutWireEntry(bestPoint, attachedNode1, attachedNode2, connection2));
-                        cutConnections.computeIfAbsent(connection2, c -> new ArrayList<>()).add(new CutWireEntry(bestPoint, attachedNode2, attachedNode1, connection1));
-                        long packedShortConnection = DataPacker.pack(attachedNode1.id, attachedNode2.id);
-                        long invertedPackedShortConnection = DataPacker.pack(attachedNode2.id, attachedNode1.id);
-                        interWireShorts.put(packedShortConnection, () -> 0.1d);
-                        shortDistances.put(packedShortConnection, bestDist);
-                        shortPositions.put(packedShortConnection, bestPos);
+                    AttachedNode attachedNode1 = new AttachedNode(nodeID++, cutWireString);
+                    AttachedNode attachedNode2 = new AttachedNode(nodeID++, cutWireString);
+                    // Wires touch
 
-                        interWireShorts.put(invertedPackedShortConnection, () -> 0.1d);
-                        shortDistances.put(invertedPackedShortConnection, bestDist);
-                        shortPositions.put(invertedPackedShortConnection, bestPos);
-                    }
+                    data1.cuts.add(new CutWireEntry(bestPoint, attachedNode1, attachedNode2, connection2));
+                    data2.cuts.add(new CutWireEntry(bestPoint, attachedNode2, attachedNode1, connection1));
+
+                    wireShorts.put(Couple.create(attachedNode1, attachedNode2), new WireShortEntry(0.1d, bestPos1, bestPos2, bestDist));
+                    wireShorts.put(Couple.create(attachedNode2, attachedNode1), new WireShortEntry(0.1d, bestPos1, bestPos2, bestDist));
                 }
             }
-        }
 
-        for (Pair<InWorldNodeConnection, List<Vec3>> pointPair : allPoints) {
+            // Put into chunks
             ChunkPos prevChunk = null;
-            for (Vec3 point : pointPair.getSecond()) {
+            for (Vec3 point : data1.points) {
                 ChunkPos chunkPos = new ChunkPos(BlockPos.containing(point));
                 if (chunkPos.equals(prevChunk))
                     continue;
                 prevChunk = chunkPos;
-                chunks.computeIfAbsent(DataPacker.pack(chunkPos.x, chunkPos.z), k -> new ArrayList<>()).add(pointPair.getFirst());
+                chunks.computeIfAbsent(DataPacker.pack(chunkPos.x, chunkPos.z), k -> new ArrayList<>()).add(Pair.of(connection1, data1));
             }
         }
     }
@@ -327,11 +311,12 @@ public class WireConnectionManager {
         if (CEEConfigs.server().wiresBreak.get()) {
             InWorldNodeConnection longestWireToBreak = null;
             WireType longestWireTypeToBreak = null;
-            for (Map.Entry<InWorldNodeConnection, WireType> e : originalConnections.entrySet()) {
+            for (Map.Entry<InWorldNodeConnection, ConnectionData> e : connections.entrySet()) {
                 InWorldNodeConnection connection = e.getKey();
-                WireType wireType = e.getValue();
+                ConnectionData connectionData = e.getValue();
+                WireType wireType = connectionData.wireType;
+                List<CutWireEntry> cuts = connectionData.cuts;
 
-                List<CutWireEntry> cuts = cutConnections.get(connection);
                 double current = 0;
                 double wholeWireResistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType);
                 if (cuts == null) {
@@ -349,6 +334,12 @@ public class WireConnectionManager {
                     }
                 }
 
+                double lastWireVoltage = Math.max(Math.abs(sd.getVoltageAt(connection.node1())), Math.abs(sd.getVoltageAt(connection.node2())));
+                double unsafeDistance = Mth.clamp(Math.log(0.006d * lastWireVoltage + 1) / 8.1d + 0.000011d * lastWireVoltage -0.6d, 0.1, 3);
+                connectionData.dangerousDistance = unsafeDistance * unsafeDistance;
+
+                connectionData.dangerousBB = connectionData.bb.inflate(connectionData.dangerousDistance);
+                connectionData.isOvervolted = lastWireVoltage > connectionData.wireType.maxInsulationVoltage.getAsDouble();
 
                 double finalCurrent = current;
                 float newTemp = sd.updateConnectionTemperature(connection, temp -> {
@@ -393,18 +384,18 @@ public class WireConnectionManager {
         }
         SimulationTicker.profiler.popPush("showWireShorts");
 
-        for (long packedConnection : interWireShorts.keySet()) {
-            AttachedNode node1 = createFirstNode(packedConnection);
-            AttachedNode node2 = createSecondNode(packedConnection);
+        wireShorts.forEach((c, e) -> {
+            AttachedNode node1 = c.getFirst();
+            AttachedNode node2 = c.getSecond();
             double current = Math.abs(results.getCurrentThrough(node1, node2));
             if (current > 0.1) {
-                Vec3 pos = shortPositions.get(packedConnection);
-                if (pos == null)
-                    continue;
-                if (level.random.nextFloat() > 0.7f && shortDistances.getOrDefault(packedConnection, 0d) > 0.03d)
-                    CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos, 30, new SendSparkPacket(pos, SendSparkPacket.SparkSize.SMALL));
+
+                if (level.random.nextFloat() > 0.7f && e.distance > 0.03d) {
+                    Vec3 middlePos = VecHelper.lerp(0.5f, e.startPosition, e.endPosition);
+                    CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, middlePos, 30, new SendSparkPacket(middlePos, SendSparkPacket.SparkSize.SMALL));
+                }
             }
-        }
+        });
 
         if (electrocutions.isEmpty() || !CEEConfigs.server().enableElectrocution.get()) {
             SimulationTicker.profiler.pop();
@@ -449,44 +440,34 @@ public class WireConnectionManager {
     }
 
     public void wireRemoved(InWorldNodeConnection connection) {
-        List<CutWireEntry> cuts = cutConnections.get(connection);
-        if (cuts != null) {
+        ConnectionData connectionData = connections.get(connection);
+        if (connectionData == null)
+            return;
+        List<CutWireEntry> cuts = connectionData.cuts;
 
-            for (int i = 0; i < cuts.size(); i++) {
-                CutWireEntry cut = cuts.get(i);
-                InWorldNodeConnection neighbourConnection = cut.neighbourWire;
-                List<CutWireEntry> neighbourCuts = cutConnections.get(neighbourConnection);
-                if (neighbourCuts == null)
+        for (int i = 0; i < cuts.size(); i++) {
+            CutWireEntry cut = cuts.get(i);
+            InWorldNodeConnection neighbourConnection = cut.neighbourWire;
+            ConnectionData neighbourData = connections.get(neighbourConnection);
+            List<CutWireEntry> neighbourCuts = neighbourData.cuts;
+            for (int j = 0; j < neighbourCuts.size(); j++) {
+                AttachedNode neighbourNode = neighbourCuts.get(j).neighbourNode;
+                if (!neighbourNode.equals(cut.node))
                     continue;
-                for (int j = 0; j < neighbourCuts.size(); j++) {
-                    AttachedNode neighbourNode = neighbourCuts.get(j).neighbourNode;
-                    if (neighbourNode.equals(cut.node)) {
-                        neighbourCuts.remove(j);
-                        long short1 = DataPacker.pack(cut.node.id, neighbourNode.id);
-                        long short2 = DataPacker.pack(neighbourNode.id, cut.node.id);
-                        interWireShorts.remove(short1);
-                        interWireShorts.remove(short2);
-                        shortDistances.remove(short1);
-                        shortDistances.remove(short2);
-                        shortPositions.remove(short1);
-                        shortPositions.remove(short2);
-                        if (neighbourCuts.isEmpty())
-                            cutConnections.remove(neighbourConnection);
-                        break;
-                    }
-                }
 
-
+                neighbourCuts.remove(j);
+                wireShorts.remove(Couple.create(cut.neighbourNode, cut.node));
+                wireShorts.remove(Couple.create(cut.node, cut.neighbourNode));
+                break;
             }
-            cutConnections.remove(connection);
-        }
 
-        originalConnections.remove(connection);
-        wireBBs.remove(connection);
+
+        }
+        connections.remove(connection);
 
         List<Long> chunkPositionToRemove = new LinkedList<>();
         chunks.forEach((packedChunkPos, connections) -> {
-            connections.remove(connection);
+            connections.removeIf(c -> c.getFirst().equals(connection));
             if (connections.isEmpty())
                 chunkPositionToRemove.add(packedChunkPos);
         });
@@ -495,33 +476,34 @@ public class WireConnectionManager {
             chunks.remove(packedChunkPos);
     }
 
-    public void wireAdded(InWorldNodeConnection connection, WireData wireData) {
-        Vec3 pos1 = sd.getNodePosition(connection.node1());
-        Vec3 pos2 = sd.getNodePosition(connection.node2());
+    public void wireAdded(InWorldNodeConnection connection1, WireData wireData) {
+        Vec3 pos1 = sd.getNodePosition(connection1.node1());
+        Vec3 pos2 = sd.getNodePosition(connection1.node2());
         List<Vec3> points1 = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag(), 0.5f);
         double miny = pos1.y;
         for (Vec3 point : points1)
             miny = Math.min(miny, point.y());
         AABB bb1 = new AABB(pos1, pos2).setMinY(miny).inflate(0.25);
+        ConnectionData connectionData1 = new ConnectionData(bb1, points1, wireData.wireType());
 
-        for (Map.Entry<InWorldNodeConnection, AABB> e : wireBBs.entrySet()) {
-            InWorldNodeConnection neighbourConnection = e.getKey();
-            AABB bb2 = e.getValue();
+        for (Map.Entry<InWorldNodeConnection, ConnectionData> e : connections.entrySet()) {
+            InWorldNodeConnection connection2 = e.getKey();
+            ConnectionData connectionData2 = e.getValue();
+            AABB bb2 = connectionData2.bb;
             if (!(bb1.minX <= bb2.maxX && bb1.maxX >= bb2.minX &&
                     bb1.minY <= bb2.maxY && bb1.maxY >= bb2.minY &&
                     bb1.minZ <= bb2.maxZ && bb1.maxZ >= bb2.minZ))
                 continue;
-            if (sd.getConnections(connection.node1()).contains(neighbourConnection) ||
-                    sd.getConnections(connection.node2()).contains(neighbourConnection))
+            if (sd.getConnections(connection1.node1()).contains(connection2) ||
+                    sd.getConnections(connection1.node2()).contains(connection2))
                 continue;
-            Vec3 neighbourPos1 = sd.getNodePosition(neighbourConnection.node1());
-            Vec3 neighbourPos2 = sd.getNodePosition(neighbourConnection.node2());
 
-            List<Vec3> points2 = QuadraticWireHelper.cablePoints(neighbourPos1, neighbourPos2, wireData.wireType().getSag(), 0.5f);
+            List<Vec3> points2 = connectionData2.points;
 
             float bestPoint = 0;
             double bestDist = 999;
-            Vec3 bestPos = null;
+            Vec3 bestPos1 = null;
+            Vec3 bestPos2 = null;
 
             for (int k = 0; k < points1.size(); k++) {
                 Vec3 point1 = points1.get(k);
@@ -531,35 +513,27 @@ public class WireConnectionManager {
                     if (distance < bestDist) {
                         bestPoint = k / (float) points1.size();
                         bestDist = distance;
-                        bestPos = point1;
+                        bestPos1 = point1;
+                        bestPos2 = point2;
                     }
                 }
             }
 
             if (bestDist < 0.04) {
 
-                WireData wireData2 = sd.getConnectionData(neighbourConnection);
+                WireData wireData2 = sd.getConnectionData(connection2);
                 if (wireData2 == null || wireData.wireType().insulated() || wireData2.wireType().insulated())
                     continue;
 
-                AttachedNode attachedNode1 = createNode(nodeID++);
-                AttachedNode attachedNode2 = createNode(nodeID++);
+                AttachedNode attachedNode1 = new AttachedNode(nodeID++, cutWireString);
+                AttachedNode attachedNode2 = new AttachedNode(nodeID++, cutWireString);
                 // Wires touch
-                cutConnections.computeIfAbsent(connection, c -> new ArrayList<>()).add(new CutWireEntry(bestPoint, attachedNode1, attachedNode2, neighbourConnection));
-                cutConnections.computeIfAbsent(neighbourConnection, c -> new ArrayList<>()).add(new CutWireEntry(bestPoint, attachedNode2, attachedNode1, connection));
-                long packedConnection = DataPacker.pack(attachedNode1.id, attachedNode2.id);
-                long invertedPackedConnection = DataPacker.pack(attachedNode2.id, attachedNode1.id);
-                interWireShorts.put(packedConnection, () -> 0.1d);
-                shortPositions.put(packedConnection, bestPos);
-                shortDistances.put(packedConnection, bestDist);
-
-                interWireShorts.put(invertedPackedConnection, () -> 0.1d);
-                shortPositions.put(invertedPackedConnection, bestPos);
-                shortDistances.put(invertedPackedConnection, bestDist);
+                connectionData1.cuts.add(new CutWireEntry(bestPoint, attachedNode1, attachedNode2, connection2));
+                connectionData2.cuts.add(new CutWireEntry(bestPoint, attachedNode2, attachedNode1, connection1));
+                wireShorts.put(Couple.create(attachedNode1, attachedNode2), new WireShortEntry(0.1, bestPos1, bestPos2, bestDist));
             }
         }
-        originalConnections.put(connection, wireData.wireType());
-        wireBBs.put(connection, bb1);
+        connections.put(connection1, connectionData1);
 
         ChunkPos prevChunk = null;
         for (Vec3 point : points1) {
@@ -567,23 +541,36 @@ public class WireConnectionManager {
             if (chunkPos.equals(prevChunk))
                 continue;
             prevChunk = chunkPos;
-            chunks.computeIfAbsent(DataPacker.pack(chunkPos.x, chunkPos.z), k -> new ArrayList<>()).add(connection);
+            chunks.computeIfAbsent(DataPacker.pack(chunkPos.x, chunkPos.z), k -> new ArrayList<>()).add(Pair.of(connection1, connectionData1));
         }
     }
 
-    record CutWireEntry(Float point, AttachedNode node, AttachedNode neighbourNode, InWorldNodeConnection neighbourWire) { }
+    record CutWireEntry(Float point, AttachedNode node, AttachedNode neighbourNode, InWorldNodeConnection neighbourWire) {
 
-    record ElectrocutionEntry(AttachedNode centralNode, Object2DoubleMap<AttachedNode> nodes, Map<AttachedNode, Vec3> positions) { }
-
-    private static AttachedNode createNode(int id) {
-        return new AttachedNode(id, cutWireString);
     }
 
-    private static AttachedNode createFirstNode(long packed) {
-        return new AttachedNode((int) ((packed >> 32) & 0xFFFFFFFFL), cutWireString);
+    record ElectrocutionEntry(AttachedNode centralNode, Object2DoubleMap<AttachedNode> nodes, Map<AttachedNode, Vec3> positions) {
+
     }
 
-    private static AttachedNode createSecondNode(long packed) {
-        return new AttachedNode((int) (packed & 0xFFFFFFFFL), cutWireString);
+    static class ConnectionData {
+        final public List<Vec3> points;
+        final public List<CutWireEntry> cuts = new ArrayList<>();
+        final public AABB bb;
+        public AABB dangerousBB;
+        final public WireType wireType;
+        public double dangerousDistance;
+        public boolean isOvervolted;
+
+        public ConnectionData(AABB bb, List<Vec3> points, WireType wireType) {
+            this.bb = bb;
+            this.points = points;
+            this.wireType = wireType;
+            this.dangerousBB = bb;
+        }
+    }
+
+    record WireShortEntry(double resistance, Vec3 startPosition, Vec3 endPosition, double distance) {
+
     }
 }

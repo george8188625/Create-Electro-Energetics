@@ -27,3 +27,5 @@ repo
 
 .profileconfig.json
 profile.jfr
+err_profile.jfr
+err_profile.jfr.txt

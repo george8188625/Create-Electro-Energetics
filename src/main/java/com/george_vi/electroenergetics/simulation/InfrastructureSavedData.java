@@ -244,8 +244,11 @@ public class InfrastructureSavedData extends SavedData {
                 sd.CATENARY.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
             });
         });
-
-        sd.wireConnectionManager.rebuild();
+        try {
+            sd.wireConnectionManager.rebuild();
+        } catch (Throwable err) {
+            LOGGER.error("Could not build the wire connection graph!", err);
+        }
 
         return sd;
     }
