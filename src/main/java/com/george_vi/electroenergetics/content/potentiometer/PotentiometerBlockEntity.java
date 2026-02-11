@@ -1,10 +1,7 @@
 package com.george_vi.electroenergetics.content.potentiometer;
 
-import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
-import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
-import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorDevice;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;

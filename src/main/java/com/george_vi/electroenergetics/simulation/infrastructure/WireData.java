@@ -1,7 +1,8 @@
-package com.george_vi.electroenergetics.simulation;
+package com.george_vi.electroenergetics.simulation.infrastructure;
 
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
+import com.george_vi.electroenergetics.simulation.WireType;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.data.Pair;
@@ -11,7 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 import java.util.List;
 import java.util.Objects;
 
-public final class WireData {
+public class WireData {
     public static StreamCodec<ByteBuf, WireData> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public WireData decode(ByteBuf buffer) {

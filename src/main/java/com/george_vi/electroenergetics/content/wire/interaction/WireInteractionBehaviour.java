@@ -4,8 +4,8 @@ import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.WireData;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.simibubi.create.AllSoundEvents;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
@@ -51,8 +51,6 @@ public abstract class WireInteractionBehaviour {
     public void attachToWire(NodeConnectionPoint point, Level level, Player player, ItemStack stack, WireAttachment toAttach) {
         if (!(level instanceof ServerLevel sl))
             return;
-        if (point.node1().compareTo(point.node2()) > 0)
-            point = point.reverse();
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
         WireData data = sd.getConnectionData(new InWorldNodeConnection(point.node1(), point.node2()));

@@ -45,8 +45,8 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
         float messengerWidth = 0.35f;
 
         ClientLevel level = Minecraft.getInstance().level;
-        Vec3 start = Vec3.atBottomCenterOf(connection.pos1.subtract(visualizationContext.renderOrigin()));
-        Vec3 end = Vec3.atBottomCenterOf(connection.pos2.subtract(visualizationContext.renderOrigin()));
+        Vec3 start = Vec3.atBottomCenterOf(connection.pos1().subtract(visualizationContext.renderOrigin()));
+        Vec3 end = Vec3.atBottomCenterOf(connection.pos2().subtract(visualizationContext.renderOrigin()));
 
         List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(start, end, 0, 10);
 
@@ -67,8 +67,8 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                                     LevelRenderer.getLightColor(level, nextBlockPos)));
             lowerInstances.add(instance);
         }
-        BlockState startingState = level.getBlockState(connection.pos1);
-        BlockState endingState = level.getBlockState(connection.pos2);
+        BlockState startingState = level.getBlockState(connection.pos1());
+        BlockState endingState = level.getBlockState(connection.pos2());
         boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
         boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
         prevLow = isStartingLow || isEndingLow;
@@ -133,12 +133,12 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
 
         lightSections = new LongOpenHashSet();
 
-        int minSectionX = SectionPos.blockToSectionCoord(Math.min(connection.pos1.getX(), connection.pos2.getX()));
-        int minSectionY = SectionPos.blockToSectionCoord(Math.min(connection.pos1.getY(), connection.pos2.getY()));
-        int minSectionZ = SectionPos.blockToSectionCoord(Math.min(connection.pos1.getZ(), connection.pos2.getZ()));
-        int maxSectionX = SectionPos.blockToSectionCoord(Math.max(connection.pos1.getX(), connection.pos2.getX()));
-        int maxSectionY = SectionPos.blockToSectionCoord(Math.max(connection.pos1.getY(), connection.pos2.getY()) + 1);
-        int maxSectionZ = SectionPos.blockToSectionCoord(Math.max(connection.pos1.getZ(), connection.pos2.getZ()));
+        int minSectionX = SectionPos.blockToSectionCoord(Math.min(connection.pos1().getX(), connection.pos2().getX()));
+        int minSectionY = SectionPos.blockToSectionCoord(Math.min(connection.pos1().getY(), connection.pos2().getY()));
+        int minSectionZ = SectionPos.blockToSectionCoord(Math.min(connection.pos1().getZ(), connection.pos2().getZ()));
+        int maxSectionX = SectionPos.blockToSectionCoord(Math.max(connection.pos1().getX(), connection.pos2().getX()));
+        int maxSectionY = SectionPos.blockToSectionCoord(Math.max(connection.pos1().getY(), connection.pos2().getY()) + 1);
+        int maxSectionZ = SectionPos.blockToSectionCoord(Math.max(connection.pos1().getZ(), connection.pos2().getZ()));
 
         for (int x = minSectionX; x <= maxSectionX; x++)
             for (int y = minSectionY; y <= maxSectionY; y++)
@@ -150,13 +150,13 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
     @Override
     public void update(float partialTick) {
         ClientLevel level = Minecraft.getInstance().level;
-        Vec3 start = Vec3.atBottomCenterOf(connection.pos1.subtract(visualizationContext.renderOrigin()));
-        Vec3 end = Vec3.atBottomCenterOf(connection.pos2.subtract(visualizationContext.renderOrigin()));
+        Vec3 start = Vec3.atBottomCenterOf(connection.pos1().subtract(visualizationContext.renderOrigin()));
+        Vec3 end = Vec3.atBottomCenterOf(connection.pos2().subtract(visualizationContext.renderOrigin()));
 
         float wireWidth = 0.66f;
 
-        BlockState startingState = level.getBlockState(connection.pos1);
-        BlockState endingState = level.getBlockState(connection.pos2);
+        BlockState startingState = level.getBlockState(connection.pos1());
+        BlockState endingState = level.getBlockState(connection.pos2());
         boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
         boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
         boolean low = isStartingLow || isEndingLow;
@@ -239,8 +239,8 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
     @Override
     public void updateLight(float partialTick) {
         ClientLevel level = Minecraft.getInstance().level;
-        Vec3 start = Vec3.atBottomCenterOf(connection.pos1);
-        Vec3 end = Vec3.atBottomCenterOf(connection.pos2);
+        Vec3 start = Vec3.atBottomCenterOf(connection.pos1());
+        Vec3 end = Vec3.atBottomCenterOf(connection.pos2());
 
         List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(start, end, 0, 10);
 

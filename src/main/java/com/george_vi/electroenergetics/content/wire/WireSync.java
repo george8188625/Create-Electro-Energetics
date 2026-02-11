@@ -3,10 +3,10 @@ package com.george_vi.electroenergetics.content.wire;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.ClearCatenaryPacket;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.SendCatenaryPacket;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
-import com.george_vi.electroenergetics.simulation.WireData;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.ChunkPos;
 
 import java.util.*;
 
-public class LoadedWireManager {
+public class WireSync {
     public static Map<UUID, List<ChunkPos>> loadedChunks = new HashMap<>();
     static final int renderDistance = 20;
 
@@ -46,8 +46,8 @@ public class LoadedWireManager {
             }
         }
 
-        List<CatenaryConnection> newCatenary = sd.getAllCatenaryConnections().stream().filter(c -> (newChunks.contains(new ChunkPos(c.pos1)) && !chunks.contains(new ChunkPos(c.pos2))) ||
-                (newChunks.contains(new ChunkPos(c.pos2)) && !chunks.contains(new ChunkPos(c.pos1)))).toList();
+        List<CatenaryConnection> newCatenary = sd.getAllCatenaryConnections().stream().filter(c -> (newChunks.contains(new ChunkPos(c.pos1())) && !chunks.contains(new ChunkPos(c.pos2()))) ||
+                (newChunks.contains(new ChunkPos(c.pos2())) && !chunks.contains(new ChunkPos(c.pos1())))).toList();
 
         CatnipServices.NETWORK.sendToClient(player, new SendCatenaryPacket(newCatenary));
 
@@ -74,8 +74,8 @@ public class LoadedWireManager {
 
         CatnipServices.NETWORK.sendToClient(player, new ClearWireConnectionsPacket(connectionsToRemove.stream().map(c -> Pair.of(c.node1(), c.node2())).toList(), false));
 
-        List<CatenaryConnection> catenaryToRemove = sd.getAllCatenaryConnections().stream().filter(c -> (chunksToRemove.contains(new ChunkPos(c.pos1)) && !chunks.contains(new ChunkPos(c.pos2))) ||
-                (chunksToRemove.contains(new ChunkPos(c.pos2)) && !chunks.contains(new ChunkPos(c.pos1)))).toList();
+        List<CatenaryConnection> catenaryToRemove = sd.getAllCatenaryConnections().stream().filter(c -> (chunksToRemove.contains(new ChunkPos(c.pos1())) && !chunks.contains(new ChunkPos(c.pos2()))) ||
+                (chunksToRemove.contains(new ChunkPos(c.pos2())) && !chunks.contains(new ChunkPos(c.pos1())))).toList();
 
         CatnipServices.NETWORK.sendToClient(player, new ClearCatenaryPacket(catenaryToRemove, false));
     }

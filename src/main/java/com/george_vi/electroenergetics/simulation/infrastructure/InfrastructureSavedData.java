@@ -1,16 +1,15 @@
-package com.george_vi.electroenergetics.simulation;
+package com.george_vi.electroenergetics.simulation.infrastructure;
 
-import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.CEERegistries;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
-import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
+import com.george_vi.electroenergetics.content.wire.WireSync;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.simulation.*;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
 import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
 import com.mojang.logging.LogUtils;
@@ -26,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
@@ -40,27 +40,39 @@ public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, List<InWorldNode>> NODES_BY_POS = new HashMap<>();
     Map<InWorldNodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
 
-    // TRAINS
-    Map<BlockPos, List<BlockPos>> CATENARY = new HashMap<>();
+    // Trains
+    Map<BlockPos, List<BlockPos>> CATENARY_ADJACENCY = new HashMap<>();
+    Map<CatenaryConnection, CatenaryConnectionData> CATENARY_DATA = new HashMap<>();
 
-    // NOT PERSISTENT
+    // Not persistent
     Object2DoubleMap<InWorldNode> VOLTAGES = new Object2DoubleOpenHashMap<>();
 
     ServerLevel level;
-    WireConnectionManager wireConnectionManager;
     public SimulationResults lastResults;
     public CircuitBuilder circuitBuilder;
     public SimulationStats stats;
     public List<SimulatorProfiler.ResultEntry> lastProfilerResults;
     public SimulationStats lastStats;
 
+    // Wire infrastructure
+    public WireInfrastructure wireInfrastructure;
+    public WireAssemblerModule wireAssemblerModule;
+    public WireLifetimeModule wireLifetimeModule;
+    public WireCrossContactModule wireCrossContactModule;
+    public CatenaryModule catenaryModule;
+
+    // Async
     public Future<SimulationResults> future = null;
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public InfrastructureSavedData(ServerLevel level) {
         this.level = level;
-        wireConnectionManager = new WireConnectionManager(this, level);
+        wireInfrastructure = new WireInfrastructure(this, level);
+        wireAssemblerModule = new WireAssemblerModule(this, level, this.wireInfrastructure);
+        wireLifetimeModule = new WireLifetimeModule(this, level, this.wireInfrastructure);
+        wireCrossContactModule = new WireCrossContactModule(this, level, this.wireInfrastructure);
+        catenaryModule = new CatenaryModule(this, level, this.wireInfrastructure);
     }
 
     @Override
@@ -130,11 +142,17 @@ public class InfrastructureSavedData extends SavedData {
         // Save Railway Catenary
 
         ListTag catenaryList = new ListTag();
-        for (Map.Entry<BlockPos, List<BlockPos>> e : CATENARY.entrySet()) {
+        for (Map.Entry<BlockPos, List<BlockPos>> e : CATENARY_ADJACENCY.entrySet()) {
             CompoundTag catenaryTag = new CompoundTag();
             ListTag connectionList = new ListTag();
-            for (BlockPos otherPos : e.getValue())
-                connectionList.add(NbtUtils.writeBlockPos(otherPos));
+            for (BlockPos otherPos : e.getValue()) {
+                CompoundTag tg = new CompoundTag();
+                tg.put("Pos", NbtUtils.writeBlockPos(otherPos));
+                CatenaryConnectionData data = CATENARY_DATA.get(new CatenaryConnection(e.getKey(), otherPos));
+                tg.putFloat("Temperature", data.temperature);
+                tg.putBoolean("IsLow", data.isLow);
+                connectionList.add(tg);
+            }
             catenaryTag.put("From", NbtUtils.writeBlockPos(e.getKey()));
             catenaryTag.put("Connections", connectionList);
             catenaryList.add(catenaryTag);
@@ -150,8 +168,8 @@ public class InfrastructureSavedData extends SavedData {
         sd.NODES = new HashMap<>();
         sd.NODES_BY_POS = new HashMap<>();
         sd.CONNECTION_DATA = new HashMap<>();
-        sd.CATENARY = new HashMap<>();
-
+        sd.CATENARY_ADJACENCY = new HashMap<>();
+        sd.CATENARY_DATA = new HashMap<>();
         // Read Nodes / Node Connections
 
         NBTHelper.iterateCompoundList(compoundTag.getList("Nodes", Tag.TAG_COMPOUND), tag -> {
@@ -169,18 +187,12 @@ public class InfrastructureSavedData extends SavedData {
                 }
 
                 connectedNodes.add(connectedNode);
-                WireType wireType;
-
-                try {
-                    wireType = CEERegistries.WIRE_TYPE.get(ResourceLocation.parse(connectionTag.getString("WireType")));
-                    if (wireType == null) {
-                        LOGGER.warn("Could not load wire type between nodes: {}, {} with id: {} in: {}, changing to standard...", node, connectedNode, connectionTag.getString("WireType"), level.dimension().location());
-                        wireType = CEEWireTypes.STANDARD.get();
-                    }
-                } catch (Throwable e) {
+                WireType wireType = CEERegistries.WIRE_TYPE.get(ResourceLocation.tryParse(connectionTag.getString("WireType")));
+                if (wireType == null) {
                     LOGGER.warn("Could not load wire type between nodes: {}, {} with id: {} in: {}, changing to standard...", node, connectedNode, connectionTag.getString("WireType"), level.dimension().location());
                     wireType = CEEWireTypes.STANDARD.get();
                 }
+
 
                 List<Pair<Float, WireAttachment>> attachments = new ArrayList<>();
                 NBTHelper.iterateCompoundList(connectionTag.getList("Attachments", Tag.TAG_COMPOUND), attachmentTag -> {
@@ -193,10 +205,11 @@ public class InfrastructureSavedData extends SavedData {
                    }
                 });
 
+                InWorldNodeConnection connection = new InWorldNodeConnection(new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")), new InWorldNode(id, pos));
+                WireData wireData = new WireData(wireType, Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature"), attachments);
 
-                WireType finalWireType = wireType;
-                sd.CONNECTION_DATA.computeIfAbsent(new InWorldNodeConnection(new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")),
-                        new InWorldNode(id, pos)), c -> new WireData(finalWireType, Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature"), attachments));
+                sd.wireInfrastructure.addConnection(connection, wireData, true);
+                sd.CONNECTION_DATA.computeIfAbsent(connection, c -> wireData);
             });
             sd.NODE_POSITIONS.put(node, lastKnownPos);
             sd.NODES.put(node, connectedNodes);
@@ -232,6 +245,7 @@ public class InfrastructureSavedData extends SavedData {
         NBTHelper.iterateCompoundList(compoundTag.getList("Catenary", Tag.TAG_COMPOUND), tag -> {
             BlockPos from = NBTHelper.readBlockPos(tag, "From");
 
+            // Legacy
             tag.getList("Connections", Tag.TAG_INT_ARRAY).forEach(tg -> {
                 int[] arr = ((IntArrayTag)tg).getAsIntArray();
                 if (arr.length != 3) {
@@ -241,14 +255,35 @@ public class InfrastructureSavedData extends SavedData {
 
                 BlockPos to = new BlockPos(arr[0], arr[1], arr[2]);
 
-                sd.CATENARY.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
+                sd.CATENARY_ADJACENCY.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
+                CatenaryConnectionData catenaryData = new CatenaryConnectionData(0, false);
+                sd.CATENARY_DATA.put(new CatenaryConnection(from, to), catenaryData);
+                sd.wireInfrastructure.addCatenaryConnection(new InWorldNodeConnection(new InWorldNode(0, from), new InWorldNode(0, to)), catenaryData, true);
+
+            });
+
+            NBTHelper.iterateCompoundList(tag.getList("Connections", Tag.TAG_COMPOUND), tg -> {
+                int[] arr = tg.getIntArray("Pos");
+                if (arr.length != 3) {
+                    LOGGER.warn("Could not load catenary connection, invalid position, at pos: {} in: {}", from.toShortString(), level.dimension().location());
+                    return;
+                }
+
+                BlockPos to = new BlockPos(arr[0], arr[1], arr[2]);
+
+                sd.CATENARY_ADJACENCY.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
+                boolean isLow = tg.getBoolean("IsLow");
+                CatenaryConnectionData catenaryData = new CatenaryConnectionData(Float.isNaN(tg.getFloat("Temperature")) ? 0f : tg.getFloat("Temperature"), isLow);
+                sd.CATENARY_DATA.put(new CatenaryConnection(from, to), catenaryData);
+                sd.wireInfrastructure.addCatenaryConnection(new InWorldNodeConnection(new InWorldNode(0, from), new InWorldNode(0, to)), catenaryData, true);
             });
         });
-        try {
-            sd.wireConnectionManager.rebuild();
-        } catch (Throwable err) {
-            LOGGER.error("Could not build the wire connection graph!", err);
-        }
+
+//        try {
+//            sd.wireConnectionManager.rebuild();
+//        } catch (Throwable err) {
+//            LOGGER.error("Could not build the wire connection graph!", err);
+//        }
 
         return sd;
     }
@@ -270,11 +305,31 @@ public class InfrastructureSavedData extends SavedData {
                         Vec3 newPos = node.getPosition(level);
                         if (NODE_POSITIONS.replace(node, newPos) != newPos) {
                             for (InWorldNodeConnection connection : getConnections(node)) {
-                                wireConnectionManager.wireRemoved(connection);
-                                wireConnectionManager.wireAdded(connection, getConnectionData(connection));
+                                wireInfrastructure.removeConnection(connection);
+                                wireInfrastructure.addConnection(connection, getConnectionData(connection), false);
+//                                wireConnectionManager.wireRemoved(connection);
+//                                wireConnectionManager.wireAdded(connection, getConnectionData(connection));
                             }
                         }
                     }
+                    List<BlockPos> catenaryConnections = CATENARY_ADJACENCY.get(pos);
+                    if (catenaryConnections != null) {
+                        for (BlockPos neighbour : catenaryConnections) {
+                            BlockState startingState = level.getBlockState(pos);
+                            BlockState endingState = level.getBlockState(neighbour);
+                            boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+                            boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+                            boolean isLow = isStartingLow || isEndingLow;
+                            CatenaryConnectionData connectionData = CATENARY_DATA.get(new CatenaryConnection(pos, neighbour));
+                            if (connectionData != null && connectionData.isLow != isLow) {
+                                connectionData.isLow = isLow;
+                                InWorldNodeConnection nodeConnection = new InWorldNodeConnection(new InWorldNode(0, pos), new InWorldNode(0, neighbour));
+                                wireInfrastructure.removeConnection(nodeConnection);
+                                wireInfrastructure.addCatenaryConnection(nodeConnection, connectionData, false);
+                            }
+                        }
+                    }
+
                     return;
                 }
 
@@ -294,9 +349,11 @@ public class InfrastructureSavedData extends SavedData {
                     NODE_POSITIONS.put(node, node.getPosition(level));
 
                     for (InWorldNodeConnection connection : getConnections(node)) {
-                        wireConnectionManager.wireRemoved(connection);
+                        wireInfrastructure.removeConnection(connection);
+//                        wireConnectionManager.wireRemoved(connection);
                         if (NODES.containsKey(connection.node1()) && NODES.containsKey(connection.node2()))
-                        wireConnectionManager.wireAdded(connection, getConnectionData(connection));
+                            wireInfrastructure.addConnection(connection, getConnectionData(connection), false);
+//                            wireConnectionManager.wireAdded(connection, getConnectionData(connection));
                     }
                 }
 
@@ -313,7 +370,7 @@ public class InfrastructureSavedData extends SavedData {
                         for (InWorldNodeConnection connection : connections)
                             Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
 
-                        List<BlockPos> catenaryConnections = List.copyOf(CATENARY.getOrDefault(pos, new ArrayList<>()));
+                        List<BlockPos> catenaryConnections = List.copyOf(CATENARY_ADJACENCY.getOrDefault(pos, new ArrayList<>()));
                         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.COPPER_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
                         for (BlockPos connection : catenaryConnections)
                             removeCatenary(pos, connection);
@@ -357,7 +414,7 @@ public class InfrastructureSavedData extends SavedData {
                 for (InWorldNodeConnection connection : connections)
                     Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
 
-                List<BlockPos> catenaryConnections = List.copyOf(CATENARY.getOrDefault(pos, new ArrayList<>()));
+                List<BlockPos> catenaryConnections = List.copyOf(CATENARY_ADJACENCY.getOrDefault(pos, new ArrayList<>()));
                 Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.COPPER_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
                 for (BlockPos connection : catenaryConnections)
                     removeCatenary(pos, connection);
@@ -393,19 +450,17 @@ public class InfrastructureSavedData extends SavedData {
         WireData connectionData = CONNECTION_DATA.remove(connection);
         if (connectionData != null) {
             for (Pair<Float, WireAttachment> attachment : connectionData.attachments()) {
-                Vec3 pos;
-                if (connection.node1().compareTo(connection.node2()) > 0)
-                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), 1.0f - attachment.getFirst(), connectionData.wireType().getSag());
-                else
-                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), attachment.getFirst(), connectionData.wireType().getSag());
+                Vec3 pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), attachment.getFirst(), connectionData.wireType().getSag());
 
                 for (ItemStack stack : attachment.getSecond().getDrops(level))
                     Containers.dropItemStack(level, pos.x(), pos.y(), pos.z(), stack);
 
             }
         }
-        LoadedWireManager.handleWireRemoved(connection, level);
-        wireConnectionManager.wireRemoved(connection);
+
+        WireSync.handleWireRemoved(connection, level);
+        wireInfrastructure.removeConnection(connection);
+//        wireConnectionManager.wireRemoved(connection);
         setDirty();
         return connectionData;
     }
@@ -433,14 +488,14 @@ public class InfrastructureSavedData extends SavedData {
         CONNECTION_DATA.put(connection, data);
         setDirty();
 
-        LoadedWireManager.handleWireAdded(connection, data, level);
-        wireConnectionManager.wireAdded(connection, data);
-
+        WireSync.handleWireAdded(connection, data, level);
+//        wireConnectionManager.wireAdded(connection, data);
+        wireInfrastructure.addConnection(connection, data, false);
         return connection;
     }
 
     public boolean isConnected(InWorldNode node1, InWorldNode node2) {
-        return NODES.getOrDefault(node1, Collections.emptyList()).contains(node2) || (node1.id() == 0 && node2.id() == 0 && CATENARY.getOrDefault(node1.sourcePos(), Collections.emptyList()).contains(node2.sourcePos()));
+        return NODES.getOrDefault(node1, Collections.emptyList()).contains(node2) || (node1.id() == 0 && node2.id() == 0 && CATENARY_ADJACENCY.getOrDefault(node1.sourcePos(), Collections.emptyList()).contains(node2.sourcePos()));
     }
 
     public float getConnectionTemperature(InWorldNodeConnection connection) {
@@ -466,9 +521,11 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public void setConnectionData(InWorldNodeConnection connection, WireData data) {
-        LoadedWireManager.handleWireAdded(connection, data, level);
-        wireConnectionManager.wireRemoved(connection);
-        wireConnectionManager.wireAdded(connection, data);
+        WireSync.handleWireAdded(connection, data, level);
+        wireInfrastructure.removeConnection(connection);
+        wireInfrastructure.addConnection(connection, data, false);
+//        wireConnectionManager.wireRemoved(connection);
+//        wireConnectionManager.wireAdded(connection, data);
         CONNECTION_DATA.put(connection, data);
     }
 
@@ -515,30 +572,33 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public void connectCatenary(BlockPos pos1, BlockPos pos2) {
-        CATENARY.computeIfAbsent(pos1, k -> new ArrayList<>()).add(pos2);
-        CATENARY.computeIfAbsent(pos2, k -> new ArrayList<>()).add(pos1);
-        LoadedWireManager.handleCatenaryAdded(pos1, pos2, level);
+        CATENARY_ADJACENCY.computeIfAbsent(pos1, k -> new ArrayList<>()).add(pos2);
+        CATENARY_ADJACENCY.computeIfAbsent(pos2, k -> new ArrayList<>()).add(pos1);
+        BlockState startingState = level.getBlockState(pos1);
+        BlockState endingState = level.getBlockState(pos2);
+        boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+        boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+        boolean isLow = isStartingLow || isEndingLow;
+
+        CatenaryConnectionData data = new CatenaryConnectionData(0, isLow);
+        CATENARY_DATA.put(new CatenaryConnection(pos1, pos2), data);
+        InWorldNode node1 = new InWorldNode(0, pos1);
+        InWorldNode node2 = new InWorldNode(0, pos2);
+        wireInfrastructure.addCatenaryConnection(new InWorldNodeConnection(node1, node2), data, false);
+        WireSync.handleCatenaryAdded(pos1, pos2, level);
     }
 
     public void removeCatenary(BlockPos pos1, BlockPos pos2) {
-        CATENARY.computeIfAbsent(pos1, k -> new ArrayList<>()).remove(pos2);
-        CATENARY.computeIfAbsent(pos2, k -> new ArrayList<>()).remove(pos1);
-        LoadedWireManager.handleCatenaryRemoved(pos1, pos2, level);
+        CATENARY_ADJACENCY.computeIfAbsent(pos1, k -> new ArrayList<>()).remove(pos2);
+        CATENARY_ADJACENCY.computeIfAbsent(pos2, k -> new ArrayList<>()).remove(pos1);
+        CATENARY_DATA.remove(new CatenaryConnection(pos1, pos2));
+        InWorldNode node1 = new InWorldNode(0, pos1);
+        InWorldNode node2 = new InWorldNode(0, pos2);
+        wireInfrastructure.removeConnection(new InWorldNodeConnection(node1, node2));
+        WireSync.handleCatenaryRemoved(pos1, pos2, level);
     }
 
-    public List<CatenaryConnection> getAllCatenaryConnections() {
-        List<CatenaryConnection> connections = new ArrayList<>();
-        Map<BlockPos, List<BlockPos>> catenary = Map.copyOf(CATENARY);
-        for (Map.Entry<BlockPos, List<BlockPos>> e : catenary.entrySet()) {
-            BlockPos from = e.getKey();
-            for (BlockPos to : e.getValue())
-                if (!connections.contains(new CatenaryConnection(from, to)))
-                    connections.add(new CatenaryConnection(from, to));
-        }
-        return connections;
-    }
-
-    public WireConnectionManager getWireConnectionManager() {
-        return wireConnectionManager;
+    public Set<CatenaryConnection> getAllCatenaryConnections() {
+       return CATENARY_DATA.keySet();
     }
 }

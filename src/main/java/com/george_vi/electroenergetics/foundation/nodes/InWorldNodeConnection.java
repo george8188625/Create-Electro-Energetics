@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -16,7 +17,7 @@ import java.util.stream.IntStream;
  * InWorldNodeConnection(a, b) is equal to InWorldNodeConnection(b, a)
  * @see DirectionalInWorldNodeConnection
  */
-public final class InWorldNodeConnection {
+public final class InWorldNodeConnection implements Comparable<InWorldNodeConnection> {
     public static final Codec<InWorldNodeConnection> CODEC = Codec.INT_STREAM.comapFlatMap(
             s -> Util.fixedSize(s, 8).map(a -> new InWorldNodeConnection(new InWorldNode(a[0], new BlockPos(a[1], a[2], a[3])), new InWorldNode(a[4], new BlockPos(a[5], a[6], a[7])))),
             n -> IntStream.of(n.node1.id(), n.node1.sourcePos().getX(), n.node1.sourcePos().getY(), n.node1.sourcePos().getZ(), n.node2.id(), n.node2.sourcePos().getX(), n.node2.sourcePos().getY(), n.node2.sourcePos().getZ())
@@ -32,8 +33,14 @@ public final class InWorldNodeConnection {
     private final InWorldNode node2;
 
     public InWorldNodeConnection(InWorldNode node1, InWorldNode node2) {
-        this.node1 = node1;
-        this.node2 = node2;
+        // Canonicalize the connection
+        if (node1.compareTo(node2) >= 0) {
+            this.node1 = node1;
+            this.node2 = node2;
+        } else {
+            this.node1 = node2;
+            this.node2 = node1;
+        }
     }
 
     public InWorldNodeConnection(BlockPos pos, int id1, int id2) {
@@ -70,9 +77,13 @@ public final class InWorldNodeConnection {
         if (o == this) return true;
         if (o == null || o.getClass() != this.getClass()) return false;
         var that = (InWorldNodeConnection) o;
-        return (Objects.equals(this.node1, that.node1) &&
-                Objects.equals(this.node2, that.node2)) ||
-                (Objects.equals(this.node2, that.node1) &&
-                Objects.equals(this.node1, that.node2));
+        return node1.equals(that.node1) && node2.equals(that.node2);
+    }
+
+    @Override
+    public int compareTo(@NotNull InWorldNodeConnection o) {
+        int c = node1.compareTo(o.node1);
+        if (c != 0) return c;
+        return node2.compareTo(o.node2);
     }
 }

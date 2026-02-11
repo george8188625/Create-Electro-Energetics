@@ -4,15 +4,14 @@ import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.commands.CEECommands;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
-import com.george_vi.electroenergetics.content.railway_electrification.CatenaryHandler;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
-import com.george_vi.electroenergetics.content.wire.LoadedWireManager;
+import com.george_vi.electroenergetics.content.wire.WireSync;
 import com.george_vi.electroenergetics.client.WireEffects;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import net.minecraft.client.Minecraft;
@@ -59,8 +58,8 @@ public class GameEvents {
         if (!(event.getEntity() instanceof ServerPlayer player))
             return;
 
-        LoadedWireManager.unloadForPlayer(player);
-        LoadedWireManager.handlePlayerEnterNewSection(player, new ChunkPos(player.blockPosition()));
+        WireSync.unloadForPlayer(player);
+        WireSync.handlePlayerEnterNewSection(player, new ChunkPos(player.blockPosition()));
     }
 
     @SubscribeEvent
@@ -68,8 +67,8 @@ public class GameEvents {
         if (!(event.getEntity() instanceof ServerPlayer player))
             return;
 
-        LoadedWireManager.unloadForPlayer(player);
-        LoadedWireManager.handlePlayerEnterNewSection(player, new ChunkPos(player.blockPosition()));
+        WireSync.unloadForPlayer(player);
+        WireSync.handlePlayerEnterNewSection(player, new ChunkPos(player.blockPosition()));
     }
 
     @SubscribeEvent
@@ -80,7 +79,7 @@ public class GameEvents {
         if (event.getNewPos().getX() == event.getOldPos().getX() && event.getNewPos().getZ() == event.getOldPos().getZ())
             return;
 
-        LoadedWireManager.handlePlayerEnterNewSection(player, event.getNewPos().chunk());
+        WireSync.handlePlayerEnterNewSection(player, event.getNewPos().chunk());
     }
 
     @SubscribeEvent
@@ -122,16 +121,19 @@ public class GameEvents {
 
     @SubscribeEvent
     public static void addToElectricGraph(AddToElectricGraphEvent event) {
-        SimulationTicker.profiler.push("catenaryStuff");
-        CatenaryHandler.addToGraph(event);
-        SimulationTicker.profiler.pop();
+        InfrastructureSavedData sd = event.sd;
+        if (sd.wireInfrastructure.rebuild)
+            sd.wireInfrastructure.rebuild();
+
+        sd.catenaryModule.buildCircuit(event.builder);
+        sd.wireCrossContactModule.buildCircuit(event.builder);
+        sd.wireAssemblerModule.buildCircuit(event.builder);
     }
 
     @SubscribeEvent
     public static void finishElectricSimulation(FinishElectricSimulationEvent event) {
-        SimulationTicker.profiler.push("catenaryStuff");
-        CatenaryHandler.finishSimulation(event);
-        SimulationTicker.profiler.pop();
+        InfrastructureSavedData sd = event.sd;
+        sd.catenaryModule.finishSimulation(event.results);
     }
 
     @SubscribeEvent

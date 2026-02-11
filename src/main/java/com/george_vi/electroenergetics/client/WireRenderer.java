@@ -13,7 +13,7 @@ import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.simulation.WireData;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
@@ -68,14 +68,14 @@ public class WireRenderer {
         boolean renderImmediately = !VisualizationManager.supportsVisualization(mc.level);
         if (renderImmediately)
             for (CatenaryConnection connection : List.copyOf(CATENARY)) {
-                BlockState startingState = mc.level.getBlockState(connection.pos1);
-                BlockState endingState = mc.level.getBlockState(connection.pos2);
-                AABB bb = AABB.encapsulatingFullBlocks(connection.pos1, connection.pos2);
+                BlockState startingState = mc.level.getBlockState(connection.pos1());
+                BlockState endingState = mc.level.getBlockState(connection.pos2());
+                AABB bb = AABB.encapsulatingFullBlocks(connection.pos1(), connection.pos2());
                 if (!levelRenderer.getFrustum().isVisible(bb))
                     continue;
 
-                Vec3 start = Vec3.atCenterOf(connection.pos1).add(0, -0.5, 0);
-                Vec3 end = Vec3.atCenterOf(connection.pos2).add(0, -0.5, 0);
+                Vec3 start = Vec3.atCenterOf(connection.pos1()).add(0, -0.5, 0);
+                Vec3 end = Vec3.atCenterOf(connection.pos2()).add(0, -0.5, 0);
 
                 List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(start, end, 0, 10);
 
@@ -109,7 +109,7 @@ public class WireRenderer {
                 Vec3 topStart = start.add(0, 1.5, 0);
                 Vec3 topEnd = end.add(0, 1.5, 0);
 
-                float distance = (float) start.distanceTo(topEnd);
+                float distance = (float) topStart.distanceTo(topEnd);
 
 
                 List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 350f * (0.05f / distance), 4);
@@ -188,15 +188,9 @@ public class WireRenderer {
             mc.getProfiler().popPush("renderWireAttachments");
             for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
                 mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachment.getSecond().type).toString());
-                Vec3 offset;
-                float elevation;
-                if (wire.getFirst().node1().compareTo(wire.getFirst().node2()) > 0) {
-                    offset = QuadraticWireHelper.posAt(pos1, pos2, 1.0f - attachment.getFirst(), wireData.wireType().getSag());
-                    elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, 1.0f - attachment.getFirst(), wireData.wireType().getSag());
-                } else {
-                    offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
-                    elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
-                }
+                Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
+                float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
+
                 if (offset.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
                     continue;
 

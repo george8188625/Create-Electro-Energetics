@@ -69,12 +69,12 @@ public class CatenaryHolderBlock extends SimpleDeviceBlock implements IBE<Catena
 
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        return Map.of(0, new Vec3(8/16f, (state.getValue(STYLE).isLow() ? 2 : 22)/16f, 8/16f));
+        return Map.of(0, new Vec3(8/16f, (state.getValue(STYLE).isLow() ? 0.5 : 22)/16f, 8/16f));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
-        return new Vec3(8/16f, (state.getValue(STYLE).isLow() ? 2 : 22)/16f, 8/16f);
+        return new Vec3(8/16f, (state.getValue(STYLE).isLow() ? 0.5 : 22)/16f, 8/16f);
     }
 
     @Override

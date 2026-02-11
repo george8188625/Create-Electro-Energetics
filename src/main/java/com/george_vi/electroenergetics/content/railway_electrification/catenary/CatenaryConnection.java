@@ -5,18 +5,26 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.Vec3;
 
-public class CatenaryConnection {
+import java.util.Objects;
+
+/**
+ * This class holds a catenary connection between two {@link BlockPos}.
+ * These connections are bidirectional.
+ * That means, for a connection between a and b, where a and b are two {@link BlockPos}:
+ * CatenaryConnection(a, b) is equal to CatenaryConnection(b, a)
+ */
+public record CatenaryConnection(BlockPos pos1, BlockPos pos2) {
     public static final StreamCodec<ByteBuf, CatenaryConnection> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, c -> c.pos1,
             BlockPos.STREAM_CODEC, c -> c.pos2,
             CatenaryConnection::new
     );
-    public final BlockPos pos1;
-    public final BlockPos pos2;
 
-    public CatenaryConnection(BlockPos pos1, BlockPos pos2) {
-        this.pos1 = pos1;
-        this.pos2 = pos2;
+    /**
+     * Returns true if the specified pos is a part of this connection.
+     */
+    public boolean isAny(BlockPos pos) {
+        return pos1.equals(pos) || pos2.equals(pos);
     }
 
     public Vec3 getStartPos() {
@@ -28,19 +36,19 @@ public class CatenaryConnection {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (CatenaryConnection) obj;
-        return pos1.equals(that.pos1) && pos2.equals(that.pos2);
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (o == null || o.getClass() != this.getClass()) return false;
+        var that = (CatenaryConnection) o;
+        return (Objects.equals(this.pos1, that.pos1) &&
+                Objects.equals(this.pos2, that.pos2)) ||
+                (Objects.equals(this.pos2, that.pos1) &&
+                        Objects.equals(this.pos1, that.pos2));
     }
 
     @Override
     public int hashCode() {
-        int result = 31 + ((pos1.getY() + pos1.getZ() * 31) * 31 + pos1.getX());
-        result = 31 * result + (pos2.getY() + pos2.getZ() * 31) * 31 + pos2.getX();
-        result ^= (result >>> 16);
-        return result;
+        return pos1.hashCode() ^ pos2.hashCode();
     }
 
     @Override

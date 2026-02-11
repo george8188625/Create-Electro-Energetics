@@ -6,8 +6,8 @@ import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionB
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.WireData;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import net.createmod.catnip.data.Pair;
@@ -26,8 +26,6 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
     public void interactWire(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
         if (!(level instanceof ServerLevel sl))
             return;
-        if (point.node1().compareTo(point.node2()) > 0)
-            point = point.reverse();
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
         WireData data = sd.getConnectionData(new InWorldNodeConnection(point.node1(), point.node2()));
@@ -36,11 +34,7 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
             Pair<Float, WireAttachment> attachment = attachments.get(i);
             if (Math.abs(point.point() - attachment.getFirst()) * Math.sqrt(point.node1().sourcePos().distSqr(point.node2().sourcePos())) < attachment.getSecond().getWidth() / 2 + 0.25) {
                 AllSoundEvents.WRENCH_REMOVE.playOnServer(level, BlockPos.containing(point.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), data.wireType().getSag())));
-                Vec3 pos;
-                if (point.node1().compareTo(point.node2()) > 0)
-                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), 1.0f - attachment.getFirst(), data.wireType().getSag());
-                else
-                    pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), attachment.getFirst(), data.wireType().getSag());
+                Vec3 pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), 1.0f - attachment.getFirst(), data.wireType().getSag());
                 for (ItemStack drop : attachment.getSecond().getDrops(level))
                     Containers.dropItemStack(level, pos.x, pos.y, pos.z, drop);
                 attachments.remove(i);

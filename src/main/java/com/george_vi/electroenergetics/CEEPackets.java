@@ -5,11 +5,8 @@ import com.george_vi.electroenergetics.content.railway_electrification.catenary.
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ChangeTrainSoundTypePacket;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.content.energy_meter.ChangeEnergyMeterStatePacket;
-import com.george_vi.electroenergetics.content.wire.ClearWireConnectionsPacket;
-import com.george_vi.electroenergetics.content.wire.SendQuadraticParticlesPacket;
-import com.george_vi.electroenergetics.content.wire.SendWireParticlesPacket;
+import com.george_vi.electroenergetics.content.wire.*;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;
-import com.george_vi.electroenergetics.content.wire.SendWireConnectionsPacket;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.RequestVoltageDataPacket;
 import com.george_vi.electroenergetics.simulation.SendVoltageDataPacket;
@@ -33,6 +30,7 @@ public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     CHANGE_TRAIN_SOUND_TYPE(ChangeTrainSoundTypePacket.class, ChangeTrainSoundTypePacket.STREAM_CODEC),
     SEND_SPARK(SendSparkPacket.class, SendSparkPacket.STREAM_CODEC),
     SEND_WIRE_PARTICLE(SendWireParticlesPacket.class, SendWireParticlesPacket.STREAM_CODEC),
+    SEND_POSITIONED_WIRE_PARTICLE(SendPositionedWireParticlesPacket.class, SendPositionedWireParticlesPacket.STREAM_CODEC),
     SEND_QUADRATIC_PARTICLES(SendQuadraticParticlesPacket.class, SendQuadraticParticlesPacket.STREAM_CODEC),
     REQUEST_VOLTAGE_DATA(RequestVoltageDataPacket.class, RequestVoltageDataPacket.STREAM_CODEC),
     ;

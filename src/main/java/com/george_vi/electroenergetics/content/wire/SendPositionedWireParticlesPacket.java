@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.wire;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
@@ -15,22 +15,18 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public record SendWireParticlesPacket(InWorldNode node1, InWorldNode node2, ParticleOptions options, Float sag, float chance) implements ClientboundPacketPayload {
-    public static final StreamCodec<RegistryFriendlyByteBuf, SendWireParticlesPacket> STREAM_CODEC = StreamCodec.composite(
-            InWorldNode.STREAM_CODEC, SendWireParticlesPacket::node1,
-            InWorldNode.STREAM_CODEC, SendWireParticlesPacket::node2,
-            ParticleTypes.STREAM_CODEC, SendWireParticlesPacket::options,
-            ByteBufCodecs.FLOAT, SendWireParticlesPacket::sag,
-            ByteBufCodecs.FLOAT, SendWireParticlesPacket::chance,
-            SendWireParticlesPacket::new
+public record SendPositionedWireParticlesPacket(Vec3 pos1, Vec3 pos2, ParticleOptions options, Float sag, float chance) implements ClientboundPacketPayload {
+    public static final StreamCodec<RegistryFriendlyByteBuf, SendPositionedWireParticlesPacket> STREAM_CODEC = StreamCodec.composite(
+            CatnipStreamCodecs.VEC3, SendPositionedWireParticlesPacket::pos1,
+            CatnipStreamCodecs.VEC3, SendPositionedWireParticlesPacket::pos2,
+            ParticleTypes.STREAM_CODEC, SendPositionedWireParticlesPacket::options,
+            ByteBufCodecs.FLOAT, SendPositionedWireParticlesPacket::sag,
+            ByteBufCodecs.FLOAT, SendPositionedWireParticlesPacket::chance,
+            SendPositionedWireParticlesPacket::new
     );
 
     @Override
     public void handle(LocalPlayer player) {
-        Vec3 pos1 = node1.getPosition(player.level());
-        Vec3 pos2 = node2.getPosition(player.level());
-        if (pos1 == null || pos2 == null)
-            return;
 
         List<Vec3> cablePoints = QuadraticWireHelper.cablePoints(pos1, pos2, sag);
         cablePoints.add(pos2);
@@ -48,6 +44,6 @@ public record SendWireParticlesPacket(InWorldNode node1, InWorldNode node2, Part
 
     @Override
     public PacketTypeProvider getTypeProvider() {
-        return CEEPackets.SEND_WIRE_PARTICLE;
+        return CEEPackets.SEND_POSITIONED_WIRE_PARTICLE;
     }
 }

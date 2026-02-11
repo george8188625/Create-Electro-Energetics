@@ -1,12 +1,14 @@
 package com.george_vi.electroenergetics.client;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
-import com.george_vi.electroenergetics.simulation.WireData;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
@@ -58,12 +60,20 @@ public class WireEffects {
         for (CatenaryConnection connection : WireRenderer.CATENARY) {
 //            InWorldNodeConnection connection = wire.getFirst();
 //
-            Vec3 pos1 = connection.pos1.getBottomCenter();
-            Vec3 pos2 = connection.pos2.getBottomCenter();
+            Vec3 pos1 = connection.pos1().getBottomCenter();
+            Vec3 pos2 = connection.pos2().getBottomCenter();
 
             List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 0);
 
             spawnDrippingWater(points);
+
+            BlockState startingState = mc.level.getBlockState(connection.pos1());
+            BlockState endingState = mc.level.getBlockState(connection.pos2());
+
+            boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+            boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+            if (isStartingLow || isEndingLow)
+                continue;
 
             Vec3 topPos1 = pos1.add(0, 1.5, 0);
             Vec3 topPos2 = pos2.add(0, 1.5, 0);
@@ -73,19 +83,19 @@ public class WireEffects {
             List<Vec3> topPoints = QuadraticWireHelper.cablePoints(topPos1, topPos2, 350f * (0.05f / distance), 4);
 
             spawnDrippingWater(topPoints);
-//            BlockState state1 = mc.level.getBlockState(connection.node1().sourcePos());
-//            BlockState state2 = mc.level.getBlockState(connection.node2().sourcePos());
+//            BlockState state1 = mc.level.getBlockState(connection.pos1().sourcePos());
+//            BlockState state2 = mc.level.getBlockState(connection.pos2().sourcePos());
 //
 //            if (state1.getBlock() instanceof DeviceBlock db)
-//                pos1 = db.getNodePosition(mc.level, connection.node1().sourcePos(), state1, connection.node1().id());
+//                pos1 = db.getNodePosition(mc.level, connection.pos1().sourcePos(), state1, connection.pos1().id());
 //            if (state2.getBlock() instanceof DeviceBlock db)
-//                pos2 = db.getNodePosition(mc.level, connection.node2().sourcePos(), state2, connection.node2().id());
+//                pos2 = db.getNodePosition(mc.level, connection.pos2().sourcePos(), state2, connection.pos2().id());
 //
 //            if (pos1 == null || pos2 == null)
 //                continue;
 //
-//            BlockPos devicePos1 = connection.node1().sourcePos();
-//            BlockPos devicePos2 = connection.node2().sourcePos();
+//            BlockPos devicePos1 = connection.pos1().sourcePos();
+//            BlockPos devicePos2 = connection.pos2().sourcePos();
 //            pos1 = pos1.add(devicePos1.getX(), devicePos1.getY(), devicePos1.getZ());
 //            pos2 = pos2.add(devicePos2.getX(), devicePos2.getY(), devicePos2.getZ());
 //

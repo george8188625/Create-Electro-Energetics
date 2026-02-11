@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.client;
 
-import com.george_vi.electroenergetics.simulation.WireData;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 
 public class ClientWireData {
     public WireData wireData;

@@ -1,27 +1,26 @@
 package com.george_vi.electroenergetics.content.railway_electrification.pantograph;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
-import com.george_vi.electroenergetics.client.WireEffects;
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
-import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -82,33 +81,30 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             pantographPos = context.rotation.apply(pantographPos);
             pantographPos = pantographPos.add(context.position);
 
-            List<CatenaryConnection> allCatenaryConnections = WireRenderer.CATENARY;
             Vec3 connectionPoint = null;
             if (CEEConfigs.client().debugPantographRange.get())
                 context.world.addParticle(ParticleTypes.SCRAPE, pantographPos.x, pantographPos.y, pantographPos.z, 0, 0, 0);
-            for (CatenaryConnection connection : allCatenaryConnections) {
-                Vec3 start = connection.pos1.getBottomCenter();
-                Vec3 end = connection.pos2.getBottomCenter();
-
-                double t = 0;
-
-                Vec3 ab = end.subtract(start);
-                Vec3 ap = pantographPos.subtract(start);
-                double denom = ab.lengthSqr();
-                if (denom != 0) {
-                    t = ap.dot(ab) / denom;
-                    t = Math.max(0, Math.min(1, t));
+            for (CatenaryConnection connection : WireRenderer.CATENARY) {
+                Vec3 start = connection.pos1().getBottomCenter();
+                Vec3 end = connection.pos2().getBottomCenter();
+                Vec3 cp = checkCatenary(start, end, pantographPos, context, halfPantoReach);
+                if (cp != null) {
+                    if (connectionPoint == null || connectionPoint.y > cp.y)
+                        connectionPoint = cp;
                 }
+            }
 
-                Vec3 closest = VecHelper.lerp((float) t, start, end);
-
-                Vec3 distance = pantographPos.subtract(closest);
-                context.rotation.apply(distance).multiply(0, 0, 0);
-                float xTol = (float) ((distance.y + halfPantoReach) * 0.2f + 0.125f);
-//                context.world.addParticle(ParticleTypes.ELECTRIC_SPARK, closest.x, closest.y, closest.z, 0, 0, 0);
-                if (Math.abs(distance.z) < 1.5 && Math.abs(distance.x) < xTol && Math.abs(distance.y) < halfPantoReach) {
-                    connectionPoint = closest;
-                    break;
+            for (Pair<InWorldNodeConnection, WireData> connection : WireRenderer.WIRE_CONNECTIONS) {
+                if (connection.getSecond().wireType() != CEEWireTypes.IRON_BUS.get())
+                    continue;
+                Vec3 start = connection.getFirst().node1().getPosition(context.world);
+                Vec3 end = connection.getFirst().node2().getPosition(context.world);
+                if (start == null || end == null)
+                    continue;
+                Vec3 cp = checkCatenary(start, end, pantographPos, context, halfPantoReach);
+                if (cp != null) {
+                    if (connectionPoint == null || connectionPoint.y > cp.y)
+                        connectionPoint = cp;
                 }
             }
 
@@ -362,6 +358,29 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                     .useLevelLight(context.world, matrices.getWorld())
                     .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
         }
+    }
+
+    Vec3 checkCatenary(Vec3 start, Vec3 end, Vec3 pantographPos, MovementContext context, float halfPantoReach) {
+
+        double t = 0;
+
+        Vec3 ab = end.subtract(start);
+        Vec3 ap = pantographPos.subtract(start);
+        double denom = ab.lengthSqr();
+        if (denom != 0) {
+            t = ap.dot(ab) / denom;
+            t = Math.max(0, Math.min(1, t));
+        }
+
+        Vec3 closest = VecHelper.lerp((float) t, start, end);
+
+        Vec3 distance = pantographPos.subtract(closest);
+        context.rotation.apply(distance).multiply(0, 0, 0);
+        float xTol = (float) ((distance.y + halfPantoReach) * 0.2f + 0.125f);
+        if (Math.abs(distance.z) < 1.5 && Math.abs(distance.x) < xTol && Math.abs(distance.y) < halfPantoReach)
+            return closest;
+
+        return null;
     }
 
     @Override

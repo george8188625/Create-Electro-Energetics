@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import net.createmod.catnip.platform.CatnipServices;

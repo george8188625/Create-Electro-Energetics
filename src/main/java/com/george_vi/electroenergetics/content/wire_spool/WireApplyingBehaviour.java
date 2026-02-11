@@ -14,7 +14,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.RequestVoltageDataPacket;
-import com.george_vi.electroenergetics.simulation.WireData;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.simibubi.create.AllSpecialTextures;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.lang.FontHelper;

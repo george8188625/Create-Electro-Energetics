@@ -7,6 +7,7 @@ import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnectio
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.*;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import com.george_vi.electroenergetics.simulation.util.LUSolver;
 import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
@@ -69,10 +70,6 @@ public class SimulationTicker {
             SimulatedDevice device = deviceInstance.simulatedDevice();
             device.preTick(deviceInstance.pos(), level, bridgeCollector, deviceInstance.extraData());
         }
-
-        profiler.popPush("connectWires");
-
-        sd.getWireConnectionManager().buildCircuit(circuitBuilder);
 
         profiler.popPush("addToGraphEvent");
 
@@ -224,7 +221,8 @@ public class SimulationTicker {
 
         profiler.popPush("finish");
 
-        sd.getWireConnectionManager().finish(allSimulationResults);
+//        sd.getWireConnectionManager().finish(allSimulationResults);
+        sd.wireLifetimeModule.finishSimulation(allSimulationResults);
 
         NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(allSimulationResults, level, sd));
 

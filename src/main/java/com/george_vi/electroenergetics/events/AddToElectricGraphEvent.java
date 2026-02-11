@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.events;
 
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.Event;
 

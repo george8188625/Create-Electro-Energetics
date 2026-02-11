@@ -6,7 +6,7 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlock;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllShapes;
@@ -81,9 +81,9 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (state.getValue(STYLE) == Style.LONG)
+        if (state.getValue(STYLE) == Style.LONG || state.getValue(STYLE) == Style.LONG_HANGER)
             return AllShapes.FOUR_VOXEL_POLE.get(state.getValue(FACING).getAxis());
-        if (state.getValue(STYLE) == Style.SHORT)
+        if (state.getValue(STYLE) == Style.SHORT || state.getValue(STYLE) == Style.HANGER)
             return CEEShapes.CONNECTOR.get(state.getValue(FACING));
         return CEEShapes.CONNECTOR_SHORT.get(state.getValue(FACING));
     }
@@ -110,18 +110,18 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
 
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        if (state.getValue(STYLE) == Style.LONG)
+        if (state.getValue(STYLE) == Style.LONG || state.getValue(STYLE) == Style.LONG_HANGER)
             return CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodes(state.getValue(FACING));
-        if (state.getValue(STYLE) == Style.SHORT)
+        if (state.getValue(STYLE) == Style.SHORT || state.getValue(STYLE) == Style.HANGER)
             return Map.of(0, new Vec3(0.5, 0.5, 0.5));
         return CEENodeConfigurations.SHORT_CONNECTOR.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
-        if (state.getValue(STYLE) == Style.LONG)
+        if (state.getValue(STYLE) == Style.LONG || state.getValue(STYLE) == Style.LONG_HANGER)
             return CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodePos(state.getValue(FACING), id);
-        if (state.getValue(STYLE) == Style.SHORT)
+        if (state.getValue(STYLE) == Style.SHORT || state.getValue(STYLE) == Style.HANGER)
             return new Vec3(0.5, 0.5, 0.5);
         return CEENodeConfigurations.SHORT_CONNECTOR.getNodePos(state.getValue(FACING), id);
     }
@@ -164,7 +164,10 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
         SHORTER("short"),
         LONG("long"),
         UNINSULATED("outer"),
-        OUTER("outer");
+        OUTER("outer"),
+        SHORT_HANGER("short_hanger"),
+        HANGER("hanger"),
+        LONG_HANGER("long_hanger");
 
         public final String suffix;
 

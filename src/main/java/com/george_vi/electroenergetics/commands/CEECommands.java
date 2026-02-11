@@ -1,7 +1,9 @@
 package com.george_vi.electroenergetics.commands;
 
-import com.george_vi.electroenergetics.simulation.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.ConnectionEntry;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireCrossContactModule;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
 import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
@@ -16,10 +18,14 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -53,6 +59,11 @@ public class CEECommands {
                         .requires(cs -> cs.hasPermission(2))
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .executes(CEECommands::deviceData))
+            ).then(
+                    Commands.literal("debug")
+                            .requires(cs -> cs.hasPermission(2))
+                            .then(Commands.literal("cross_contact").executes(CEECommands::showCrossContact))
+                            .then(Commands.literal("points").executes(CEECommands::points))
             ).then(
                 Commands.literal("devices")
                         .requires(cs -> cs.hasPermission(2))
@@ -126,6 +137,38 @@ public class CEECommands {
         }
 
         source.sendSuccess(() -> Component.literal("-+------------------------------------+-"), false);
+        return 1;
+    }
+
+    public static int showCrossContact(CommandContext<CommandSourceStack> ctx) {
+        CommandSourceStack source = ctx.getSource();
+        ServerPlayer player = source.getPlayer();
+        if (player == null)
+            return 1;
+        ServerLevel level = source.getLevel();
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        for (WireCrossContactModule.CrossContactEntry cce : sd.wireCrossContactModule.crossContacts.values()) {
+            if (cce.pos1().distanceToSqr(player.position()) < 30 * 30) {
+                level.sendParticles(player, ParticleTypes.SNEEZE, true, cce.pos1().x, cce.pos1().y, cce.pos1().z, 3, 0, 0, 0, 0);
+                level.sendParticles(player, ParticleTypes.SCRAPE, true, cce.pos1().x, cce.pos1().y, cce.pos1().z, 3, 0, 0, 0, 0);
+            }
+        }
+        return 1;
+    }
+
+    private static int points(CommandContext<CommandSourceStack> ctx) {
+        CommandSourceStack source = ctx.getSource();
+        ServerPlayer player = source.getPlayer();
+        if (player == null)
+            return 1;
+        ServerLevel level = source.getLevel();
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        for (ConnectionEntry ce : sd.wireInfrastructure.connections.values()) {
+            for (Vec3 point : ce.points) {
+                if (point.distanceToSqr(player.position()) < 30 * 30)
+                    level.sendParticles(player, ParticleTypes.SCRAPE, true, point.x, point.y, point.z, 3, 0, 0, 0, 0);
+            }
+        }
         return 1;
     }
 
