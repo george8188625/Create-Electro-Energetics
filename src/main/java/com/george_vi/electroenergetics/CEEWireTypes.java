@@ -21,84 +21,97 @@ public class CEEWireTypes {
     private static final DeferredRegister<WireType> WIRE_TYPES =
             DeferredRegister.create(CEERegistries.WIRE_TYPE, CreateElecrtoEnergetics.ID);
 
-    public static final DeferredHolder<WireType, WireType> COPPER = WIRE_TYPES.register("copper", () -> new WireType(
-            CEEConfigs.server().resistanceValues.wireResistance::get,
-            CEEPartialModels.COPPER_WIRE_SEGMENT,
-            () -> getFromTag(CEETags.COPPER_WIRE), CEEItems.COPPER_WIRE_SPOOL::get,
-            0d,
-            () -> 0d, () -> null, () -> 5000,
-            1f,
-            CEEConfigs.server().maxWireLength::get));
+    public static final DeferredHolder<WireType, WireType> COPPER = WIRE_TYPES.register("copper", () -> new WireType.Builder(CEEPartialModels.COPPER_WIRE_SEGMENT)
+            .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+            .droppedItem(() -> getFromTag(CEETags.COPPER_WIRE))
+            .spoolItem(CEEItems.COPPER_WIRE_SPOOL::get)
+            .maxTemperature(() -> 5000)
+            .maxLength(CEEConfigs.server().maxWireLength::get)
+            .build());
 
-    public static final DeferredHolder<WireType, WireType> STANDARD = WIRE_TYPES.register("standard", () -> new WireType(
-            CEEConfigs.server().resistanceValues.wireResistance::get,
-            CEEPartialModels.WIRE_SEGMENT,
-            CEEItems.INSULATED_WIRE, CEEItems.WIRE_SPOOL::get,
-            33_0000,
-            CEEConfigs.server().voltageValues.wireMaxVoltage::get, COPPER,
-            () -> 3540,
-            1f,
-            CEEConfigs.server().maxWireLength::get));
+    public static final DeferredHolder<WireType, WireType> STANDARD = WIRE_TYPES.register("standard", () -> new WireType.Builder(CEEPartialModels.WIRE_SEGMENT)
+            .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+            .droppedItem(CEEItems.INSULATED_WIRE)
+            .spoolItem(CEEItems.COPPER_WIRE_SPOOL::get)
+            .maxInsulationVoltage(CEEConfigs.server().voltageValues.wireMaxVoltage::get)
+            .maxTemperature(() -> 3540)
+            .replaceOnOverheated(COPPER)
+            .insulationResistance(330_000)
+            .maxLength(CEEConfigs.server().maxWireLength::get)
+            .build());
 
-    public static final DeferredHolder<WireType, WireType> HEAVILY_INSULATED = WIRE_TYPES.register("heavily_insulated", () -> new WireType(
-            CEEConfigs.server().resistanceValues.wireResistance::get,
-            CEEPartialModels.HEAVILY_INSULATED_WIRE_SEGMENT,
-            CEEItems.HEAVILY_INSULATED_WIRE, CEEItems.HEAVILY_INSULATED_WIRE_SPOOL::get,
-            66_0000,
-            CEEConfigs.server().voltageValues.heavilyInsulatedWireMaxVoltage::get, COPPER,
-            () -> 3540,
-            0.7f,
-            CEEConfigs.server().maxHeavilyInsulatedWireLength::get));
+    public static final DeferredHolder<WireType, WireType> HEAVILY_INSULATED = WIRE_TYPES.register("heavily_insulated", () -> new WireType.Builder(CEEPartialModels.HEAVILY_INSULATED_WIRE_SEGMENT)
+            .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+            .droppedItem(CEEItems.HEAVILY_INSULATED_WIRE)
+            .spoolItem(CEEItems.HEAVILY_INSULATED_WIRE_SPOOL::get)
+            .maxInsulationVoltage(CEEConfigs.server().voltageValues.heavilyInsulatedWireMaxVoltage::get)
+            .maxTemperature(() -> 3540)
+            .replaceOnOverheated(COPPER)
+            .insulationResistance(660_000)
+            .maxLength(CEEConfigs.server().maxHeavilyInsulatedWireLength::get)
+            .sag(0.7f)
+            .thickness(3/16f)
+            .build());
 
-    public static final DeferredHolder<WireType, WireType> CREATIVE = WIRE_TYPES.register("creative", () -> new WireType(
-            () -> 0.00001d,
-            CEEPartialModels.CREATIVE_WIRE_SEGMENT,
-            () -> Items.AIR, CEEItems.CREATIVE_WIRE_SPOOL::get,
-            1e+11d,
-            () -> 1e+11d, () -> null, () -> 9999999,
-            1f,
-            CEEConfigs.server().maxWireLength::get));
+    public static final DeferredHolder<WireType, WireType> CREATIVE = WIRE_TYPES.register("creative", () -> new WireType.Builder(CEEPartialModels.CREATIVE_WIRE_SEGMENT)
+            .resistance(() -> 0.00001d)
+            .spoolItem(CEEItems.CREATIVE_WIRE_SPOOL::get)
+            .maxInsulationVoltage(() -> 1e+11d)
+            .maxTemperature(() -> 1e+11d)
+            .insulationResistance(1e+11d)
+            .maxLength(CEEConfigs.server().maxWireLength::get)
+            .build());
 
-    public static final DeferredHolder<WireType, WireType> IRON = WIRE_TYPES.register("iron", () -> new WireType(
-            CEEConfigs.server().resistanceValues.ironWireResistance::get,
-            CEEPartialModels.IRON_WIRE_SEGMENT, () -> getFromTag(AllTags.commonItemTag("wires/iron")),
-            CEEItems.IRON_WIRE_SPOOL::get,
-            0,
-            () -> 0d, () -> null, () -> 6000,
-            1f,
-            CEEConfigs.server().maxWireLength::get));
+    public static final DeferredHolder<WireType, WireType> IRON = WIRE_TYPES.register("iron", () -> new WireType.Builder(CEEPartialModels.IRON_WIRE_SEGMENT)
+            .resistance(CEEConfigs.server().resistanceValues.ironWireResistance::get)
+            .droppedItem(CEEItems.IRON_WIRE_STRAND)
+            .spoolItem(CEEItems.IRON_WIRE_SPOOL::get)
+            .maxTemperature(() -> 6000)
+            .maxLength(CEEConfigs.server().maxWireLength::get)
+            .build());
 
-    public static final DeferredHolder<WireType, WireType> IRON_BUS = WIRE_TYPES.register("iron_bus", () -> new WireType(
-            CEEConfigs.server().resistanceValues.ironWireResistance::get,
-            CEEPartialModels.IRON_BUS_SEGMENT, Items.IRON_INGOT::asItem,
-            CEEItems.IRON_BUS_SPOOL::get,
-            0,
-            () -> 0d, () -> null, () -> 10000,
-            0f,
-            CEEConfigs.server().maxBusWireLength::get));
+    public static final DeferredHolder<WireType, WireType> IRON_BUS = WIRE_TYPES.register("iron_bus", () -> new WireType.Builder(CEEPartialModels.IRON_BUS_SEGMENT)
+            .resistance(CEEConfigs.server().resistanceValues.ironWireResistance::get)
+            .droppedItem(Items.IRON_INGOT::asItem)
+            .spoolItem(CEEItems.IRON_BUS_SPOOL::get)
+            .maxTemperature(() -> 10000)
+            .maxLength(CEEConfigs.server().maxBusWireLength::get)
+            .sag(0f)
+            .thickness(2/16f)
+            .build());
 
-    public static final DeferredHolder<WireType, WireType> ELECTRUM = WIRE_TYPES.register("electrum", () -> new WireType(
-            CEEConfigs.server().resistanceValues.electrumWireResistance::get,
-            CEEPartialModels.ELECTRUM_WIRE_SEGMENT, () -> getFromTag(CEETags.ELECTRUM_WIRE),
-            CEEItems.ELECTRUM_WIRE_SPOOL::get,
-            0,
-            () -> 0d, () -> null, () -> 3540,
-            1f,
-            CEEConfigs.server().maxWireLength::get));
+    public static final DeferredHolder<WireType, WireType> IRON_RAIL = WIRE_TYPES.register("iron_rail", () -> new WireType.Builder(CEEPartialModels.IRON_RAIL_SEGMENT)
+            .resistance(CEEConfigs.server().resistanceValues.ironWireResistance::get)
+            .droppedItem(() -> getFromTag(CEETags.IRON_RAIL_COMPONENT))
+            .spoolItem(CEEItems.IRON_BUS_SPOOL::get)
+            .maxTemperature(() -> 15000)
+            .maxLength(CEEConfigs.server().maxBusWireLength::get)
+            .sag(0f)
+            .thickness(4/16f)
+            .build());
+
+    public static final DeferredHolder<WireType, WireType> ELECTRUM = WIRE_TYPES.register("electrum", () -> new WireType.Builder(CEEPartialModels.ELECTRUM_WIRE_SEGMENT)
+            .resistance(CEEConfigs.server().resistanceValues.electrumWireResistance::get)
+            .droppedItem(() -> getFromTag(CEETags.ELECTRUM_WIRE))
+            .spoolItem(CEEItems.ELECTRUM_WIRE_SPOOL::get)
+            .maxTemperature(() -> 3540)
+            .maxLength(CEEConfigs.server().maxWireLength::get)
+            .build());
 
     public static final Map<DyeColor, DeferredHolder<WireType, WireType>> COLORED_WIRES = new HashMap<>();
 
     static {
         for (DyeColor color : DyeColor.values()) {
-            COLORED_WIRES.put(color, WIRE_TYPES.register("colored_" + color.getName(), () -> new WireType(
-                        CEEConfigs.server().resistanceValues.wireResistance::get,
-                        CEEPartialModels.COLORED_WIRE_SEGMENTS.get(color),
-                        CEEItems.INSULATED_WIRE, CEEItems.WIRE_SPOOL::get,
-                        33_0000,
-                        CEEConfigs.server().voltageValues.wireMaxVoltage::get, COPPER,
-                        () -> 3540,
-                        1f,
-                        CEEConfigs.server().maxWireLength::get)));
+            COLORED_WIRES.put(color, WIRE_TYPES.register("colored_" + color.getName(), () -> new WireType.Builder(CEEPartialModels.COLORED_WIRE_SEGMENTS.get(color))
+                    .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+                    .droppedItem(CEEItems.INSULATED_WIRE)
+                    .spoolItem(CEEItems.COPPER_WIRE_SPOOL::get)
+                    .maxInsulationVoltage(CEEConfigs.server().voltageValues.wireMaxVoltage::get)
+                    .maxTemperature(() -> 3540)
+                    .replaceOnOverheated(COPPER)
+                    .insulationResistance(330_000)
+                    .maxLength(CEEConfigs.server().maxWireLength::get)
+                    .build()));
         }
     }
 

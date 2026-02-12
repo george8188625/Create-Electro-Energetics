@@ -1,7 +1,9 @@
 package com.george_vi.electroenergetics.simulation;
 
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
@@ -35,8 +37,9 @@ public class WireType {
     final DoubleSupplier maxTemperature;
     final float sag;
     final IntSupplier maxLength;
+    final float thickness;
 
-    public WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage, Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength) {
+    WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage, Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength, float thickness) {
         this.resistance = resistance;
         this.model = model;
         this.droppedItem = droppedItem;
@@ -47,6 +50,7 @@ public class WireType {
         this.maxTemperature = maxTemperature;
         this.sag = sag;
         this.maxLength = maxLength;
+        this.thickness = thickness;
     }
 
     public Item getDrops() {
@@ -91,5 +95,82 @@ public class WireType {
 
     public boolean insulated() {
         return insulationResistance > 1;
+    }
+
+    public float getThickness() {
+        return thickness;
+    }
+
+    public static class Builder {
+
+        DoubleSupplier resistance = () -> CEEConfigs.server().resistanceValues.wireResistance.get();
+        PartialModel model;
+        Supplier<Item> droppedItem = () -> Items.AIR;
+        Supplier<Item> spoolItem = () -> Items.AIR;
+        double insulationResistance = 0;
+        DoubleSupplier maxInsulationVoltage = () -> 0;
+        Supplier<WireType> overheatedReplacement = () -> null;
+        DoubleSupplier maxTemperature = () -> 1000;
+        float sag = 1;
+        IntSupplier maxLength = () -> CEEConfigs.server().maxWireLength.get();
+        float thickness = 1/16f;
+
+        public WireType build() {
+            return new WireType(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage, overheatedReplacement, maxTemperature, sag, maxLength, thickness);
+        }
+
+        public Builder(PartialModel model) {
+            this.model = model;
+        }
+
+        public Builder resistance(DoubleSupplier v) {
+            resistance = v;
+            return this;
+        }
+
+        public Builder droppedItem(Supplier<Item> v) {
+            droppedItem = v;
+            return this;
+        }
+
+        public Builder spoolItem(Supplier<Item> v) {
+            spoolItem = v;
+            return this;
+        }
+
+        public Builder insulationResistance(double v) {
+            insulationResistance = v;
+            return this;
+        }
+
+        public Builder sag(float v) {
+            sag = v;
+            return this;
+        }
+
+        public Builder thickness(float v) {
+            thickness = v;
+            return this;
+        }
+
+        public Builder maxTemperature(DoubleSupplier v) {
+            maxTemperature = v;
+            return this;
+        }
+
+        public Builder maxInsulationVoltage(DoubleSupplier v) {
+            maxInsulationVoltage = v;
+            return this;
+        }
+
+        public Builder replaceOnOverheated(Supplier<WireType> v) {
+            overheatedReplacement = v;
+            return this;
+        }
+
+        public Builder maxLength(IntSupplier v) {
+            maxLength = v;
+            return this;
+        }
     }
 }

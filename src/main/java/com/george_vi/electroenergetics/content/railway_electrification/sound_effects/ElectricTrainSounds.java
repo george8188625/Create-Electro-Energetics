@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class ElectricTrainSounds {
-    static Map<Pair<UUID, Integer>, ElectricTrainSoundEntry> soundProperties = new HashMap<>();
+    public static Map<Pair<UUID, Integer>, ElectricTrainSoundEntry> soundProperties = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     static Map<Pair<UUID, Integer>, ElectricTrainSoundBehaviour> sounds = new HashMap<>();

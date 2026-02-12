@@ -33,6 +33,8 @@ import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlock;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodBlock;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleBlock;
 import com.george_vi.electroenergetics.content.pole.PoleMountBlock;
+import com.george_vi.electroenergetics.content.railway_electrification.third_rail.RailContactShoe;
+import com.george_vi.electroenergetics.content.railway_electrification.third_rail.RailContactShoeMovementBehaviour;
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayBlock;
 import com.george_vi.electroenergetics.content.relay.RelayBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
@@ -456,6 +458,18 @@ public class CEEBlocks {
             .blockstate((c, p) -> p.horizontalBlock(c.get(), bs -> bs.getValue(PantographBlock.DOUBLE) ? AssetLookup.partialBaseModel(c, p, "double") : AssetLookup.partialBaseModel(c, p)))
             .transform(pickaxeOnly())
             .onRegister(movementBehaviour(new PantographMovementBehaviour()))
+            .item()
+            .tag(AllTags.AllItemTags.CONTRAPTION_CONTROLLED.tag)
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .build()
+            .register();
+
+    public static final BlockEntry<RailContactShoe> RAIL_CONTACT_SHOE = REGISTRATE.block("rail_contact_shoe", RailContactShoe::new)
+            .initialProperties(SharedProperties::netheriteMetal)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.get(), AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .onRegister(movementBehaviour(new RailContactShoeMovementBehaviour()))
             .item()
             .tag(AllTags.AllItemTags.CONTRAPTION_CONTROLLED.tag)
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))

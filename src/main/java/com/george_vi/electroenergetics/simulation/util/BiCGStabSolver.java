@@ -7,7 +7,7 @@ public class BiCGStabSolver {
 
     public static double[] solve(SparseMatrix A, double[] b, double[] x, double tolerance, int maxIterations) {
         int n = A.size;
-        A.scale(b);
+//        A.scale(b);
 
         double[] r = new double[n];
         double[] rHat = new double[n];
@@ -86,7 +86,7 @@ public class BiCGStabSolver {
             rhoOld = rho;
         }
 
-        A.unscaleResults(x);
+//        A.unscaleResults(x);
         return x;
     }
 }

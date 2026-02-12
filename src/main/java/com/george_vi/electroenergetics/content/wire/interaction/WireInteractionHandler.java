@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.george_vi.electroenergetics.simulation.WireType;
+import com.simibubi.create.AllSpecialTextures;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.outliner.Outliner;
@@ -156,7 +157,7 @@ public class WireInteractionHandler {
                 Vec3 nextPoint = points.get(i + 1);
 
                 Outliner.getInstance().showLine("cee_wire_interaction_line_" + i, point, nextPoint)
-                        .lineWidth(0.07f)
+                        .lineWidth(0.07f * 16 * bestWireType.getThickness())
                         .colored(behaviour.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
                         .disableLineNormals();
             }
@@ -165,7 +166,7 @@ public class WireInteractionHandler {
     }
 
 
-    // From RaycastHelper. That class got moved in 6.0.7, so it is copied here to ensure it is compatible with both 6.0.6 and 6.0.7.
+    // From Create from RaycastHelper. That class got moved in 6.0.7, so it is copied here to ensure the mod is compatible with both 6.0.6 and 6.0.7.
     public static Vec3 getTraceTarget(Player playerIn, double range, Vec3 origin) {
         float f = playerIn.getXRot();
         float f1 = playerIn.getYRot();

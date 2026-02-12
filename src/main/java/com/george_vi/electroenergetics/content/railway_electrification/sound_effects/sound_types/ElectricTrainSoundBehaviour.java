@@ -27,8 +27,8 @@ public abstract class ElectricTrainSoundBehaviour {
             windSoundInstance = playSound(pos, CEESoundEvents.TRAIN_WIND_STATIC.get());
 
         if (trainSpeed != 0) {
-            windSoundInstance.targetVolume = trainSpeed * 3;
-            windRiseSoundInstance.targetVolume = trainSpeed * 2 + 0.5f;
+            windSoundInstance.targetVolume = trainSpeed * 1;
+            windRiseSoundInstance.targetVolume = trainSpeed * 0.5f + 0.15f;
             windSoundInstance.targetPitch = 1f;
             windRiseSoundInstance.targetPitch = (trainSpeed * 0.3f) + 1f;
             windSoundInstance.setPos(pos);

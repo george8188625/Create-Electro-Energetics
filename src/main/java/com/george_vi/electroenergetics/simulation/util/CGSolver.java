@@ -14,11 +14,11 @@ public class CGSolver {
         double[] p = new double[n];
         double[] Ap = new double[n];
         for (int i = 0; i < n; i++) {
-            double sum = 0;
-            for (Int2DoubleMap.Entry e : A.getRow(i).int2DoubleEntrySet())
-                sum += e.getDoubleValue() * x[e.getIntKey()];
+//            double sum = 0;
+//            for (Int2DoubleMap.Entry e : A.getRow(i).int2DoubleEntrySet())
+//                sum += e.getDoubleValue() * x[e.getIntKey()];
 
-            res[i] = b[i] - sum;
+//            res[i] = b[i] - sum;
         }
 //        ILUPreconditioner ilu = ILUPreconditioner.computeILU0(A);
 //        ilu.applyPreconditioner(res, z);
@@ -41,13 +41,13 @@ public class CGSolver {
                 x[i] += alpha * p[i];
 
             if (k != 0 && (k & 0b1111) == 0) {
-                for (int i = 0; i < n; i++) {
-                    double sum = 0;
-                    for (Int2DoubleMap.Entry e : A.getRow(i).int2DoubleEntrySet())
-                        sum += e.getDoubleValue() * x[e.getIntKey()];
-
-                    res[i] = b[i] - sum;
-                }
+//                for (int i = 0; i < n; i++) {
+//                    double sum = 0;
+//                    for (Int2DoubleMap.Entry e : A.getRow(i).int2DoubleEntrySet())
+//                        sum += e.getDoubleValue() * x[e.getIntKey()];
+//
+//                    res[i] = b[i] - sum;
+//                }
             }
             else for (int i = 0; i < n; i++)
                 res[i] -= alpha * Ap[i];

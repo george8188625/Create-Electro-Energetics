@@ -1,7 +1,6 @@
 package com.george_vi.electroenergetics.content.railway_electrification.pantograph;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
-import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
@@ -10,6 +9,7 @@ import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
+import com.simibubi.create.content.contraptions.OrientedContraptionEntity;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
@@ -18,6 +18,7 @@ import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.render.CachedBuffers;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -27,14 +28,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.List;
 
 import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 
 public class PantographMovementBehaviour implements MovementBehaviour {
+
     @Override
     public void tick(MovementContext context) {
         float targetExtensionState = context.blockEntityData.getFloat("ExtensionState");
@@ -75,7 +76,7 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             double pantographX = context.state.getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 0.5 : -0.5;
             if (!isDouble)
                 pantographX /= 2;
-            float halfPantoReach = isDouble ? 1.625f : 1.625f;
+            float halfPantoReach = 1.625f;
             Direction.Axis axis = context.state.getValue(FACING).getAxis();
             Vec3 pantographPos = new Vec3(axis == Direction.Axis.X ? pantographX : 0, halfPantoReach, axis == Direction.Axis.Z ? pantographX : 0);
             pantographPos = context.rotation.apply(pantographPos);
@@ -95,16 +96,17 @@ public class PantographMovementBehaviour implements MovementBehaviour {
             }
 
             for (Pair<InWorldNodeConnection, WireData> connection : WireRenderer.WIRE_CONNECTIONS) {
-                if (connection.getSecond().wireType() != CEEWireTypes.IRON_BUS.get())
+                if (connection.getSecond().wireType().getSag() != 0)
                     continue;
                 Vec3 start = connection.getFirst().node1().getPosition(context.world);
                 Vec3 end = connection.getFirst().node2().getPosition(context.world);
                 if (start == null || end == null)
                     continue;
+                float halfThickness = connection.getSecond().wireType().getThickness() * 0.5f;
                 Vec3 cp = checkCatenary(start, end, pantographPos, context, halfPantoReach);
                 if (cp != null) {
                     if (connectionPoint == null || connectionPoint.y > cp.y)
-                        connectionPoint = cp;
+                        connectionPoint = cp.add(0, -halfThickness + 0.015f, 0);
                 }
             }
 
@@ -121,10 +123,12 @@ public class PantographMovementBehaviour implements MovementBehaviour {
                 }
 //                context.world.addParticle(ParticleTypes.SCULK_CHARGE_POP, connectionPoint.x, connectionPoint.y, connectionPoint.z, 0, 0, 0);
                 float newExtensionState = (lo + hi) / 2;
-                if (Math.abs(currentExtensionState - newExtensionState) < 0.075 && newExtensionState != targetExtensionState)
+                if (targetExtensionState == currentExtensionState && targetExtensionState != 0)
                     currentExtensionState = newExtensionState;
 
                 targetExtensionState = newExtensionState;
+            } else {
+                targetExtensionState = 0f;
             }
 
             if (CEEConfigs.client().debugPantographRange.get() && (AnimationTickHolder.getTicks() % 3) == 0) {
@@ -367,15 +371,18 @@ public class PantographMovementBehaviour implements MovementBehaviour {
         Vec3 ab = end.subtract(start);
         Vec3 ap = pantographPos.subtract(start);
         double denom = ab.lengthSqr();
-        if (denom != 0) {
+        if (denom != 0)
             t = ap.dot(ab) / denom;
-            t = Math.max(0, Math.min(1, t));
-        }
+        if (t < -0.01 || t > 1.01)
+            return null;
 
         Vec3 closest = VecHelper.lerp((float) t, start, end);
+//        Vec3 closest = Minecraft.getInstance().player.position();
+//        context.world.addParticle(ParticleTypes.SCULK_CHARGE_POP, closest.x, closest.y, closest.z, 0, 0, 0);
+//        context.world.addParticle(ParticleTypes.SCULK_CHARGE_POP, pantographPos.x, pantographPos.y, pantographPos.z, 0, 0, 0);
 
         Vec3 distance = pantographPos.subtract(closest);
-        context.rotation.apply(distance).multiply(0, 0, 0);
+        distance = VecHelper.rotate(distance, -context.contraption.entity.getViewYRot(0), Direction.Axis.Y);
         float xTol = (float) ((distance.y + halfPantoReach) * 0.2f + 0.125f);
         if (Math.abs(distance.z) < 1.5 && Math.abs(distance.x) < xTol && Math.abs(distance.y) < halfPantoReach)
             return closest;

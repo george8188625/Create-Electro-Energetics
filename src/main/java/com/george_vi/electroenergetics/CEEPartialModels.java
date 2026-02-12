@@ -13,6 +13,7 @@ public class CEEPartialModels {
     public static final PartialModel CREATIVE_WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/creative_wire_segment"));
     public static final PartialModel IRON_WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/iron_wire_segment"));
     public static final PartialModel IRON_BUS_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/iron_bus_segment"));
+    public static final PartialModel IRON_RAIL_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/iron_rail_segment"));
     public static final PartialModel HEAVILY_INSULATED_WIRE_SEGMENT = PartialModel.of(CreateElecrtoEnergetics.rl("block/heavily_insulated_wire_segment"));
     public static final PartialModel ROTOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/alternator_rotor/block"));
     public static final PartialModel INSULATOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/connector/insulator"));
@@ -31,6 +32,8 @@ public class CEEPartialModels {
     public static final PartialModel PANTOGRAPH_CONNECTING_ROD = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/connecting_rod"));
     public static final PartialModel PANTOGRAPH_SPRINGS = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/springs"));
     public static final PartialModel PANTOGRAPH_SPRINGS_DOUBLE = PartialModel.of(CreateElecrtoEnergetics.rl("block/pantograph/springs_double"));
+    public static final PartialModel RAIL_CONTACT_SHOE_CONTACT = PartialModel.of(CreateElecrtoEnergetics.rl("block/rail_contact_shoe/contact_shoe"));
+    public static final PartialModel RAIL_CONTACT_SHOE_HINGES = PartialModel.of(CreateElecrtoEnergetics.rl("block/rail_contact_shoe/hinges"));
     public static final PartialModel CATENARY_HOLDER_INSULATOR = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/insulator"));
     public static final PartialModel CATENARY_HOLDER_LONG_ROD = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/long_rod"));
     public static final PartialModel CATENARY_HOLDER_SHORT_ROD = PartialModel.of(CreateElecrtoEnergetics.rl("block/catenary_holder/short_rod"));

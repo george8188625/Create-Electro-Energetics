@@ -43,7 +43,7 @@ public record UpdateElectricTrainSoundPacket(UUID trainUUID, int carriageID, flo
         if (!active)
             ElectricTrainSounds.soundProperties.remove(Pair.of(trainUUID, carriageID));
         else
-            ElectricTrainSounds.soundProperties.put(Pair.of(trainUUID, carriageID), new ElectricTrainSoundEntry(speed, acceleration, active, 6, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.byId(soundType)));
+            ElectricTrainSounds.soundProperties.put(Pair.of(trainUUID, carriageID), new ElectricTrainSoundEntry(speed, acceleration, active, 7, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.byId(soundType)));
     }
 
     @Override

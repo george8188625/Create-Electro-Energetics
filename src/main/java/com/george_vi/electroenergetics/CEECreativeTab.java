@@ -32,6 +32,7 @@ public class CEECreativeTab {
                             output.accept(CEEItems.ELECTRUM_WIRE_SPOOL.asStack());
                         output.accept(CEEItems.IRON_WIRE_SPOOL.asStack());
                         output.accept(CEEItems.IRON_BUS_SPOOL.asStack());
+                        output.accept(CEEItems.IRON_RAIL_SPOOL.asStack());
                         output.accept(CEEItems.CREATIVE_WIRE_SPOOL.asStack());
                         output.accept(CEEItems.EMPTY_SPOOL.asStack());
                         output.accept(CEEItems.INSULATED_WIRE.asStack());
@@ -75,6 +76,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.POLE_MOUNT.asStack());
                         output.accept(CEEBlocks.CATENARY_HOLDER.asStack());
                         output.accept(CEEBlocks.PANTOGRAPH.asStack());
+                        output.accept(CEEBlocks.RAIL_CONTACT_SHOE.asStack());
                         output.accept(CEEBlocks.DIODE.asStack());
                         output.accept(CEEBlocks.CAPACITOR.asStack());
                         output.accept(CEEBlocks.POTENTIOMETER.asStack());

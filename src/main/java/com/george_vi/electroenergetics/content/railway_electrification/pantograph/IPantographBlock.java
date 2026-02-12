@@ -4,4 +4,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public interface IPantographBlock {
     PantographType getPantographType(BlockState state);
+
+    default boolean isSidewaysPantograph() {
+        return false;
+    }
 }

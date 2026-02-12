@@ -1,5 +1,6 @@
 {
   "values": [
-    "electroenergetics:pantograph"
+    "electroenergetics:pantograph",
+    "electroenergetics:rail_contact_shoe"
   ]
 }

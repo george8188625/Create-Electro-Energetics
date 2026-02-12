@@ -26,6 +26,8 @@ import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEn
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlockEntity;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeRenderer;
+import com.george_vi.electroenergetics.content.railway_electrification.third_rail.RailContactShoeBlockEntity;
+import com.george_vi.electroenergetics.content.railway_electrification.third_rail.RailContactShoeRenderer;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlockEntity;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlockEntity;
 import com.george_vi.electroenergetics.content.transformer.TransformerBlockEntity;
@@ -115,6 +117,11 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<PantographBlockEntity> PANTOGRAPH = REGISTRATE.blockEntity("pantograph", PantographBlockEntity::new)
             .validBlock(CEEBlocks.PANTOGRAPH::get)
             .renderer(() -> PantographRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<RailContactShoeBlockEntity> RAIL_CONTACT_SHOE = REGISTRATE.blockEntity("rail_contact_shoe", RailContactShoeBlockEntity::new)
+            .validBlock(CEEBlocks.RAIL_CONTACT_SHOE::get)
+            .renderer(() -> RailContactShoeRenderer::new)
             .register();
 
     public static final BlockEntityEntry<CatenaryHolderBlockEntity> CATENARY_HOLDER = REGISTRATE.blockEntity("catenary_holder", CatenaryHolderBlockEntity::new)

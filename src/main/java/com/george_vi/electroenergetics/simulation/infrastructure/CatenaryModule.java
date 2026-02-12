@@ -80,13 +80,13 @@ public class CatenaryModule {
                     if (!pantograph.active)
                         continue;
 
-                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.rotatedPos).add((pantograph.facingForward ? 1 : -1) * pantograph.type.backOffset, pantograph.type.reach / 2 + 0.5f, 0);
+                    Vec3 pantographPos = Vec3.atLowerCornerOf(pantograph.rotatedPos).add((pantograph.facingForward ? 1 : -1) * pantograph.type.backOffset, pantograph.type.reach / 2 + pantograph.type.topOffset, 0);
 
                     pantographPos = VecHelper.rotate(pantographPos, -pitch, Direction.Axis.Z);
                     pantographPos = VecHelper.rotate(pantographPos, -yaw + 180, Direction.Axis.Y);
 
                     pantographPos = pivotPosition.add(pantographPos);
-//                    event.level.sendParticles(ParticleTypes.ELECTRIC_SPARK, pantographPos.x, pantographPos.y, pantographPos.z, 3, 0, 0, 0, 0);
+//                    level.sendParticles(ParticleTypes.ELECTRIC_SPARK, pantographPos.x, pantographPos.y, pantographPos.z, 3, 0, 0, 0, 0);
 
                     for (ConnectionEntry connectionEntry : wireInfrastructure.connections.values()) {
                         if (connectionEntry.wireData.wireType().getSag() != 0 && !(connectionEntry.wireData instanceof CatenaryConnectionData))
@@ -110,7 +110,7 @@ public class CatenaryModule {
                         distance = VecHelper.rotate(distance, yaw + 180, Direction.Axis.Y);
                         distance = VecHelper.rotate(distance, -pitch, Direction.Axis.X);
                         float xTol = (float) ((distance.y + pantograph.type.reach / 2) * 0.2f + 0.125f);
-                        if (Math.abs(distance.z()) < 2 && Math.abs(distance.x()) < xTol && Math.abs(distance.y()) < pantograph.type.reach / 2) {
+                        if (Math.abs(distance.z()) < pantograph.type.sidewaysReach && Math.abs(distance.x()) < xTol && Math.abs(distance.y()) < pantograph.type.reach / 2) {
                             pantograph.prevPos = pantograph.pos;
                             pantograph.pos = closest;
                             if (pantograph.onConnection == null) {
@@ -158,7 +158,8 @@ public class CatenaryModule {
             builder.connect(groundNode, trainNode, ElectricalProperties.resistor(trainResistance));
 
             for (TrainPantographEntry pe : trainExtension.getElectricTrainData().pantographs)
-                builder.connect(pe.node, trainNode, ElectricalProperties.resistor(CEEConfigs.server().resistanceValues.wireResistance.get()));
+                if (pe.active && pe.node != null)
+                    builder.connect(pe.node, trainNode, ElectricalProperties.resistor(CEEConfigs.server().resistanceValues.wireResistance.get()));
             id++;
         }
     }

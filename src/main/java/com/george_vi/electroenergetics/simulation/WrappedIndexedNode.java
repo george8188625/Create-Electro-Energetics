@@ -11,6 +11,8 @@ public class WrappedIndexedNode {
     public double groundConductance = 0d;
 
     public WrappedIndexedNode(Node node, int ordinal) {
+        if (node == null)
+            throw new IllegalArgumentException("node can't be null!");
         this.node = node;
         this.ordinal = ordinal;
     }

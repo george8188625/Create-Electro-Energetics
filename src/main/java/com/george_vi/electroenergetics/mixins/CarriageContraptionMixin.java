@@ -1,13 +1,10 @@
 package com.george_vi.electroenergetics.mixins;
 
-import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.IPantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
-import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
-import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
@@ -77,11 +74,11 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     public void electroEnergetics$capture(Level level, BlockPos pos, CallbackInfoReturnable<oshi.util.tuples.Pair<StructureTemplate.StructureBlockInfo, BlockEntity>> cir) {
         BlockState state = level.getBlockState(pos);
 
-        if (state.getBlock() instanceof IPantographBlock pb && level.getBlockEntity(pos) instanceof PantographBlockEntity be) {
+        if (state.getBlock() instanceof IPantographBlock pb) {
 
             Direction facing = state.getValue(PantographBlock.FACING);
             Direction assemblyDirection = this.electroEnergetics$getAssemblyDirection();
-            if (facing.getAxis() != assemblyDirection.getAxis())
+            if (pb.isSidewaysPantograph() == (facing.getAxis() == assemblyDirection.getAxis()))
                 electroEnergetics$sidewaysPantograph = true;
             else {
                 electroEnergetics$pantographs.add(new TrainPantographEntry(toLocalPos(pos), toLocalPos(pos).rotate(

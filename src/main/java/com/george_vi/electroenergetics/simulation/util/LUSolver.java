@@ -110,20 +110,19 @@ public class LUSolver {
             pivot[k] = pivot[max];
             pivot[max] = tp;
 
-            Int2DoubleMap rowK = A.getRow(k);
+            SparseRow rowK = A.data[k];
             for (int i = k + 1; i < n; i++) {
-                // If the rows weren't swapped, use the values from the previous loop that did an A[i][k] lookup. This reduces map lookups.
-                double aik = k == max ? tempIK[i] : A.getValue(i, k);
+                SparseRow rowI = A.data[i];
+                double aik = k == max ? tempIK[i] : rowI.values[k];
                 if (aik == 0) continue;
 
-                double m = aik / rowK.get(k);
-                A.set(i,k, m);
+                double m = aik / rowK.values[k];
+                rowI.put(k, m);
 
-                for (Int2DoubleMap.Entry e : rowK.int2DoubleEntrySet()) {
-                    int j = e.getIntKey();
+                for (int j : rowK.getNz()) {
                     if (j <= k) continue;
-                    double newValue = A.getValue(i,j) - m * e.getDoubleValue();
-                    A.set(i,j, newValue);
+                    double newValue = rowI.values[j] - m * rowK.values[j];
+                    rowI.put(j, newValue);
                 }
             }
         }
@@ -131,10 +130,11 @@ public class LUSolver {
         // forward substitution (y = L⁻¹ b)
         double[] y = new double[n];
         for (int i = 0; i < n; i++) {
+            SparseRow rowI = A.data[i];
             double sum = b[i];
-            for (Int2DoubleMap.Entry e : A.getRow(i).int2DoubleEntrySet())
-                if (e.getIntKey() < i)
-                    sum -= e.getDoubleValue() * y[e.getIntKey()];
+            for (int col : rowI.getNz())
+                if (col < i)
+                    sum -= rowI.values[col] * y[col];
 
             y[i] = sum;
         }
@@ -142,12 +142,13 @@ public class LUSolver {
         // backward substitution (x = U⁻¹ y)
         double[] x = new double[n];
         for (int i = n - 1; i >= 0; i--) {
+            SparseRow rowI = A.data[i];
             double sum = y[i];
-            for (Int2DoubleMap.Entry e : A.getRow(i).int2DoubleEntrySet())
-                if (e.getIntKey() < n && e.getIntKey() > i)
-                    sum -= e.getDoubleValue() * x[e.getIntKey()];
+            for (int col : rowI.getNz())
+                if (col < n && col > i)
+                    sum -= rowI.values[col] * x[col];
 
-            x[i] = sum / A.getValue(i, i);
+            x[i] = sum / rowI.values[i];
         }
 
         return x;

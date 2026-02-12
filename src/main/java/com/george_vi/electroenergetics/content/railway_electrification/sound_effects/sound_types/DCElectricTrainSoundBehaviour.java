@@ -12,6 +12,7 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
     float prevSpeed;
     @Override
     public void tick() {
+        super.tick();
         if (trainSpeed == 0) {
             this.prevSpeed = trainSpeed;
             return;
@@ -20,7 +21,7 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
         if (mainSoundInstance == null || mainSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(mainSoundInstance))
             mainSoundInstance = playSound(pos, CEESoundEvents.DC_TRAIN.get());
 
-        int tth = (int) Math.max(Math.floor(trainSpeed > 0.2 ? 8 * trainSpeed + 5 : 32 * trainSpeed), -1);
+        int tth = (int) Math.max(Math.floor(trainSpeed > 0.1 ? 4 * trainSpeed + 5 : 16 * trainSpeed), -1);
         if (acceleration < 0)
             tth = -1;
         int th = pth;
@@ -32,11 +33,17 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
         if (th != pth)
             Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.TRAIN_RELAY.get(), SoundSource.NEUTRAL, 0.4f, 1f, false);
         if (prevSpeed == 0)
-            Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.DC_TRAIN_START.get(), SoundSource.NEUTRAL, 0.2f, 1f, false);
+            Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.DC_TRAIN_START.get(), SoundSource.NEUTRAL, 0.1f, 1f, false);
         mainSoundInstance.setPos(pos);
 
-        mainSoundInstance.targetPitch = Math.min(0.56f, trainSpeed) * 1.3f + 0.7f;
-        mainSoundInstance.targetVolume = 4 * (trainSpeed < 0.3 ? (trainSpeed * 3) : (trainSpeed + 0.9f)) * (acceleration > 0 ? 2f : acceleration < 0 ? 0.25f : 0.125f);
+        mainSoundInstance.setPitchImmediately(Math.min(3f, trainSpeed) + 0.45f);
+        if (acceleration < 0.001f)
+            mainSoundInstance.targetVolume = trainSpeed * 0.04f;
+        else if (trainSpeed < 0.3)
+            mainSoundInstance.targetVolume = trainSpeed;
+        else
+            mainSoundInstance.targetVolume = 0.3f -(trainSpeed - 0.3f) * 0.03f;
+        mainSoundInstance.targetVolume *= 5;
 
         mainSoundInstance.keepAlive();
         this.pth = th;

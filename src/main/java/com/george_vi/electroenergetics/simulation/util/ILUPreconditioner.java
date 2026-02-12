@@ -10,20 +10,18 @@ public record ILUPreconditioner(SparseMatrix L, SparseMatrix U) {
 
             for (int i = 0; i < n; i++) {
                 double sum = 0.0;
-                for (Int2DoubleMap.Entry e : this.L.getRow(i).int2DoubleEntrySet()) {
-                    int j = e.getIntKey();
+                for (int j : L.data[i].getNz()) {
                     if (j >= i) continue;
-                    sum += e.getDoubleValue() * y[j];
+                    sum += L.getValue(i, j) * y[j];
                 }
                 y[i] = r[i] - sum;
             }
 
             for (int i = n - 1; i >= 0; i--) {
                 double sum = 0.0;
-                for (Int2DoubleMap.Entry e : this.U.getRow(i).int2DoubleEntrySet()) {
-                    int j = e.getIntKey();
+                for (int j : U.data[i].getNz()) {
                     if (j <= i) continue;
-                    sum += e.getDoubleValue() * z[j];
+                    sum += U.getValue(i, j) * z[j];
                 }
                 double Uii = this.U.getValue(i, i);
                 if (Uii == 0) Uii = 1.0;
@@ -37,15 +35,13 @@ public record ILUPreconditioner(SparseMatrix L, SparseMatrix U) {
         SparseMatrix U = new SparseMatrix(n);
 
         for (int i = 0; i < n; i++) {
-            for (Int2DoubleMap.Entry entry : A.getRow(i).int2DoubleEntrySet()) {
-                int j = entry.getIntKey();
-                double Aij = entry.getDoubleValue();
+            for (int j : A.data[i].getNz()) {
+                double Aij = A.getValue(i, j);
 
                 double sum = 0.0;
-                for (Int2DoubleMap.Entry eL : L.getRow(i).int2DoubleEntrySet()) {
-                    int k = eL.getIntKey();
+                for (int k : L.data[i].getNz()) {
                     if (k >= j) continue;
-                    double Lik = eL.getDoubleValue();
+                    double Lik = L.getValue(i, k);
                     double Ukj = U.getValue(k, j);
                     sum += Lik * Ukj;
                 }

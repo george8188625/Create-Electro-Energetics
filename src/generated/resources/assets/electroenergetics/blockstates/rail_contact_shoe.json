@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "electroenergetics:block/rail_contact_shoe/block",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "electroenergetics:block/rail_contact_shoe/block"
+    },
+    "facing=south": {
+      "model": "electroenergetics:block/rail_contact_shoe/block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "electroenergetics:block/rail_contact_shoe/block",
+      "y": 270
+    }
+  }
+}

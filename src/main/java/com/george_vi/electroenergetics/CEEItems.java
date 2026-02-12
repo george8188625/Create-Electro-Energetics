@@ -37,6 +37,8 @@ public class CEEItems {
 
     public static final ItemEntry<WireSpoolItem> IRON_BUS_SPOOL = simpleWireSpoolItem("iron_bus_spool", CEEWireTypes.IRON_BUS);
 
+    public static final ItemEntry<WireSpoolItem> IRON_RAIL_SPOOL = simpleWireSpoolItem("iron_rail_spool", CEEWireTypes.IRON_RAIL);
+
     public static final ItemEntry<WireSpoolItem> CREATIVE_WIRE_SPOOL = REGISTRATE.item("creative_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.CREATIVE))
             .properties(p -> p.rarity(Rarity.EPIC))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "electroenergetics:rail_contact_shoe"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "electroenergetics:blocks/rail_contact_shoe"
+}

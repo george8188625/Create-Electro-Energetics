@@ -6,7 +6,8 @@
   "refmap": "electroenergetics.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "LevelRendererAccessor"
+    "LevelRendererAccessor",
+    "CarriageSoundsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

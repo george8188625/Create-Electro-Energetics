@@ -33,6 +33,7 @@
     "electroenergetics:converter",
     "electroenergetics:catenary_holder",
     "electroenergetics:pantograph",
+    "electroenergetics:rail_contact_shoe",
     "electroenergetics:diode",
     "electroenergetics:resistor",
     "electroenergetics:creative_resistor",

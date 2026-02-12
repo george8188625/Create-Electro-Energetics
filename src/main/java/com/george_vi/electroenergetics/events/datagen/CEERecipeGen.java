@@ -146,6 +146,15 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_bus_spool"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_RAIL_SPOOL)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', CEETags.IRON_RAIL_COMPONENT)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_iron_rail_component", has(CEETags.IRON_RAIL_COMPONENT))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_rail_spool"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ALTERNATOR_BRUSHES)
                 .pattern(" B ")
                 .pattern("CSC")
@@ -463,6 +472,16 @@ public class CEERecipeGen extends RecipeProvider {
                 .define('S', AllBlocks.SHAFT)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/pantograph"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.RAIL_CONTACT_SHOE)
+                .pattern("CKA")
+                .pattern("ASA")
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('C', CEEBlocks.CONNECTOR)
+                .define('K', Items.DRIED_KELP)
+                .define('S', AllBlocks.SHAFT)
+                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/rail_contact_shoe"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.CLAMP_METER)
                 .pattern(" WW")

@@ -96,6 +96,9 @@ public class    CEEShapes {
     public static final VoxelShaper CATENARY_HOLDER_LOW = shape(6, 0, 6, 10, 4, 10)
             .forAxis();
 
+    public static final VoxelShaper RAIL_CONTACT_SHOE = shape(6,2, 14,10,10,16).forHorizontal(Direction.NORTH);
+
+
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);
     }
