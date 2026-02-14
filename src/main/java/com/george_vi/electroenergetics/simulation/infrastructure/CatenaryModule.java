@@ -5,8 +5,6 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.ElectricTrainData;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
-import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
-import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
 import com.george_vi.electroenergetics.mixin_interfaces.ICEETrainExtension;
@@ -20,36 +18,30 @@ import com.simibubi.create.content.trains.entity.Train;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CatenaryModule {
     final InfrastructureSavedData sd;
     final ServerLevel level;
-    final WireInfrastructure wireInfrastructure;
+    final WireSimulationState wireSimulationState;
+    private final Set<Train> allTrains = new HashSet<>();
 
-    public CatenaryModule(InfrastructureSavedData sd, ServerLevel level, WireInfrastructure wireInfrastructure) {
+    public CatenaryModule(InfrastructureSavedData sd, ServerLevel level, WireSimulationState wireSimulationState) {
         this.sd = sd;
         this.level = level;
-        this.wireInfrastructure = wireInfrastructure;
+        this.wireSimulationState = wireSimulationState;
     }
 
     public void buildCircuit(CircuitBuilder builder) {
         int id = 0;
         for (Train train : Create.RAILWAYS.trains.values()) {
+            allTrains.add(train);
             ICEETrainExtension trainExtension = (ICEETrainExtension)train;
             ElectricTrainData trainData = trainExtension.getElectricTrainData();
             boolean connected = false;
@@ -88,7 +80,7 @@ public class CatenaryModule {
                     pantographPos = pivotPosition.add(pantographPos);
 //                    level.sendParticles(ParticleTypes.ELECTRIC_SPARK, pantographPos.x, pantographPos.y, pantographPos.z, 3, 0, 0, 0, 0);
 
-                    for (ConnectionEntry connectionEntry : wireInfrastructure.connections.values()) {
+                    for (ConnectionEntry connectionEntry : wireSimulationState.getAllConnectionEntries()) {
                         if (connectionEntry.wireData.wireType().getSag() != 0 && !(connectionEntry.wireData instanceof CatenaryConnectionData))
                             continue;
                         Vec3 start = connectionEntry.pos1;
@@ -111,22 +103,19 @@ public class CatenaryModule {
                         distance = VecHelper.rotate(distance, -pitch, Direction.Axis.X);
                         float xTol = (float) ((distance.y + pantograph.type.reach / 2) * 0.2f + 0.125f);
                         if (Math.abs(distance.z()) < pantograph.type.sidewaysReach && Math.abs(distance.x()) < xTol && Math.abs(distance.y()) < pantograph.type.reach / 2) {
+                            if (trainData.wireCutHandle == null)
+                                trainData.wireCutHandle = wireSimulationState.createHandle("ElectricTrain");
                             pantograph.prevPos = pantograph.pos;
                             pantograph.pos = closest;
-                            if (pantograph.onConnection == null) {
+                            if (pantograph.node == null) {
+                                pantograph.node = wireSimulationState.createCut(trainData.wireCutHandle, connectionEntry, t);
                                 pantograph.onConnection = connectionEntry;
-                                pantograph.node = connectionEntry.addCut(t);
                             } else if (pantograph.onConnection != connectionEntry) {
-                                pantograph.onConnection.removeCut(pantograph.node);
+                                wireSimulationState.removeCut(trainData.wireCutHandle, pantograph.node);
+                                pantograph.node = wireSimulationState.createCut(trainData.wireCutHandle, connectionEntry, t);
                                 pantograph.onConnection = connectionEntry;
-                                pantograph.node = connectionEntry.addCut(t);
                             } else {
-                                for (int i = 0; i < connectionEntry.cuts.size(); i++) {
-                                    Pair<Float, AttachedNode> cut = connectionEntry.cuts.get(i);
-                                    if (cut.getSecond().equals(pantograph.node))
-                                        connectionEntry.cuts.set(i, Pair.of(t, pantograph.node));
-                                }
-                                connectionEntry.cuts.sort(Comparator.comparing(Pair::getFirst));
+                                wireSimulationState.relocateCut(trainData.wireCutHandle, pantograph.node, t);
                             }
                             connected = true;
 //                            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, closest.x, closest.y, closest.z, 3, 0, 0, 0, 0);
@@ -135,6 +124,9 @@ public class CatenaryModule {
                     }
                     pantograph.prevPos = pantograph.pos;
                     pantograph.pos = null;
+                    if (trainData.wireCutHandle != null && pantograph.node != null)
+                        wireSimulationState.removeCut(trainData.wireCutHandle, pantograph.node);
+
                 }
             }
 
@@ -161,6 +153,16 @@ public class CatenaryModule {
                 if (pe.active && pe.node != null)
                     builder.connect(pe.node, trainNode, ElectricalProperties.resistor(CEEConfigs.server().resistanceValues.wireResistance.get()));
             id++;
+        }
+
+        Iterator<Train> trainIterator = allTrains.iterator();
+        while (trainIterator.hasNext()) {
+            Train train = trainIterator.next();
+            if (!Create.RAILWAYS.trains.containsKey(train.id) && ((ICEETrainExtension)train).getElectricTrainData().wireCutHandle != null) {
+                wireSimulationState.invalidateHandle(((ICEETrainExtension) train).getElectricTrainData().wireCutHandle);
+                ((ICEETrainExtension) train).getElectricTrainData().wireCutHandle = null;
+                trainIterator.remove();
+            }
         }
     }
 
@@ -198,8 +200,7 @@ public class CatenaryModule {
                         trainData.accumulatorCharge = Math.max(0d, trainData.accumulatorCharge - 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorOnTrain.get());
                     active = true;
                 }
-            } else
-            if (trainData.accumulatorCharge < trainData.accumulators)
+            } else if (trainData.accumulatorCharge < trainData.accumulators)
                 trainData.accumulatorCharge = Math.min(trainData.accumulators, trainData.accumulatorCharge + 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorChargeOnTrain.get());
 
             Map<Integer, Vec3> positions = new HashMap<>();

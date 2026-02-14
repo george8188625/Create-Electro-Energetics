@@ -1,12 +1,12 @@
 package com.george_vi.electroenergetics.simulation.infrastructure;
 
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import net.createmod.catnip.data.Couple;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -18,56 +18,28 @@ public class WireCrossContactModule {
 
     final InfrastructureSavedData sd;
     final ServerLevel level;
-    final WireInfrastructure wireInfrastructure;
-    public Map<Couple<AttachedNode>, CrossContactEntry> crossContacts = new HashMap<>();
+    final WireSimulationState wireSimulationState;
+    public Map<WireSimulationState.WireCutHandle, CrossContactEntry> crossContacts = new HashMap<>();
+    public Map<InWorldNodeConnection, CrossContactEntry> crossContactsByWire = new HashMap<>();
 
-    public WireCrossContactModule(InfrastructureSavedData sd, ServerLevel level, WireInfrastructure wireInfrastructure) {
+    public WireCrossContactModule(InfrastructureSavedData sd, ServerLevel level, WireSimulationState wireSimulationState) {
         this.sd = sd;
         this.level = level;
-        this.wireInfrastructure = wireInfrastructure;
+        this.wireSimulationState = wireSimulationState;
     }
 
     public void onRebuild() {
-        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireInfrastructure.connections.entrySet()) {
+        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             computeCrossContactFor(e.getKey(), e.getValue(), true);
         }
     }
 
     public void onWireRemoved(InWorldNodeConnection connection, ConnectionEntry connectionData) {
-        CrossContactEntry entry = null;
-        AttachedNode node1 = null;
-        AttachedNode node2 = null;
-        InWorldNodeConnection connection2 = null;
-        for (Map.Entry<Couple<AttachedNode>, CrossContactEntry> e : crossContacts.entrySet()) {
-            CrossContactEntry contactEntry = e.getValue();
-            if (contactEntry.wire1.equals(connection)) {
-                entry = contactEntry;
-                node1 = e.getKey().getFirst();
-                node2 = e.getKey().getSecond();
-                connection2 = contactEntry.wire2;
-                break;
-            }
-            if (contactEntry.wire2.equals(connection)) {
-                entry = contactEntry;
-                node2 = e.getKey().getFirst();
-                node1 = e.getKey().getSecond();
-                connection2 = contactEntry.wire1;
-                break;
-            }
+        CrossContactEntry entry = crossContactsByWire.remove(connection);
+        if (entry != null) {
+            crossContacts.remove(entry.handle);
+            wireSimulationState.invalidateHandle(entry.handle);
         }
-
-        if (entry == null)
-            return;
-
-        crossContacts.remove(Couple.create(node1, node2));
-        crossContacts.remove(Couple.create(node2, node1));
-
-        ConnectionEntry connectionData2 = wireInfrastructure.getConnection(connection2);
-        if (connectionData2 == null)
-            return;
-
-        connectionData.removeCut(node1);
-        connectionData2.removeCut(node2);
     }
 
     public void onWireAdded(InWorldNodeConnection connection, ConnectionEntry connectionData) {
@@ -78,7 +50,7 @@ public class WireCrossContactModule {
         AABB bb = connectionData.bb;
         List<Vec3> points = connectionData.points;
         WireData wireData = connectionData.wireData;
-        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireInfrastructure.connections.entrySet()) {
+        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             InWorldNodeConnection connection2 = e.getKey();
             ConnectionEntry connectionData2 = e.getValue();
             if (connectionData == connectionData2)
@@ -134,19 +106,23 @@ public class WireCrossContactModule {
                 if (wireData.wireType().insulated() || wireData2.wireType().insulated())
                     continue;
 
-                AttachedNode attachedNode1 = connectionData.addCut(bestPoint);
-                AttachedNode attachedNode2 = connectionData2.addCut(bestPoint2);
+                WireSimulationState.WireCutHandle handle = wireSimulationState.createHandle("CrossContact");
+                AttachedNode attachedNode1 = wireSimulationState.createCut(handle, connection, bestPoint);
+                AttachedNode attachedNode2 = wireSimulationState.createCut(handle, connection2, bestPoint2);
 
-                crossContacts.put(Couple.create(attachedNode1, attachedNode2), new CrossContactEntry(0.1, bestPos1, bestPos2, bestDist, connection, connection2));
+                CrossContactEntry entry = new CrossContactEntry(handle, 0.1, attachedNode1, attachedNode2, bestPos1, bestPos2, bestDist);
+                crossContacts.put(handle, entry);
+                crossContactsByWire.put(connection, entry);
+                crossContactsByWire.put(connection2, entry);
             }
         }
     }
 
     public void buildCircuit(CircuitBuilder builder) {
-        crossContacts.forEach((c, e) -> builder.connect(c.getFirst(), c.getSecond(), ElectricalProperties.resistor(e.resistance)));
+        crossContacts.forEach((h, e) -> builder.connect(e.node1, e.node2, ElectricalProperties.resistor(e.resistance)));
     }
 
-    public record CrossContactEntry(double resistance, Vec3 pos1, Vec3 pos2, double distance, InWorldNodeConnection wire1, InWorldNodeConnection wire2) {
+    public record CrossContactEntry(WireSimulationState.WireCutHandle handle, double resistance, AttachedNode node1, AttachedNode node2, Vec3 pos1, Vec3 pos2, double distance) {
 
     }
 }

@@ -163,7 +163,7 @@ public class CEECommands {
             return 1;
         ServerLevel level = source.getLevel();
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        for (ConnectionEntry ce : sd.wireInfrastructure.connections.values()) {
+        for (ConnectionEntry ce : sd.wireSimulationState.getAllConnectionEntries()) {
             for (Vec3 point : ce.points) {
                 if (point.distanceToSqr(player.position()) < 30 * 30)
                     level.sendParticles(player, ParticleTypes.SCRAPE, true, point.x, point.y, point.z, 3, 0, 0, 0, 0);

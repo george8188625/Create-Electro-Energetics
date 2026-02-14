@@ -28,10 +28,10 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
             if (phasing == Phasing.ASYNC) {
                 float trainSpeedNormalized = trainSpeed / 0.4f;
                 mainSoundInstance.setPitchImmediately(Math.min(2, (trainSpeed * 0.5f) + 0.35f));
-                mainSoundInstance.setVolumeImmediately((trainSpeedNormalized - 0.22f));
+                mainSoundInstance.setVolumeImmediately((acceleration > 0 ? 1 : 0.01f) * (trainSpeedNormalized - 0.22f));
             } else {
                 mainSoundInstance.setPitchImmediately(Math.min(2, (trainSpeed * 0.5f) + 0.35f));
-                mainSoundInstance.setVolumeImmediately(3f);
+                mainSoundInstance.setVolumeImmediately(acceleration > 0 ? 3f : 0.7f);
             }
             mainSoundInstance.setPos(pos);
             mainSoundInstance.keepAlive();

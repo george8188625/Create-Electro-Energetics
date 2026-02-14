@@ -11,6 +11,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.*;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
@@ -44,35 +45,28 @@ public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, List<BlockPos>> CATENARY_ADJACENCY = new HashMap<>();
     Map<CatenaryConnection, CatenaryConnectionData> CATENARY_DATA = new HashMap<>();
 
-    // Not persistent
-    Object2DoubleMap<InWorldNode> VOLTAGES = new Object2DoubleOpenHashMap<>();
-
-    ServerLevel level;
-    public SimulationResults lastResults;
-    public CircuitBuilder circuitBuilder;
-    public SimulationStats stats;
-    public List<SimulatorProfiler.ResultEntry> lastProfilerResults;
-    public SimulationStats lastStats;
+    public ServerLevel level;
+    public SimulationTicker ticker;
 
     // Wire infrastructure
-    public WireInfrastructure wireInfrastructure;
+    public WireSimulationState wireSimulationState;
     public WireAssemblerModule wireAssemblerModule;
     public WireLifetimeModule wireLifetimeModule;
     public WireCrossContactModule wireCrossContactModule;
     public CatenaryModule catenaryModule;
-
-    // Async
-    public Future<SimulationResults> future = null;
+    public WireElectrocutionModule wireElectrocutionModule;
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public InfrastructureSavedData(ServerLevel level) {
         this.level = level;
-        wireInfrastructure = new WireInfrastructure(this, level);
-        wireAssemblerModule = new WireAssemblerModule(this, level, this.wireInfrastructure);
-        wireLifetimeModule = new WireLifetimeModule(this, level, this.wireInfrastructure);
-        wireCrossContactModule = new WireCrossContactModule(this, level, this.wireInfrastructure);
-        catenaryModule = new CatenaryModule(this, level, this.wireInfrastructure);
+        wireSimulationState = new WireSimulationState(this, level);
+        wireAssemblerModule = new WireAssemblerModule(this, level, this.wireSimulationState);
+        wireLifetimeModule = new WireLifetimeModule(this, level, this.wireSimulationState);
+        wireCrossContactModule = new WireCrossContactModule(this, level, this.wireSimulationState);
+        catenaryModule = new CatenaryModule(this, level, this.wireSimulationState);
+        wireElectrocutionModule = new WireElectrocutionModule(this, level, this.wireSimulationState);
+        ticker = new SimulationTicker(level, this);
     }
 
     @Override
@@ -208,12 +202,11 @@ public class InfrastructureSavedData extends SavedData {
                 InWorldNodeConnection connection = new InWorldNodeConnection(new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")), new InWorldNode(id, pos));
                 WireData wireData = new WireData(wireType, Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature"), attachments);
 
-                sd.wireInfrastructure.addConnection(connection, wireData, true);
+                sd.wireSimulationState.addConnection(connection, wireData, true);
                 sd.CONNECTION_DATA.computeIfAbsent(connection, c -> wireData);
             });
             sd.NODE_POSITIONS.put(node, lastKnownPos);
             sd.NODES.put(node, connectedNodes);
-            sd.VOLTAGES.put(node, 0d);
             sd.NODES_BY_POS.computeIfAbsent(pos, ((p) -> new ArrayList<>()));
             sd.NODES_BY_POS.computeIfPresent(pos, ((p, nodes) -> {
                 nodes.add(node);
@@ -258,7 +251,7 @@ public class InfrastructureSavedData extends SavedData {
                 sd.CATENARY_ADJACENCY.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
                 CatenaryConnectionData catenaryData = new CatenaryConnectionData(0, false);
                 sd.CATENARY_DATA.put(new CatenaryConnection(from, to), catenaryData);
-                sd.wireInfrastructure.addCatenaryConnection(new InWorldNodeConnection(new InWorldNode(0, from), new InWorldNode(0, to)), catenaryData, true);
+                sd.wireSimulationState.addCatenaryConnection(new InWorldNodeConnection(new InWorldNode(0, from), new InWorldNode(0, to)), catenaryData, true);
 
             });
 
@@ -275,7 +268,7 @@ public class InfrastructureSavedData extends SavedData {
                 boolean isLow = tg.getBoolean("IsLow");
                 CatenaryConnectionData catenaryData = new CatenaryConnectionData(Float.isNaN(tg.getFloat("Temperature")) ? 0f : tg.getFloat("Temperature"), isLow);
                 sd.CATENARY_DATA.put(new CatenaryConnection(from, to), catenaryData);
-                sd.wireInfrastructure.addCatenaryConnection(new InWorldNodeConnection(new InWorldNode(0, from), new InWorldNode(0, to)), catenaryData, true);
+                sd.wireSimulationState.addCatenaryConnection(new InWorldNodeConnection(new InWorldNode(0, from), new InWorldNode(0, to)), catenaryData, true);
             });
         });
 
@@ -305,8 +298,8 @@ public class InfrastructureSavedData extends SavedData {
                         Vec3 newPos = node.getPosition(level);
                         if (NODE_POSITIONS.replace(node, newPos) != newPos) {
                             for (InWorldNodeConnection connection : getConnections(node)) {
-                                wireInfrastructure.removeConnection(connection);
-                                wireInfrastructure.addConnection(connection, getConnectionData(connection), false);
+                                wireSimulationState.removeConnection(connection);
+                                wireSimulationState.addConnection(connection, getConnectionData(connection), false);
 //                                wireConnectionManager.wireRemoved(connection);
 //                                wireConnectionManager.wireAdded(connection, getConnectionData(connection));
                             }
@@ -324,8 +317,8 @@ public class InfrastructureSavedData extends SavedData {
                             if (connectionData != null && connectionData.isLow != isLow) {
                                 connectionData.isLow = isLow;
                                 InWorldNodeConnection nodeConnection = new InWorldNodeConnection(new InWorldNode(0, pos), new InWorldNode(0, neighbour));
-                                wireInfrastructure.removeConnection(nodeConnection);
-                                wireInfrastructure.addCatenaryConnection(nodeConnection, connectionData, false);
+                                wireSimulationState.removeConnection(nodeConnection);
+                                wireSimulationState.addCatenaryConnection(nodeConnection, connectionData, false);
                             }
                         }
                     }
@@ -349,10 +342,10 @@ public class InfrastructureSavedData extends SavedData {
                     NODE_POSITIONS.put(node, node.getPosition(level));
 
                     for (InWorldNodeConnection connection : getConnections(node)) {
-                        wireInfrastructure.removeConnection(connection);
+                        wireSimulationState.removeConnection(connection);
 //                        wireConnectionManager.wireRemoved(connection);
                         if (NODES.containsKey(connection.node1()) && NODES.containsKey(connection.node2()))
-                            wireInfrastructure.addConnection(connection, getConnectionData(connection), false);
+                            wireSimulationState.addConnection(connection, getConnectionData(connection), false);
 //                            wireConnectionManager.wireAdded(connection, getConnectionData(connection));
                     }
                 }
@@ -459,7 +452,7 @@ public class InfrastructureSavedData extends SavedData {
         }
 
         WireSync.handleWireRemoved(connection, level);
-        wireInfrastructure.removeConnection(connection);
+        wireSimulationState.removeConnection(connection);
 //        wireConnectionManager.wireRemoved(connection);
         setDirty();
         return connectionData;
@@ -490,7 +483,7 @@ public class InfrastructureSavedData extends SavedData {
 
         WireSync.handleWireAdded(connection, data, level);
 //        wireConnectionManager.wireAdded(connection, data);
-        wireInfrastructure.addConnection(connection, data, false);
+        wireSimulationState.addConnection(connection, data, false);
         return connection;
     }
 
@@ -522,8 +515,8 @@ public class InfrastructureSavedData extends SavedData {
 
     public void setConnectionData(InWorldNodeConnection connection, WireData data) {
         WireSync.handleWireAdded(connection, data, level);
-        wireInfrastructure.removeConnection(connection);
-        wireInfrastructure.addConnection(connection, data, false);
+        wireSimulationState.removeConnection(connection);
+        wireSimulationState.addConnection(connection, data, false);
 //        wireConnectionManager.wireRemoved(connection);
 //        wireConnectionManager.wireAdded(connection, data);
         CONNECTION_DATA.put(connection, data);
@@ -559,18 +552,6 @@ public class InfrastructureSavedData extends SavedData {
         return pos;
     }
 
-    public double getVoltageAt(InWorldNode node) {
-        return VOLTAGES.getOrDefault(node, 0d);
-    }
-
-    public void setVoltage(InWorldNode node, double v) {
-        VOLTAGES.put(node, v);
-    }
-
-    public void clearVoltages() {
-        VOLTAGES.clear();
-    }
-
     public void connectCatenary(BlockPos pos1, BlockPos pos2) {
         CATENARY_ADJACENCY.computeIfAbsent(pos1, k -> new ArrayList<>()).add(pos2);
         CATENARY_ADJACENCY.computeIfAbsent(pos2, k -> new ArrayList<>()).add(pos1);
@@ -584,7 +565,7 @@ public class InfrastructureSavedData extends SavedData {
         CATENARY_DATA.put(new CatenaryConnection(pos1, pos2), data);
         InWorldNode node1 = new InWorldNode(0, pos1);
         InWorldNode node2 = new InWorldNode(0, pos2);
-        wireInfrastructure.addCatenaryConnection(new InWorldNodeConnection(node1, node2), data, false);
+        wireSimulationState.addCatenaryConnection(new InWorldNodeConnection(node1, node2), data, false);
         WireSync.handleCatenaryAdded(pos1, pos2, level);
     }
 
@@ -594,7 +575,7 @@ public class InfrastructureSavedData extends SavedData {
         CATENARY_DATA.remove(new CatenaryConnection(pos1, pos2));
         InWorldNode node1 = new InWorldNode(0, pos1);
         InWorldNode node2 = new InWorldNode(0, pos2);
-        wireInfrastructure.removeConnection(new InWorldNodeConnection(node1, node2));
+        wireSimulationState.removeConnection(new InWorldNodeConnection(node1, node2));
         WireSync.handleCatenaryRemoved(pos1, pos2, level);
     }
 

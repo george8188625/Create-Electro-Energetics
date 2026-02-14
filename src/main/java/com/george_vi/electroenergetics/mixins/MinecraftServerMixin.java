@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.mixins;
 
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -18,13 +19,13 @@ public class MinecraftServerMixin {
         SimulationTicker.profiler.clear();
         SimulationTicker.allStats.clear();
         for (ServerLevel level : ((MinecraftServer)(Object)this).getAllLevels())
-            SimulationTicker.tick(level);
+            InfrastructureSavedData.load(level).ticker.tick();
     }
 
     @Inject(method = "tickServer", at = @At(value = "TAIL"), remap = false)
     public void electroEnergetics$tickServerPost(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
         for (ServerLevel level : ((MinecraftServer)(Object)this).getAllLevels())
-            SimulationTicker.endTick(level);
+            InfrastructureSavedData.load(level).ticker.endTick();
     }
 
     @Inject(method = "runServer", at = @At(value = "HEAD"), remap = false)

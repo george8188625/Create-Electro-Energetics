@@ -23,11 +23,33 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class SimulationTicker {
 
+
     public static SimulatorProfiler profiler = new SimulatorProfiler();
     public static Map<Level, SimulationStats> allStats = new Object2ObjectArrayMap<>();
+
+    public final ServerLevel level;
+    public final InfrastructureSavedData sd;
+
+    Object2DoubleMap<InWorldNode> VOLTAGES = new Object2DoubleOpenHashMap<>();
+    public SimulationResults lastResults;
+    public CircuitBuilder circuitBuilder;
+    public SimulationStats stats;
+    public List<SimulatorProfiler.ResultEntry> lastProfilerResults;
+    public SimulationStats lastStats;
+
+    public final int microTickBits = 0;
+    public final int microTicks = 1 << microTickBits;
+
+    public Future<SimulationResults> future = null;
+
+    public SimulationTicker(ServerLevel level, InfrastructureSavedData sd) {
+        this.level = level;
+        this.sd = sd;
+    }
 
     static WorkerThread electricalWorkerThread;
 
@@ -39,9 +61,8 @@ public class SimulationTicker {
         electricalWorkerThread.shutdown();
     }
 
-    public static void tick(ServerLevel level) {
+    public void tick() {
         profiler.push(level.dimension().location().toString());
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
         // Setup
         profiler.push("setupNodes");
 
@@ -52,14 +73,9 @@ public class SimulationTicker {
             profiler.pop();
             return;
         }
-        SimulationStats stats = new SimulationStats();
-        sd.stats = stats;
+        stats = new SimulationStats();
 
-        final int microTickBits = 0;
-        final int microTicks = 1 << microTickBits;
-
-        CircuitBuilder circuitBuilder = new CircuitBuilder(inWorldNodes);
-        sd.circuitBuilder = circuitBuilder;
+        circuitBuilder = new CircuitBuilder(inWorldNodes);
 
         profiler.popPush("preTick");
 
@@ -75,14 +91,14 @@ public class SimulationTicker {
 
         NeoForge.EVENT_BUS.post(new AddToElectricGraphEvent(circuitBuilder, level, sd));
 
-        sd.clearVoltages();
+        VOLTAGES.clear();
 
         profiler.pop();
         profiler.pop();
 
         long thrStart = System.nanoTime();
 
-        sd.future = electricalWorkerThread.submit(() -> {
+        future = electricalWorkerThread.submit(() -> {
             List<Set<WrappedIndexedNode>> networks = circuitBuilder.dfs();
             stats.totalNodes = circuitBuilder.allNodes().size();
             stats.totalSeparatedNodes = new int[networks.size()];
@@ -176,7 +192,7 @@ public class SimulationTicker {
                 if (!(node.node instanceof InWorldNode iwn))
                     continue;
                 if (microTickBits == 0) {
-                    sd.setVoltage(iwn, allVoltages[i]);
+                    VOLTAGES.put(iwn, allVoltages[i]);
                     continue;
                 }
                 double rms = 0;
@@ -184,7 +200,7 @@ public class SimulationTicker {
                     rms += allVoltages[i|j] * allVoltages[i|j];
                 rms /= microTicks;
                 rms = Math.sqrt(rms);
-                sd.setVoltage(iwn, rms);
+                VOLTAGES.put(iwn, rms);
             }
 
             Object2DoubleMap<DirectionalNodeConnection> allSourceAmps = new Object2DoubleOpenHashMap<>();
@@ -195,20 +211,19 @@ public class SimulationTicker {
         });
     }
 
-    public static void endTick(ServerLevel level) {
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulationResults allSimulationResults = null;
+    public void endTick() {
+        SimulationResults simulationResults = null;
 
-        if (sd.future != null) {
+        if (future != null) {
             try {
-                allSimulationResults = sd.future.get();
+                simulationResults = future.get();
             } catch (InterruptedException | ExecutionException e) {
                 InfrastructureSavedData.LOGGER.warn("Error while waiting for the electrical simulation to finish!", e);
                 return;
             }
         }
 
-        if (allSimulationResults == null) {
+        if (simulationResults == null) {
             return;
         }
 
@@ -217,29 +232,33 @@ public class SimulationTicker {
         profiler.push("postTick");
 
         for (SimulatedDeviceInstance device : sd.getDevices())
-            device.simulatedDevice().postTick(device.pos(), level, allSimulationResults, device.extraData());
+            device.simulatedDevice().postTick(device.pos(), level, simulationResults, device.extraData());
 
         profiler.popPush("finish");
 
 //        sd.getWireConnectionManager().finish(allSimulationResults);
-        sd.wireLifetimeModule.finishSimulation(allSimulationResults);
+        sd.wireLifetimeModule.finishSimulation(simulationResults);
 
-        NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(allSimulationResults, level, sd));
+        NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(simulationResults, level, sd));
 
-        if (!sd.circuitBuilder.allNodes().isEmpty())
+        if (!circuitBuilder.allNodes().isEmpty())
             sd.setDirty();
 
         profiler.push("syncVoltages");
-        VoltageSync.finishSimulation(sd, level, allSimulationResults);
-        sd.lastResults = allSimulationResults;
-        sd.lastStats = sd.stats;
-        sd.lastProfilerResults = profiler.getResults();
+        VoltageSync.finishSimulation(sd, level, simulationResults);
+        lastResults = simulationResults;
+        lastStats = stats;
+        lastProfilerResults = profiler.getResults();
 
         profiler.pop();
         profiler.pop();
         profiler.pop();
 
-        SimulationTicker.allStats.put(level, sd.stats);
+        SimulationTicker.allStats.put(level, stats);
+    }
+
+    public double getVoltageAt(InWorldNode node) {
+        return VOLTAGES.getOrDefault(node, 0d);
     }
 
     public static double getWireResistance(InWorldNode node1, InWorldNode node2, WireType wireType) {

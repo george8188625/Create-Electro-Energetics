@@ -14,7 +14,6 @@ import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -24,12 +23,12 @@ public class WireLifetimeModule {
 
     final InfrastructureSavedData sd;
     final ServerLevel level;
-    final WireInfrastructure wireInfrastructure;
+    final WireSimulationState wireSimulationState;
 
-    public WireLifetimeModule(InfrastructureSavedData sd, ServerLevel level, WireInfrastructure wireInfrastructure) {
+    public WireLifetimeModule(InfrastructureSavedData sd, ServerLevel level, WireSimulationState wireSimulationState) {
         this.sd = sd;
         this.level = level;
-        this.wireInfrastructure = wireInfrastructure;
+        this.wireSimulationState = wireSimulationState;
     }
 
     public void finishSimulation(SimulationResults results) {
@@ -39,11 +38,11 @@ public class WireLifetimeModule {
         InWorldNodeConnection longestWireToBreak = null;
         WireType longestWireTypeToBreak = null;
         boolean isCatenary = false;
-        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireInfrastructure.connections.entrySet()) {
+        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             InWorldNodeConnection connection = e.getKey();
             ConnectionEntry connectionData = e.getValue();
             WireType wireType = connectionData.wireData.wireType();
-            List<Pair<Float, AttachedNode>> cuts = connectionData.cuts;
+            List<WireSimulationState.CutWireEntry> cuts = connectionData.cuts;
 
             double current = 0;
             double wholeWireResistance = connectionData.resistance.getAsDouble();
@@ -53,11 +52,11 @@ public class WireLifetimeModule {
             } else {
                 float prevPoint = 0;
                 Node prevNode = connection.node1();
-                for (Pair<Float, AttachedNode> cut : cuts) {
-                    float point = cut.getFirst();
+                for (WireSimulationState.CutWireEntry cut : cuts) {
+                    float point = cut.point();
                     if (point - prevPoint < 0.01)
                         continue;
-                    AttachedNode node = cut.getSecond();
+                    AttachedNode node = cut.node();
                     float dist = point - prevPoint;
                     prevPoint = point;
                     double vd = Math.abs(results.getVoltageAt(prevNode, node));

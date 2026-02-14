@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.content.railway_electrification.sound_eff
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 
 public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
     ElectricTrainSoundInstance mainSoundInstance;
@@ -33,17 +34,19 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
         if (th != pth)
             Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.TRAIN_RELAY.get(), SoundSource.NEUTRAL, 0.4f, 1f, false);
         if (prevSpeed == 0)
-            Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.DC_TRAIN_START.get(), SoundSource.NEUTRAL, 0.1f, 1f, false);
+            Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.DC_TRAIN_START.get(), SoundSource.NEUTRAL, 0.4f, 1f, false);
         mainSoundInstance.setPos(pos);
 
-        mainSoundInstance.setPitchImmediately(Math.min(3f, trainSpeed) + 0.45f);
+        mainSoundInstance.setPitchImmediately(Math.min(4f, trainSpeed) + 0.4f);
         if (acceleration < 0.001f)
-            mainSoundInstance.targetVolume = trainSpeed * 0.04f;
+            mainSoundInstance.targetVolume = trainSpeed * 0.2f;
+        else if (trainSpeed < 0.1)
+            mainSoundInstance.targetVolume = Mth.clamp(trainSpeed, 0f, 0.1f);
         else if (trainSpeed < 0.3)
-            mainSoundInstance.targetVolume = trainSpeed;
+            mainSoundInstance.targetVolume = Mth.clamp(trainSpeed * 30 - 3, 0.1f, 3);
         else
             mainSoundInstance.targetVolume = 0.3f -(trainSpeed - 0.3f) * 0.03f;
-        mainSoundInstance.targetVolume *= 5;
+        mainSoundInstance.targetVolume *= 3;
 
         mainSoundInstance.keepAlive();
         this.pth = th;

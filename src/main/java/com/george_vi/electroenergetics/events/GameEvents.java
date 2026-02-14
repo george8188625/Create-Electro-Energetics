@@ -12,7 +12,6 @@ import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionB
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
@@ -122,10 +121,11 @@ public class GameEvents {
     @SubscribeEvent
     public static void addToElectricGraph(AddToElectricGraphEvent event) {
         InfrastructureSavedData sd = event.sd;
-        if (sd.wireInfrastructure.rebuild)
-            sd.wireInfrastructure.rebuild();
+        if (sd.wireSimulationState.rebuild)
+            sd.wireSimulationState.rebuild();
 
         sd.catenaryModule.buildCircuit(event.builder);
+        sd.wireElectrocutionModule.buildCircuit(event.builder);
         sd.wireCrossContactModule.buildCircuit(event.builder);
         sd.wireAssemblerModule.buildCircuit(event.builder);
     }
@@ -133,6 +133,7 @@ public class GameEvents {
     @SubscribeEvent
     public static void finishElectricSimulation(FinishElectricSimulationEvent event) {
         InfrastructureSavedData sd = event.sd;
+        sd.wireElectrocutionModule.finishSimulation(event.results);
         sd.catenaryModule.finishSimulation(event.results);
     }
 
