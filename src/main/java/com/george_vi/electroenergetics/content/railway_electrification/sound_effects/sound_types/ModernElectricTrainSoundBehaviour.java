@@ -77,9 +77,9 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
     private enum Phasing {
         ASYNC(0, 0.4f, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get()),
         P15(0.4f, 0.6f, CEESoundEvents.TRAIN_GTO_P15.get()),
-        P9(0.6f, 1.1f, CEESoundEvents.TRAIN_GTO_P9.get()),
-        P3(1.1f, 1.5f, CEESoundEvents.TRAIN_GTO_P3.get()),
-        P1(1.5f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get());
+        P9(0.6f, 0.8f, CEESoundEvents.TRAIN_GTO_P9.get()),
+        P3(0.8f, 1.1f, CEESoundEvents.TRAIN_GTO_P3.get()),
+        P1(1.1f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get());
 
         public final float startingSpeed;
         public final float endingSpeed;
