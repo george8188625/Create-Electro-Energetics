@@ -80,9 +80,10 @@ public class ElectricPumpBlockEntity extends PumpBlockEntity {
     }
 
     public void setVoltage(float voltage) {
-        if (!(Math.abs(voltage - this.voltage) < 1 ||
-                (Math.abs(voltage) < 5 && voltage != this.voltage)))
+        if (Math.abs(voltage - this.voltage) < 1)
             return;
+        if (voltage <= 1)
+            voltage = 0;
         this.voltage = voltage;
         if (Math.abs(voltage) > 0.5)
             award(AllAdvancements.PUMP);

@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.simulation.infrastructure;
 
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
@@ -29,20 +30,28 @@ public class WireCrossContactModule {
     }
 
     public void onRebuild() {
+        if (!CEEConfigs.server().enableCrossContact.get())
+            return;
         for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             computeCrossContactFor(e.getKey(), e.getValue(), true);
         }
     }
 
     public void onWireRemoved(InWorldNodeConnection connection, ConnectionEntry connectionData) {
+        if (!CEEConfigs.server().enableCrossContact.get())
+            return;
         CrossContactEntry entry = crossContactsByWire.remove(connection);
         if (entry != null) {
+            if (!entry.handle.valid())
+                return;
             crossContacts.remove(entry.handle);
             wireSimulationState.invalidateHandle(entry.handle);
         }
     }
 
     public void onWireAdded(InWorldNodeConnection connection, ConnectionEntry connectionData) {
+        if (!CEEConfigs.server().enableCrossContact.get())
+            return;
         computeCrossContactFor(connection, connectionData, false);
     }
 

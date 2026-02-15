@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.server.level.ServerLevel;
 
@@ -26,7 +27,7 @@ public class WireAssemblerModule {
         for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             InWorldNodeConnection connection = e.getKey();
             ConnectionEntry connectionData = e.getValue();
-            double resistance = connectionData.resistance.getAsDouble();
+            double resistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), connectionData.resistance.getAsDouble());
             List<WireSimulationState.CutWireEntry> cuts = connectionData.cuts;
 
             if (cuts.isEmpty())

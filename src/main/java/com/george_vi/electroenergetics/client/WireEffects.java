@@ -167,4 +167,29 @@ public class WireEffects {
                 .play(instance);
         instance.setVolume(1f);
     }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void showLargeSpark(Vec3 pos) {
+        Minecraft mc = Minecraft.getInstance();
+        Level level = mc.level;
+        for (int i = 0; i < 32; i++) {
+            Vec3 vel = Vec3.ZERO.offsetRandom(level.random, 0.25f);
+            level.addParticle(ParticleTypes.BUBBLE_POP, pos.x, pos.y, pos.z, vel.z, vel.y, vel.z);
+            vel = Vec3.ZERO.offsetRandom(level.random, 0.25f);
+            level.addParticle(ParticleTypes.ELECTRIC_SPARK, pos.x, pos.y, pos.z, vel.z, vel.y, vel.z);
+        }
+
+        for (int i = 0; i < 32; i++) {
+            Vec3 vel = Vec3.ZERO.offsetRandom(level.random, 0.25f);
+            level.addParticle(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, vel.z, vel.y, vel.z);
+        }
+
+        level.addParticle(ParticleTypes.FLASH, pos.x, pos.y, pos.z, 0, 0, 0);
+        level.addParticle(ParticleTypes.EXPLOSION, pos.x, pos.y, pos.z, 0, 0, 0);
+        ElectricHumSoundInstance instance = new ElectricHumSoundInstance(CEESoundEvents.ARC.get(), BlockPos.containing(pos));
+        Minecraft.getInstance()
+                .getSoundManager()
+                .play(instance);
+        instance.setVolume(1f);
+    }
 }

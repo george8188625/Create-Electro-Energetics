@@ -115,7 +115,7 @@ public class WireSimulationState {
 
         List<CutWireEntry> cuts = new ArrayList<>();
         cutsByWire.put(connection, cuts);
-        AABB bb = new AABB(pos1, pos2).inflate(0.5);
+        AABB bb = new AABB(pos1, catenaryData.isLow ? pos2 : pos2.add(0, 1.5, 0)).inflate(0.5);
         ConnectionEntry connectionEntry = new ConnectionEntry(pos1, pos2, points, catenaryData, bb, true, cuts);
         connections.put(connection, connectionEntry);
 
@@ -279,6 +279,10 @@ public class WireSimulationState {
         @Override
         public String toString() {
             return id + "-" + name;
+        }
+
+        public boolean valid() {
+            return !invalidated;
         }
     }
 

@@ -4,7 +4,6 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.simulator.MicroTickingElectricalProperties;
-import net.createmod.catnip.animation.AnimationTickHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -20,8 +19,6 @@ public class CreativeBatteryDevice extends SimulatedDevice<CreativeBatteryDevice
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
         double voltage = extraData.voltage;
 
-        // AC experiment
-        // voltage = Math.sin(AnimationTickHolder.getTicks() / 5d) * voltage;
         if (extraData.acFrequency == 0)
             bridges.builder(pos)
                     .idealVoltageSource(0, 1, voltage);

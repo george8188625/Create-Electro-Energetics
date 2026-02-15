@@ -35,6 +35,8 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.forComponents(CEEBlocks.PANTOGRAPH.getId(), CEEBlocks.CATENARY_HOLDER.getId())
                 .addStoryBoard("railway_electrification", RailwayElectrificationScenes::setup)
                 .addStoryBoard("electric_train_sounds", RailwayElectrificationScenes::sounds);
+        helper.forComponents(CEEBlocks.RAIL_CONTACT_SHOE.getId())
+                .addStoryBoard("third_rail", RailwayElectrificationScenes::thirdRail);
         helper.forComponents(CEEBlocks.DIODE.getId())
                 .addStoryBoard("diode", ElectricityBasicsScenes::diode);
         helper.forComponents(CEEBlocks.VOLTMETER.getId())
@@ -42,8 +44,13 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.forComponents(CEEBlocks.HV_SWITCH.getId())
                 .addStoryBoard("hv_switch", SwitchScenes::hvSwitch);
 
+        helper.forComponents(CEEBlocks.ALTERNATOR_ROTOR.getId())
+                .addStoryBoard("alternator", GeneratorScenes::alternator);
+
         helper.forComponents(CEEBlocks.ALTERNATOR_BRUSHES.getId())
+                .addStoryBoard("alternator", GeneratorScenes::alternator)
                 .addStoryBoard("electric_train_sounds", RailwayElectrificationScenes::sounds);
+
     }
 
     @Override
@@ -74,7 +81,7 @@ public class CEEPonderPlugin implements PonderPlugin {
 
         helper.registerTag(CreateElecrtoEnergetics.rl("electric_train_sound_changing"))
                 .addToIndex()
-                .item(CEEBlocks.DIODE, true, false)
+                .item(CEEBlocks.ALTERNATOR_BRUSHES, true, false)
                 .title("Electric Train Sound Changers")
                 .description("These blocks change electric train sounds.")
                 .register();

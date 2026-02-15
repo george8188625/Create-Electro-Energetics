@@ -261,8 +261,8 @@ public class SimulationTicker {
         return VOLTAGES.getOrDefault(node, 0d);
     }
 
-    public static double getWireResistance(InWorldNode node1, InWorldNode node2, WireType wireType) {
-        double res = Math.sqrt(node1.sourcePos().distSqr(node2.sourcePos())) * wireType.getResistance();
-        return res == 0 ? wireType.getResistance() : res;
+    public static double getWireResistance(InWorldNode node1, InWorldNode node2, double resistance) {
+        double res = Math.sqrt(node1.sourcePos().distSqr(node2.sourcePos())) * resistance;
+        return res == 0 ? resistance : res;
     }
 }

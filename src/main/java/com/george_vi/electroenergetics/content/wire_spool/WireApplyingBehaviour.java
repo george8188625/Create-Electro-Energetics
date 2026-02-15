@@ -97,13 +97,15 @@ public class WireApplyingBehaviour {
                 NodeVoltageHolder.VoltageEntry ve = NodeVoltageHolder.getVoltageEntryOrNull(hoveredNode);
                 if (ve != null)
                     ElectricPropertiesOverlay.INSTANCE.setHoveredNode(ve, hoveredNode);
-            }
-        }
+            } else
+                ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
+
+        } else
+            ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
 
         // Player is not looking at a node, return and say it's too far away
 
         if (hoveredNode == null) {
-            ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
             CEELang.builder()
                     .translate("wire_spool.too_far_away")
                     .style(ChatFormatting.RED)

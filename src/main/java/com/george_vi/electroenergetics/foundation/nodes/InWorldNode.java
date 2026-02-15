@@ -42,6 +42,10 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         this.sourcePos = sourcePos;
     }
 
+    public InWorldNode(int id, int x, int y, int z) {
+        this(id, new BlockPos(x, y, z));
+    }
+
     public static InWorldNode closestNode(Level level, Vec3 clickedPos, float threshold) {
 
         List<Pair<Vec3, InWorldNode>> nodes = new ArrayList<>();
