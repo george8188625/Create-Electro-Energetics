@@ -126,7 +126,7 @@
   "electroenergetics.nodes.primary": "初级端子",
   "electroenergetics.nodes.secondary": "次级端子",
   "electroenergetics.ponder.alternator.header": "建造交流发电机",
-  "electroenergetics.ponder.alternator.text_1": "交流发电机能够将旋转力转化为电能",
+  "electroenergetics.ponder.alternator.text_1": "交流发电机能够将应力转化为电能",
   "electroenergetics.ponder.alternator.text_2": "在转子周围放置磁铁",
   "electroenergetics.ponder.alternator.text_3": "交流发电机将会开始产生电压。",
   "electroenergetics.ponder.alternator.text_4": "184V",
