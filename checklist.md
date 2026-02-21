@@ -1,49 +1,57 @@
-**CHECKLIST**
+# Checklist
 
-**Features:**
-- [x] Train sounds out of multiple carriages
+These are potential and planned features. Feel free to contribute by implementing some of them.
+
+### Train & railway electrification
 - [ ] Electric train lights
-- [x] Train sound selection
-- [x] Accumulators on trains
-- [ ] Pantograph sparks
-- [x] Colored bulbs
-- [ ] Variacs
-- [x] Potentiometers
-- [ ] Variable buzzer pitch
-- [x] Multi-block transformers
+- [ ] Energy meters work on trains
+- [ ] Electrical train detector
+- [ ] Bottom contact third rail
+### Lighting
 - [ ] Floodlights
-- [ ] More light types
-- [x] Lights prevent mob spawning even when they are off
-- [ ] Energy meters on trains
-- [x] Resistance / voltage tooltips
-- [ ] DC motors (~12V, direction depends on voltage, useful for controlling fluid valves, variacs, etc)
-- [ ] Transistors
-- [ ] Logic chips (adders, logic gates, etc.)
+- [ ] Pole mount lights
+- [ ] Electric train lights
+- [ ] Growing bulb - increases crop growth
+### Electrical Engineering
 - [ ] Small alternators
-- [ ] Directional ammeters
-- [ ] Galvanic basin recipes
-- [x] Electrocution
-- [x] Uninsulated wire shorts
-- [ ] Zipline hook (like IE skyhook)
-- [x] InfrastructureSD saved in schematics (wires, devices, etc.)
-- [ ] Advancements
-- [ ] Surge protection
-- [x] fix transformers
-- [ ] Some way of reading voltage / current into an analog signal
-- [ ] Electric doors (buzz in door)
-- [ ] Some special behaviour when cables go through walls
-- [x] Display sources
-- [ ] Some coil-gun-like weapon
-- [ ] More CC integration
-- [ ] Electric basin heater
-- [ ] Solenoid valves
-- [ ] A pipe that detects a presence of a fluid inside of it by shorting the connectors when its filled. I have no idea what to name it
-- [ ] Electromagnets
-- [ ] AC
-
-**Ponders:**
-- [x] Voltage
-- [x] Current
+- [ ] Alternating Current (using Micro-Ticking)
+- - [ ] Micro-ticked transformers
+- - [ ] Micro-ticked accumulators
+- [ ] Realistic grounding
+- [ ] Variac
+- [ ] Realistic surge protection
+- [ ] Electromagnets - can be used in alternators as exciters or to attract items
+- [ ] Fuses have changeable max amperage
+- [ ] Interdimensional transformer - a transformer placed in a nether portal that allows for getting power to the nether.
+### Electronics
+- [ ] Transistors
+- [ ] Variacs
+- [ ] Pre-made integrated circuits
+- - [ ] Adders
+- - [ ] Logic Gates
+- [ ] Small DC motors - Operate at ~ 12V. Direction depends on voltage. Useful for controlling fluid valves, variacs, etc.
+- [ ] Some way of reading voltage/current into an analog signal
+- [ ] 5 pin relay
+### Content
+- [ ] Changeable buzzer pitch
+- [ ] Galvanic basin recipes 
+- [ ] Zipline hook - Like IE skyhook
+- [ ] Electric doors - Buzz in door
+- [ ] Resistive heater - Electric blaze burner
+- [ ] A coil-gun-like weapon
+- [ ] Solenoid valves - opens or closes create's pipes
+- [ ] Diagonal concrete beams
+- [ ] Colored heavily insulated wire
+- [ ] Modded metal wire types
+- [ ] Multiblock accumulators
+- [ ] Basin electrodes - allows for new recipe types using electricity
+### CC Integration
+- [ ] Alternator brushes peripheral
+- [ ] Energy meter peripheral
+- [ ] Accumulator peripheral
+### UX
+- [ ] Remaining cable counter - displays the length of the wire while placing
+### Ponders
 - [ ] Resistance
 - [ ] Voltage divider
 - [ ] Capacitor
@@ -52,9 +60,8 @@
 - [ ] Faults
 - [ ] Protection (fuses)
 - [ ] Switch
-- [x] HV switch
 - [ ] Relays
 - [ ] Energy meters
 - [ ] Grounding
-- [ ] Multi-block transformer
+- [ ] Transformer core
 
