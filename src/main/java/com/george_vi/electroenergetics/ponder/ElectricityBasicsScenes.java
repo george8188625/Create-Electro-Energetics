@@ -98,7 +98,7 @@ public class ElectricityBasicsScenes {
         connections.createConnection(new InWorldNode(0, source), new InWorldNode(1, diode));
         connections.createConnection(new InWorldNode(1, bulb), new InWorldNode(1, source));
 
-        connections.createCurrentVisualization(new InWorldNode(1, diode), new InWorldNode(0, bulb), 1, -0.1f, false);
+        connections.createCurrentVisualization(new InWorldNode(0, diode), new InWorldNode(0, bulb), 1, -0.1f, false);
         connections.createCurrentVisualization(new InWorldNode(1, bulb), new InWorldNode(1, source), 1, -0.1f, false);
 
         scene.overlay().showText(100)

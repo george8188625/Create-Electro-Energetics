@@ -1,13 +1,11 @@
 package com.george_vi.electroenergetics.foundation;
 
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
-import com.simibubi.create.Create;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangBuilder;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.level.block.state.BlockState;
 
 public class CEELang extends Lang {
     public static LangBuilder builder() {
@@ -34,6 +32,12 @@ public class CEELang extends Lang {
         return builder()
                 .text(LangNumberFormat.format(Math.abs(power) > 1000 ? power / 1000 : power))
                 .translate(Math.abs(power) > 1000 ? "generic.kilowatts" : "generic.watts");
+    }
+
+    public static LangBuilder formatFEPerTick(double fet) {
+        return builder()
+                .text(LangNumberFormat.format(Math.abs(fet) > 1000 ? fet / 1000 : fet))
+                .translate(Math.abs(fet) > 1000 ? "generic.kilofe_per_tick" : "generic.fe_per_tick");
     }
 
     public static LangBuilder formatEnergy(double energy) {

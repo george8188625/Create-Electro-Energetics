@@ -138,7 +138,8 @@ public class WireApplyingBehaviour {
                 (heldItem.getItem() instanceof WireSpoolItem wsi) && wsi.wireType.get() == CEEWireTypes.COPPER.get();
 
         // Wire too long
-        if (Math.sqrt(selectedNode.sourcePos().distSqr(pos)) > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() :
+        double wireDistance = Math.sqrt(selectedNode.sourcePos().distSqr(pos));
+        if (wireDistance > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() :
                 (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getMaxLength() : CEEConfigs.server().maxWireLength.get()))) {
             mc.gui.setOverlayMessage(
                     Lang.builder(CreateElecrtoEnergetics.ID)
@@ -174,7 +175,7 @@ public class WireApplyingBehaviour {
                 .colored(new Color(canConnect ? .3f : .9f, canConnect ? .9f : .3f, .5f, 1f))
                 .withFaceTexture(AllSpecialTextures.SELECTION);
 
-        if (!toRemove && !mc.isPaused()) {
+        if (!toRemove && !mc.isPaused() && wireDistance < 512) {
             for (Vec3 point : QuadraticWireHelper.cablePoints(selectedPos, hoveredPos, isCatenary ? 0 : (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getSag() : 1))) {
                 if (level.random.nextInt(7) != 0)
                     continue;

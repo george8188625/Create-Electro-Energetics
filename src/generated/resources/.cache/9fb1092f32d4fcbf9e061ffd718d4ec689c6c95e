@@ -1,4 +1,4 @@
-// 1.21.1	2026-02-12T18:52:00.630529305	Recipes
+// 1.21.1	2026-02-21T00:30:20.898473464	Recipes
 e4558ff2c12de196a56a9f67ffe27050cdfe38f7 data/electroenergetics/advancement/recipes/decorations/stonecutting/electric_shock_sign.json
 1e443110466e17eb3a8f102e9fc77c86fc29380e data/electroenergetics/advancement/recipes/decorations/stonecutting/grounding_sign.json
 e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/recipes/decorations/stonecutting/high_voltage_sign.json
@@ -124,7 +124,7 @@ a954acdc1a807b0753429c4be3c85dcf10691018 data/electroenergetics/recipe/crafting/
 81822e18569bba3e70f7f5f0fafb8f4de3e460f8 data/electroenergetics/recipe/crafting/voltmeter.json
 a18deafb87a52f5f13c56ae2f26a24d16b7edf39 data/electroenergetics/recipe/crafting/voltmeter_from_ammeter.json
 4fdea6851fd7b8c82f5751555d993f228e7c4691 data/electroenergetics/recipe/crafting/wire_spool.json
-555df15a370e9a6714048155d5daf9065f936600 data/electroenergetics/recipe/sequenced_assembly/transformer_core.json
+53052abc1720d9d2cc311d7b520e3e7b6df29276 data/electroenergetics/recipe/sequenced_assembly/transformer_core.json
 5ab4f6f271f527ad893583ef12c8a8688fc52dbe data/electroenergetics/recipe/stonecutting/electric_shock_sign.json
 28d91f7da28d4e598201ca45e7655fe4791ec1ef data/electroenergetics/recipe/stonecutting/grounding_sign.json
 e2f30f64f71f5dc59fe9908f87d7ef068ddf9c6a data/electroenergetics/recipe/stonecutting/high_voltage_sign.json

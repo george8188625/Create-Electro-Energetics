@@ -75,11 +75,13 @@ public class WireSimulationState {
             for (Vec3 point : v.points) {
                 SectionPos section = SectionPos.of(point);
                 if (!Objects.equals(prevSection, section)) {
+                    prevSection = section;
                     Map<InWorldNodeConnection, ConnectionEntry> c = connectionsBySection.get(section.asLong());
+                    if (c == null)
+                        continue;
                     c.remove(connection);
                     if (c.isEmpty())
                         connectionsBySection.remove(section.asLong());
-                    prevSection = section;
                 }
             }
         }

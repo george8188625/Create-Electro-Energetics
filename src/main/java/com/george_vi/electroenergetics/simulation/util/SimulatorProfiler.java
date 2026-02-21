@@ -11,6 +11,7 @@ public class SimulatorProfiler {
     private final Deque<Long> startTimes = new ArrayDeque<>();
     private long profilerOverheadNanos = 0L;
     private long threadedNanos = 0L;
+    private long solverNanos = 0L;
 
     public SimulatorProfiler() {
 
@@ -54,6 +55,7 @@ public class SimulatorProfiler {
         startTimes.clear();
         profilerOverheadNanos = 0L;
         threadedNanos = 0L;
+        solverNanos = 0L;
     }
 
     public List<ResultEntry> getResults() {
@@ -64,9 +66,19 @@ public class SimulatorProfiler {
         return threadedNanos;
     }
 
+    public long getSolverNanos() {
+        return solverNanos;
+    }
+
     public void addThreadedNanos(long n) {
         synchronized (this) { // I don't know if this is required, but I think this is safer.
             threadedNanos += n;
+        }
+    }
+
+    public void addSolverNanos(long n) {
+        synchronized (this) { // I don't know if this is required, but I think this is safer.
+            solverNanos += n;
         }
     }
 

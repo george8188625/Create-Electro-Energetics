@@ -74,6 +74,7 @@ public class CEECommands {
         dispatcher.register(root);
     }
 
+
     public static int performance(CommandContext<CommandSourceStack> ctx) {
         CommandSourceStack source = ctx.getSource();
         source.sendSuccess(() -> Component.literal("-+------<< Simulation Performance: >>------+-"), false);
@@ -82,6 +83,7 @@ public class CEECommands {
         listResults(1, results, source, totalTime == 0 ? 1 : totalTime, totalTime);
         source.sendSuccess(() -> Component.literal("profiler: " + SimulationTicker.profiler.getProfilerOverheadNanos() / 1000 + " μs").withStyle(blue), false);
         source.sendSuccess(() -> Component.literal("threadedSimulation: " + SimulationTicker.profiler.getThreadedNanos() / 1000 + " μs").withStyle(blue), false);
+        source.sendSuccess(() -> Component.literal("threadedSolve: " + SimulationTicker.profiler.getSolverNanos() / 1000 + " μs").withStyle(blue), false);
         source.sendSuccess(() -> Component.literal("-+------------------------------------+-"), false);
         return 1;
     }
