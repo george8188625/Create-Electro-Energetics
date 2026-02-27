@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.NodeVoltageHolder;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.*;
@@ -164,12 +165,20 @@ public class WireApplyingBehaviour {
             canConnect = false;
         }
 
-        if (canConnect)
+        if (canConnect) {
             for (Pair<InWorldNodeConnection, WireData> connection : WireRenderer.getAllConnections())
                 if (new InWorldNodeConnection(selectedNode, hoveredNode).equals(connection.getFirst())) {
                     canConnect = false;
                     break;
                 }
+            for (CatenaryConnection connection : WireRenderer.CATENARY)
+                if ((connection.pos1().equals(selectedNode.sourcePos()) && connection.pos2().equals(hoveredNode.sourcePos())) ||
+                        (connection.pos2().equals(selectedNode.sourcePos()) && connection.pos1().equals(hoveredNode.sourcePos()))) {
+                    canConnect = false;
+                    break;
+                }
+        }
+
 
         Outliner.getInstance().showAABB("electroenergetics_node_selection", AABB.ofSize(hoveredPos, 5/16f, 5/16f, 5/16f), 3)
                 .colored(new Color(canConnect ? .3f : .9f, canConnect ? .9f : .3f, .5f, 1f))

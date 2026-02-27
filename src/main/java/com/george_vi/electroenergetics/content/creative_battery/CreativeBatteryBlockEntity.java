@@ -36,34 +36,44 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
         voltage = new ScrollValueBehaviour(CEELang.translate("creative_battery.voltage").component(), this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(CEELang.translate("creative_battery.voltage_symbol").component()),
-                        new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(indexToVoltage(valueSettings.value())).component()));
+                return new ValueSettingsBoard(label, 190, 10, ImmutableList.of(CEELang.translate("creative_battery.voltage_symbol").component(),
+                                                                                             CEELang.translate("creative_battery.kilo_voltage_symbol").component()),
+                        new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(indexToVoltage(valueSettings.value(), valueSettings.row())).component()));
+            }
+
+            @Override
+            public void setValueSettings(Player player, ValueSettings valueSetting, boolean ctrlHeld) {
+                int value = Math.max(1, valueSetting.value());
+                if (!valueSetting.equals(getValueSettings()))
+                    playFeedbackSound(this);
+                setValue((int) (indexToVoltage(valueSetting.value(), valueSetting.row()) * 1000));
+            }
+
+            @Override
+            public String formatValue() {
+                return CEELang.formatVoltage(value / 1000d).string();
             }
         };
-        voltage.between(0, 550);
-        voltage.value = 210;
-        voltage.withFormatter(v -> CEELang.formatVoltage(indexToVoltage(v)).string());
+        voltage.between(0, 1_000_000_000);
+
+        voltage.value = 300_000;
         voltage.withCallback(i -> this.updateVoltage());
         behaviours.add(voltage);
     }
 
-    double indexToVoltage(int i) {
+    private double indexToVoltage(int i, int row) {
+        if (row == 0) {
+
+            if (i < 100)
+                return i;
+            else
+                return (i - 90) * 10;
+        }
+
         if (i < 100)
-            return i / 10d;
-        i -= 100;
-        if (i < 90)
-            return (i + 10);
-        i -= 90;
-        if (i < 90)
-            return (i + 10) * 10d;
-        i -= 90;
-        if (i < 90)
-            return (i + 10) * 100d;
-        i -= 90;
-        if (i < 90)
-            return (i + 10) * 1000d;
-        i -= 90;
-        return (i + 10) * 10000d;
+            return (i + 10) * 100;
+        else
+            return (i - 90) * 10000;
     }
 
     private void updateVoltage() {
@@ -73,7 +83,7 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
         SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null && deviceInstance.extraData() instanceof CreativeBatteryDevice.DataHolder dataHolder) {
-            dataHolder.voltage = indexToVoltage(voltage.value);
+            dataHolder.voltage = voltage.value / 1000d;
         }
     }
 

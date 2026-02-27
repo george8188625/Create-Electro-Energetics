@@ -36,34 +36,47 @@ public class ResistorBlockEntity extends SmartBlockEntity {
         resistance = new ScrollValueBehaviour(CEELang.translate("resistor.resistance").component(), this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(CEELang.translate("resistor.resistance_symbol").component()),
-                        new ValueSettingsFormatter(valueSettings -> CEELang.formatResistance(indexToResistance(valueSettings.value())).component()));
+                return new ValueSettingsBoard(label, 190, 10, ImmutableList.of(CEELang.translate("resistor.milli_resistance_symbol").component(),
+                                                                                                      CEELang.translate("resistor.resistance_symbol").component(),
+                                                                                                      CEELang.translate("resistor.kilo_resistance_symbol").component()),
+                        new ValueSettingsFormatter(valueSettings ->
+                                CEELang.formatResistance(indexToResistance(valueSettings.value(), valueSettings.row())).component()));
+            }
+
+            @Override
+            public void setValueSettings(Player player, ValueSettings valueSetting, boolean ctrlHeld) {
+                int value = Math.max(1, valueSetting.value());
+                if (!valueSetting.equals(getValueSettings()))
+                    playFeedbackSound(this);
+                setValue((int) (indexToResistance(value, valueSetting.row()) * 1000d));
+            }
+
+            @Override
+            public String formatValue() {
+                return CEELang.formatResistance(value / 1000d).string();
             }
         };
-        resistance.between(0, 550);
-        resistance.value = 24;
-        resistance.withFormatter(v -> CEELang.formatResistance(indexToResistance(v)).string());
+        resistance.between(0, 1_000_000_000);
+        resistance.value = 1_000_000;
         resistance.withCallback(i -> this.updateResistance());
         behaviours.add(resistance);
     }
 
-    double indexToResistance(int i) {
+    private double indexToResistance(int i, int row) {
+        if (row == 0) {
+                return (i / 20d) + 0.1;
+        } else if (row == 1) {
+
+            if (i < 100)
+                return Math.max(1, i);
+            else
+                return (i - 90) * 10;
+        }
+
         if (i < 100)
-            return i / 10d;
-        i -= 100;
-        if (i < 90)
-            return (i + 10);
-        i -= 90;
-        if (i < 90)
-            return (i + 10) * 10d;
-        i -= 90;
-        if (i < 90)
-            return (i + 10) * 100d;
-        i -= 90;
-        if (i < 90)
-            return (i + 10) * 1000d;
-        i -= 90;
-        return (i + 10) * 10000d;
+            return (i + 10) * 100;
+        else
+            return (i - 90) * 10000;
     }
 
     private void updateResistance() {
@@ -73,9 +86,9 @@ public class ResistorBlockEntity extends SmartBlockEntity {
         SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null && deviceInstance.extraData() instanceof ResistorDevice.DataHolder dataHolder) {
-            dataHolder.properties.resistance = Math.max(0.01, indexToResistance(resistance.value));
+            dataHolder.properties.resistance = Math.max(0.01, resistance.value / 1000d);
         } else if (deviceInstance != null && deviceInstance.extraData() instanceof CreativeResistorDevice.DataHolder dataHolder) {
-            dataHolder.properties.resistance = Math.max(0.01, indexToResistance(resistance.value));
+            dataHolder.properties.resistance = Math.max(0.01, resistance.value / 1000d);
         }
     }
 

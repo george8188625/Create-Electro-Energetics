@@ -59,7 +59,7 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Variac
 - [ ] Faults
 - [ ] Protection (fuses)
-- [ ] Switch
+- [x] Switch
 - [ ] Relays
 - [ ] Energy meters
 - [ ] Grounding

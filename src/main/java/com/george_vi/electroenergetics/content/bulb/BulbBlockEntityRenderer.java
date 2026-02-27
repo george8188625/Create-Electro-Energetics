@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class BulbBlockEntityRenderer extends SmartBlockEntityRenderer<BulbBlockEntity> {
@@ -32,12 +33,13 @@ public class BulbBlockEntityRenderer extends SmartBlockEntityRenderer<BulbBlockE
                 .uncenter();
 
         if (CEEBlocks.BULB.has(state)) {
-            if (blockEntity.light > 0.5) {
-                float factor = (blockEntity.light - 0.3f);
+            float bulbLight = blockEntity.smoothLight.getValue(partialTicks);
+            if (bulbLight > 0.5) {
+                float factor = (bulbLight - 0.3f);
                 int newColor = ((int)(255 * factor) << 16)
                         | ((int)(200 * factor) << 8)
                         | ((int)(140 * factor));
-                if (blockEntity.light < 0.65)
+                if (bulbLight < 0.65)
                     CachedBuffers.partial(CEEPartialModels.BULB_GLASS, state)
                             .light(light)
                             .renderInto(ms, buffer.getBuffer(RenderType.CUTOUT));
@@ -66,8 +68,8 @@ public class BulbBlockEntityRenderer extends SmartBlockEntityRenderer<BulbBlockE
                         .renderInto(ms, buffer.getBuffer(RenderTypes.additive()));
             } else {
                 CachedBuffers.partial(CEEPartialModels.BULB_FILAMENT, state)
-                        .light(blockEntity.light > 0.05 ? LightTexture.FULL_BRIGHT : light)
-                        .color(blockEntity.light > 0.7 ? 255 : (int) (blockEntity.light * 330) + 22, blockEntity.light > 0.7 ? 255 : (int) (blockEntity.light * 330) + 22, blockEntity.light > 0.7 ? 255 : (int) (blockEntity.light * 330) + 22, 255)
+                        .light(bulbLight > 0.05 ? LightTexture.FULL_BRIGHT : light)
+                        .color(bulbLight > 0.7 ? 255 : (int) (bulbLight * 330) + 22, bulbLight > 0.7 ? 255 : (int) (bulbLight * 330) + 22, bulbLight > 0.7 ? 255 : (int) (bulbLight * 330) + 22, 255)
                         .renderInto(ms, buffer.getBuffer(RenderType.CUTOUT));
                 CachedBuffers.partial(CEEPartialModels.BULB_GLASS, state)
                         .light(light)

@@ -6,6 +6,8 @@ import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
+import net.createmod.ponder.api.scene.Selection;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
 public class TransformerScenes {
@@ -247,5 +249,22 @@ public class TransformerScenes {
                 .attachKeyFrame()
                 .placeNearTarget();
         scene.idle(100);
+    }
+
+    public static void turns(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+        scene.title("transformer_turns", "How transformers work");
+        scene.configureBasePlate(0, 0, 9);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+
+        BlockPos source = util.grid().at(4, 1, 0);
+        BlockPos primaryMeter = util.grid().at(4, 1, 2);
+        BlockPos primary = util.grid().at(4, 1, 4);
+        BlockPos secondary = util.grid().at(4, 1, 5);
+        BlockPos secondaryMeter = util.grid().at(4, 1, 7);
+        BlockPos bulb = util.grid().at(4, 2, 7);
+
+
     }
 }
