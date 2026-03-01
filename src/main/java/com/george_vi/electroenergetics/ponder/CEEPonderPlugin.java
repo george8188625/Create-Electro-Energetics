@@ -30,8 +30,11 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .addStoryBoard("basics", ElectricityBasicsScenes::theBasics);
 
         helper.forComponents(CEEBlocks.TRANSFORMER.getId())
+                .addStoryBoard("transformer_core", TransformerScenes::turns)
                 .addStoryBoard("transformer", TransformerScenes::transformer)
                 .addStoryBoard("transformer_losses", TransformerScenes::losses);
+        helper.forComponents(CEEBlocks.TRANSFORMER_CORE.getId())
+                .addStoryBoard("transformer_core", TransformerScenes::turns);
         helper.forComponents(CEEBlocks.PANTOGRAPH.getId(), CEEBlocks.CATENARY_HOLDER.getId())
                 .addStoryBoard("railway_electrification", RailwayElectrificationScenes::setup)
                 .addStoryBoard("electric_train_sounds", RailwayElectrificationScenes::sounds);
@@ -61,9 +64,12 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.registerSharedText("voltage0", "0V");
         helper.registerSharedText("voltage300", "300V");
         helper.registerSharedText("voltage600", "600V");
+        helper.registerSharedText("voltage1500", "1500V");
         helper.registerSharedText("ratio1over2", "1 / 2");
         helper.registerSharedText("ratio1over3", "1 / 3");
         helper.registerSharedText("ratio3over1", "3 / 1");
+        helper.registerSharedText("turns10", "10 turns");
+        helper.registerSharedText("turns50", "50 turns");
     }
 
     @Override

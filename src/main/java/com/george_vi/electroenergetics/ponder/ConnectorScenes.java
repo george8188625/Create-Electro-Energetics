@@ -110,7 +110,7 @@ public class ConnectorScenes {
         connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(2, 1, 0)), new InWorldNode(0, util.grid().at(1, 1, 2)), 1, 1, true);
 
         scene.world().modifyBlock(util.grid().at(2, 1, 0), s -> s.setValue(BulbBlock.LIGHT, 15), false);
-        scene.world().modifyBlockEntity(util.grid().at(2, 1, 0), BulbBlockEntity.class, be -> be.light = 1);
+        scene.world().modifyBlockEntity(util.grid().at(2, 1, 0), BulbBlockEntity.class, be -> be.setLight(1));
     }
 
     public static void chunks(SceneBuilder builder, SceneBuildingUtil util) {

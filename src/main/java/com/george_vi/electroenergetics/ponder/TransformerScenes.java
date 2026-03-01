@@ -1,14 +1,18 @@
 package com.george_vi.electroenergetics.ponder;
 
+import com.george_vi.electroenergetics.content.bulb.BulbBlock;
+import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
+import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 
 public class TransformerScenes {
     public static void transformer(SceneBuilder builder, SceneBuildingUtil util) {
@@ -265,6 +269,117 @@ public class TransformerScenes {
         BlockPos secondaryMeter = util.grid().at(4, 1, 7);
         BlockPos bulb = util.grid().at(4, 2, 7);
 
+        scene.world().showSection(util.select().fromTo(primary, secondary), Direction.DOWN);
+        scene.world().showSection(util.select().position(source), Direction.DOWN);
+        scene.world().showSection(util.select().position(primaryMeter), Direction.DOWN);
+        scene.world().showSection(util.select().position(secondaryMeter), Direction.DOWN);
+        scene.world().showSection(util.select().position(bulb), Direction.DOWN);
+        scene.idle(20);
 
+        scene.overlay().showText(70)
+                .text("Transformers are used to step-up or step-down voltage")
+                .pointAt(util.vector().topOf(primary).add(0, 0, 0.5))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        connections.createConnection(new InWorldNode(0, source), new InWorldNode(0, primaryMeter));
+        connections.createConnection(new InWorldNode(0, primaryMeter), new InWorldNode(1, primary));
+        connections.createConnection(new InWorldNode(1, primaryMeter), new InWorldNode(0, primary));
+        connections.createConnection(new InWorldNode(1, source), new InWorldNode(1, primaryMeter));
+
+        scene.world().modifyBlockEntityNBT(util.select().position(primaryMeter), ElectricGaugeBlockEntity.class,
+                nbt -> nbt.putFloat("Value", 1f));
+
+        scene.idle(20);
+
+        scene.overlay().showText(20)
+                .sharedText("turns50")
+                .pointAt(util.vector().blockSurface(primary, Direction.NORTH))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(40);
+
+        scene.rotateCameraY(-90);
+        scene.idle(60);
+
+        scene.overlay().showText(20)
+                .sharedText("turns10")
+                .pointAt(util.vector().blockSurface(secondary, Direction.SOUTH))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(40);
+
+        scene.rotateCameraY(90);
+        scene.idle(60);
+
+        scene.overlay().showText(20)
+                .sharedText("voltage1500")
+                .pointAt(util.vector().blockSurface(primaryMeter, Direction.NORTH))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(40);
+
+        connections.createConnection(new InWorldNode(0, secondary), new InWorldNode(0, secondaryMeter));
+        connections.createConnection(new InWorldNode(1, secondary), new InWorldNode(1, secondaryMeter));
+
+        scene.world().modifyBlockEntityNBT(util.select().position(secondaryMeter), ElectricGaugeBlockEntity.class,
+                nbt -> nbt.putFloat("Value", 0.3f));
+        scene.idle(20);
+
+        scene.overlay().showText(20)
+                .sharedText("voltage300")
+                .pointAt(util.vector().blockSurface(secondaryMeter, Direction.NORTH))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(40);
+
+        connections.createConnection(new InWorldNode(0, secondary), new InWorldNode(0, bulb));
+        connections.createConnection(new InWorldNode(1, secondary), new InWorldNode(1, bulb));
+
+        scene.world().modifyBlock(bulb, bs -> bs.setValue(BulbBlock.LIGHT, 15), false);
+        scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.setLight(1));
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Notice how the turns ratio is equal to the voltage ratio")
+                .colored(PonderPalette.GREEN)
+                .pointAt(util.vector().topOf(primary).add(0, 0, 0.5))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        connections.createCurrentVisualization(new InWorldNode(0, source), new InWorldNode(0, primaryMeter), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, primaryMeter), new InWorldNode(1, primary), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, primaryMeter), new InWorldNode(0, primary), 1, -1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, source), new InWorldNode(1, primaryMeter), 1, -1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, secondary), new InWorldNode(0, bulb), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, secondary), new InWorldNode(1, bulb), 1, -1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, bulb), new InWorldNode(0, bulb), 1, 1, true);
+
+        scene.idle(20);
+
+        scene.rotateCameraY(-55);
+        scene.idle(60);
+        scene.overlay().chaseBoundingBoxOutline(PonderPalette.RED, "CEEPonderTransformerIsolation", AABB.encapsulatingFullBlocks(primary, secondary).inflate(0.5, 0.5, -0.9), 80);
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Additionally, the transformer doesn't connect the both circuits")
+                .colored(PonderPalette.BLUE)
+                .pointAt(util.vector().centerOf(primary).add(0, 0, 0.5))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.overlay().showText(70)
+                .text("Instead, it couples them magnetically")
+                .colored(PonderPalette.GREEN)
+                .pointAt(util.vector().centerOf(primary).add(0, 0, 0.5))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
     }
 }

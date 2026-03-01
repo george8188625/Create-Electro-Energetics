@@ -46,6 +46,7 @@ public class WirePonderElement extends AnimatedSceneElementBase {
                         .translate(point)
                         .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                         .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                        .rotateZ(0.01f)
                         .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(world, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
                                 Math.max(LevelRenderer.getLightColor(world, BlockPos.containing(point)),
@@ -70,6 +71,7 @@ public class WirePonderElement extends AnimatedSceneElementBase {
                         .translate(point)
                         .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                         .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                        .rotateZ(0.01f)
                         .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(world, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
                                 Math.max(LevelRenderer.getLightColor(world, BlockPos.containing(point)),

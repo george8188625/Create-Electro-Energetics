@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.client;
 
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
@@ -65,11 +66,14 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
                 return;
 
             MutableComponent nodeLabel = db.getNodeLabel(mc.level, node.sourcePos(), state, node.id()).withStyle(ChatFormatting.BOLD);
+            if (CEEConfigs.client().debugNodeID.get())
+                nodeLabel.append(" [" + node.id() + "]");
             graphics.drawString(mc.font, nodeLabel, x - mc.font.width(nodeLabel) / 2, y, titleColor.getRGB());
 
             y += 12;
             MutableComponent formattedVoltage = CEELang.formatVoltage(voltage.rmsVoltage).component();
             graphics.drawString(mc.font, formattedVoltage, x - mc.font.width(formattedVoltage) / 2, y, color.getRGB());
+
         } else if (mode == OverlayMode.AMMETER) {
             MutableComponent formattedAmperage = CEELang.formatAmperage(amperage).component();
             graphics.drawString(mc.font, formattedAmperage, x - mc.font.width(formattedAmperage) / 2, y, color.getRGB());

@@ -32,7 +32,7 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = CreateElecrtoEnergetics.ID)
+@EventBusSubscriber(modid = CreateElecrtoEnergetics.ID)
 public class GameEvents {
 
     @OnlyIn(Dist.CLIENT)

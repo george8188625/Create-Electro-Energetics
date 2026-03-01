@@ -117,7 +117,7 @@ public class GeneratorScenes {
         connections.createConnection(new InWorldNode(0, 0, 1, 0), new InWorldNode(3, 2, 1, 0), positiveWireType);
         connections.createConnection(new InWorldNode(3, 2, 1, 0), new InWorldNode(1, bulbPos), positiveWireType);
         scene.world().modifyBlock(bulbPos, bs -> bs.setValue(BulbBlock.LIGHT, 15), false);
-        scene.world().modifyBlockEntity(bulbPos, BulbBlockEntity.class, be -> be.light = 1);
+        scene.world().modifyBlockEntity(bulbPos, BulbBlockEntity.class, be -> be.setLight(1));
         scene.idle(40);
         connections.createCurrentVisualization(new InWorldNode(1, 6, 3, 6), new InWorldNode(0, 6, 3, 8), 1, 1, true);
         connections.createCurrentVisualization(new InWorldNode(0, 6, 3, 8), new InWorldNode(0, 4, 1, 7), 1, 1, true);

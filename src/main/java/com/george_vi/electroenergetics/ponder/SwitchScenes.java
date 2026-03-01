@@ -89,7 +89,7 @@ public class SwitchScenes {
 
         scene.world().modifyBlockEntity(util.grid().at(3, 1, 0), HVSwitchBlockEntity.class, be -> be.connected = true);
         scene.idle(85);
-        scene.world().modifyBlockEntity(util.grid().at(1, 1, 2), BulbBlockEntity.class, be -> be.light = 1);
+        scene.world().modifyBlockEntity(util.grid().at(1, 1, 2), BulbBlockEntity.class, be -> be.setLight(1));
         scene.idle(20);
         scene.overlay().showText(70)
                 .text("...or with the help of Redstone")
@@ -106,7 +106,7 @@ public class SwitchScenes {
 
         scene.world().modifyBlockEntity(util.grid().at(3, 1, 0), HVSwitchBlockEntity.class, be -> be.connected = false);
         scene.idle(15);
-        scene.world().modifyBlockEntity(util.grid().at(1, 1, 2), BulbBlockEntity.class, be -> be.light = 0);
+        scene.world().modifyBlockEntity(util.grid().at(1, 1, 2), BulbBlockEntity.class, be -> be.setLight(0));
         scene.idle(105);
 
         scene.world().modifyBlock(util.grid().at(3, 1, 1), bs -> bs.setValue(BlockStateProperties.POWER, 0), false);
@@ -114,7 +114,7 @@ public class SwitchScenes {
 
         scene.world().modifyBlockEntity(util.grid().at(3, 1, 0), HVSwitchBlockEntity.class, be -> be.connected = true);
         scene.idle(85);
-        scene.world().modifyBlockEntity(util.grid().at(1, 1, 2), BulbBlockEntity.class, be -> be.light = 1);
+        scene.world().modifyBlockEntity(util.grid().at(1, 1, 2), BulbBlockEntity.class, be -> be.setLight(1));
         scene.idle(60);
     }
 
@@ -151,7 +151,7 @@ public class SwitchScenes {
         scene.world().modifyBlock(cutOffSwitch, bs -> bs.setValue(CutOffSwitchBlock.CLOSED, true), false);
 
         scene.world().modifyBlock(bulb, bs -> bs.setValue(BulbBlock.LIGHT, 15), false);
-        scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.light = 1);
+        scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.setLight(1));
 
         ElementLink<CurrentVisualizationPonderElement> visualization1 = connections.createCurrentVisualization(new InWorldNode(1, battery), new InWorldNode(1, cutOffSwitch), 1, 1, true);
         ElementLink<CurrentVisualizationPonderElement> visualization2 = connections.createCurrentVisualization(new InWorldNode(1, cutOffSwitch), new InWorldNode(0, cutOffSwitch), 0, 1, true);
@@ -175,7 +175,7 @@ public class SwitchScenes {
         scene.world().modifyBlock(cutOffSwitch, bs -> bs.setValue(CutOffSwitchBlock.CLOSED, false), false);
 
         scene.world().modifyBlock(bulb, bs -> bs.setValue(BulbBlock.LIGHT, 0), false);
-        scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.light = 0);
+        scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.setLight(0));
         scene.idle(20);
 
     }

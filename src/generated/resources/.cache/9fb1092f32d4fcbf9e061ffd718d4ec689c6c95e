@@ -1,4 +1,4 @@
-// 1.21.1	2026-02-21T00:30:20.898473464	Recipes
+// 1.21.1	2026-03-01T21:03:40.880811582	Recipes
 e4558ff2c12de196a56a9f67ffe27050cdfe38f7 data/electroenergetics/advancement/recipes/decorations/stonecutting/electric_shock_sign.json
 1e443110466e17eb3a8f102e9fc77c86fc29380e data/electroenergetics/advancement/recipes/decorations/stonecutting/grounding_sign.json
 e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/recipes/decorations/stonecutting/high_voltage_sign.json
@@ -13,7 +13,7 @@ e5e367873afffc9a90f0b59f563825a0ecfc2050 data/electroenergetics/advancement/reci
 7134a865ef3747f1a2c05c82cfbc077420a4220b data/electroenergetics/advancement/recipes/misc/crafting/catenary_holder.json
 f7f57cb6ddb3dbf3f30b8fc6f1ada215a7632ffa data/electroenergetics/advancement/recipes/misc/crafting/clamp_meter.json
 f72346bd00e7f0d8156b4c407156afc007f4e80d data/electroenergetics/advancement/recipes/misc/crafting/concrete_pole.json
-e03529bb629b7b9968504297b9f2bf14d3aa4f17 data/electroenergetics/advancement/recipes/misc/crafting/connector.json
+f30f1712dea654c2914bdcb027d8ed90cabd5b6b data/electroenergetics/advancement/recipes/misc/crafting/connector.json
 57ecfc4f6ea00c1572d0fdda492751ca80147365 data/electroenergetics/advancement/recipes/misc/crafting/connector_from_double.json
 7c426ab298e4dfd8cb5d157541e540a4b979bc71 data/electroenergetics/advancement/recipes/misc/crafting/connector_from_quad.json
 ca51f9e7f91e1375d6c69de29af22075acd2a9e9 data/electroenergetics/advancement/recipes/misc/crafting/connector_from_triple.json

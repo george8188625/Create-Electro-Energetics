@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.List;
 
 public class BulbBlockEntity extends SmartBlockEntity {
-    public float light = 0;
+    float light = 0;
     LerpedFloat smoothLight = LerpedFloat.linear();
     public BulbBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -27,6 +27,13 @@ public class BulbBlockEntity extends SmartBlockEntity {
     public void tick() {
         if (level.isClientSide)
             smoothLight.tickChaser();
+    }
+
+    public void setLight(float light) {
+        this.light = light;
+        smoothLight.chase(light, 0.5f, LerpedFloat.Chaser.LINEAR);
+        if (!level.isClientSide)
+            sendData();
     }
 
     @Override

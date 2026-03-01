@@ -71,7 +71,7 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
         }
 
         if (i < 100)
-            return (i + 10) * 100;
+            return i == 0 ? 1000 : i * 1000;
         else
             return (i - 90) * 10000;
     }
