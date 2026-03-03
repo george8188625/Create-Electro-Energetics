@@ -111,6 +111,7 @@ public class WirePonderElement extends AnimatedSceneElementBase {
                     .translate(point)
                     .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                    .rotateZ(0.01f)
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2))
                     .light(LevelRenderer.getLightColor(world, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))))
                     .renderInto(graphics.pose(), buffer.getBuffer(RenderType.SOLID));

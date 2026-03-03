@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.creative_battery;
 
 import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.VoltageScrollValueBehaviour;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.google.common.collect.ImmutableList;
@@ -29,51 +30,13 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
         super(type, pos, state);
     }
 
-    protected ScrollValueBehaviour voltage;
+    protected VoltageScrollValueBehaviour voltage;
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        voltage = new ScrollValueBehaviour(CEELang.translate("creative_battery.voltage").component(), this, new ValueBox()) {
-            @Override
-            public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, 190, 10, ImmutableList.of(CEELang.translate("creative_battery.voltage_symbol").component(),
-                                                                                             CEELang.translate("creative_battery.kilo_voltage_symbol").component()),
-                        new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(indexToVoltage(valueSettings.value(), valueSettings.row())).component()));
-            }
-
-            @Override
-            public void setValueSettings(Player player, ValueSettings valueSetting, boolean ctrlHeld) {
-                int value = Math.max(1, valueSetting.value());
-                if (!valueSetting.equals(getValueSettings()))
-                    playFeedbackSound(this);
-                setValue((int) (indexToVoltage(valueSetting.value(), valueSetting.row()) * 1000));
-            }
-
-            @Override
-            public String formatValue() {
-                return CEELang.formatVoltage(value / 1000d).string();
-            }
-        };
-        voltage.between(0, 1_000_000_000);
-
-        voltage.value = 300_000;
+        voltage = new VoltageScrollValueBehaviour(CEELang.translate("creative_battery.voltage").component(), this, new ValueBox());
         voltage.withCallback(i -> this.updateVoltage());
         behaviours.add(voltage);
-    }
-
-    private double indexToVoltage(int i, int row) {
-        if (row == 0) {
-
-            if (i < 100)
-                return i;
-            else
-                return (i - 90) * 10;
-        }
-
-        if (i < 100)
-            return i == 0 ? 1000 : i * 1000;
-        else
-            return (i - 90) * 10000;
     }
 
     private void updateVoltage() {
@@ -83,7 +46,7 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
         SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null && deviceInstance.extraData() instanceof CreativeBatteryDevice.DataHolder dataHolder) {
-            dataHolder.voltage = voltage.value / 1000d;
+            dataHolder.voltage = voltage.getVoltage();
         }
     }
 

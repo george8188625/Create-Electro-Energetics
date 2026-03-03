@@ -121,7 +121,6 @@ public class ConnectorScenes {
         scene.world().showSection(util.select().layer(0), Direction.UP);
 
         Selection firstPlatform = util.select().fromTo(0,1,0,4,1,4);
-        Selection secondPlatform = util.select().fromTo(0,0,40,4,1,44);
 
         Selection wires = util.select().fromTo(1,1,13,3,1,31);
 

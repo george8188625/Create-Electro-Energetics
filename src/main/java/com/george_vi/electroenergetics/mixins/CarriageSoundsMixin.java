@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(CarriageSounds.class)
 public class CarriageSoundsMixin {
     @Shadow
-    private CarriageContraptionEntity entity;
+    CarriageContraptionEntity entity;
 
     @Redirect(method = "tick", at= @At(value = "INVOKE", target = "Lcom/simibubi/create/AllSoundEvents$SoundEntry;playAt(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/Vec3;FFZ)V"), remap = false)
     private void electroEnergetics$cancelSteam(AllSoundEvents.SoundEntry instance, Level world, Vec3 pos, float volume, float pitch, boolean fade) {

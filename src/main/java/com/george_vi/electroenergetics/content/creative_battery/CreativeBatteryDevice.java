@@ -31,7 +31,7 @@ public class CreativeBatteryDevice extends SimulatedDevice<CreativeBatteryDevice
     @Override
     public DataHolder read(CompoundTag tag) {
         DataHolder dataHolder = new DataHolder();
-        dataHolder.voltage = tag.contains("Voltage") ? tag.getDouble("Voltage") : 12;
+        dataHolder.voltage = tag.contains("Voltage") ? tag.getDouble("Voltage") : 300;
         dataHolder.acFrequency = tag.getDouble("ACFrequency");
         return dataHolder;
     }

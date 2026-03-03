@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
+import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.PonderPalette;
@@ -14,6 +15,9 @@ import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
 
 public class ElectricityBasicsScenes {
     public static void diode(SceneBuilder builder, SceneBuildingUtil util) {
@@ -487,5 +491,112 @@ public class ElectricityBasicsScenes {
         scene.idle(100);
 
         scene.idle(60);
+    }
+
+    public static void resistance(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+
+        scene.title("resistance", "Effect of a Resistor on a Circuit");
+        scene.configureBasePlate(0, 0, 5);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+
+        BlockPos bulbWithoutResistorPos = util.grid().at(2,1,1);
+        Selection bulbWithoutResistor = util.select().position(bulbWithoutResistorPos);
+        BlockPos bulbWithResistorPos = util.grid().at(1,1,1);
+        Selection bulbWithResistor = util.select().position(bulbWithResistorPos);
+        Selection battery = util.select().position(2,1,3);
+        BlockPos resistorPos = util.grid().at(3,1,1);
+        Selection resistor = util.select().position(resistorPos);
+        Selection connectors = util.select().position(0, 1, 1)
+                .add(util.select().position(0, 1, 3))
+                .add(util.select().position(4, 1, 1))
+                .add(util.select().position(4, 1, 3));
+
+
+        scene.world().showSection(bulbWithoutResistor, Direction.DOWN);
+        scene.world().showSection(battery, Direction.DOWN);
+        scene.world().showSection(connectors, Direction.DOWN);
+
+        scene.idle(20);
+
+        connections.createConnection(new InWorldNode(1, 2, 1, 3), new InWorldNode(0, 4, 1, 3));
+        connections.createConnection(new InWorldNode(0, 4, 1, 3), new InWorldNode(0, 4, 1, 1));
+        ElementLink<WirePonderElement> connection1 = connections.createConnection(new InWorldNode(0, 4, 1, 1), new InWorldNode(1, 2, 1, 1));
+        ElementLink<WirePonderElement> connection2 = connections.createConnection(new InWorldNode(0, 2, 1, 1), new InWorldNode(0, 0, 1, 1));
+        connections.createConnection(new InWorldNode(0, 0, 1, 1), new InWorldNode(0, 0, 1, 3));
+        connections.createConnection(new InWorldNode(0, 0, 1, 3), new InWorldNode(0, 2, 1, 3));
+
+        scene.world().modifyBlock(bulbWithoutResistorPos, bs -> bs.setValue(BulbBlock.LIGHT, 15), false);
+        scene.world().modifyBlockEntity(bulbWithoutResistorPos, BulbBlockEntity.class, be -> be.setLight(1));
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Without a resistor, the bulb shines at full intensity")
+                .pointAt(util.vector().centerOf(bulbWithoutResistorPos))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        connections.removeConnection(connection1);
+        connections.removeConnection(connection2);
+        scene.world().showSection(resistor, Direction.DOWN);
+        scene.world().showSection(bulbWithResistor, Direction.DOWN);
+        scene.world().hideSection(bulbWithoutResistor, Direction.UP);
+
+        scene.idle(20);
+
+        scene.overlay().showText(20)
+                .text("1kΩ")
+                .pointAt(util.vector().blockSurface(resistorPos, Direction.DOWN, -4/16f))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(40);
+
+        connections.createConnection(new InWorldNode(0, 4, 1, 1), new InWorldNode(1, 3, 1, 1));
+        connections.createConnection(new InWorldNode(0, 3, 1, 1), new InWorldNode(1, 1, 1, 1));
+        connections.createConnection(new InWorldNode(0, 1, 1, 1), new InWorldNode(0, 0, 1, 1));
+
+        scene.world().modifyBlock(bulbWithResistorPos, bs -> bs.setValue(BulbBlock.LIGHT, 7), false);
+        scene.world().modifyBlockEntity(bulbWithResistorPos, BulbBlockEntity.class, be -> be.setLight(0.6f));
+
+        scene.idle(20);
+        connections.createCurrentVisualization(new InWorldNode(1, 2, 1, 3), new InWorldNode(0, 4, 1, 3), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 4, 1, 3), new InWorldNode(0, 4, 1, 1), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 4, 1, 1), new InWorldNode(1, 3, 1, 1), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, 3, 1, 1), new InWorldNode(0, 3, 1, 1), 0, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 3, 1, 1), new InWorldNode(1, 1, 1, 1), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 1, 1, 1), new InWorldNode(0, 0, 1, 1), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 0, 1, 1), new InWorldNode(0, 0, 1, 3), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 0, 1, 3), new InWorldNode(0, 2, 1, 3), 1, 1, true);
+
+        scene.idle(20);
+        scene.overlay().showText(70)
+                .text("Notice how the bulb is dimmer")
+                .pointAt(util.vector().centerOf(bulbWithResistorPos))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.overlay().showText(70)
+                .text("The resistor is limiting the current flowing through the bulb")
+                .colored(PonderPalette.GREEN)
+                .pointAt(util.vector().blockSurface(resistorPos, Direction.DOWN, -4/16f))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.effects().emitParticles(util.vector().topOf(resistorPos.below()), scene.effects().particleEmitterWithinBlockSpace(ParticleTypes.SMOKE, new Vec3(0, 0, 0)), 1, Integer.MAX_VALUE);
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("The downside is, some power is wasted as heat")
+                .colored(PonderPalette.RED)
+                .pointAt(util.vector().blockSurface(resistorPos, Direction.DOWN, -4/16f))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
     }
 }

@@ -86,7 +86,7 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (!stack.is(AllTags.commonItemTag("wires/copper")) || !broken)
+        if (!stack.is(CEETags.COPPER_WIRE) || !broken)
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {

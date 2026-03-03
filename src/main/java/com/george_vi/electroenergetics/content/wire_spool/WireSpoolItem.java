@@ -65,7 +65,7 @@ public class WireSpoolItem extends Item {
         if (!(state.getBlock() instanceof DeviceBlock db))
             return InteractionResult.PASS;
 
-        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1.5f);
 
 
         if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {

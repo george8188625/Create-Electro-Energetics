@@ -52,7 +52,7 @@ These are potential and planned features. Feel free to contribute by implementin
 ### UX
 - [ ] Remaining cable counter - displays the length of the wire while placing
 ### Ponders
-- [ ] Resistance
+- [x] Resistance
 - [ ] Voltage divider
 - [ ] Capacitor
 - [ ] Potentiometer
@@ -63,5 +63,5 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Relays
 - [ ] Energy meters
 - [ ] Grounding
-- [ ] Transformer core
+- [x] Transformer core
 

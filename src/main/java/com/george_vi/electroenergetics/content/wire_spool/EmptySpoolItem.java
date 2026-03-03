@@ -48,7 +48,7 @@ public class EmptySpoolItem extends Item {
             return InteractionResult.SUCCESS;
         }
 
-        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1.5f);
 
         if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
             if (!(player.level() instanceof ServerLevel sl))
@@ -72,7 +72,7 @@ public class EmptySpoolItem extends Item {
             if (!player.isCreative()) {
                 heldItem.shrink(1);
                 if (wireData == null)
-                    player.getInventory().placeItemBackInInventory(CEEItems.WIRE_SPOOL.asStack());
+                    player.getInventory().placeItemBackInInventory(CEEItems.COPPER_WIRE_SPOOL.asStack());
                 else
                     player.getInventory().placeItemBackInInventory(wireData.wireType().getSpooledItem().getDefaultInstance());
             }

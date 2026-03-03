@@ -33,17 +33,24 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .addStoryBoard("transformer_core", TransformerScenes::turns)
                 .addStoryBoard("transformer", TransformerScenes::transformer)
                 .addStoryBoard("transformer_losses", TransformerScenes::losses);
+
         helper.forComponents(CEEBlocks.TRANSFORMER_CORE.getId())
-                .addStoryBoard("transformer_core", TransformerScenes::turns);
+                .addStoryBoard("transformer_core", TransformerScenes::turns)
+                .addStoryBoard("transformer_core_multiblock", TransformerScenes::transformerCore);
+
         helper.forComponents(CEEBlocks.PANTOGRAPH.getId(), CEEBlocks.CATENARY_HOLDER.getId())
                 .addStoryBoard("railway_electrification", RailwayElectrificationScenes::setup)
                 .addStoryBoard("electric_train_sounds", RailwayElectrificationScenes::sounds);
+
         helper.forComponents(CEEBlocks.RAIL_CONTACT_SHOE.getId())
                 .addStoryBoard("third_rail", RailwayElectrificationScenes::thirdRail);
+
         helper.forComponents(CEEBlocks.DIODE.getId())
                 .addStoryBoard("diode", ElectricityBasicsScenes::diode);
+
         helper.forComponents(CEEBlocks.VOLTMETER.getId())
                 .addStoryBoard("voltage", ElectricityBasicsScenes::voltage);
+
         helper.forComponents(CEEBlocks.HV_SWITCH.getId())
                 .addStoryBoard("hv_switch", SwitchScenes::hvSwitch);
 
@@ -56,6 +63,9 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.forComponents(CEEBlocks.ALTERNATOR_BRUSHES.getId())
                 .addStoryBoard("alternator", GeneratorScenes::alternator)
                 .addStoryBoard("electric_train_sounds", RailwayElectrificationScenes::sounds);
+
+        helper.forComponents(CEEBlocks.RESISTOR.getId())
+                .addStoryBoard("resistance", ElectricityBasicsScenes::resistance);
 
     }
 
@@ -106,6 +116,7 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEItems.IRON_WIRE_SPOOL.getId())
                 .add(CEEItems.IRON_BUS_SPOOL.getId())
                 .add(CEEItems.CREATIVE_WIRE_SPOOL.getId())
+                .add(CEEBlocks.TRANSFORMER_CORE.getId())
                 .add(CEEBlocks.TRANSFORMER.getId())
                 .add(CEEBlocks.VOLTAGE_REGULATOR.getId())
                 .add(CEEBlocks.ELECTRIC_MOTOR.getId())
@@ -133,7 +144,8 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.DIODE.getId())
                 .add(CEEBlocks.RESISTOR.getId())
                 .add(CEEBlocks.CAPACITOR.getId())
-                .add(CEEBlocks.RESISTOR.getId());
+                .add(CEEBlocks.RESISTOR.getId())
+                .add(CEEBlocks.TRANSFORMER_CORE.getId());
 
         helper.addToTag(CreateElecrtoEnergetics.rl("electric_train_sound_changing"))
                 .add(CEEBlocks.ALTERNATOR_BRUSHES.getId());

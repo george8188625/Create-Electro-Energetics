@@ -75,7 +75,7 @@ public class WireApplyingBehaviour {
                     .withFaceTexture(AllSpecialTextures.SELECTION);
         }
 
-        InWorldNode hoveredNode = InWorldNode.closestNode(level, mc.hitResult.getLocation(), 1f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, mc.hitResult.getLocation(), 1.5f);
         Vec3 hoveredPos = null;
 
         // Display all nodes of block

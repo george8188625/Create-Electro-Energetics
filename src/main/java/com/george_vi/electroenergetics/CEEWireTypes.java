@@ -72,7 +72,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> IRON_BUS = WIRE_TYPES.register("iron_bus", () -> new WireType.Builder(CEEPartialModels.IRON_BUS_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.ironWireResistance::get)
-            .droppedItem(Items.IRON_INGOT::asItem)
+            .droppedItem(() -> getFromTag(CEETags.IRON_BUS_COMPONENT))
             .spoolItem(CEEItems.IRON_BUS_SPOOL::get)
             .maxTemperature(() -> 10000)
             .maxLength(CEEConfigs.server().maxBusWireLength::get)

@@ -36,7 +36,7 @@ public class ResistorBlock extends DirectionalRolledDeviceBlock implements IBE<R
     protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof ResistorBlockEntity be)
-            tag.putDouble("Resistance", be.resistance.value / 1000d);
+            tag.putDouble("Resistance", be.resistance.getResistance());
         return tag;
     }
 

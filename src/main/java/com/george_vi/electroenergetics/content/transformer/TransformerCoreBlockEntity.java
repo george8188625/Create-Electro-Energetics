@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.transformer;
 
 import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.CEELang;
@@ -131,7 +132,7 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
             BlockState state = level.getBlockState(nextPos);
             if ((waterlogged && !level.getFluidState(currentPos).isEmpty()) ||
                     (CEEBlocks.TRANSFORMER_CORE.has(state) && direction == getBlockState().getValue(TransformerCoreBlock.FACING)) ||
-                state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("transformer_heat_dissipators"))))
+                state.is(CEETags.TRANSFORMER_HEAT_DISSIPATORS))
                 if (visited.add(nextPos))
                     heatDissipatorsDFS(visited, nextPos);
         }

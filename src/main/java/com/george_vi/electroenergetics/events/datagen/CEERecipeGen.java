@@ -4,15 +4,19 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
 import com.simibubi.create.content.kinetics.press.PressingRecipe;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipeBuilder;
+import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.Tags;
@@ -90,68 +94,13 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_iron_wire", has(CEETags.IRON_WIRE))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_wire_strand"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEEItems.INSULATED_WIRE)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_insulated_wire", has(CEEItems.INSULATED_WIRE))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.ELECTRUM_WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEETags.ELECTRUM_WIRE)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_insulated_wire", has(CEEItems.INSULATED_WIRE))
-                .save(recipeOutput.withConditions(new NotCondition(new TagEmptyCondition(CEETags.ELECTRUM_NUGGET))), CreateElecrtoEnergetics.rl("crafting/electrum_wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.HEAVILY_INSULATED_WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEEItems.HEAVILY_INSULATED_WIRE)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_heavily_insulated_wire", has(CEEItems.HEAVILY_INSULATED_WIRE))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/heavily_insulated_wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.COPPER_WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEEItems.COPPER_WIRE)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_copper_wire", has(CEEItems.COPPER_WIRE))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/copper_wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEEItems.IRON_WIRE_STRAND)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_iron_wire_strand", has(CEEItems.IRON_WIRE_STRAND))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_BUS_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', Items.IRON_INGOT)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_bus_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_RAIL_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEETags.IRON_RAIL_COMPONENT)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_iron_rail_component", has(CEETags.IRON_RAIL_COMPONENT))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_rail_spool"));
+        conditionalWireSpool(recipeOutput, CEEItems.ELECTRUM_WIRE_SPOOL, CEETags.ELECTRUM_WIRE, CEETags.ELECTRUM_NUGGET);
+        wireSpool(recipeOutput, CEEItems.HEAVILY_INSULATED_WIRE_SPOOL, CEEItems.HEAVILY_INSULATED_WIRE);
+        wireSpool(recipeOutput, CEEItems.WIRE_SPOOL, CEEItems.INSULATED_WIRE);
+        wireSpool(recipeOutput, CEEItems.COPPER_WIRE_SPOOL, CEETags.COPPER_WIRE);
+        wireSpool(recipeOutput, CEEItems.IRON_WIRE_SPOOL, CEEItems.IRON_WIRE_STRAND);
+        wireSpool(recipeOutput, CEEItems.IRON_BUS_SPOOL, CEETags.IRON_BUS_COMPONENT);
+        wireSpool(recipeOutput, CEEItems.IRON_RAIL_SPOOL, CEETags.IRON_RAIL_COMPONENT);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ALTERNATOR_BRUSHES)
                 .pattern(" B ")
@@ -628,6 +577,39 @@ public class CEERecipeGen extends RecipeProvider {
 
     protected void sequencedAssembly(String name, UnaryOperator<SequencedAssemblyRecipeBuilder> transform, RecipeOutput recipeOutput) {
         transform.apply(new SequencedAssemblyRecipeBuilder(CreateElecrtoEnergetics.rl(name))).build(recipeOutput);
+    }
+
+    public static void wireSpool(RecipeOutput recipeOutput, ItemEntry<WireSpoolItem> spool, ItemEntry<Item> wire) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, spool)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', wire)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_" + wire.getRegisteredName(), has(wire))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/" + spool.getKey().location().getPath()));
+    }
+
+    public static void wireSpool(RecipeOutput recipeOutput, ItemEntry<WireSpoolItem> spool, TagKey<Item> wire) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, spool)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', wire)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_" + wire.location().getPath(), has(wire))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/" + spool.getKey().location().getPath()));
+    }
+
+    public static void conditionalWireSpool(RecipeOutput recipeOutput, ItemEntry<WireSpoolItem> spool, TagKey<Item> wire, TagKey<Item> condition) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, spool)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', wire)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_" + wire.location().getPath(), has(wire))
+                .save(recipeOutput.withConditions(new NotCondition(new TagEmptyCondition(condition))), CreateElecrtoEnergetics.rl("crafting/" + spool.getKey().location().getPath()));
     }
 }
 

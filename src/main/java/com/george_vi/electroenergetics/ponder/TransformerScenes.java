@@ -12,6 +12,7 @@ import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.phys.AABB;
 
 public class TransformerScenes {
@@ -381,5 +382,96 @@ public class TransformerScenes {
                 .attachKeyFrame()
                 .placeNearTarget();
         scene.idle(100);
+    }
+
+    public static void transformerCore(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+
+        scene.title("transformer_core_multiblock", "Transformer Core Basics");
+        scene.configureBasePlate(0, 0, 9);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+
+        Selection battery = util.select().position(4, 1, 0);
+        BlockPos primaryPos = util.grid().at(4, 1, 3);
+        BlockPos secondaryPos = util.grid().at(4, 1, 4);
+        Selection primary = util.select().position(primaryPos);
+        Selection secondary = util.select().position(secondaryPos);
+        Selection resistor = util.select().position(4, 1, 8);
+
+        scene.world().showSection(battery, Direction.DOWN);
+        scene.world().showSection(primary, Direction.DOWN);
+        scene.world().showSection(secondary, Direction.DOWN);
+        scene.world().showSection(resistor, Direction.DOWN);
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Transformer cores can be configured with a specific number of turns.")
+                .pointAt(util.vector().topOf(primaryPos).add(0, 0, 0.5))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.overlay().showText(20)
+                .sharedText("turns10")
+                .pointAt(util.vector().blockSurface(primaryPos, Direction.NORTH))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(40);
+
+        scene.rotateCameraY(-90);
+        scene.idle(60);
+
+        scene.overlay().showText(20)
+                .sharedText("turns50")
+                .pointAt(util.vector().blockSurface(secondaryPos, Direction.SOUTH))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(40);
+
+        scene.rotateCameraY(90);
+        scene.idle(60);
+
+        connections.createConnection(new InWorldNode(0, util.grid().at(4, 1, 0)),
+                new InWorldNode(1, util.grid().at(4, 1, 3)));
+        connections.createConnection(new InWorldNode(1, util.grid().at(4, 1, 0)),
+                new InWorldNode(0, util.grid().at(4, 1, 3)));
+        connections.createConnection(new InWorldNode(0, util.grid().at(4, 1, 4)),
+                new InWorldNode(0, util.grid().at(4, 1, 8)));
+        connections.createConnection(new InWorldNode(1, util.grid().at(4, 1, 4)),
+                new InWorldNode(1, util.grid().at(4, 1, 8)));
+        scene.idle(20);
+
+
+        connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(4, 1, 0)),
+                new InWorldNode(1, util.grid().at(4, 1, 3)), 1, -1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, util.grid().at(4, 1, 0)),
+                new InWorldNode(0, util.grid().at(4, 1, 3)), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, util.grid().at(4, 1, 4)),
+                new InWorldNode(0, util.grid().at(4, 1, 8)), 1, -1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, util.grid().at(4, 1, 4)),
+                new InWorldNode(1, util.grid().at(4, 1, 8)), 1, 1, true);
+        scene.idle(40);
+
+        Selection radiators = util.select().fromTo(3, 1, 3, 5, 1, 4)
+                .substract(primary)
+                .substract(secondary);
+
+        scene.world().showSection(radiators, Direction.DOWN);
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Surrounding transformer core with radiator panels or waterlogging them increases its power rating.")
+                .pointAt(util.vector().topOf(primaryPos).add(0, 0, 0.5))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.overlay().showText(70)
+                .text("Exceeding the transformer's power rating will cause it to overload.")
+                .pointAt(util.vector().topOf(primaryPos).add(0, 0, 0.5))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
     }
 }

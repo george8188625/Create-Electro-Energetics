@@ -104,7 +104,7 @@ dependencies {
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
 //    implementation "curse.maven:createaddition-439890:7262496"
-    implementation "curse.maven:supplementaries-412082:7511735"
+    implementation "curse.maven:supplementaries-412082:7688722"
     implementation "curse.maven:selene-499980:7522321"
     implementation("cc.tweaked:cc-tweaked-1.21.1-forge:1.116.1")
     runtimeOnly("curse.maven:spark-361579:6225208")
