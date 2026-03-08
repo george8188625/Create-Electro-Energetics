@@ -2,6 +2,7 @@
   "itemGroup.electroenergetics": "Create: Electro Energetics",
 
   "electroenergetics.wire_spool.too_far_away": "Too far away!",
+  "electroenergetics.wire_spool.cancelled_connection": "Selection Cleared",
   "electroenergetics.wire_spool.invalid_connection": "Invalid connection!",
 
   "electroenergetics.gui.energy_meter": "Energy Meter",

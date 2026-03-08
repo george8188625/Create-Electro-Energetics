@@ -54,7 +54,10 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.forComponents(CEEBlocks.HV_SWITCH.getId())
                 .addStoryBoard("hv_switch", SwitchScenes::hvSwitch);
 
-        helper.forComponents(CEEBlocks.CUT_OFF_SWITCH.getId())
+        helper.forComponents(CEEBlocks.RELAY.getId())
+                .addStoryBoard("relay", SwitchScenes::relay);
+
+        helper.forComponents(CEEBlocks.CUT_OFF_SWITCH.getId(), CEEBlocks.DOUBLE_SWITCH.getId(), CEEBlocks.MOMENTARY_SWITCH.getId())
                 .addStoryBoard("switch", SwitchScenes::cutOffSwitch);
 
         helper.forComponents(CEEBlocks.ALTERNATOR_ROTOR.getId())
@@ -67,11 +70,17 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.forComponents(CEEBlocks.RESISTOR.getId())
                 .addStoryBoard("resistance", ElectricityBasicsScenes::resistance);
 
+        helper.forComponents(CEEBlocks.GROUND_ROD.getId())
+                .addStoryBoard("grounding", ElectricityBasicsScenes::grounding);
+
+        helper.forComponents(CEEBlocks.ENERGY_METER.getId())
+                .addStoryBoard("energy_meter", InfrastructureScenes::energy_meter);
     }
 
     @Override
     public void registerSharedText(SharedTextRegistrationHelper helper) {
         helper.registerSharedText("voltage0", "0V");
+        helper.registerSharedText("voltage12", "12V");
         helper.registerSharedText("voltage300", "300V");
         helper.registerSharedText("voltage600", "600V");
         helper.registerSharedText("voltage1500", "1500V");
@@ -135,6 +144,7 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.CATENARY_HOLDER.getId())
                 .add(CEEBlocks.DIODE.getId())
                 .add(CEEBlocks.RESISTOR.getId())
+                .add(CEEBlocks.GROUND_ROD.getId())
                 ;
 
         helper.addToTag(CreateElecrtoEnergetics.rl("electricity_basics"))
@@ -145,18 +155,23 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.RESISTOR.getId())
                 .add(CEEBlocks.CAPACITOR.getId())
                 .add(CEEBlocks.RESISTOR.getId())
-                .add(CEEBlocks.TRANSFORMER_CORE.getId());
+                .add(CEEBlocks.TRANSFORMER_CORE.getId())
+                .add(CEEBlocks.GROUND_ROD.getId())
+                ;
 
         helper.addToTag(CreateElecrtoEnergetics.rl("electric_train_sound_changing"))
-                .add(CEEBlocks.ALTERNATOR_BRUSHES.getId());
+                .add(CEEBlocks.ALTERNATOR_BRUSHES.getId())
+                ;
 
         helper.addToTag(AllCreatePonderTags.TRAIN_RELATED)
                 .add(CEEBlocks.PANTOGRAPH.getId())
-                .add(CEEBlocks.CATENARY_HOLDER.getId());
+                .add(CEEBlocks.CATENARY_HOLDER.getId())
+                ;
 
         helper.addToTag(AllCreatePonderTags.DISPLAY_SOURCES)
                 .add(CEEBlocks.AMMETER.getId())
                 .add(CEEBlocks.VOLTMETER.getId())
-                .add(CEEBlocks.ENERGY_METER.getId());
+                .add(CEEBlocks.ENERGY_METER.getId())
+                ;
     }
 }

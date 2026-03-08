@@ -599,4 +599,47 @@ public class ElectricityBasicsScenes {
                 .placeNearTarget();
         scene.idle(100);
     }
+
+    public static void grounding(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+        scene.title("grounding", "The ground as a conductor of electricity");
+        scene.configureBasePlate(0, 0, 5);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+
+        BlockPos bulb = util.grid().at(4, 1, 7);
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("The ground can actually conduct electricity.")
+                .pointAt(util.vector().topOf(1, 0, 4))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.world().showSection(util.select().layer(1), Direction.DOWN);
+        scene.idle(20);
+
+        connections.createConnection(new InWorldNode(0, 1, 1, 1), new InWorldNode(0, 4, 1, 1));
+        connections.createConnection(new InWorldNode(1, 4, 1, 1), new InWorldNode(0, 7, 1, 1));
+        connections.createConnection(new InWorldNode(0, 7, 1, 1), new InWorldNode(0, 7, 1, 4));
+        connections.createConnection(new InWorldNode(0, 7, 1, 4), new InWorldNode(0, 7, 1, 7));
+        connections.createConnection(new InWorldNode(0, 7, 1, 7), new InWorldNode(1, 4, 1, 7));
+        connections.createConnection(new InWorldNode(0, 4, 1, 7), new InWorldNode(0, 1, 1, 7));
+
+        scene.world().modifyBlock(bulb, bs -> bs.setValue(BulbBlock.LIGHT, 15), false);
+        scene.world().modifyBlockEntity(bulb, BulbBlockEntity.class, be -> be.setLight(1));
+        scene.idle(20);
+
+        connections.createCurrentVisualization(new InWorldNode(0, 1, 1, 1), new InWorldNode(0, 4, 1, 1), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 7, 1, 1), new InWorldNode(0, 7, 1, 4), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, 4, 1, 1), new InWorldNode(0, 7, 1, 1), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 7, 1, 4), new InWorldNode(0, 7, 1, 7), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 7, 1, 7), new InWorldNode(1, 4, 1, 7), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 4, 1, 7), new InWorldNode(0, 1, 1, 7), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 1, 1, 7), new InWorldNode(0, 1, 1, 1), 0, 1, true);
+        scene.idle(60);
+    }
+
 }

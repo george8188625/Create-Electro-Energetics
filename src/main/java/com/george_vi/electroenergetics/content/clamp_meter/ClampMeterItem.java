@@ -110,7 +110,7 @@ public class ClampMeterItem extends Item {
 
     @OnlyIn(Dist.CLIENT)
     protected void setMetering(float amperage) {
-        ElectricPropertiesOverlay.INSTANCE.setAmmeter(Math.abs(amperage), 0);
+        ElectricPropertiesOverlay.INSTANCE.setAmmeter(Math.abs(amperage));
         NodeConnectionPoint point = WireInteractionHandler.targetedPoint;
         if (point == null || Math.abs(amperage) < 1e-2d)
             return;

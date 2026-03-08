@@ -12,8 +12,11 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.simibubi.create.AllSoundEvents;
 import net.createmod.catnip.data.Pair;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -47,6 +50,10 @@ public class WireSpoolItem extends Item {
         return InteractionResultHolder.success(heldItem);
     }
 
+    @Override
+    public boolean isFoil(ItemStack stack) {
+        return stack.has(CEEDataComponents.SELECTED_NODE);
+    }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
@@ -57,8 +64,11 @@ public class WireSpoolItem extends Item {
         BlockState state = level.getBlockState(pos);
 
         if (player.isShiftKeyDown()) {
-            if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE))
+            if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
                 heldItem.remove(CEEDataComponents.SELECTED_NODE);
+                if (level.isClientSide)
+                    player.displayClientMessage(Component.translatable("electroenergetics.wire_spool.cancelled_connection"), true);
+            }
             return InteractionResult.SUCCESS;
         }
 

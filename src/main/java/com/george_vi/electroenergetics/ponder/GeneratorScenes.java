@@ -23,6 +23,7 @@ public class GeneratorScenes {
         scene.title("alternator", "Setting up an alternator");
         scene.configureBasePlate(0, 0, 9);
         scene.world().showSection(util.select().layer(0), Direction.UP);
+
         WireType positiveWireType = CEEWireTypes.COLORED_WIRES.get(DyeColor.RED).get();
         WireType negativeWireType = CEEWireTypes.COLORED_WIRES.get(DyeColor.BLACK).get();
         Selection rotors = util.select().fromTo(6, 3, 6, 8, 3, 6);
@@ -119,6 +120,7 @@ public class GeneratorScenes {
         scene.world().modifyBlock(bulbPos, bs -> bs.setValue(BulbBlock.LIGHT, 15), false);
         scene.world().modifyBlockEntity(bulbPos, BulbBlockEntity.class, be -> be.setLight(1));
         scene.idle(40);
+
         connections.createCurrentVisualization(new InWorldNode(1, 6, 3, 6), new InWorldNode(0, 6, 3, 8), 1, 1, true);
         connections.createCurrentVisualization(new InWorldNode(0, 6, 3, 8), new InWorldNode(0, 4, 1, 7), 1, 1, true);
         connections.createCurrentVisualization(new InWorldNode(0, 2, 1, 7), new InWorldNode(0, 0, 1, 7), 1, 1, true);

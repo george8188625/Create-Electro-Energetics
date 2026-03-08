@@ -56,12 +56,11 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Voltage divider
 - [ ] Capacitor
 - [ ] Potentiometer
-- [ ] Variac
 - [ ] Faults
 - [ ] Protection (fuses)
 - [x] Switch
-- [ ] Relays
-- [ ] Energy meters
-- [ ] Grounding
+- [x] Relays
+- [x] Energy meters
+- [x] Grounding
 - [x] Transformer core
 

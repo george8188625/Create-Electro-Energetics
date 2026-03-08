@@ -48,6 +48,9 @@ public class WireApplyingBehaviour {
         if (mc.player == null || mc.level == null || !(mc.hitResult instanceof BlockHitResult result))
             return;
 
+        ElectricPropertiesOverlay.INSTANCE.invalidConnection = false;
+        ElectricPropertiesOverlay.INSTANCE.connectionTooLong = false;
+
         ClientLevel level = mc.level;
         BlockPos pos = result.getBlockPos();
         LocalPlayer player = mc.player;
@@ -106,13 +109,8 @@ public class WireApplyingBehaviour {
 
         // Player is not looking at a node, return and say it's too far away
 
-        if (hoveredNode == null) {
-            CEELang.builder()
-                    .translate("wire_spool.too_far_away")
-                    .style(ChatFormatting.RED)
-                    .component();
+        if (hoveredNode == null)
             return;
-        }
 
         // Player has selected a node and is looking at one
 
@@ -142,12 +140,8 @@ public class WireApplyingBehaviour {
         double wireDistance = Math.sqrt(selectedNode.sourcePos().distSqr(pos));
         if (wireDistance > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() :
                 (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getMaxLength() : CEEConfigs.server().maxWireLength.get()))) {
-            mc.gui.setOverlayMessage(
-                    Lang.builder(CreateElecrtoEnergetics.ID)
-                            .translate("wire_spool.too_far_away")
-                            .style(ChatFormatting.RED)
-                            .component()
-                    , false);
+            ElectricPropertiesOverlay.INSTANCE.connectionTooLong = true;
+
             canConnect = false;
         }
 
@@ -156,14 +150,10 @@ public class WireApplyingBehaviour {
         if ((canConnect &&
                 hoveredNode.sourcePos().equals(selectedNode.sourcePos()) &&
                 (!db.canSelfConnect(level, pos, state, selectedNode.id(), hoveredNode.id()) || selectedNode.id() == hoveredNode.id()))) {
-            mc.gui.setOverlayMessage(
-                    Lang.builder(CreateElecrtoEnergetics.ID)
-                            .translate("wire_spool.invalid_connection")
-                            .style(ChatFormatting.RED)
-                            .component()
-                    , false);
+            ElectricPropertiesOverlay.INSTANCE.invalidConnection = true;
             canConnect = false;
         }
+
 
         if (canConnect) {
             for (Pair<InWorldNodeConnection, WireData> connection : WireRenderer.getAllConnections())
