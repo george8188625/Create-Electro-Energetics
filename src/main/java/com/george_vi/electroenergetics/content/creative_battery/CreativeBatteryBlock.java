@@ -54,7 +54,7 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
     protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof CreativeBatteryBlockEntity be)
-            tag.putDouble("Voltage", be.indexToVoltage(be.voltage.value));
+            tag.putDouble("Voltage", be.voltage.getVoltage());
         if (state.getValue(AC))
             tag.putDouble("ACFrequency", 20);
         return tag;

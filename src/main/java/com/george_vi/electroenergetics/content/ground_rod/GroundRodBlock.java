@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.ground_rod;
 
 import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -48,7 +49,7 @@ public class GroundRodBlock extends SimpleDeviceBlock implements IWrenchable, Si
 
     @Override
     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-        return level.getBlockState(pos.below()).is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("earth")));
+        return level.getBlockState(pos.below()).is(CEETags.EARTH);
     }
 
     @Override

@@ -95,7 +95,7 @@ repositories {
 
 dependencies {
     implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
-    implementation("net.createmod.ponder:Ponder-NeoForge-${minecraft_version}:${ponder_version}")
+    implementation("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
     runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
     implementation("com.tterrag.registrate:Registrate:${registrate_version}")
@@ -103,9 +103,9 @@ dependencies {
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
-//    implementation("curse.maven:createaddition-439890:6445614")
-    implementation("curse.maven:supplementaries-412082:6829977")
-    implementation("curse.maven:selene-499980:6818413")
+//    implementation "curse.maven:createaddition-439890:7262496"
+    implementation "curse.maven:supplementaries-412082:7688722"
+    implementation "curse.maven:selene-499980:7522321"
     implementation("cc.tweaked:cc-tweaked-1.21.1-forge:1.116.1")
     runtimeOnly("curse.maven:spark-361579:6225208")
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"

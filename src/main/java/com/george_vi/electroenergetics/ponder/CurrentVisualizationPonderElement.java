@@ -45,7 +45,7 @@ public class CurrentVisualizationPonderElement extends AnimatedSceneElementBase 
 
             CachedBuffers.block(valid ? Blocks.YELLOW_CONCRETE.defaultBlockState() : Blocks.RED_CONCRETE.defaultBlockState())
                     .translate(position)
-                    .scale(0.1875f)
+                    .scale(0.1875f + 0.0001f)
                     .uncenter()
                     .disableDiffuse()
                     .light(LightTexture.FULL_BRIGHT)

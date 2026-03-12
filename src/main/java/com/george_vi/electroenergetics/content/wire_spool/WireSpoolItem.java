@@ -5,13 +5,18 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.simibubi.create.AllSoundEvents;
+import net.createmod.catnip.data.Pair;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -23,6 +28,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.Stack;
 import java.util.function.Supplier;
 
 public class WireSpoolItem extends Item {
@@ -44,6 +50,10 @@ public class WireSpoolItem extends Item {
         return InteractionResultHolder.success(heldItem);
     }
 
+    @Override
+    public boolean isFoil(ItemStack stack) {
+        return stack.has(CEEDataComponents.SELECTED_NODE);
+    }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
@@ -54,15 +64,18 @@ public class WireSpoolItem extends Item {
         BlockState state = level.getBlockState(pos);
 
         if (player.isShiftKeyDown()) {
-            if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE))
+            if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
                 heldItem.remove(CEEDataComponents.SELECTED_NODE);
+                if (level.isClientSide)
+                    player.displayClientMessage(Component.translatable("electroenergetics.wire_spool.cancelled_connection"), true);
+            }
             return InteractionResult.SUCCESS;
         }
 
         if (!(state.getBlock() instanceof DeviceBlock db))
             return InteractionResult.PASS;
 
-        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1.5f);
 
 
         if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
@@ -88,12 +101,15 @@ public class WireSpoolItem extends Item {
                 }
 
                 sd.connectCatenary(hoveredNode.sourcePos(), originalNode.sourcePos());
+                WireSparkEffectTicker.placedConnections.computeIfAbsent(level, l -> new Stack<>()).add(Pair.of(new InWorldNodeConnection(originalNode, hoveredNode), Pair.of(hoveredNode.getPosition(level), player)));
             } else {
                 if (wireType.get() == CEEWireTypes.STANDARD.get() && player.getOffhandItem().getItem() instanceof DyeItem di) {
                     WireType newWiretype = CEEWireTypes.COLORED_WIRES.getOrDefault(di.getDyeColor(), CEEWireTypes.STANDARD).get();
                     sd.connect(originalNode, hoveredNode, newWiretype);
                 } else
                     sd.connect(originalNode, hoveredNode, wireType.get());
+                if (!level.isClientSide)
+                    WireSparkEffectTicker.placedConnections.computeIfAbsent(level, l -> new Stack<>()).add(Pair.of(new InWorldNodeConnection(originalNode, hoveredNode), Pair.of(hoveredNode.getPosition(level), player)));
             }
 
             AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);

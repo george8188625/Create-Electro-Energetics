@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.IPantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
@@ -53,7 +54,7 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     int electroenergetics$accumulators = 0;
 
     @Override
-    public boolean hasCreativeElectricalSource() {
+    public boolean electroEnergetics$hasCreativeElectricalSource() {
         return electroEnergetics$hasCreativeSource;
     }
 
@@ -61,12 +62,12 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     abstract Direction electroEnergetics$getAssemblyDirection();
 
     @Override
-    public int getAccumulators() {
+    public int electroEnergetics$getAccumulators() {
         return electroenergetics$accumulators;
     }
 
     @Override
-    public void setAccumulators(int value) {
+    public void electroEnergetics$setAccumulators(int value) {
         electroenergetics$accumulators = value;
     }
 
@@ -88,11 +89,11 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
                 ), pb.getPantographType(state), true, facing == assemblyDirection));
             }
         }
-        if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_electric_motor"))))
+        if (state.is(CEETags.TRAIN_ELECTRIC_MOTOR))
             electroEnergetics$hasMotor = true;
-        if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_accumulator"))))
+        if (state.is(CEETags.TRAIN_ACCUMULATOR))
             electroenergetics$accumulators++;
-        if (state.is(AllTags.optionalTag(BuiltInRegistries.BLOCK, CreateElecrtoEnergetics.rl("train_creative_source"))))
+        if (state.is(CEETags.TRAIN_CREATIVE_SOURCE))
             electroEnergetics$hasCreativeSource = true;
         electroEnergetics$addSMBlock(state.getBlock(), electroEnergetics$soundModifyingBlocks);
     }
@@ -109,27 +110,27 @@ public abstract class CarriageContraptionMixin extends Contraption implements IP
     }
 
     @Override
-    public void setPantographList(List<TrainPantographEntry> newPantographList) {
+    public void electroEnergetics$setPantographList(List<TrainPantographEntry> newPantographList) {
         electroEnergetics$pantographs = newPantographList;
     }
 
     @Override
-    public List<TrainPantographEntry> getPantographList() {
+    public List<TrainPantographEntry> electroEnergetics$getPantographList() {
         return electroEnergetics$pantographs;
     }
 
     @Override
-    public boolean hasElectricMotor() {
+    public boolean electroEnergetics$hasElectricMotor() {
         return electroEnergetics$hasMotor;
     }
 
     @Override
-    public void setElectricMotor(boolean v) {
+    public void electroEnergetics$setElectricMotor(boolean v) {
         electroEnergetics$hasMotor = v;
     }
 
     @Override
-    public Set<TrainSoundModifier> getSoundModifyingBlocks() {
+    public Set<TrainSoundModifier> electroEnergetics$getSoundModifyingBlocks() {
         return electroEnergetics$soundModifyingBlocks;
     }
 }

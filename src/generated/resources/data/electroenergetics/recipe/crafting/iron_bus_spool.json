@@ -6,7 +6,7 @@
       "item": "electroenergetics:empty_spool"
     },
     "w": {
-      "item": "minecraft:iron_ingot"
+      "tag": "electroenergetics:iron_bus_component"
     }
   },
   "pattern": [

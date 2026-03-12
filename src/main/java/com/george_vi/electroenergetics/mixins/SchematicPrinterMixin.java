@@ -51,7 +51,6 @@ public class SchematicPrinterMixin {
 
             for (Map.Entry<InWorldNodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
                 InWorldNodeConnection connection = e.getKey();
-                WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
                 if (sd.getDevice(node1.sourcePos()) == null) {
@@ -92,7 +91,7 @@ public class SchematicPrinterMixin {
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
 
-                if (!sd.getConnections(node1).contains(node2)) {
+                if (sd.getConnections(node1).stream().noneMatch(c -> c.isAny(node2))) {
                     List<ItemStack> allRequirements = new ArrayList<>();
                     for (Pair<Float, WireAttachment> attachment : wireData.attachments())
                         allRequirements.addAll(attachment.getSecond().getItemRequirement());

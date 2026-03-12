@@ -237,4 +237,52 @@ public class RailwayElectrificationScenes {
         scene.idle(60);
     }
 
+    public static void thirdRail(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+        scene.title("third_rail", "Using third rail");
+        scene.configureBasePlate(0, 0, 9);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+        scene.scaleSceneView(0.75f);
+
+        Selection train = util.select().fromTo(0, 2, 2, 3, 4, 5);
+        Selection tracks = util.select().fromTo(0, 1, 1, 8, 1, 4);
+
+        scene.world().showSection(tracks, Direction.EAST);
+        scene.idle(20);
+
+        connections.createConnection(new InWorldNode(0, util.grid().at(0, 1, 2)), new InWorldNode(0, util.grid().at(8, 1, 2)), CEEWireTypes.IRON_RAIL.get());
+        scene.idle(20);
+
+        scene.world().showSection(train, Direction.DOWN);
+        scene.idle(20);
+
+        scene.overlay().showText(100)
+                .text("Electric trains can collect power from a third rail")
+                .pointAt(util.vector().centerOf(4, 1, 2))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(130);
+
+        scene.overlay().showText(100)
+                .text("For that, use a Rail Contact Shoe")
+                .pointAt(util.vector().centerOf(1, 2, 2))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(130);
+
+        ElementLink<WorldSectionElement> trainElement = scene.world().makeSectionIndependent(train);
+
+        ElementLink<ParrotElement> birb =
+                scene.special().createBirb(util.vector().centerOf(1, 3, 4), ParrotPose.FacePointOfInterestPose::new);
+        scene.idle(20);
+
+        scene.world().moveSection(trainElement, util.vector().of(4, 0, 0), 60);
+        scene.world().animateBogey(util.grid().at(1, 2, 4), -4, 60);
+        scene.special().moveParrot(birb, util.vector().of(4, 0, 0), 60);
+
+
+        scene.idle(60);
+    }
+
 }

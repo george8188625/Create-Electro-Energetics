@@ -2,7 +2,6 @@ package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.CEEPantographTypes;
 import com.george_vi.electroenergetics.CEERegistries;
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.railway_electrification.ElectricTrainData;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographType;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
@@ -45,19 +44,19 @@ public class CarriageMixin implements IPantographList {
     public boolean electroEnergetics$hasMotor = false;
 
     @Shadow
-    private Train train;
+    public Train train;
 
     @Override
-    public int getAccumulators() {
+    public int electroEnergetics$getAccumulators() {
         return 0;
     }
 
     @Override
-    public void setAccumulators(int value) {
+    public void electroEnergetics$setAccumulators(int value) {
     }
 
     @Override
-    public boolean hasCreativeElectricalSource() {
+    public boolean electroEnergetics$hasCreativeElectricalSource() {
         return false;
     }
 
@@ -83,23 +82,23 @@ public class CarriageMixin implements IPantographList {
 
             pantographs.add(new TrainPantographEntry(originalPos, pos, type, active, forward));
         });
-        ((IPantographList)carriage).setPantographList(pantographs);
-        ((IPantographList)carriage).setElectricMotor(tag.getBoolean("CEEHasElectricMotor"));
+        ((IPantographList)carriage).electroEnergetics$setPantographList(pantographs);
+        ((IPantographList)carriage).electroEnergetics$setElectricMotor(tag.getBoolean("CEEHasElectricMotor"));
     }
 
     @Inject(method = "setContraption", at=@At("TAIL"), remap = false)
     public void electroEnergetics$setContraption(Level level, CarriageContraption contraption, CallbackInfo ci) {
         IPantographList contraptionExtension = (IPantographList) contraption;
-        this.electroEnergetics$pantographs = contraptionExtension.getPantographList();
-        this.electroEnergetics$hasMotor = contraptionExtension.hasElectricMotor();
-        this.electroEnergetics$soundModifyingBlocks = contraptionExtension.getSoundModifyingBlocks();
+        this.electroEnergetics$pantographs = contraptionExtension.electroEnergetics$getPantographList();
+        this.electroEnergetics$hasMotor = contraptionExtension.electroEnergetics$hasElectricMotor();
+        this.electroEnergetics$soundModifyingBlocks = contraptionExtension.electroEnergetics$getSoundModifyingBlocks();
 
         if (train == null)
             return;
         ICEETrainExtension trainExtension = (ICEETrainExtension) train;
         ElectricTrainData trainData = trainExtension.getElectricTrainData();
-        trainData.accumulators += contraptionExtension.getAccumulators();
-        trainData.hasCreativeSource |= contraptionExtension.hasCreativeElectricalSource();
+        trainData.accumulators += contraptionExtension.electroEnergetics$getAccumulators();
+        trainData.hasCreativeSource |= contraptionExtension.electroEnergetics$hasCreativeElectricalSource();
         trainData.pantographs.addAll(this.electroEnergetics$pantographs);
 
         if (electroEnergetics$soundModifyingBlocks.isEmpty())
@@ -149,28 +148,28 @@ public class CarriageMixin implements IPantographList {
 
 
     @Override
-    public void setPantographList(List<TrainPantographEntry> newPantographList) {
+    public void electroEnergetics$setPantographList(List<TrainPantographEntry> newPantographList) {
         electroEnergetics$pantographs = newPantographList;
     }
 
     @Override
-    public List<TrainPantographEntry> getPantographList() {
+    public List<TrainPantographEntry> electroEnergetics$getPantographList() {
         return electroEnergetics$pantographs;
     }
 
     @Override
-    public boolean hasElectricMotor() {
+    public boolean electroEnergetics$hasElectricMotor() {
         return electroEnergetics$hasMotor;
     }
 
     @Override
-    public void setElectricMotor(boolean v) {
+    public void electroEnergetics$setElectricMotor(boolean v) {
         electroEnergetics$hasMotor = v;
     }
 
 
     @Override
-    public Set<TrainSoundModifier> getSoundModifyingBlocks() {
+    public Set<TrainSoundModifier> electroEnergetics$getSoundModifyingBlocks() {
         return electroEnergetics$soundModifyingBlocks;
     }
 }

@@ -80,7 +80,7 @@ public class TransformerCoreDevice extends SimulatedDevice<TransformerCoreDevice
 
         if (extraData.temp > 31_000) {
             if (level.isLoaded(pos)) {
-                CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.BIG));
+                CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.LARGE));
                 ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0,0, 0);
             }
             InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);

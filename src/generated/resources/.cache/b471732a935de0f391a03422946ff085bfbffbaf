@@ -1,11 +1,11 @@
-// 1.21.1	2026-02-12T18:43:53.315203606	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-03-08T16:37:27.205524064	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/ammeter.json
-f9c621956f91cb0b324efcd00302cbe866651841 assets/electroenergetics/blockstates/broken_bulb.json
+d8740182f4ecc63bb46197e15c408e5aa3a38a74 assets/electroenergetics/blockstates/broken_bulb.json
 d559c0a9eb0b6946a749be415010fd6ced4191fa assets/electroenergetics/blockstates/broken_fuse.json
-f9c621956f91cb0b324efcd00302cbe866651841 assets/electroenergetics/blockstates/bulb.json
+d8740182f4ecc63bb46197e15c408e5aa3a38a74 assets/electroenergetics/blockstates/bulb.json
 b793a6b89e2676a1eddf656d88e9bcb6169db8ec assets/electroenergetics/blockstates/buzzer.json
 052e7a9607be568f11307f4988c8eec13710c60f assets/electroenergetics/blockstates/capacitor.json
 33dc22a8cc57bb61e7505e9bf2ee5b6856c16670 assets/electroenergetics/blockstates/catenary_holder.json
@@ -47,8 +47,8 @@ d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tr
 600c5f36375220f10093b0281d61f9d813217cec assets/electroenergetics/blockstates/triple_connector.json
 1890500dc4c769a55aeb82cabdc670382dddad47 assets/electroenergetics/blockstates/voltage_regulator.json
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
-3d896d45611f8c552d085a91767dfcece0136881 assets/electroenergetics/lang/en_ud.json
-5ce604f53050e6d563607110eda039f6b7cd8084 assets/electroenergetics/lang/en_us.json
+099edf057110324dae8a6edd9ec51fbfe77ed7c5 assets/electroenergetics/lang/en_ud.json
+f8968fd06092ccfb49af861c5bbd37b5d8331164 assets/electroenergetics/lang/en_us.json
 765c328111edefba08ab581cf90002ac3163c985 assets/electroenergetics/models/block/creative_battery.json
 41220aad614f77bd1e09d645e147029acb992cf5 assets/electroenergetics/models/block/creative_battery_ac.json
 f2a0a8c7269e5b0a9318f61027d189a0c74da680 assets/electroenergetics/models/block/magnet.json

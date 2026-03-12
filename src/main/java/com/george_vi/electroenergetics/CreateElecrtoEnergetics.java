@@ -25,6 +25,7 @@ public class CreateElecrtoEnergetics
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static CreateRegistrate REGISTRATE;
+
     public CreateElecrtoEnergetics(IEventBus modEventBus, ModContainer modContainer) {
         REGISTRATE = CreateRegistrate.create(ID)
                 .setTooltipModifierFactory(item ->
@@ -33,7 +34,6 @@ public class CreateElecrtoEnergetics
                                 .andThen(TooltipModifier.mapNull(new ElectricStatsTooltipModifier(item)))
                 );
         REGISTRATE.registerEventListeners(modEventBus);
-//        modEventBus.addListener((GatherDataEvent event) -> event.addProvider(new RegistrateDataProvider(REGISTRATE, ID, event)));
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
         CEEItems.register();

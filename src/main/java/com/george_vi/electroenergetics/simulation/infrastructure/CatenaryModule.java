@@ -15,7 +15,6 @@ import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.Train;
-import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
@@ -46,10 +45,10 @@ public class CatenaryModule {
             ElectricTrainData trainData = trainExtension.getElectricTrainData();
             boolean connected = false;
             for (Carriage carriage : train.carriages) {
-                List<TrainPantographEntry> pantographs = ((IPantographList)carriage).getPantographList();
+                List<TrainPantographEntry> pantographs = ((IPantographList)carriage).electroEnergetics$getPantographList();
                 if (carriage.presentInMultipleDimensions() ||
                         !carriage.getPresentDimensions().getFirst().equals(level.dimension()) ||
-                        !((IPantographList)carriage).hasElectricMotor())
+                        !((IPantographList)carriage).electroEnergetics$hasElectricMotor())
                     continue;
 
                 Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(carriage.getPresentDimensions().getFirst());
@@ -205,7 +204,7 @@ public class CatenaryModule {
 
             Map<Integer, Vec3> positions = new HashMap<>();
             for (Carriage carriage : train.carriages) {
-                if (((IPantographList)carriage).hasElectricMotor()) {
+                if (((IPantographList)carriage).electroEnergetics$hasElectricMotor()) {
                     Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(level);
 
                     int carriageIndex = train.carriages.indexOf(carriage);

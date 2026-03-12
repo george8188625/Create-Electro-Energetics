@@ -19,7 +19,7 @@ public class ResistorRenderer extends SmartBlockEntityRenderer<ResistorBlockEnti
 
     @Override
     protected void renderSafe(ResistorBlockEntity blockEntity, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
-        double resistance = blockEntity.indexToResistance(blockEntity.resistance.value);
+        double resistance = blockEntity.resistance.value / 1000d;
         if (resistance > 1000000 || resistance < 0.1)
             return;
 

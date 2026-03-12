@@ -2,28 +2,26 @@ package com.george_vi.electroenergetics.mixin_interfaces;
 
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
-import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Block;
 
 import java.util.*;
 
 public interface IPantographList {
-    void setPantographList(List<TrainPantographEntry> newPantographList);
+    void electroEnergetics$setPantographList(List<TrainPantographEntry> newPantographList);
 
-    List<TrainPantographEntry> getPantographList();
+    List<TrainPantographEntry> electroEnergetics$getPantographList();
 
-    Set<TrainSoundModifier> getSoundModifyingBlocks();
+    Set<TrainSoundModifier> electroEnergetics$getSoundModifyingBlocks();
 
-    int getAccumulators();
+    int electroEnergetics$getAccumulators();
 
-    void setAccumulators(int value);
+    void electroEnergetics$setAccumulators(int value);
 
-    boolean hasCreativeElectricalSource();
+    boolean electroEnergetics$hasCreativeElectricalSource();
 
 
     default void changePantographState(BlockPos localPos, boolean active) {
-        List<TrainPantographEntry> pantographList = getPantographList();
+        List<TrainPantographEntry> pantographList = electroEnergetics$getPantographList();
 
         for (int i = 0; i < pantographList.size(); i++) {
             TrainPantographEntry e = pantographList.get(i);
@@ -35,11 +33,11 @@ public interface IPantographList {
     }
 
     default TrainPantographEntry getPantographState(BlockPos localPos) {
-        return getPantographList().stream().filter(e -> e.originalPos.equals(localPos)).findFirst().orElse(null);
+        return electroEnergetics$getPantographList().stream().filter(e -> e.originalPos.equals(localPos)).findFirst().orElse(null);
     }
 
-    boolean hasElectricMotor();
+    boolean electroEnergetics$hasElectricMotor();
 
-    void setElectricMotor(boolean v);
+    void electroEnergetics$setElectricMotor(boolean v);
 
 }

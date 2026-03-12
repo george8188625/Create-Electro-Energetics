@@ -53,7 +53,7 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements SimpleWa
     protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof VoltageRegulatorBlockEntity be)
-            tag.putDouble("Voltage", be.voltage.value * 10);
+            tag.putDouble("Voltage", be.voltage.getVoltage());
         return tag;
     }
 

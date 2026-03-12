@@ -6,7 +6,7 @@
       "item": "electroenergetics:empty_spool"
     },
     "w": {
-      "item": "electroenergetics:copper_wire"
+      "tag": "c:wires/copper"
     }
   },
   "pattern": [

@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -33,6 +34,7 @@ import java.util.Map;
 
 public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbBlockEntity> {
     public static final IntegerProperty LIGHT = IntegerProperty.create("light", 0, 15);
+    public static final BooleanProperty COMPACT = BooleanProperty.create("compact");
     public final boolean broken;
 
     public BulbBlock(Properties properties) {
@@ -42,6 +44,7 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
     public BulbBlock(Properties properties, boolean broken) {
         super(properties);
         this.broken = broken;
+        registerDefaultState(defaultBlockState().setValue(COMPACT, false).setValue(LIGHT, 0));
     }
 
     @Override
@@ -64,11 +67,13 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(LIGHT);
+        builder.add(LIGHT, COMPACT);
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (state.getValue(COMPACT))
+            return CEEShapes.BULB_COMPACT.get(state.getValue(FACING));
         return (state.getValue(ROLL) ? CEEShapes.BULB_ROLL : CEEShapes.BULB).get(state.getValue(FACING));
     }
 
@@ -86,7 +91,7 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (!stack.is(AllTags.commonItemTag("wires/copper")) || !broken)
+        if (!stack.is(CEETags.COPPER_WIRE) || !broken)
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
@@ -103,6 +108,11 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
     }
 
     @Override
+    public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {
+        return targetedFace.getAxis() == originalState.getValue(FACING).getAxis() ? super.getRotatedBlockState(originalState, targetedFace) : originalState.cycle(COMPACT);
+    }
+
+    @Override
     public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
         if (broken)
             return 0;
@@ -111,6 +121,10 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
 
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        if (state.getValue(COMPACT))
+            return state.getValue(ROLL) ?
+                    CEENodeConfigurations.BULB_COMPACT.rotate(new Vec3(0, 90, 0)).getNodes(state.getValue(FACING)) :
+                    CEENodeConfigurations.BULB_COMPACT.getNodes(state.getValue(FACING));
         return state.getValue(ROLL) ?
                 CEENodeConfigurations.BULB.rotate(new Vec3(0, 90, 0)).getNodes(state.getValue(FACING)) :
                 CEENodeConfigurations.BULB.getNodes(state.getValue(FACING));
@@ -118,6 +132,10 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
+        if (state.getValue(COMPACT))
+            return state.getValue(ROLL) ?
+                    CEENodeConfigurations.BULB_COMPACT.rotate(new Vec3(0, 90, 0)).getNodePos(state.getValue(FACING), id) :
+                    CEENodeConfigurations.BULB_COMPACT.getNodePos(state.getValue(FACING), id);
         return state.getValue(ROLL) ?
                 CEENodeConfigurations.BULB.rotate(new Vec3(0, 90, 0)).getNodePos(state.getValue(FACING), id) :
                 CEENodeConfigurations.BULB.getNodePos(state.getValue(FACING), id);

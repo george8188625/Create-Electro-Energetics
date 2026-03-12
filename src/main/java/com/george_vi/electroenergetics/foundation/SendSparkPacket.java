@@ -8,7 +8,6 @@ import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -27,6 +26,8 @@ public record SendSparkPacket(Vec3 pos, SparkSize size) implements ClientboundPa
             WireEffects.showSmallSpark(pos);
         } else if (size == SparkSize.MEDIUM) {
             WireEffects.showMediumSpark(pos);
+        } else if (size == SparkSize.LARGE) {
+            WireEffects.showLargeSpark(pos);
         }
     }
 
@@ -38,6 +39,6 @@ public record SendSparkPacket(Vec3 pos, SparkSize size) implements ClientboundPa
     public enum SparkSize {
         SMALL,
         MEDIUM,
-        BIG
+        LARGE
     }
 }

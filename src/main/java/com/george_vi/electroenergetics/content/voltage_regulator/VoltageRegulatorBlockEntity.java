@@ -3,16 +3,13 @@ package com.george_vi.electroenergetics.content.voltage_regulator;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.VoltageScrollValueBehaviour;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
-import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
-import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatter;
-import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.createmod.catnip.math.VecHelper;
@@ -26,11 +23,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -43,7 +38,7 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
         setLazyTickRate(20);
     }
 
-    protected ScrollValueBehaviour voltage;
+    protected VoltageScrollValueBehaviour voltage;
     protected double power;
     protected double lastSentPower = -1;
     protected double primaryVoltage;
@@ -130,16 +125,8 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
 
-        voltage = new ScrollValueBehaviour(CEELang.translate("voltage_regulator.voltage").component(), this, new ValueBox()) {
-            @Override
-            public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(CEELang.translate("voltage_regulator.voltage_symbol").component()),
-                        new ValueSettingsFormatter(valueSettings -> CEELang.formatVoltage(valueSettings.value() * 10).component()));
-            }
-        };
-        voltage.between(0, 432);
-        voltage.value = 10;
-        voltage.withFormatter(v -> CEELang.formatVoltage(v * 10).string());
+        voltage = new VoltageScrollValueBehaviour(CEELang.translate("voltage_regulator.voltage").component(), this, new ValueBox());
+
         voltage.withCallback(i -> this.updateVoltage());
         behaviours.add(voltage);
     }
@@ -171,8 +158,7 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
         SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null && deviceInstance.extraData() instanceof VoltageRegulatorDevice.DataHolder dataHolder) {
-            int i = voltage.value;
-            dataHolder.voltage = i * 10;
+            dataHolder.voltage = voltage.getVoltage();
         }
     }
 
