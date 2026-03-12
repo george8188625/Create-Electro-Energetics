@@ -3,7 +3,6 @@
   "ingredient": {
     "tag": "c:plates/iron"
   },
-  "loops": 1,
   "results": [
     {
       "id": "electroenergetics:transformer_core"

@@ -45,7 +45,7 @@ public class WireLifetimeModule {
             List<WireSimulationState.CutWireEntry> cuts = connectionData.cuts;
 
             double current = 0;
-            double wholeWireResistance = connectionData.resistance.getAsDouble();
+            double wholeWireResistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), connectionData.resistance.getAsDouble());
             if (cuts == null || cuts.isEmpty()) {
                 double vd = Math.abs(results.getVoltageAt(connection.node1(), connection.node2()));
                 current = vd / wholeWireResistance;
@@ -70,6 +70,7 @@ public class WireLifetimeModule {
             newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
             newTemp = Math.max(temp - 33.3f + newTemp, 0);
             connectionData.wireData.temperature = newTemp;
+            boolean increase = newTemp > temp;
 
             if (newTemp > wireType.getMaxTemperature() * 0.6 && level.isLoaded(connection.node1().sourcePos())) {
                 // Smoke particles
@@ -89,14 +90,14 @@ public class WireLifetimeModule {
                             connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE, wireType.getSag(), 0.2f));
             }
 
-            if (newTemp > wireType.getMaxTemperature()) {
+            if (newTemp > wireType.getMaxTemperature() && increase) {
                 if (longestWireToBreak == null) {
                     longestWireToBreak = connection;
                     longestWireTypeToBreak = wireType;
                     isCatenary = connectionData.isCatenary;
 
                 }
-                else if (SimulationTicker.getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType) < SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType)) {
+                else if (SimulationTicker.getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType.getResistance()) < SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType.getResistance())) {
                     longestWireToBreak = connection;
                     longestWireTypeToBreak = wireType;
                     isCatenary = connectionData.isCatenary;

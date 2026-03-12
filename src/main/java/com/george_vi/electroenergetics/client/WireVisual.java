@@ -143,6 +143,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             instance.translate(point)
                     .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                    .rotateZ(0.001f)
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                     .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
                             WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
@@ -165,6 +166,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             instance.translate(point)
                     .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                    .rotateZ(0.001f)
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                     .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
                             WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),

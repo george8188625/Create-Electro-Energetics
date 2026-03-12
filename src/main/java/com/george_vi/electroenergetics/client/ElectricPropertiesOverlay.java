@@ -1,8 +1,11 @@
 package com.george_vi.electroenergetics.client;
 
+import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
+import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
@@ -19,7 +22,8 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
     InWorldNode node;
     float amperage;
     OverlayMode mode;
-    int directionPointerAngle;
+    public boolean invalidConnection;
+    public boolean connectionTooLong;
 
     public void setHoveredNode(NodeVoltageHolder.VoltageEntry voltage, InWorldNode node) {
         this.voltage = voltage;
@@ -27,10 +31,9 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
         this.mode = OverlayMode.HOVER_NODE;
     }
 
-    public void setAmmeter(float amperage, int direction) {
+    public void setAmmeter(float amperage) {
         this.amperage = amperage;
         this.mode = OverlayMode.AMMETER;
-        this.directionPointerAngle = direction;
     }
 
     public void removeHoveredNode() {
@@ -54,7 +57,7 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
         float alpha = 1;
 
         Color color = new Color(0xffffff);
-        Color titleColor = new Color(0xFBDC7D);
+        Color titleColor = (invalidConnection || connectionTooLong) ? new Color(ChatFormatting.RED.getColor()) : new Color(0xFBDC7D);
         color.setAlpha(alpha);
         titleColor.setAlpha(alpha);
         if (mode == OverlayMode.HOVER_NODE) {
@@ -65,11 +68,22 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
                 return;
 
             MutableComponent nodeLabel = db.getNodeLabel(mc.level, node.sourcePos(), state, node.id()).withStyle(ChatFormatting.BOLD);
+            if (CEEConfigs.client().debugNodeID.get())
+                nodeLabel.append(" [" + node.id() + "]");
             graphics.drawString(mc.font, nodeLabel, x - mc.font.width(nodeLabel) / 2, y, titleColor.getRGB());
 
             y += 12;
             MutableComponent formattedVoltage = CEELang.formatVoltage(voltage.rmsVoltage).component();
             graphics.drawString(mc.font, formattedVoltage, x - mc.font.width(formattedVoltage) / 2, y, color.getRGB());
+
+            if (invalidConnection || connectionTooLong) {
+                MutableComponent component = Lang.builder(CreateElecrtoEnergetics.ID)
+                        .translate(connectionTooLong ? "wire_spool.too_far_away" : "wire_spool.invalid_connection")
+                        .style(ChatFormatting.RED)
+                        .component();
+                graphics.drawString(mc.font, component, x - mc.font.width(component) / 2, y + 12, 0);
+            }
+
         } else if (mode == OverlayMode.AMMETER) {
             MutableComponent formattedAmperage = CEELang.formatAmperage(amperage).component();
             graphics.drawString(mc.font, formattedAmperage, x - mc.font.width(formattedAmperage) / 2, y, color.getRGB());

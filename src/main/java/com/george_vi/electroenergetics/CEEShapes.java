@@ -35,6 +35,8 @@ public class    CEEShapes {
     public static final VoxelShaper BULB_ROLL = shape(5,0, 5,11,10,11)
             .add(6,0, 0,10,5,16).forDirectional();
 
+    public static final VoxelShaper BULB_COMPACT = shape(5,0, 5,11,10,11).forDirectional();
+
     public static final VoxelShaper DOUBLE_CONNECTOR = shape(1,0, 6,15,7,10).forDirectional();
 
     public static final VoxelShaper DOUBLE_CONNECTOR_ROLL = shape(6,0, 1,10,7,15).forDirectional();

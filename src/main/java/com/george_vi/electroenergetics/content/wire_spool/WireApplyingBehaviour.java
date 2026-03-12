@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.NodeVoltageHolder;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.*;
@@ -47,6 +48,9 @@ public class WireApplyingBehaviour {
         if (mc.player == null || mc.level == null || !(mc.hitResult instanceof BlockHitResult result))
             return;
 
+        ElectricPropertiesOverlay.INSTANCE.invalidConnection = false;
+        ElectricPropertiesOverlay.INSTANCE.connectionTooLong = false;
+
         ClientLevel level = mc.level;
         BlockPos pos = result.getBlockPos();
         LocalPlayer player = mc.player;
@@ -74,7 +78,7 @@ public class WireApplyingBehaviour {
                     .withFaceTexture(AllSpecialTextures.SELECTION);
         }
 
-        InWorldNode hoveredNode = InWorldNode.closestNode(level, mc.hitResult.getLocation(), 1f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, mc.hitResult.getLocation(), 1.5f);
         Vec3 hoveredPos = null;
 
         // Display all nodes of block
@@ -97,19 +101,16 @@ public class WireApplyingBehaviour {
                 NodeVoltageHolder.VoltageEntry ve = NodeVoltageHolder.getVoltageEntryOrNull(hoveredNode);
                 if (ve != null)
                     ElectricPropertiesOverlay.INSTANCE.setHoveredNode(ve, hoveredNode);
-            }
-        }
+            } else
+                ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
+
+        } else
+            ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
 
         // Player is not looking at a node, return and say it's too far away
 
-        if (hoveredNode == null) {
-            ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
-            CEELang.builder()
-                    .translate("wire_spool.too_far_away")
-                    .style(ChatFormatting.RED)
-                    .component();
+        if (hoveredNode == null)
             return;
-        }
 
         // Player has selected a node and is looking at one
 
@@ -136,14 +137,11 @@ public class WireApplyingBehaviour {
                 (heldItem.getItem() instanceof WireSpoolItem wsi) && wsi.wireType.get() == CEEWireTypes.COPPER.get();
 
         // Wire too long
-        if (Math.sqrt(selectedNode.sourcePos().distSqr(pos)) > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() :
+        double wireDistance = Math.sqrt(selectedNode.sourcePos().distSqr(pos));
+        if (wireDistance > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() :
                 (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getMaxLength() : CEEConfigs.server().maxWireLength.get()))) {
-            mc.gui.setOverlayMessage(
-                    Lang.builder(CreateElecrtoEnergetics.ID)
-                            .translate("wire_spool.too_far_away")
-                            .style(ChatFormatting.RED)
-                            .component()
-                    , false);
+            ElectricPropertiesOverlay.INSTANCE.connectionTooLong = true;
+
             canConnect = false;
         }
 
@@ -152,27 +150,31 @@ public class WireApplyingBehaviour {
         if ((canConnect &&
                 hoveredNode.sourcePos().equals(selectedNode.sourcePos()) &&
                 (!db.canSelfConnect(level, pos, state, selectedNode.id(), hoveredNode.id()) || selectedNode.id() == hoveredNode.id()))) {
-            mc.gui.setOverlayMessage(
-                    Lang.builder(CreateElecrtoEnergetics.ID)
-                            .translate("wire_spool.invalid_connection")
-                            .style(ChatFormatting.RED)
-                            .component()
-                    , false);
+            ElectricPropertiesOverlay.INSTANCE.invalidConnection = true;
             canConnect = false;
         }
 
-        if (canConnect)
+
+        if (canConnect) {
             for (Pair<InWorldNodeConnection, WireData> connection : WireRenderer.getAllConnections())
                 if (new InWorldNodeConnection(selectedNode, hoveredNode).equals(connection.getFirst())) {
                     canConnect = false;
                     break;
                 }
+            for (CatenaryConnection connection : WireRenderer.CATENARY)
+                if ((connection.pos1().equals(selectedNode.sourcePos()) && connection.pos2().equals(hoveredNode.sourcePos())) ||
+                        (connection.pos2().equals(selectedNode.sourcePos()) && connection.pos1().equals(hoveredNode.sourcePos()))) {
+                    canConnect = false;
+                    break;
+                }
+        }
+
 
         Outliner.getInstance().showAABB("electroenergetics_node_selection", AABB.ofSize(hoveredPos, 5/16f, 5/16f, 5/16f), 3)
                 .colored(new Color(canConnect ? .3f : .9f, canConnect ? .9f : .3f, .5f, 1f))
                 .withFaceTexture(AllSpecialTextures.SELECTION);
 
-        if (!toRemove && !mc.isPaused()) {
+        if (!toRemove && !mc.isPaused() && wireDistance < 512) {
             for (Vec3 point : QuadraticWireHelper.cablePoints(selectedPos, hoveredPos, isCatenary ? 0 : (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getSag() : 1))) {
                 if (level.random.nextInt(7) != 0)
                     continue;

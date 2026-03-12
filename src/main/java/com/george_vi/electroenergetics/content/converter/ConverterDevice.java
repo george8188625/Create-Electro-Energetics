@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.converter;
 
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorDevice;
+import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -19,6 +20,7 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
     }
 
     static final int MAX_ENERGY = 100_000;
+    public static final double CONVERSION_RATE = 34;
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
@@ -32,8 +34,8 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
-        double conversionRate = 34;
 
+        double displayedPower = 0;
         double vd = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
         if (extraData.isSource) {
 
@@ -46,26 +48,42 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
                 BlockState state = level.getBlockState(pos);
                 IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()), state.getValue(ConverterBlock.FACING));
                 if (energyStorage != null)
-                    extraData.storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - extraData.storedEnergy) / conversionRate), false) * conversionRate;
+                    extraData.storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - extraData.storedEnergy) / CONVERSION_RATE), false) * CONVERSION_RATE;
             }
 
-            return;
+            displayedPower = power;
+        } else {
+
+            double power = Math.abs(vd * results.getCurrentThrough(pos, 0, 1));
+
+            extraData.storedEnergy += power;
+
+            if (extraData.storedEnergy > 0 && level.isLoaded(pos)) {
+                BlockState state = level.getBlockState(pos);
+                IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()), state.getValue(ConverterBlock.FACING));
+                if (energyStorage != null)
+                    extraData.storedEnergy -= energyStorage.receiveEnergy((int) (extraData.storedEnergy / CONVERSION_RATE), false) * CONVERSION_RATE;
+            }
+
+            displayedPower = -power;
+            if (vd > 1)
+                extraData.resistance = Math.max(20, vd / (Math.max((MAX_ENERGY - extraData.storedEnergy), 0.01) / vd));
+
         }
+        if (extraData.be == null && level.isLoaded(pos))
+            if (level.getBlockEntity(pos) instanceof ConverterBlockEntity be)
+                extraData.be = be;
 
-        double power = Math.abs(vd * results.getCurrentThrough(pos, 0, 1));
-
-        extraData.storedEnergy += power;
-
-        if (extraData.storedEnergy > 0 && level.isLoaded(pos)) {
-            BlockState state = level.getBlockState(pos);
-            IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()), state.getValue(ConverterBlock.FACING));
-            if (energyStorage != null)
-                extraData.storedEnergy -= energyStorage.receiveEnergy((int) (extraData.storedEnergy / conversionRate), false) * conversionRate;
+        if (extraData.be != null) {
+            if (extraData.be.isRemoved())
+                extraData.be = null;
+            else {
+                if (Math.abs(extraData.be.power - displayedPower) > 1) {
+                    extraData.be.power = displayedPower;
+                    extraData.be.sendData();
+                }
+            }
         }
-
-
-        if (vd > 1)
-            extraData.resistance = Math.max(20, vd / (Math.max((MAX_ENERGY - extraData.storedEnergy), 0.01) / vd));
     }
 
     @Override

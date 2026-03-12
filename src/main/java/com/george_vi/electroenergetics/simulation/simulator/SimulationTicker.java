@@ -104,7 +104,7 @@ public class SimulationTicker {
             stats.totalSeparatedNodes = new int[networks.size()];
             stats.totalOptimizedNodes = new int[networks.size()];
             stats.totalDevices = devices.size();
-
+            long solveNanos = 0;
             // Solve
             double[] allVoltages = new double[circuitBuilder.allNodes().size() * microTicks];
             Map<BlockPos, Object2DoubleMap<DirectionalNodeConnection>> sourceAmps = new HashMap<>();
@@ -157,6 +157,7 @@ public class SimulationTicker {
                     entry.getValue().tick(allVoltages, i, microTickBits, microTicks, first, second);
                 }
                 for (Network network : allNetworks) {
+                    long solveStart = System.nanoTime();
                     network.formMatrix();
 //                double[] mnaResults = BiCGStabSolver.solve(network.conductanceMatrix, network.rhsVector,
 //                        (network.lastMNAResult == null || network.lastMNAResult.length != network.rhsVector.length) ? new double[network.rhsVector.length] : network.lastMNAResult, 1e-12d, 300);
@@ -166,8 +167,8 @@ public class SimulationTicker {
 //                double[] mnaResults = CGSolver.solve(network.conductanceMatrix, network.rhsVector, new double[network.rhsVector.length], 1e-10d, 300);
 //                double[] mnaResults = CGSolver.solve(network.conductanceMatrix, network.rhsVector,
 //                        (network.lastMNAResult == null || network.lastMNAResult.length != network.rhsVector.length) ? new double[network.rhsVector.length] : network.lastMNAResult, 1e-10d, 300);
+                    solveNanos += (System.nanoTime() - solveNanos);
                     network.getResults(mnaResults, allVoltages, microTickBits, i);
-
                     int j = 0;
                     for (long packedConnection : network.voltageSources.keySet()) {
                         double amps = mnaResults[network.simulationNodes.length + j];
@@ -207,6 +208,7 @@ public class SimulationTicker {
             for (Object2DoubleMap<DirectionalNodeConnection> v : sourceAmps.values())
                 allSourceAmps.putAll(v);
             profiler.addThreadedNanos(System.nanoTime() - thrStart);
+            profiler.addSolverNanos(System.nanoTime() - thrStart);
             return new SimulationResults(allVoltages, microTicks, microTickBits, allSourceAmps, circuitBuilder, sd);
         });
     }
@@ -261,8 +263,8 @@ public class SimulationTicker {
         return VOLTAGES.getOrDefault(node, 0d);
     }
 
-    public static double getWireResistance(InWorldNode node1, InWorldNode node2, WireType wireType) {
-        double res = Math.sqrt(node1.sourcePos().distSqr(node2.sourcePos())) * wireType.getResistance();
-        return res == 0 ? wireType.getResistance() : res;
+    public static double getWireResistance(InWorldNode node1, InWorldNode node2, double resistance) {
+        double res = Math.sqrt(node1.sourcePos().distSqr(node2.sourcePos())) * resistance;
+        return res == 0 ? resistance : res;
     }
 }

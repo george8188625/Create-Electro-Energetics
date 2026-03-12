@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
@@ -76,7 +77,7 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (!stack.is(AllTags.commonItemTag("wires/copper")) || !broken)
+        if (!stack.is(CEETags.COPPER_WIRE) || !broken)
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {

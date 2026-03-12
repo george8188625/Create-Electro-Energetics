@@ -39,7 +39,7 @@ public class RMSHolder {
         for (int i = 0; i < Math.min(arr.length, windowSize); i++)
             values[i] = Double.longBitsToDouble(arr[i]);
 
-        pointer = tag.getInt(key + "Pointer");
+        pointer = tag.getInt(key + "Pointer") % windowSize;
 
         double sum = 0;
         for (int i = 0; i < windowSize; i++)
@@ -51,5 +51,9 @@ public class RMSHolder {
     public void write(CompoundTag tag, String key) {
         tag.putLongArray(key, Arrays.stream(values).mapToLong(Double::doubleToRawLongBits).toArray());
         tag.putInt(key + "Pointer", pointer);
+    }
+
+    public double getSigned() {
+        return values[(pointer - 1 + windowSize) % windowSize] > 0 ? rms : -rms;
     }
 }

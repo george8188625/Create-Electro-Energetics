@@ -4,19 +4,21 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
-import com.simibubi.create.AllTags;
 import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
 import com.simibubi.create.content.kinetics.press.PressingRecipe;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipeBuilder;
+import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
@@ -92,68 +94,13 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_iron_wire", has(CEETags.IRON_WIRE))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_wire_strand"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEEItems.INSULATED_WIRE)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_insulated_wire", has(CEEItems.INSULATED_WIRE))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.ELECTRUM_WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEETags.ELECTRUM_WIRE)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_insulated_wire", has(CEEItems.INSULATED_WIRE))
-                .save(recipeOutput.withConditions(new NotCondition(new TagEmptyCondition(CEETags.ELECTRUM_NUGGET))), CreateElecrtoEnergetics.rl("crafting/electrum_wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.HEAVILY_INSULATED_WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEEItems.HEAVILY_INSULATED_WIRE)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_heavily_insulated_wire", has(CEEItems.HEAVILY_INSULATED_WIRE))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/heavily_insulated_wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.COPPER_WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEEItems.COPPER_WIRE)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_copper_wire", has(CEEItems.COPPER_WIRE))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/copper_wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_WIRE_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEEItems.IRON_WIRE_STRAND)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_iron_wire_strand", has(CEEItems.IRON_WIRE_STRAND))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_wire_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_BUS_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', Items.IRON_INGOT)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_bus_spool"));
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.IRON_RAIL_SPOOL)
-                .pattern(" w ")
-                .pattern("wsw")
-                .pattern(" w ")
-                .define('w', CEETags.IRON_RAIL_COMPONENT)
-                .define('s', CEEItems.EMPTY_SPOOL)
-                .unlockedBy("has_iron_rail_component", has(CEETags.IRON_RAIL_COMPONENT))
-                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/iron_rail_spool"));
+        conditionalWireSpool(recipeOutput, CEEItems.ELECTRUM_WIRE_SPOOL, CEETags.ELECTRUM_WIRE, CEETags.ELECTRUM_NUGGET);
+        wireSpool(recipeOutput, CEEItems.HEAVILY_INSULATED_WIRE_SPOOL, CEEItems.HEAVILY_INSULATED_WIRE);
+        wireSpool(recipeOutput, CEEItems.WIRE_SPOOL, CEEItems.INSULATED_WIRE);
+        wireSpool(recipeOutput, CEEItems.COPPER_WIRE_SPOOL, CEETags.COPPER_WIRE);
+        wireSpool(recipeOutput, CEEItems.IRON_WIRE_SPOOL, CEEItems.IRON_WIRE_STRAND);
+        wireSpool(recipeOutput, CEEItems.IRON_BUS_SPOOL, CEETags.IRON_BUS_COMPONENT);
+        wireSpool(recipeOutput, CEEItems.IRON_RAIL_SPOOL, CEETags.IRON_RAIL_COMPONENT);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ALTERNATOR_BRUSHES)
                 .pattern(" B ")
@@ -179,10 +126,10 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern(" n ")
                 .pattern(" A ")
                 .pattern(" T ")
-                .define('n', AllTags.commonItemTag("nuggets/copper"))
+                .define('n', CEETags.COPPER_NUGGET)
                 .define('A', AllItems.ANDESITE_ALLOY)
                 .define('T', ItemTags.TERRACOTTA)
-                .unlockedBy("has_copper", has(AllTags.commonItemTag("nuggets/copper")))
+                .unlockedBy("has_copper_nugget", has(CEETags.COPPER_NUGGET))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/connector"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.CONNECTOR, 2)
@@ -265,7 +212,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern(" w ")
                 .pattern("CAC")
                 .define('g', Items.GLASS)
-                .define('w', AllTags.commonItemTag("wires/copper"))
+                .define('w', CEETags.COPPER_WIRE)
                 .define('C', CEEBlocks.CONNECTOR)
                 .define('A', AllItems.ANDESITE_ALLOY)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
@@ -283,7 +230,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("CwC")
                 .pattern("AgA")
                 .define('g', Items.GLASS)
-                .define('w', AllTags.commonItemTag("wires/copper"))
+                .define('w', CEETags.COPPER_WIRE)
                 .define('C', CEEBlocks.CONNECTOR)
                 .define('A', AllItems.ANDESITE_ALLOY)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
@@ -294,7 +241,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern(" S ")
                 .pattern("CAC")
                 .define('k', Items.DRIED_KELP)
-                .define('S', AllTags.commonItemTag("plates/copper"))
+                .define('S', CEETags.COPPER_PLATE)
                 .define('C', CEEBlocks.CONNECTOR)
                 .define('A', AllItems.ANDESITE_ALLOY)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
@@ -366,7 +313,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .define('C', CEEBlocks.DOUBLE_CONNECTOR)
                 .define('v', CEEBlocks.VOLTMETER)
                 .define('a', CEEBlocks.AMMETER)
-                .define('s', AllTags.commonItemTag("plates/iron"))
+                .define('s', CEETags.IRON_PLATE)
                 .unlockedBy("has_voltmeter", has(CEEBlocks.VOLTMETER))
                 .unlockedBy("has_ammeter", has(CEEBlocks.AMMETER))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/energy_meter"));
@@ -379,7 +326,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .define('C', CEEBlocks.TRIPLE_CONNECTOR)
                 .define('v', CEEBlocks.VOLTMETER)
                 .define('a', CEEBlocks.AMMETER)
-                .define('s', AllTags.commonItemTag("plates/iron"))
+                .define('s', CEETags.IRON_PLATE)
                 .unlockedBy("has_voltmeter", has(CEEBlocks.VOLTMETER))
                 .unlockedBy("has_ammeter", has(CEEBlocks.AMMETER))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/tri_polar_energy_meter"));
@@ -398,7 +345,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("AAA")
                 .pattern("A  ")
                 .define('A', AllItems.ANDESITE_ALLOY)
-                .define('s', AllTags.commonItemTag("plates/iron"))
+                .define('s', CEETags.IRON_PLATE)
                 .unlockedBy("has_andesite", has(AllItems.ANDESITE_ALLOY))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/pole_mount"));
 
@@ -447,7 +394,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("CAS")
                 .pattern("CC ")
                 .define('A', AllItems.ANDESITE_ALLOY)
-                .define('n', AllTags.commonItemTag("nuggets/copper"))
+                .define('n', CEETags.COPPER_NUGGET)
                 .define('S', AllBlocks.SHAFT)
                 .define('C', CEEBlocks.CONNECTOR)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
@@ -457,8 +404,8 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("III")
                 .pattern(" N ")
                 .pattern("III")
-                .define('N', AllTags.commonItemTag("nuggets/iron"))
-                .define('I', AllTags.commonItemTag("ingots/iron"))
+                .define('N', CEETags.IRON_NUGGET)
+                .define('I', CEETags.IRON_INGOT)
                 .unlockedBy("has_iron_nugget", has(Items.IRON_NUGGET))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/catenary_holder"));
 
@@ -501,7 +448,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .define('W', CEEItems.WIRE_SPOOL)
                 .define('C', CEEBlocks.CONNECTOR)
                 .define('A', AllItems.ANDESITE_ALLOY)
-                .define('S', AllTags.commonItemTag("plates/iron"))
+                .define('S', CEETags.IRON_PLATE)
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/buzzer"));
 
@@ -532,7 +479,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("CcC")
                 .pattern(" S ")
                 .define('C', CEEBlocks.CONNECTOR)
-                .define('S', AllTags.commonItemTag("plates/iron"))
+                .define('S', CEETags.IRON_PLATE)
                 .define('c', Items.COAL)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/resistor"));
@@ -552,7 +499,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("CQC")
                 .pattern(" S ")
                 .define('C', CEEBlocks.CONNECTOR)
-                .define('S', AllTags.commonItemTag("plates/iron"))
+                .define('S', CEETags.IRON_PLATE)
                 .define('Q', Items.QUARTZ)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/diode"));
@@ -562,9 +509,9 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("SZS")
                 .pattern("C C")
                 .define('C', CEEBlocks.CONNECTOR)
-                .define('S', AllTags.commonItemTag("plates/iron"))
-                .define('Z', AllTags.commonItemTag("ingots/zinc"))
-                .define('c', AllTags.commonItemTag("plates/copper"))
+                .define('S', CEETags.IRON_PLATE)
+                .define('Z', CEETags.ZINC_INGOT)
+                .define('c', CEETags.COPPER_PLATE)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/capacitor"));
 
@@ -574,8 +521,8 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("ZAc")
                 .define('C', CEEBlocks.CONNECTOR)
                 .define('A', AllItems.ANDESITE_ALLOY)
-                .define('Z', AllTags.commonItemTag("ingots/zinc"))
-                .define('c', AllTags.commonItemTag("plates/copper"))
+                .define('Z', CEETags.ZINC_INGOT)
+                .define('c', CEETags.COPPER_PLATE)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/accumulator"));
 
@@ -584,7 +531,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("ASA")
                 .pattern("C C")
                 .define('C', CEEBlocks.CONNECTOR)
-                .define('S', AllTags.commonItemTag("plates/iron"))
+                .define('S', CEETags.IRON_PLATE)
                 .define('A', AllItems.ANDESITE_ALLOY)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/fuse_holder"));
@@ -593,33 +540,33 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("ASA")
                 .pattern("ASA")
                 .pattern("ASA")
-                .define('S', AllTags.commonItemTag("plates/iron"))
+                .define('S', CEETags.IRON_PLATE)
                 .define('A', AllItems.ANDESITE_ALLOY)
                 .unlockedBy("has_andesite_alloy", has(AllItems.ANDESITE_ALLOY))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/radiator_panel"));
 
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(AllTags.commonItemTag("plates/iron")), RecipeCategory.DECORATIONS, CEEBlocks.HIGH_VOLTAGE_SIGN, 2)
-                .unlockedBy("has_iron_plate", has(AllTags.commonItemTag("plates/iron")))
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEBlocks.HIGH_VOLTAGE_SIGN, 2)
+                .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("stonecutting/high_voltage_sign"));
 
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(AllTags.commonItemTag("plates/iron")), RecipeCategory.DECORATIONS, CEEBlocks.ELECTRIC_SHOCK_SIGN, 2)
-                .unlockedBy("has_iron_plate", has(AllTags.commonItemTag("plates/iron")))
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEBlocks.ELECTRIC_SHOCK_SIGN, 2)
+                .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("stonecutting/electric_shock_sign"));
 
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(AllTags.commonItemTag("plates/iron")), RecipeCategory.DECORATIONS, CEEBlocks.GROUNDING_SIGN, 2)
-                .unlockedBy("has_iron_plate", has(AllTags.commonItemTag("plates/iron")))
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEBlocks.GROUNDING_SIGN, 2)
+                .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))
                 .save(recipeOutput, CreateElecrtoEnergetics.rl("stonecutting/grounding_sign"));
 
-        sequencedAssembly("transformer_core", b -> b.require(AllTags.commonItemTag("plates/iron"))
+        sequencedAssembly("transformer_core", b -> b.require(CEETags.IRON_PLATE)
                         .transitionTo(CEEItems.INCOMPLETE_TRANSFORMER_CORE)
                         .addOutput(CEEBlocks.TRANSFORMER_CORE.asStack(), 1)
                         .loops(1)
                         .addStep(DeployerApplicationRecipe::new,
-                                rb -> rb.require(Ingredient.of(AllTags.commonItemTag("plates/iron"))))
+                                rb -> rb.require(Ingredient.of(CEETags.IRON_PLATE)))
                         .addStep(DeployerApplicationRecipe::new,
-                                rb -> rb.require(Ingredient.of(AllTags.commonItemTag("plates/iron"))))
+                                rb -> rb.require(Ingredient.of(CEETags.IRON_PLATE)))
                         .addStep(DeployerApplicationRecipe::new,
-                                rb -> rb.require(Ingredient.of(AllTags.commonItemTag("plates/iron"))))
+                                rb -> rb.require(Ingredient.of(CEETags.IRON_PLATE)))
                         .addStep(PressingRecipe::new, rb -> rb)
                         .addStep(DeployerApplicationRecipe::new,
                                 rb -> rb.require(Ingredient.of(CEEItems.WIRE_SPOOL)))
@@ -630,6 +577,39 @@ public class CEERecipeGen extends RecipeProvider {
 
     protected void sequencedAssembly(String name, UnaryOperator<SequencedAssemblyRecipeBuilder> transform, RecipeOutput recipeOutput) {
         transform.apply(new SequencedAssemblyRecipeBuilder(CreateElecrtoEnergetics.rl(name))).build(recipeOutput);
+    }
+
+    public static void wireSpool(RecipeOutput recipeOutput, ItemEntry<WireSpoolItem> spool, ItemEntry<Item> wire) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, spool)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', wire)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_" + wire.getRegisteredName(), has(wire))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/" + spool.getKey().location().getPath()));
+    }
+
+    public static void wireSpool(RecipeOutput recipeOutput, ItemEntry<WireSpoolItem> spool, TagKey<Item> wire) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, spool)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', wire)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_" + wire.location().getPath(), has(wire))
+                .save(recipeOutput, CreateElecrtoEnergetics.rl("crafting/" + spool.getKey().location().getPath()));
+    }
+
+    public static void conditionalWireSpool(RecipeOutput recipeOutput, ItemEntry<WireSpoolItem> spool, TagKey<Item> wire, TagKey<Item> condition) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, spool)
+                .pattern(" w ")
+                .pattern("wsw")
+                .pattern(" w ")
+                .define('w', wire)
+                .define('s', CEEItems.EMPTY_SPOOL)
+                .unlockedBy("has_" + wire.location().getPath(), has(wire))
+                .save(recipeOutput.withConditions(new NotCondition(new TagEmptyCondition(condition))), CreateElecrtoEnergetics.rl("crafting/" + spool.getKey().location().getPath()));
     }
 }
 

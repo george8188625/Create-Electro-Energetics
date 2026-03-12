@@ -92,7 +92,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 
-        double v = voltmeter ? voltage : voltage / 0.01;
+        double v = Math.abs(voltmeter ? voltage : voltage / 0.01);
         if (v  > 1)
             v = Math.round(v);
         Lang.builder(CreateElecrtoEnergetics.ID)

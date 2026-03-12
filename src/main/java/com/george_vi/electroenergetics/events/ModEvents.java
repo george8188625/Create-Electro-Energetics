@@ -33,7 +33,7 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = CreateElecrtoEnergetics.ID)
+@EventBusSubscriber(modid = CreateElecrtoEnergetics.ID)
 public class ModEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

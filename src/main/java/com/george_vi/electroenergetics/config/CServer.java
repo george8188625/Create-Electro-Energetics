@@ -12,6 +12,7 @@ public class CServer extends ConfigBase {
     public final ConfigInt wiresPerSpool = i(4, 1, 8, "wireItemsPerSpool");
     public final ConfigBool wiresBreak = b(true, "wiresBreak", "Wires break when overloaded");
     public final ConfigBool enableElectrocution = b(true, "enableElectrocution", "Wires can cause damage to players and entities");
+    public final ConfigBool enableCrossContact = b(false, "enableCrossContact", "Uninsulated wires can connect");
     public final ConfigBool componentDamage = b(true, "componentDamage", "Components get damaged when overloaded");
     public final ConfigBool optimizeGraph = b(true, "optimizeGraph");
     public final ConfigBool saveInfrastructureInSchematics = b(true, "saveInfrastructureSDInSchematics");

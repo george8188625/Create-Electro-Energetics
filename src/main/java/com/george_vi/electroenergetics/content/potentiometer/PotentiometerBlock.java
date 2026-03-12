@@ -72,7 +72,7 @@ public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<Po
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof PotentiometerBlockEntity be) {
-            tag.putDouble("Resistance", be.indexToResistance(be.resistance.value));
+            tag.putDouble("Resistance", Math.max(0.01, be.resistance.value / 1000d));
             tag.putDouble("Progress", be.progress);
         }
         InfrastructureSavedData.load(level).addDevice(pos, CEESimulatedDevices.POTENTIOMETER, tag, List.of(0, 1, 2));

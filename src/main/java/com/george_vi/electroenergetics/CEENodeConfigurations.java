@@ -24,6 +24,11 @@ public class CEENodeConfigurations {
             .add(new Vec3(14/16f, 3/16f, 0.5f))
             .simple();
 
+    public static final NodeConfigurator BULB_COMPACT = new NodeConfigurator.Builder()
+            .add(new Vec3(6/16f, 3/16f, 0.5f))
+            .add(new Vec3(10/16f, 3/16f, 0.5f))
+            .simple();
+
     public static final NodeConfigurator TRIPLE_CONNECTOR = new NodeConfigurator.Builder()
             .add(new Vec3(3/16f, 5/16f, 0.5f))
             .add(new Vec3(0.5f, 5/16f, 0.5f))

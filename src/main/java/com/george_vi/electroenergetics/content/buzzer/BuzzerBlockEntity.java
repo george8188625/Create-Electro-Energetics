@@ -35,6 +35,11 @@ public class BuzzerBlockEntity extends SmartBlockEntity {
 
     @OnlyIn(Dist.CLIENT)
     void tickAudio() {
+        if (Math.abs(voltage) < 0.1) {
+            if (soundInstance != null)
+                soundInstance.setVolumeImmediately(0);
+            return;
+        }
         if (soundInstance == null || soundInstance.isStopped()) {
             Minecraft.getInstance().getSoundManager()
                     .play(soundInstance = new ElectricHumSoundInstance(CEESoundEvents.BUZZER.get(), worldPosition));
