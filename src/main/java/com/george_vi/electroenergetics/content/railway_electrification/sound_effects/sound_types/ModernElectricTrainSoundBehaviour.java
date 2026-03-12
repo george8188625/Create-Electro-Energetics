@@ -75,29 +75,35 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
     }
 
     private enum Phasing {
+		/*DO NOT USE THIS PUSH, THIS PUSH IS SIMPLY FOR ILLUSTRATIVE PURPOSES*/
+		
 		/*How long the phases are should be dependent to the top speed, so if the top speed of a train is higher each phase would take longer.*/
-        ASYNC(0, 0.4f, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get()),    /*This should be 6/40 of top speed*/
-        P15(0.4f, 0.6f, CEESoundEvents.TRAIN_GTO_P15.get()),          /*This should be 6/40 of top speed*/
-        P9(0.6f, 1.1f, CEESoundEvents.TRAIN_GTO_P9.get()),            /*This should be 8/40 of top speed*/
-		                                                              /*This is missing P5, which should be 9/40 of top speed*/
-        P3(1.1f, 1.5f, CEESoundEvents.TRAIN_GTO_P3.get()),            /*This should be 5/40 of top speed*/
-        P1(1.5f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get()); /*This should be 6/40 of top speed*/
+        ASYNC(0, 0.4f, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get()),    /*This should be 6/40 of the top speed*/
+        P15(0.4f, 0.6f, CEESoundEvents.TRAIN_GTO_P15.get()),          /*This should be 6/40 of the top speed*/
+        P9(0.6f, 1.1f, CEESoundEvents.TRAIN_GTO_P9.get()),            /*This should be 8/40 of the top speed*/
+		                                                              /*This is missing P5, which should be 9/40 of the top speed*/
+        P3(1.1f, 1.5f, CEESoundEvents.TRAIN_GTO_P3.get()),            /*This should be 5/40 of the top speed*/
+        P1(1.5f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get()); /*This should be 6/40 of the top speed*/
 		
 		/* A bar to illustrate what I'm talking about here          */
-		/* Let Top Speed = x                                        */
-		/* Speed:   0    0.15x   0.3x     0.5x    0.725x  0.85x   x */
+		/* Let Top Speed = t                                        */
+		/* Speed:   0    0.15t   0.3t     0.5t    0.725t  0.85t   t */
 		/*          |------|------|--------|---------|-----|------| */
 		/* Phase:   |Async |P15   |P9      |P5       |P3   |P1    | */
 		
 		
 		/*The rate in which the pitch of the audio increases/decreases should also be dependent to the top speed*/
-		/*Speed:            0                                   Top Speed  */
-		/*                  |xxxx|------|------------|------------------|  */
-		/*Pitch Change:         1/4    1/2           0                  2  */ 
-		/*                       v      v            v                  v  */
-		/*Hz:                    75    150          300                600 */
-		/*                                       (Original)                */
+		/* Let Top Speed = t                                                */
+		/* Speed:             0   0.1t              0.55t                t  */
+		/* (x means muted)->  |xxxx|------------------|------------------|  */
+		/* Pitch Change:          1/4                 0                  2  */ 
+		/*                         v                  v                  v  */
+		/* Hz:                    75                 300                600 */
+		/*                                        (Original)                */
 		
+		
+		/*For reference on how the sounds should be played https://drive.google.com/file/d/197_oQuFk4IiKZy9jo3iZX1reDImpaVfr/view?usp=sharing my audacity project file when creating the original audio*/
+		/*Feel free to ask me on Discord for any questions you may have*/
 
         public final float startingSpeed;
         public final float endingSpeed;
