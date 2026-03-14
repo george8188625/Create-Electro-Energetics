@@ -1,9 +1,8 @@
 package com.george_vi.electroenergetics.content.fuse;
 
-import com.george_vi.electroenergetics.CEEBlockEntityTypes;
-import com.george_vi.electroenergetics.CEENodeConfigurations;
-import com.george_vi.electroenergetics.CEEShapes;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.content.fuse.fuse_held.FuseHoldable;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.simibubi.create.AllSoundEvents;
@@ -12,6 +11,7 @@ import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -39,6 +39,9 @@ public class FuseHolderBlock extends DirectionalRolledDeviceBlock implements IBE
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (stack.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(stack))
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+
         boolean firstSlot = false;
         Vec3 position = hitResult.getLocation().subtract(Vec3.atLowerCornerOf(pos));
         boolean roll = state.getValue(ROLL);
@@ -66,19 +69,22 @@ public class FuseHolderBlock extends DirectionalRolledDeviceBlock implements IBE
         if (facing.getAxis().isVertical())
             firstSlot = !firstSlot;
 
-        if (stack.isEmpty() && hand == InteractionHand.MAIN_HAND) {
+        if (hand == InteractionHand.MAIN_HAND) {
             if (level.getBlockEntity(pos) instanceof FuseHolderBlockEntity be) {
                 Pair<FuseHoldable, CompoundTag> fuse = firstSlot ? be.firstFuse : be.secondFuse;
-                if (firstSlot)
-                    be.firstFuse = null;
-                else
-                    be.secondFuse = null;
-                be.updateFuses();
-                if (fuse != null)
-                    player.getInventory().placeItemBackInInventory(fuse.getFirst().getDrops(fuse.getSecond()));
-                AllSoundEvents.CRAFTER_CLICK.playOnServer(level, pos);
+
+                if (fuse != null) {
+                    if (!fuse.getFirst().interact(fuse.getSecond(), stack, level, pos)) {
+                        if (firstSlot) be.firstFuse = null;
+                        else be.secondFuse = null;
+                        for (ItemStack drop : fuse.getFirst().getDrops(fuse.getSecond()))
+                            player.getInventory().placeItemBackInInventory(drop);
+                        AllSoundEvents.CRAFTER_CLICK.playOnServer(level, pos);
+                    }
+                    be.updateFuses();
+                    return ItemInteractionResult.SUCCESS;
+                }
             }
-            return ItemInteractionResult.SUCCESS;
         }
         for (FuseHoldable type : FuseHoldable.ALL.values()) {
             if (type.isValid(stack)) {
@@ -101,6 +107,17 @@ public class FuseHolderBlock extends DirectionalRolledDeviceBlock implements IBE
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!newState.is(state.getBlock()))
+            if (level.getBlockEntity(pos) instanceof FuseHolderBlockEntity be) {
+                if (be.firstFuse != null)
+                    Containers.dropContents(level, pos, be.firstFuse.getFirst().getDrops(be.firstFuse.getSecond()));
+                if (be.secondFuse != null)
+                    Containers.dropContents(level, pos, be.secondFuse.getFirst().getDrops(be.secondFuse.getSecond()));
+            }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
 
     @Override
     protected SimulatedDevice getDevice() {
@@ -129,5 +146,11 @@ public class FuseHolderBlock extends DirectionalRolledDeviceBlock implements IBE
     @Override
     public BlockEntityType<? extends FuseHolderBlockEntity> getBlockEntityType() {
         return CEEBlockEntityTypes.FUSE_HOLDER.get();
+    }
+
+    @Override
+    public boolean canSelfConnect(Level level, BlockPos pos, BlockState state, int id1, int id2) {
+        return (id1 == 0 && id2 == 1) || (id1 == 1 && id2 == 0) ||
+                (id1 == 2 && id2 == 3) || (id1 == 3 && id2 == 2);
     }
 }

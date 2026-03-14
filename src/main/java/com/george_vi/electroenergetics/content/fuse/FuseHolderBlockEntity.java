@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.fuse;
 
+import com.george_vi.electroenergetics.content.fuse.fuse_held.FuseHoldable;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;

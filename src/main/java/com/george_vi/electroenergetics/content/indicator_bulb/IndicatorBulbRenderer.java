@@ -74,16 +74,6 @@ public class IndicatorBulbRenderer extends SmartBlockEntityRenderer<IndicatorBul
                         .scale(1f, 4.3f, 1f)
                         .translate(-4/16f, -5/16f, -8/16f)
                         .renderInto(ms, buffer.getBuffer(RenderTypes.additive()));
-
-//                CachedBuffers.partial(CEEPartialModels.INDICATOR_BULB_TUBE, state)
-//                        .color(color.getMapColor().col)
-//                        .light(0xf000f0)
-//                        .disableDiffuse()
-//                        .scale(1.01f)
-////                        .translate(4/16f, 3.9/16f, 8/16f)
-////                        .scale(3.1f, 3.7f, 3.1f)
-////                        .translate(-4/16f, -4/16f, -8/16f)
-//                        .renderInto(ms, buffer.getBuffer(RenderTypes.additive()));
             }
 
             ms.popPose();
