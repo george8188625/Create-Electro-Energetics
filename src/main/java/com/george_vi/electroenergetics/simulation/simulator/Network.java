@@ -22,10 +22,12 @@ public class Network {
     final Long2DoubleMap currentSources = new Long2DoubleOpenHashMap();
     final Long2ObjectMap<ElectricalProperties> microTicked = new Long2ObjectOpenHashMap<>();
     Int2ObjectMap<Int2ObjectMap<ElectricalProperties>> adjacencyOverrides = new Int2ObjectOpenHashMap<>();
+    Object2IntOpenHashMap<WrappedIndexedNode> nodeIDs;
     SimulationNode[] simulationNodes;
     public SparseMatrix conductanceMatrix;
-//    public double[][] conductanceMatrix;
     public double[] rhsVector;
+    public boolean voltageSourcesInMatrix = false;
+    List<CoupledProperties> coupledProperties;
 
     public Network(Set<WrappedIndexedNode> allNodes, CircuitBuilder builder, InfrastructureSavedData sd) {
         this.allNodes = new HashSet<>(allNodes);
@@ -35,7 +37,8 @@ public class Network {
 
     public SimulationNode[] mapToSimNodes() {
         simulationNodes = new SimulationNode[allNodes.size()];
-        Object2IntOpenHashMap<WrappedIndexedNode> nodeIDs = new Object2IntOpenHashMap<>(allNodes.size(), 0.999f);
+        nodeIDs = new Object2IntOpenHashMap<>(allNodes.size(), 0.999f);
+        coupledProperties = new ArrayList<>();
 
         // Assigns low-degree nodes first, for quicker convergence.
         int id = 0;
@@ -69,6 +72,8 @@ public class Network {
                 simulationNode.adjacentProperties[j] = connectionProperties;
                 if (connectionProperties instanceof MicroTickingElectricalProperties)
                     microTicked.put(DataPacker.pack(i, adjacentID), connectionProperties);
+                if (simulationNode.id > adjacentID && connectionProperties instanceof CoupledProperties cp && cp.isPrimary())
+                    coupledProperties.add(cp);
                 else if (!(connectionProperties instanceof MicroTickingInvertedElectricalProperties)) {
                     if ((connectionProperties.isVoltageSource()) && i > adjacentID)
                         voltageSources.put(DataPacker.pack(i, adjacentID), connectionProperties.voltageSource());
@@ -187,17 +192,19 @@ public class Network {
     }
 
     public void formMatrix() {
-        Long2DoubleMap microVoltageSources = new Long2DoubleOpenHashMap();
-        Long2DoubleMap microCurrentSources = new Long2DoubleOpenHashMap();
+        voltageSourcesInMatrix = false;
+        List<LongDoublePair> microVoltageSources = new ArrayList<>();
+        List<LongDoublePair> microCurrentSources = new ArrayList<>();
         for (Long2ObjectMap.Entry<ElectricalProperties> entry : microTicked.long2ObjectEntrySet()) {
             if (entry.getValue().isVoltageSource())
-                microVoltageSources.put(entry.getLongKey(), entry.getValue().voltageSource());
+                microVoltageSources.add(new LongDoubleImmutablePair(entry.getLongKey(), entry.getValue().voltageSource()));
             if (entry.getValue().isCurrentSource())
-                microCurrentSources.put(entry.getLongKey(), entry.getValue().currentSource);
+                microCurrentSources.add(new LongDoubleImmutablePair(entry.getLongKey(), entry.getValue().currentSource));
         }
 
-//        conductanceMatrix = new double[simulationNodes.length + voltageSources.size() + microVoltageSources.size()][simulationNodes.length + voltageSources.size() + microVoltageSources.size()];
-        conductanceMatrix = new SparseMatrix(simulationNodes.length + voltageSources.size() + microVoltageSources.size());
+        int size = simulationNodes.length + voltageSources.size() + microVoltageSources.size() + (coupledProperties.size() * 2);
+
+        conductanceMatrix = new SparseMatrix(size);
 
         for (SimulationNode node : simulationNodes) {
             double totalConductance = 0;
@@ -209,15 +216,13 @@ public class Network {
                     continue;
                 conductanceMatrix.set(node.id, node.adjacentIDs[i], -conductance);
                 conductanceMatrix.set(node.adjacentIDs[i], node.id, -conductance);
-//                conductanceMatrix[node.id][node.adjacentIDs[i]] = -conductance;
-//                conductanceMatrix[node.adjacentIDs[i]][node.id] = -conductance;
             }
             totalConductance += node.correspondingNode.groundConductance;
             conductanceMatrix.set(node.id, node.id, totalConductance);
 //            conductanceMatrix[node.id][node.id] = totalConductance;
         }
 
-        rhsVector = new double[simulationNodes.length + voltageSources.size() + microVoltageSources.size()];
+        rhsVector = new double[size];
 
         for (Long2DoubleMap.Entry e : currentSources.long2DoubleEntrySet()) {
             long packedConnection = e.getLongKey();
@@ -226,49 +231,75 @@ public class Network {
             rhsVector[DataPacker.unpackSecondI(packedConnection)] = v;
         }
 
-        for (Long2DoubleMap.Entry e : microCurrentSources.long2DoubleEntrySet()) {
-            long packedConnection = e.getLongKey();
-            double v = e.getDoubleValue();
+        for (LongDoublePair e : microCurrentSources) {
+            long packedConnection = e.firstLong();
+            double v = e.secondDouble();
             rhsVector[DataPacker.unpackFirstI(packedConnection)] = -v;
             rhsVector[DataPacker.unpackSecondI(packedConnection)] = v;
         }
 
-        int i = 0;
+        int i = simulationNodes.length;
         for (Long2DoubleMap.Entry e : voltageSources.long2DoubleEntrySet()) {
             long packedConnection = e.getLongKey();
             double v = e.getDoubleValue();
             int first = DataPacker.unpackFirstI(packedConnection);
             int second = DataPacker.unpackSecondI(packedConnection);
-//            conductanceMatrix[simulationNodes.length + i][first] = 1d;
-//            conductanceMatrix[simulationNodes.length + i][second] = -1d;
-//            conductanceMatrix[first][simulationNodes.length + i] = 1d;
-//            conductanceMatrix[second][simulationNodes.length + i] = -1d;
-            conductanceMatrix.set(simulationNodes.length + i, first, 1d);
-            conductanceMatrix.set(simulationNodes.length + i, second, -1d);
-            conductanceMatrix.set(first, simulationNodes.length + i, 1d);
-            conductanceMatrix.set(second, simulationNodes.length + i, -1d);
-//            conductanceMatrix.set(simulationNodes.length + i, simulationNodes.length + i, 1e-4d);
-            rhsVector[simulationNodes.length + i] = -v;
+            conductanceMatrix.set(i, first, 1d);
+            conductanceMatrix.set(i, second, -1d);
+            conductanceMatrix.set(first, i, 1d);
+            conductanceMatrix.set(second, i, -1d);
+            rhsVector[i] = -v;
             i++;
+            voltageSourcesInMatrix = true;
         }
 
-        for (Long2DoubleMap.Entry e : microVoltageSources.long2DoubleEntrySet()) {
-            long packedConnection = e.getLongKey();
-            double v = e.getDoubleValue();
+        for (LongDoublePair e : microVoltageSources) {
+            long packedConnection = e.firstLong();
+            double v = e.secondDouble();
             int first = DataPacker.unpackFirstI(packedConnection);
             int second = DataPacker.unpackSecondI(packedConnection);
 
-//            conductanceMatrix[simulationNodes.length + i][first] = 1d;
-//            conductanceMatrix[simulationNodes.length + i][second] = -1d;
-//            conductanceMatrix[first][simulationNodes.length + i] = 1d;
-//            conductanceMatrix[second][simulationNodes.length + i] = -1d;
-            conductanceMatrix.set(simulationNodes.length + i, first, 1d);
-            conductanceMatrix.set(simulationNodes.length + i, second, -1d);
-            conductanceMatrix.set(first, simulationNodes.length + i, 1d);
-            conductanceMatrix.set(second, simulationNodes.length + i, -1d);
-//            conductanceMatrix.set(simulationNodes.length + i, simulationNodes.length + i, 1e-4d);
-            rhsVector[simulationNodes.length + i] = -v;
+            conductanceMatrix.set(i, first, 1d);
+            conductanceMatrix.set(i, second, -1d);
+            conductanceMatrix.set(first, i, 1d);
+            conductanceMatrix.set(second, i, -1d);
+            rhsVector[i] = -v;
+            voltageSourcesInMatrix = true;
             i++;
+        }
+
+        for (CoupledProperties cp : coupledProperties) {
+            WrappedIndexedNode p1 = builder.getNode(cp.nodes().node1());
+            WrappedIndexedNode p2 = builder.getNode(cp.nodes().node2());
+            WrappedIndexedNode s1 = builder.getNode(cp.coupledNodes().node1());
+            WrappedIndexedNode s2 = builder.getNode(cp.coupledNodes().node2());
+            if (p1 == null || p2 == null || s1 == null || s2 == null)
+                continue;
+
+            int ip1 = nodeIDs.getInt(p1);
+            int ip2 = nodeIDs.getInt(p2);
+            int is1 = nodeIDs.getInt(s1);
+            int is2 = nodeIDs.getInt(s2);
+
+            // Primary (ROW I1)
+            conductanceMatrix.set(ip1, i, +1);
+            conductanceMatrix.set(ip2, i, -1);
+
+            // Vp1 - Vp2 - n*(Vs1 - Vs2) = 0
+            conductanceMatrix.set(i, ip1, +1);
+            conductanceMatrix.set(i, ip2, -1);
+            conductanceMatrix.set(i, is1, -cp.ratio());
+            conductanceMatrix.set(i, is2, cp.ratio());
+            i++;
+
+            // Secondary (ROW I2)
+            conductanceMatrix.set(is1, i, +1);
+            conductanceMatrix.set(is2, i, -1);
+
+            conductanceMatrix.set(i, i-1, cp.ratio());
+            conductanceMatrix.set(i, i, 1);
+            i++;
+            voltageSourcesInMatrix = true;
         }
     }
 

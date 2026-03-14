@@ -66,12 +66,7 @@ public class BridgeCollector {
         }
 
         public Builder voltageSourceWithResistance(int n1, int n2, double resistance, double voltage) {
-            collector.addInternalNode(1000 + i, pos);
-            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(1000 + i, pos), 10e+11d, voltage, 0);
-            collector.bridge(new InWorldNode(1000 + i, pos), new InWorldNode(n2, pos), resistance, 0, 0);
-            collector.defaultZeroPotential(voltage > 0 ? new InWorldNode(n1, pos) : new InWorldNode(n2, pos), 60);
-            i++;
-            return this;
+            return voltageSourceWithResistance(new InWorldNode(n1, pos), new InWorldNode(n2, pos), resistance, voltage);
         }
 
         public Builder energyLimitedSource(int n1, int n2, double energy, double voltage) {
@@ -85,12 +80,7 @@ public class BridgeCollector {
             else
                 resistance = (voltage * voltage) / (4 * energy);
 
-            collector.addInternalNode(1000 + i, pos);
-            collector.bridge(new InWorldNode(n1, pos), new InWorldNode(1000 + i, pos), 10e+11d, energy <= 0 ? 0 : voltage, 0);
-            collector.bridge(new InWorldNode(1000 + i, pos), new InWorldNode(n2, pos), resistance + internalResistance, 0, 0);
-            i++;
-            collector.defaultZeroPotential(voltage > 0 ? new InWorldNode(n1, pos) : new InWorldNode(n2, pos), 50);
-            return this;
+            return voltageSourceWithResistance(new InWorldNode(n1, pos), new InWorldNode(n2, pos), resistance + internalResistance, voltage);
         }
 
         public Builder idealVoltageSource(int n1, int n2, double voltage) {
@@ -104,9 +94,7 @@ public class BridgeCollector {
         }
 
         public Builder voltageSourceWithResistance(InWorldNode n1, InWorldNode n2, double resistance, double voltage) {
-            collector.addInternalNode(1000 + i, pos);
-            collector.bridge(n1, new InWorldNode(1000 + i, pos), 10e+11d, voltage, 0);
-            collector.bridge(new InWorldNode(1000 + i, pos), n2, resistance, 0, 0);
+            collector.bridge(n1, n2, ElectricalProperties.fromThevenin(resistance, voltage));
             collector.defaultZeroPotential(voltage > 0 ? n1 : n2, 60);
             i++;
             return this;
@@ -125,12 +113,7 @@ public class BridgeCollector {
             else
                 resistance = (voltage * voltage) / (4 * energy);
 
-            collector.addInternalNode(1000 + i, pos);
-            collector.bridge(n1, new InWorldNode(1000 + i, pos), 10e+11d, energy <= 0 ? 0 : voltage, 0);
-            collector.bridge(new InWorldNode(1000 + i, pos), n2, resistance + internalResistance, 0, 0);
-            i++;
-            collector.defaultZeroPotential(voltage > 0 ? n1 : n2, 50);
-            return this;
+            return voltageSourceWithResistance(n1, n2, resistance + internalResistance, voltage);
         }
 
         public Builder idealVoltageSource(InWorldNode n1, InWorldNode n2, double voltage) {

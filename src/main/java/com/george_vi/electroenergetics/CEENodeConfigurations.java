@@ -98,11 +98,21 @@ public class CEENodeConfigurations {
             .add(new Vec3(13/16f, 8/16f, 13/16f))
             .simple(Direction.NORTH);
 
-    public static final NodeConfigurator VOLTAGE_REGULATOR = new NodeConfigurator.Builder()
-            .add(new Vec3(5/16f, 16/16f, 12/16f))
-            .add(new Vec3(11/16f, 16/16f, 12/16f))
-            .add(new Vec3(5/16f, 16/16f, 4/16f))
-            .add(new Vec3(11/16f, 16/16f, 4/16f))
+    public static final NodeConfigurator VOLTAGE_REGULATOR_TOP = new NodeConfigurator.Builder()
+            .add(new Vec3(4/16f, 19/16f, 8/16f))
+            .add(new Vec3(12/16f, 19/16f, 8/16f))
+            .simple(Direction.NORTH);
+
+    public static final NodeConfigurator VOLTAGE_REGULATOR_BOTTOM = new NodeConfigurator.Builder()
+            .add(new Vec3(8/16f, 3/16f, 3/16f))
+            .add(new Vec3(8/16f, 3/16f, 13/16f))
+            .simple(Direction.NORTH);
+
+    public static final NodeConfigurator VOLTAGE_REGULATOR_BOTH = new NodeConfigurator.Builder()
+            .add(new Vec3(4/16f, 19/16f, 8/16f))
+            .add(new Vec3(12/16f, 19/16f, 8/16f))
+            .add(new Vec3(8/16f, 3/16f, 3/16f))
+            .add(new Vec3(8/16f, 3/16f, 13/16f))
             .simple(Direction.NORTH);
 
     public static final NodeConfigurator REDSTONE_RELAY = new NodeConfigurator.Builder()

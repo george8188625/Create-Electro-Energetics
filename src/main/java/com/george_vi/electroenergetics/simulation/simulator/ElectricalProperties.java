@@ -32,6 +32,16 @@ public class ElectricalProperties {
         return new ElectricalProperties(resistance, 0, 0);
     }
 
+
+    /**
+     * @param resistance series resistance
+     * @param voltage voltage
+     * @return the Norton equivalent of a voltage source with resistance
+     */
+    public static ElectricalProperties fromThevenin(double resistance, double voltage) {
+        return new ElectricalProperties(resistance, 0, voltage / resistance);
+    }
+
     public ElectricalProperties invert() {
         return new ElectricalProperties(resistance, voltageSource == 0 ? 0 : -voltageSource, currentSource == 0 ? 0 : -currentSource, isForcedVoltageSource);
     }

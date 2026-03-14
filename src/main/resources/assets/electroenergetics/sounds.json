@@ -26,6 +26,15 @@
     ],
     "subtitle": "electroenergetics.subtitle.arcing"
   },
+  "voltage_regulator": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:voltage_regulator"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.voltage_regulator"
+  },
   "electric_train": {
     "sounds": [
       {
@@ -109,6 +118,15 @@
       {
         "type": "file",
         "name": "electroenergetics:train/gto/async_rise"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/gto/async_decay": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/gto/async_decay"
       }
     ],
     "subtitle": "electroenergetics.subtitle.electric_train"

@@ -15,6 +15,7 @@ public class CEESoundEvents {
     public static final Supplier<SoundEvent> HUM = sound("hum");
     public static final Supplier<SoundEvent> SHORT_ARC = sound("short_arc");
     public static final Supplier<SoundEvent> ARC = sound("arc");
+    public static final Supplier<SoundEvent> VOLTAGE_REGULATOR = sound("voltage_regulator");
     public static final Supplier<SoundEvent> ELECTRIC_TRAIN = sound("electric_train");
     public static final Supplier<SoundEvent> ELECTRIC_TRAIN_BACKGROUND = sound("electric_train_background");
     public static final Supplier<SoundEvent> TRAIN_RELAY = sound("train_relay");
@@ -24,6 +25,7 @@ public class CEESoundEvents {
 
     public static final Supplier<SoundEvent> TRAIN_WIND_RISE = sound("train/background/wind_rise");
     public static final Supplier<SoundEvent> TRAIN_WIND_STATIC = sound("train/background/wind_static");
+    public static final Supplier<SoundEvent> TRAIN_GTO_ASYNC_DECAY = sound("train/gto/async_decay");
     public static final Supplier<SoundEvent> TRAIN_GTO_ASYNC_RISE = sound("train/gto/async_rise");
     public static final Supplier<SoundEvent> TRAIN_GTO_ASYNC = sound("train/gto/async");
     public static final Supplier<SoundEvent> TRAIN_GTO_P1 = sound("train/gto/p1");

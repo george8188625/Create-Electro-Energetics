@@ -2,12 +2,16 @@ package com.george_vi.electroenergetics.content.railway_electrification.sound_ef
 
 import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSoundInstance;
+import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
 
 public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
     ElectricTrainSoundInstance mainSoundInstance;
-    ElectricTrainSoundInstance backgroundSoundInstance;
+    ElectricTrainSoundInstance staticSoundInstance;
+    ElectricTrainSoundInstance decaySoundInstance;
 
     float prevTrainSpeed;
     Phasing phasing = Phasing.ASYNC;
@@ -17,45 +21,61 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
         super.tick();
         trainSpeed *= 1.05f;
 
-        if (trainSpeed != 0 && phasing == Phasing.ASYNC && (backgroundSoundInstance == null || backgroundSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(backgroundSoundInstance)))
-            backgroundSoundInstance = playSound(pos, CEESoundEvents.TRAIN_GTO_ASYNC.get());
+        if (trainSpeed != 0 && phasing == Phasing.ASYNC && (staticSoundInstance == null || staticSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(staticSoundInstance)))
+            staticSoundInstance = playSound(pos, CEESoundEvents.TRAIN_GTO_ASYNC.get());
+        if (trainSpeed != 0 && phasing == Phasing.ASYNC && (decaySoundInstance == null || decaySoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(decaySoundInstance)))
+            decaySoundInstance = playSound(pos, CEESoundEvents.TRAIN_GTO_ASYNC_DECAY.get());
         if (trainSpeed != 0 && (mainSoundInstance == null || mainSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(mainSoundInstance)))
             mainSoundInstance = playSound(pos, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get());
 
-
+        float trainSpeedNormalized = trainSpeed / (AllConfigs.server().trains.poweredTrainTopSpeed.getF() / 20) / 1.05f;
+//        Minecraft.getInstance().gui.setOverlayMessage(Component.literal(String.format("%.2f", trainSpeedNormalized)), false);
         if (trainSpeed != 0) {
             switchPhasing();
-            if (phasing == Phasing.ASYNC) {
-                float trainSpeedNormalized = trainSpeed / 0.4f;
-                mainSoundInstance.setPitchImmediately(Math.min(2, (trainSpeed * 0.5f) + 0.35f));
-                mainSoundInstance.setVolumeImmediately((acceleration > 0 ? 1 : 0.01f) * (trainSpeedNormalized - 0.22f));
-            } else {
-                mainSoundInstance.setPitchImmediately(Math.min(2, (trainSpeed * 0.5f) + 0.35f));
-                mainSoundInstance.setVolumeImmediately(acceleration > 0 ? 3f : 0.7f);
+
+            if (phasing == Phasing.ASYNC) { // ASYNC RISE
+                mainSoundInstance.setPitchImmediately(Mth.lerp((trainSpeedNormalized - 0.1f) * 20, 0.5f, 0.75f));
+                mainSoundInstance.setVolumeImmediately(trainSpeedNormalized < 0.1 ? 0 : (trainSpeedNormalized - 0.1f) * (acceleration > 0 ? 20f : 10f));
+            } else { // P15 - P1
+                mainSoundInstance.setPitchImmediately(Math.min(2, Mth.lerp(trainSpeedNormalized, 0.25f, 2f)));
+                mainSoundInstance.setVolumeImmediately(acceleration > 0 ? 10f : 0.7f);
             }
             mainSoundInstance.setPos(pos);
             mainSoundInstance.keepAlive();
         }
 
-        if (backgroundSoundInstance != null) {
-            float trainSpeedNormalized = trainSpeed / 0.4f;
-            backgroundSoundInstance.setPitchImmediately(1f);
-            backgroundSoundInstance.targetVolume = Math.min(trainSpeedNormalized * 5, 3);
-            backgroundSoundInstance.setPos(pos);
-            backgroundSoundInstance.keepAlive();
+        if (decaySoundInstance != null) { // ASYNC DECAY
+            decaySoundInstance.setVolumeImmediately(Math.max(0, (acceleration > 0 ? 10f : 0.7f) * (trainSpeedNormalized) * 1 - 0.2f));
+
+            decaySoundInstance.setPitchImmediately(1);
+//            decaySoundInstance.targetVolume = Math.min(trainSpeedNormalized * 20, 3);
+            decaySoundInstance.setPos(pos);
+            decaySoundInstance.keepAlive();
             if (phasing != Phasing.ASYNC || trainSpeed == 0) {
-                Minecraft.getInstance().getSoundManager().stop(backgroundSoundInstance);
-                backgroundSoundInstance = null;
+                Minecraft.getInstance().getSoundManager().stop(decaySoundInstance);
+                decaySoundInstance = null;
+            }
+        }
+
+        if (staticSoundInstance != null) { // ASYNC STATIC
+            staticSoundInstance.setPitchImmediately(1f);
+            staticSoundInstance.targetVolume = Math.min(trainSpeedNormalized * 20, 3);
+            staticSoundInstance.setPos(pos);
+            staticSoundInstance.keepAlive();
+            if (phasing != Phasing.ASYNC || trainSpeed == 0) {
+                Minecraft.getInstance().getSoundManager().stop(staticSoundInstance);
+                staticSoundInstance = null;
             }
         }
         this.prevTrainSpeed = trainSpeed;
     }
 
     void switchPhasing() {
+        float trainSpeedNormalized = trainSpeed / (AllConfigs.server().trains.poweredTrainTopSpeed.getF() / 20);
         Phasing newPhasing = Phasing.ASYNC;
         for (int i = 0; i < Phasing.values().length; i++) {
             Phasing ph = Phasing.values()[i];
-            if (ph.startingSpeed < trainSpeed && ph.endingSpeed > trainSpeed) {
+            if (ph.startingSpeed < trainSpeedNormalized && ph.endingSpeed > trainSpeedNormalized) {
                 newPhasing = ph;
                 break;
             }
@@ -64,28 +84,29 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
         if (phasing == newPhasing)
             return;
 
+        boolean smoothFade = (newPhasing == Phasing.P3 && phasing == Phasing.P1) || (newPhasing == Phasing.P1 && phasing == Phasing.P3);
+
         phasing = newPhasing;
         ElectricTrainSoundInstance newInstance = new ElectricTrainSoundInstance(pos, phasing.soundEvent);
         newInstance.setPitchImmediately(mainSoundInstance.getPitch());
         newInstance.setVolumeImmediately(3);
-        Minecraft.getInstance().getSoundManager().stop(mainSoundInstance);
+
+        if (!smoothFade)
+            Minecraft.getInstance().getSoundManager().stop(mainSoundInstance);
         Minecraft.getInstance().getSoundManager().play(mainSoundInstance = newInstance);
 
 
     }
 
     private enum Phasing {
-		/*DO NOT USE THIS PUSH, THIS PUSH IS SIMPLY FOR ILLUSTRATIVE PURPOSES*/
-		
-		/*How long the phases are should be dependent to the top speed, so if the top speed of a train is higher each phase would take longer.*/
-        ASYNC(0, 0.4f, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get()),    /*This should be 6/40 of the top speed*/
-        P15(0.4f, 0.6f, CEESoundEvents.TRAIN_GTO_P15.get()),          /*This should be 6/40 of the top speed*/
-        P9(0.6f, 1.1f, CEESoundEvents.TRAIN_GTO_P9.get()),            /*This should be 8/40 of the top speed*/
-		                                                              /*This is missing P5, which should be 9/40 of the top speed*/
-        P3(1.1f, 1.5f, CEESoundEvents.TRAIN_GTO_P3.get()),            /*This should be 5/40 of the top speed*/
-        P1(1.5f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get()); /*This should be 6/40 of the top speed*/
-		
-		/* A bar to illustrate what I'm talking about here          */
+
+        ASYNC(0, .15f, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get()),
+        P15(.15f, .3f, CEESoundEvents.TRAIN_GTO_P15.get()),
+        P9(.3f, .5f, CEESoundEvents.TRAIN_GTO_P9.get()),
+		P5(.5f, .725f, CEESoundEvents.TRAIN_GTO_P5.get()),
+        P3(.725f, .85f, CEESoundEvents.TRAIN_GTO_P3.get()),
+        P1(.85f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get());
+
 		/* Let Top Speed = t                                        */
 		/* Speed:   0    0.15t   0.3t     0.5t    0.725t  0.85t   t */
 		/*          |------|------|--------|---------|-----|------| */
@@ -100,10 +121,6 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
 		/*                         v                  v                  v  */
 		/* Hz:                    75                 300                600 */
 		/*                                        (Original)                */
-		
-		
-		/*For reference on how the sounds should be played https://drive.google.com/file/d/197_oQuFk4IiKZy9jo3iZX1reDImpaVfr/view?usp=sharing my audacity project file when creating the original audio*/
-		/*Feel free to ask me on Discord for any questions you may have*/
 
         public final float startingSpeed;
         public final float endingSpeed;

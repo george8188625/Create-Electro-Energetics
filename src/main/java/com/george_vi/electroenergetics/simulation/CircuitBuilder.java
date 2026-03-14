@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
+import com.george_vi.electroenergetics.simulation.simulator.CoupledProperties;
 import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.simulator.MicroTickingElectricalProperties;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
@@ -72,6 +73,12 @@ public class CircuitBuilder {
         if (properties instanceof MicroTickingElectricalProperties ep)
             microTickers.put(DataPacker.pack(n1, n2), ep);
 
+        if (properties instanceof CoupledProperties cp && cp.isPrimary()) { // Mark the node so it's solved in the same circuit as the coupled nodes
+            WrappedIndexedNode n = getNode(cp.coupledNodes().node1());
+            if (n != null)
+                indexedNode1.invisibleAdjacency.add(n.ordinal);
+        }
+
         indexedNode1.adjacency.put(n2, properties);
         indexedNode2.adjacency.put(n1, properties.invert());
     }
@@ -81,6 +88,12 @@ public class CircuitBuilder {
             return;
         if (properties instanceof MicroTickingElectricalProperties ep)
             microTickers.put(DataPacker.pack(n1.ordinal, n2.ordinal), ep);
+
+        if (properties instanceof CoupledProperties cp && cp.isPrimary()) { // Mark the node so it's solved in the same circuit as the coupled nodes
+            WrappedIndexedNode n = getNode(cp.coupledNodes().node1());
+            if (n != null)
+                n1.invisibleAdjacency.add(n.ordinal);
+        }
 
         n1.adjacency.put(n2.ordinal, properties);
         n2.adjacency.put(n1.ordinal, properties.invert());
@@ -135,7 +148,7 @@ public class CircuitBuilder {
 
     List<Set<WrappedIndexedNode>> allNetworks;
     public List<Set<WrappedIndexedNode>> dfs() {
-        allNetworks = new ArrayList<>();
+        List<Set<WrappedIndexedNode>> allNetworks = new ArrayList<>(allIndexedNodes.size());
         boolean[] visited = new boolean[allIndexedNodes.size()];
         for (int i = 0; i < allIndexedNodes.size(); i++) {
             if (visited[i])
@@ -144,7 +157,7 @@ public class CircuitBuilder {
             WrappedIndexedNode node = allIndexedNodes.get(i);
             Set<WrappedIndexedNode> networkNodes = new HashSet<>();
             networkNodes.add(node);
-            dfsInner(node, visited, networkNodes);
+            dfsInner(node, visited, networkNodes, false);
             allNetworks.add(networkNodes);
         }
         NetworksLoop:
@@ -168,19 +181,49 @@ public class CircuitBuilder {
             if (highestPriorityGround != null)
                 highestPriorityGround.groundConductance = 1000d;
         }
-        return allNetworks;
-    }
-
-    private void dfsInner(WrappedIndexedNode node, boolean[] visited, Set<WrappedIndexedNode> networkNodes) {
-        for (int i : node.adjacency.keySet()) {
+        // So wasteful, I know...
+        allNetworks.clear();
+        Arrays.fill(visited, false);
+        for (int i = 0; i < allIndexedNodes.size(); i++) {
             if (visited[i])
                 continue;
             visited[i] = true;
-            WrappedIndexedNode adjacentNode = allIndexedNodes.get(i);
-            networkNodes.add(adjacentNode);
-            dfsInner(adjacentNode, visited, networkNodes);
+            WrappedIndexedNode node = allIndexedNodes.get(i);
+            Set<WrappedIndexedNode> networkNodes = new HashSet<>();
+            networkNodes.add(node);
+            dfsInner(node, visited, networkNodes, true);
+            allNetworks.add(networkNodes);
+        }
+        this.allNetworks = allNetworks;
+        return allNetworks;
+    }
+
+    private void dfsInner(WrappedIndexedNode startNode, boolean[] visited, Set<WrappedIndexedNode> networkNodes, boolean invis) {
+        Deque<WrappedIndexedNode> stack = new ArrayDeque<>();
+        stack.push(startNode);
+        while (!stack.isEmpty()) {
+            WrappedIndexedNode node = stack.pop();
+            for (int i : node.adjacency.keySet()) {
+                if (visited[i])
+                    continue;
+                visited[i] = true;
+                WrappedIndexedNode adjacentNode = allIndexedNodes.get(i);
+                networkNodes.add(adjacentNode);
+                stack.push(adjacentNode);
+            }
+
+            if (invis)
+                for (int i : node.invisibleAdjacency) {
+                    if (visited[i])
+                        continue;
+                    visited[i] = true;
+                    WrappedIndexedNode adjacentNode = allIndexedNodes.get(i);
+                    networkNodes.add(adjacentNode);
+                    stack.push(adjacentNode);
+                }
         }
     }
+
     private void checkOutOfBounds(int id) {
         if (id >= allIndexedNodes.size())
             throw new IllegalArgumentException("(Indexed) node of ID: " + id + " doesn't exist");
@@ -193,5 +236,12 @@ public class CircuitBuilder {
     public WrappedIndexedNode getNode(int id) {
         checkOutOfBounds(id);
         return allIndexedNodes.get(id);
+    }
+
+    public WrappedIndexedNode getNode(Node node) {
+        int i = nodeIndexes.getInt(node);
+        if (i == -1)
+            return null;
+        return allIndexedNodes.get(i);
     }
 }

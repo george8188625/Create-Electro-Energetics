@@ -33,10 +33,12 @@ Download from [here](https://github.com/george8188625/Create-Electro-Energetics/
 
 **If you really need a stable version:**
 <br>
-Latest stable version: [Build 63](https://github.com/george8188625/Create-Electro-Energetics/releases/tag/autobuild-63)
+Latest stable version: [Build 65](https://github.com/george8188625/Create-Electro-Energetics/releases/tag/autobuild-65)
 
 The mod will **release** after the latest version is confirmed to be stable, and the following features are implemented:
 - All ponders
+- Electric motor nerf
+- Multiblock electric motors
 
 Then, after the first release, all remaining features from the [checklist](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/checklist.md) are gonna be added.
 

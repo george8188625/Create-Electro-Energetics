@@ -51,10 +51,10 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock {
-    public static BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    public static EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
-    public static BooleanProperty TOP = BooleanProperty.create("top");
-    public static BooleanProperty BOTTOM = BooleanProperty.create("bottom");
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
+    public static final BooleanProperty TOP = BooleanProperty.create("top");
+    public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
 
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
 
