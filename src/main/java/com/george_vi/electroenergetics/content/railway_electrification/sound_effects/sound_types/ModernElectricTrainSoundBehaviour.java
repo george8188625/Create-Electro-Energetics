@@ -101,14 +101,14 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
     private enum Phasing {
 
         ASYNC(0, .15f, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get()),
-        P15(.15f, .3f, CEESoundEvents.TRAIN_GTO_P15.get()),
-        P9(.3f, .5f, CEESoundEvents.TRAIN_GTO_P9.get()),
-		P5(.5f, .725f, CEESoundEvents.TRAIN_GTO_P5.get()),
-        P3(.725f, .85f, CEESoundEvents.TRAIN_GTO_P3.get()),
-        P1(.85f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get());
+        P15(.15f, .25f, CEESoundEvents.TRAIN_GTO_P15.get()),
+        P9(.25f, .45f, CEESoundEvents.TRAIN_GTO_P9.get()),
+		P5(.45f, .7f, CEESoundEvents.TRAIN_GTO_P5.get()),
+        P3(.7f, .8f, CEESoundEvents.TRAIN_GTO_P3.get()),
+        P1(.8f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get());
 
 		/* Let Top Speed = t                                        */
-		/* Speed:   0    0.15t   0.3t     0.5t    0.725t  0.85t   t */
+		/* Speed:   0    0.15t   0.25t     0.45t    0.7t  0.8t    t */
 		/*          |------|------|--------|---------|-----|------| */
 		/* Phase:   |Async |P15   |P9      |P5       |P3   |P1    | */
 		
