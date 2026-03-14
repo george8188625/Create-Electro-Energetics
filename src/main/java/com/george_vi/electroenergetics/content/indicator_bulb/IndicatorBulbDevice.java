@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.indicator_bulb;
 
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -17,14 +18,14 @@ public class IndicatorBulbDevice extends SimulatedDevice<IndicatorBulbDevice.Dat
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
         if (extraData.side == 0)
             bridges.builder(pos)
-                    .resistor(0, 1, 1000);
+                    .resistor(0, 1, CEEConfigs.server().resistanceValues.indicatorBulbResistance.get());
         if (extraData.side == 1)
             bridges.builder(pos)
-                    .resistor(2, 3, 1000);
+                    .resistor(2, 3, CEEConfigs.server().resistanceValues.indicatorBulbResistance.get());
         if (extraData.side == 2)
             bridges.builder(pos)
-                    .resistor(0, 1, 1000)
-                    .resistor(2, 3, 1000);
+                    .resistor(0, 1, CEEConfigs.server().resistanceValues.indicatorBulbResistance.get())
+                    .resistor(2, 3, CEEConfigs.server().resistanceValues.indicatorBulbResistance.get());
 
     }
 

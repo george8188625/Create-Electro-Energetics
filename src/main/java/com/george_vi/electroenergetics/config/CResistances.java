@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.config;
 
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import net.createmod.catnip.config.ConfigBase;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -13,6 +14,7 @@ public class CResistances extends ConfigBase {
     public final ConfigDouble electrumWireResistance = d(0.005d, 0.0001d, "electrumWireResistance", "[in Ohms / Meter]");
     public final ConfigDouble ironWireResistance = d(0.01d, 0.0001d, "ironWireResistance", "[in Ohms / Meter]");
     public final ConfigDouble ironRailResistance = d(0.003d, 0.0001d, "ironRailResistance", "[in Ohms / Meter]");
+    public final ConfigDouble indicatorBulbResistance = d(1000, 0.0001d, "indicatorBulbResistance", "[in Ohms]");
 
     @Override
     public String getName() {

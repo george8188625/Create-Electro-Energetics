@@ -1,10 +1,9 @@
 package com.george_vi.electroenergetics.content.fuse;
 
-import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlockEntity;
+import com.george_vi.electroenergetics.content.fuse.fuse_held.FuseHoldable;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

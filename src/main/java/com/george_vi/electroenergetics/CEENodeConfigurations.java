@@ -159,8 +159,8 @@ public class CEENodeConfigurations {
             .simple(Direction.UP);
 
     public static final NodeConfigurator MOMENTARY_SWITCH = new NodeConfigurator.Builder()
-            .add(new Vec3(1/16f, 2/16f, 8/16f))
-            .add(new Vec3(15/16f, 2/16f, 8/16f))
+            .add(new Vec3(3/16f, 2/16f, 8/16f))
+            .add(new Vec3(13/16f, 2/16f, 8/16f))
             .simple(Direction.UP);
 
     public static final NodeConfigurator INDICATOR_BULB_0 = new NodeConfigurator.Builder()

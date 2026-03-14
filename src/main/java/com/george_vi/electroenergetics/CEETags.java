@@ -27,4 +27,8 @@ public class CEETags {
     public static final TagKey<Block> TRANSFORMER_HEAT_DISSIPATORS = TagKey.create(Registries.BLOCK, CreateElecrtoEnergetics.rl("transformer_heat_dissipators"));
     public static final TagKey<Block> EARTH = TagKey.create(Registries.BLOCK, CreateElecrtoEnergetics.rl("earth"));
 
+    /**
+     * This tag is used to detach interactable items held by a fuse holder.
+     */
+    public static final TagKey<Item> FUSE_WRENCH = TagKey.create(Registries.ITEM, CreateElecrtoEnergetics.rl("fuse_wrench"));
 }

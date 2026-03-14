@@ -64,7 +64,6 @@ public abstract class DirectionalRolledDeviceBlock extends SimpleDeviceBlock imp
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
-
     @Override
     protected BlockState rotate(BlockState state, Rotation rotation) {
         if (state.getValue(FACING).getAxis() == Direction.Axis.Y)
