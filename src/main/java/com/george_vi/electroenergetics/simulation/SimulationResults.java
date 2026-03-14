@@ -31,7 +31,7 @@ public class SimulationResults {
         this.microTickBits = microTickBits;
     }
 
-    public InfrastructureSavedData getInfrastructure() {
+    public InfrastructureSavedData getSD() {
         return sd;
     }
 
@@ -67,12 +67,28 @@ public class SimulationResults {
         ElectricalProperties properties = circuitBuilder.getConnectionProperties(node1, node2);
         if (properties == null || properties.resistance() == 0)
             return 0;
+        if (properties.isCurrentSource()) {
+            if (microTickBits == 0)
+                return getVoltageAt(node1, node2) / properties.resistance() + properties.currentSource;
+            int nodeId1 = circuitBuilder.nodeIndexes.getInt(node1);
+            int nodeId2 = circuitBuilder.nodeIndexes.getInt(node2);
+            if (nodeId1 == -1 || nodeId2 == -1)
+                return 0;
+            int id1 = nodeId1 << microTickBits;
+            int id2 = nodeId2 << microTickBits;
+            double rms = 0;
+            for (int j = 0; j < microTicks; j++)
+                rms += (voltages[id1|j] - voltages[id2|j]) / properties.resistance() + properties.currentSource;
+            rms /= microTicks;
+            return rms;
+        }
         return getVoltageAt(node1, node2) / properties.resistance();
     }
 
     public double getCurrentThrough(BlockPos pos, int id1, int id2) {
         return getCurrentThrough(new InWorldNode(id1, pos), new InWorldNode(id2, pos));
     }
+
     public double getHeatLoss(BlockPos pos, int id1, int id2) {
         return getHeatLoss(new InWorldNode(id1, pos), new InWorldNode(id2, pos));
     }

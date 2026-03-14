@@ -64,7 +64,7 @@ public class ElectricStatsTooltipModifier implements TooltipModifier {
             } else if (e.statType == ElectricStatType.RESISTANCE) {
                 builder.add(CEELang.formatResistance(e.value.getAsDouble()));
             } else if (e.statType == ElectricStatType.RESISTANCE_PER_METER) {
-                builder.add(CEELang.formatResistance(e.value.getAsDouble()));
+                builder.add(CEELang.formatResistancePerMeter(e.value.getAsDouble()));
             } else if (e.statType == ElectricStatType.POWER) {
                 builder.add(CEELang.formatPower(e.value.getAsDouble()));
             } else if (e.statType == ElectricStatType.MAX_CURRENT) {

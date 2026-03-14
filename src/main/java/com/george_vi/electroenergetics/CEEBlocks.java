@@ -391,7 +391,11 @@ public class CEEBlocks {
     public static final BlockEntry<VoltageRegulatorBlock> VOLTAGE_REGULATOR = REGISTRATE.block("voltage_regulator", VoltageRegulatorBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
+                    !(bs.getValue(VoltageRegulatorBlock.BOTTOM) || bs.getValue(VoltageRegulatorBlock.TOP)) ? AssetLookup.partialBaseModel(c, p, "middle") :
+                            bs.getValue(VoltageRegulatorBlock.BOTTOM) && bs.getValue(VoltageRegulatorBlock.TOP) ? AssetLookup.partialBaseModel(c, p) :
+                                    bs.getValue(VoltageRegulatorBlock.BOTTOM) ? AssetLookup.partialBaseModel(c, p, "bottom") : AssetLookup.partialBaseModel(c, p, "top")
+            ))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))

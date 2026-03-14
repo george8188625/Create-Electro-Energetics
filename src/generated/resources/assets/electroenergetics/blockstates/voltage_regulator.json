@@ -1,32 +1,122 @@
 {
   "variants": {
-    "facing=east,waterlogged=false": {
+    "bottom=false,facing=east,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_middle",
+      "y": 90
+    },
+    "bottom=false,facing=east,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_middle",
+      "y": 90
+    },
+    "bottom=false,facing=east,top=true,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_top",
+      "y": 90
+    },
+    "bottom=false,facing=east,top=true,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_top",
+      "y": 90
+    },
+    "bottom=false,facing=north,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_middle"
+    },
+    "bottom=false,facing=north,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_middle"
+    },
+    "bottom=false,facing=north,top=true,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_top"
+    },
+    "bottom=false,facing=north,top=true,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_top"
+    },
+    "bottom=false,facing=south,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_middle",
+      "y": 180
+    },
+    "bottom=false,facing=south,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_middle",
+      "y": 180
+    },
+    "bottom=false,facing=south,top=true,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_top",
+      "y": 180
+    },
+    "bottom=false,facing=south,top=true,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_top",
+      "y": 180
+    },
+    "bottom=false,facing=west,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_middle",
+      "y": 270
+    },
+    "bottom=false,facing=west,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_middle",
+      "y": 270
+    },
+    "bottom=false,facing=west,top=true,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_top",
+      "y": 270
+    },
+    "bottom=false,facing=west,top=true,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_top",
+      "y": 270
+    },
+    "bottom=true,facing=east,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_bottom",
+      "y": 90
+    },
+    "bottom=true,facing=east,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_bottom",
+      "y": 90
+    },
+    "bottom=true,facing=east,top=true,waterlogged=false": {
       "model": "electroenergetics:block/voltage_regulator/block",
       "y": 90
     },
-    "facing=east,waterlogged=true": {
+    "bottom=true,facing=east,top=true,waterlogged=true": {
       "model": "electroenergetics:block/voltage_regulator/block",
       "y": 90
     },
-    "facing=north,waterlogged=false": {
+    "bottom=true,facing=north,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_bottom"
+    },
+    "bottom=true,facing=north,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_bottom"
+    },
+    "bottom=true,facing=north,top=true,waterlogged=false": {
       "model": "electroenergetics:block/voltage_regulator/block"
     },
-    "facing=north,waterlogged=true": {
+    "bottom=true,facing=north,top=true,waterlogged=true": {
       "model": "electroenergetics:block/voltage_regulator/block"
     },
-    "facing=south,waterlogged=false": {
+    "bottom=true,facing=south,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_bottom",
+      "y": 180
+    },
+    "bottom=true,facing=south,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_bottom",
+      "y": 180
+    },
+    "bottom=true,facing=south,top=true,waterlogged=false": {
       "model": "electroenergetics:block/voltage_regulator/block",
       "y": 180
     },
-    "facing=south,waterlogged=true": {
+    "bottom=true,facing=south,top=true,waterlogged=true": {
       "model": "electroenergetics:block/voltage_regulator/block",
       "y": 180
     },
-    "facing=west,waterlogged=false": {
+    "bottom=true,facing=west,top=false,waterlogged=false": {
+      "model": "electroenergetics:block/voltage_regulator/block_bottom",
+      "y": 270
+    },
+    "bottom=true,facing=west,top=false,waterlogged=true": {
+      "model": "electroenergetics:block/voltage_regulator/block_bottom",
+      "y": 270
+    },
+    "bottom=true,facing=west,top=true,waterlogged=false": {
       "model": "electroenergetics:block/voltage_regulator/block",
       "y": 270
     },
-    "facing=west,waterlogged=true": {
+    "bottom=true,facing=west,top=true,waterlogged=true": {
       "model": "electroenergetics:block/voltage_regulator/block",
       "y": 270
     }

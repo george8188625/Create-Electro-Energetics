@@ -77,6 +77,27 @@ public class CEELang extends Lang {
                 .translate("generic.milliohms");
     }
 
+    public static LangBuilder formatResistancePerMeter(double resistance) {
+        if (Math.abs(resistance) >= 1000000)
+            return builder()
+                    .text(String.format("%.1f", resistance / 1000000))
+                    .translate("generic.megaohms_per_meter");
+
+        if (Math.abs(resistance) >= 1000)
+            return builder()
+                    .text(String.format("%.1f", resistance / 1000))
+                    .translate("generic.kiloohms_per_meter");
+
+        if (Math.abs(resistance) >= 1)
+            return builder()
+                    .text(String.format("%.1f", resistance))
+                    .translate("generic.ohms_per_meter");
+
+        return builder()
+                .text(String.format("%.1f", resistance * 1000))
+                .translate("generic.milliohms_per_meter");
+    }
+
     public static LangBuilder formatCapacitance(double capacitance) {
         if (Math.abs(capacitance) >= 1)
             return builder()

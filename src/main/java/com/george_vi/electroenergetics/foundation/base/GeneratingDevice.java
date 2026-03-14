@@ -19,8 +19,10 @@ public abstract class GeneratingDevice<T extends GeneratingDevice.DataHolder> ex
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, T extraData) {
         double voltage = getVoltage(pos, level, extraData);
-
-        bridges.builder(pos).energyLimitedSource(0, 1, extraData.storedEnergy, Math.abs(voltage));
+        if (extraData.storedEnergy == 0)
+            bridges.builder(pos).resistor(0, 1, 1e+3d);
+        else
+            bridges.builder(pos).energyLimitedSource(0, 1, extraData.storedEnergy, Math.abs(voltage));
     }
 
     @Override
@@ -28,13 +30,12 @@ public abstract class GeneratingDevice<T extends GeneratingDevice.DataHolder> ex
         // The stored energy is stored in its internal storage, to a max of 10x, this makes the voltage not drop super low when loaded normally.
         // That is because voltage sources are limited by a resistor in series, but that drops the voltage significantly on normal load.
 
-        double v1 = results.getVoltageAt(pos, 0);
-        double v2 = results.getVoltageAt(pos, 1);
+        double vd = results.getVoltageAt(pos, 0, 1);
         double current = results.getCurrentThrough(pos, 0, 1);
 
         double power = getPower(pos, level, extraData);
 
-        extraData.storedEnergy -= Math.abs(current * (v1 - v2));
+        extraData.storedEnergy -= Math.abs(current * vd);
 
         extraData.storedEnergy = Math.min(extraData.storedEnergy + power, power * 10);
         if (extraData.storedEnergy < 0)

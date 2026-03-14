@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.voltage_regulator;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.CEELang;
@@ -41,8 +42,8 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
     protected VoltageScrollValueBehaviour voltage;
     protected double power;
     protected double lastSentPower = -1;
-    protected double primaryVoltage;
-    protected double secondaryVoltage;
+    protected double inputVoltage;
+    protected double outputVoltage;
 
     @OnlyIn(Dist.CLIENT)
     protected ElectricHumSoundInstance soundInstance;
@@ -50,25 +51,37 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
 
+        if (!getBlockState().getValue(VoltageRegulatorBlock.BOTTOM)) {
+            for (int i = 1;; i++) {
+                BlockPos pos = worldPosition.below(i);
+                if (!CEEBlocks.VOLTAGE_REGULATOR.has(level.getBlockState(pos))) {
+                    BlockPos bottomPos = worldPosition.below(i - 1);
+                    if (level.getBlockEntity(bottomPos) instanceof VoltageRegulatorBlockEntity be)
+                        return be.addToGoggleTooltip(tooltip, isPlayerSneaking);
+                    return false;
+                }
+            }
+        }
+
         Lang.builder(CreateElecrtoEnergetics.ID)
                 .translate("gui.goggles.electric_stats")
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .translate("gui.goggles.primary_voltage")
+                .translate("gui.goggles.input_voltage")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(primaryVoltage))))
+                .text(LangNumberFormat.format(Math.round(Math.abs(inputVoltage))))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
 
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .translate("gui.goggles.secondary_voltage")
+                .translate("gui.goggles.output_voltage")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
         Lang.builder(CreateElecrtoEnergetics.ID)
-                .text(LangNumberFormat.format(Math.round(Math.abs(secondaryVoltage))))
+                .text(LangNumberFormat.format(Math.round(Math.abs(outputVoltage))))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
@@ -135,9 +148,9 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
         if (clientPacket) {
-            tag.putDouble("Power", power);
-            tag.putDouble("PV", primaryVoltage);
-            tag.putDouble("SV", secondaryVoltage);
+            tag.putDouble("P", power);
+            tag.putDouble("I", inputVoltage);
+            tag.putDouble("O", outputVoltage);
         }
     }
 
@@ -145,9 +158,9 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         if (clientPacket) {
-            power = tag.getDouble("Power");
-            primaryVoltage = tag.getDouble("PV");
-            secondaryVoltage = tag.getDouble("SV");
+            power = tag.getDouble("P");
+            inputVoltage = tag.getDouble("I");
+            outputVoltage = tag.getDouble("O");
         }
     }
 
@@ -158,15 +171,19 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
         SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null && deviceInstance.extraData() instanceof VoltageRegulatorDevice.DataHolder dataHolder) {
-            dataHolder.voltage = voltage.getVoltage();
+            dataHolder.targetVoltage = voltage.getVoltage();
         }
+
+        if (!getBlockState().getValue(VoltageRegulatorBlock.BOTTOM))
+            if (level.getBlockEntity(worldPosition.below()) instanceof VoltageRegulatorBlockEntity be)
+                be.voltage.setValue(voltage.value);
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {
 
         @Override
         protected Vec3 getSouthLocation() {
-            return VecHelper.voxelSpace(8, 8, 13);
+            return VecHelper.voxelSpace(8, 10, 13);
         }
 
         @Override
@@ -176,7 +193,7 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
 
         @Override
         protected boolean isSideActive(BlockState state, Direction direction) {
-            return direction.getAxis().isHorizontal() && direction.getAxis() != state.getValue(VoltageRegulatorBlock.FACING).getAxis();
+            return state.getValue(VoltageRegulatorBlock.TOP) &&  direction.getAxis().isHorizontal() && direction.getAxis() == state.getValue(VoltageRegulatorBlock.FACING).getAxis();
         }
     }
 }

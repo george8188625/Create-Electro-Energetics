@@ -12,6 +12,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
 
     List<AlternatorRotorBlockEntity> rotors = new ArrayList<>();
+    BlockPos otherBrush = null;
     float voltage;
     public AlternatorBrushesBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
@@ -54,6 +56,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
 
         dataHolder.stress = totalStress;
         dataHolder.voltage = totalStress / 100;
+        dataHolder.otherBrush = otherBrush;
     }
 
     @Override
@@ -97,8 +100,16 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
     public void getRotors() {
         List<AlternatorRotorBlockEntity> rotors = new ArrayList<>();
         for (int i = 0; i < 16; i++) {
-            if (!(level.getBlockEntity(worldPosition.relative(getBlockState().getValue(AlternatorBrushesBlock.FACING).getOpposite(), i + 1)) instanceof AlternatorRotorBlockEntity be && be.getAxis() == getBlockState().getValue(AlternatorBrushesBlock.FACING).getAxis()))
+            BlockPos rotorPos = worldPosition.relative(getBlockState().getValue(AlternatorBrushesBlock.FACING).getOpposite(), i + 1);
+            BlockEntity rawBE = level.getBlockEntity(rotorPos);
+            if (rawBE instanceof AlternatorBrushesBlockEntity be && be.getBlockState().getValue(AlternatorBrushesBlock.FACING) == getBlockState().getValue(AlternatorBrushesBlock.FACING).getOpposite()) {
+                otherBrush = rotorPos;
                 break;
+            }
+            if (!(rawBE instanceof AlternatorRotorBlockEntity be && be.getAxis() == getBlockState().getValue(AlternatorBrushesBlock.FACING).getAxis())) {
+                otherBrush = null;
+                break;
+            }
             rotors.add(be);
         }
         this.rotors = rotors;

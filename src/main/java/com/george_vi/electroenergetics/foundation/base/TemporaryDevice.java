@@ -38,7 +38,7 @@ public class TemporaryDevice extends SimulatedDevice<Void> {
             if (!blockTicks.hasScheduledTick(pos, (Block) db))
                 level.scheduleTick(pos, (Block) db, 1);
         } else {
-            results.getInfrastructure().removeDevice(pos);
+            results.getSD().removeDevice(pos);
         }
 
     }

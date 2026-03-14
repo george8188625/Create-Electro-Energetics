@@ -14,11 +14,11 @@ public class CServer extends ConfigBase {
     public final ConfigBool enableElectrocution = b(true, "enableElectrocution", "Wires can cause damage to players and entities");
     public final ConfigBool enableCrossContact = b(false, "enableCrossContact", "Uninsulated wires can connect");
     public final ConfigBool componentDamage = b(true, "componentDamage", "Components get damaged when overloaded");
-    public final ConfigBool optimizeGraph = b(true, "optimizeGraph");
     public final ConfigBool saveInfrastructureInSchematics = b(true, "saveInfrastructureSDInSchematics");
     public final CResistances resistanceValues = nested(1, CResistances::new, "Resistance Values");
     public final CVoltages voltageValues = nested(1, CVoltages::new, "Voltage Values");
     public final CTrains trainValues = nested(1, CTrains::new, "Train Values");
+    public final CSimulation simulationConfig = nested(1, CSimulation::new, "Simulation Configs");
 
     @Override
     public String getName() {

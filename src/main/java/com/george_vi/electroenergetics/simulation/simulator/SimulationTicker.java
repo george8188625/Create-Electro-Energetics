@@ -8,10 +8,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.*;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.util.DataPacker;
-import com.george_vi.electroenergetics.simulation.util.LUSolver;
-import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
-import com.george_vi.electroenergetics.simulation.util.WorkerThread;
+import com.george_vi.electroenergetics.simulation.util.*;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
@@ -41,8 +38,8 @@ public class SimulationTicker {
     public List<SimulatorProfiler.ResultEntry> lastProfilerResults;
     public SimulationStats lastStats;
 
-    public final int microTickBits = 0;
-    public final int microTicks = 1 << microTickBits;
+    public int microTickBits = 0;
+    public int microTicks = 1 << microTickBits;
 
     public Future<SimulationResults> future = null;
 
@@ -62,6 +59,9 @@ public class SimulationTicker {
     }
 
     public void tick() {
+        microTickBits = CEEConfigs.server().simulationConfig.microTickBits.get();
+        microTicks = 1 << microTickBits;
+
         profiler.push(level.dimension().location().toString());
         // Setup
         profiler.push("setupNodes");
@@ -142,7 +142,7 @@ public class SimulationTicker {
 
                 Network network = new Network(networkNodes, circuitBuilder, sd);
 
-                if (CEEConfigs.server().optimizeGraph.get())
+                if (CEEConfigs.server().simulationConfig.optimizeGraph.get())
                     network.optimize();
                 stats.totalOptimizedNodes[k] = network.allNodes.size();
                 k++;
@@ -150,6 +150,8 @@ public class SimulationTicker {
                 allNetworks.add(network);
                 stats.totalMicroTickers += network.microTicked.size();
             }
+            long solveStart = System.nanoTime();
+
             for (int i = 0; i < microTicks; i++) {
                 for (Long2ObjectMap.Entry<MicroTickingElectricalProperties> entry : circuitBuilder.microTickers.long2ObjectEntrySet()) {
                     int first = DataPacker.unpackFirstI(entry.getLongKey());
@@ -157,13 +159,16 @@ public class SimulationTicker {
                     entry.getValue().tick(allVoltages, i, microTickBits, microTicks, first, second);
                 }
                 for (Network network : allNetworks) {
-                    long solveStart = System.nanoTime();
                     network.formMatrix();
 //                double[] mnaResults = BiCGStabSolver.solve(network.conductanceMatrix, network.rhsVector,
 //                        (network.lastMNAResult == null || network.lastMNAResult.length != network.rhsVector.length) ? new double[network.rhsVector.length] : network.lastMNAResult, 1e-12d, 300);
 //                double[] mnaResults = BiCGStabSolver.solve(network.conductanceMatrix, network.rhsVector,
 //                        new double[network.rhsVector.length], 1e-12d, 300);
-                    double[] mnaResults = LUSolver.solve(network.conductanceMatrix, network.rhsVector);
+                    double[] mnaResults;
+                    if (network.voltageSourcesInMatrix)
+                        mnaResults = LUSolver.solve(network.conductanceMatrix, network.rhsVector);
+                    else
+                        mnaResults = CholeskySolver.solve(network.conductanceMatrix, network.rhsVector);
 //                double[] mnaResults = CGSolver.solve(network.conductanceMatrix, network.rhsVector, new double[network.rhsVector.length], 1e-10d, 300);
 //                double[] mnaResults = CGSolver.solve(network.conductanceMatrix, network.rhsVector,
 //                        (network.lastMNAResult == null || network.lastMNAResult.length != network.rhsVector.length) ? new double[network.rhsVector.length] : network.lastMNAResult, 1e-10d, 300);
@@ -208,7 +213,7 @@ public class SimulationTicker {
             for (Object2DoubleMap<DirectionalNodeConnection> v : sourceAmps.values())
                 allSourceAmps.putAll(v);
             profiler.addThreadedNanos(System.nanoTime() - thrStart);
-            profiler.addSolverNanos(System.nanoTime() - thrStart);
+            profiler.addSolverNanos(System.nanoTime() - solveStart);
             return new SimulationResults(allVoltages, microTicks, microTickBits, allSourceAmps, circuitBuilder, sd);
         });
     }

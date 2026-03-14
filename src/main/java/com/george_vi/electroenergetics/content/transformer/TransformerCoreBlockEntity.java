@@ -117,7 +117,7 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
             dissipationFactor *= 0.9;
         if (level.getFluidState(worldPosition.relative(getBlockState().getValue(TransformerCoreBlock.FACING))).isEmpty())
             dissipationFactor *= 0.9;
-        dissipationFactor = dissipationFactor * 30000;
+        dissipationFactor = dissipationFactor * 60000;
 
         dataHolder.heatDissipation = heatDissipationFactor = dissipationFactor;
         sendData();

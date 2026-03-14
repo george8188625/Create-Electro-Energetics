@@ -41,7 +41,7 @@ public abstract class ElectricTrainSoundBehaviour {
     public static ElectricTrainSoundInstance playSound(Vec3 pos, SoundEvent event) {
         ElectricTrainSoundInstance newInstance = new ElectricTrainSoundInstance(pos, event);
         // For some reason when you set the volume before playing the sound, it's louder from farther away??
-        newInstance.setVolumeImmediately(3f);
+        newInstance.setVolumeImmediately(10f);
         Minecraft.getInstance().getSoundManager().play(newInstance);
         // And then you can turn it down, and it's not gonna be super quiet when it's made louder after some time??
         newInstance.setVolumeImmediately(0f);
