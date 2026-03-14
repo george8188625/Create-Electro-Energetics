@@ -45,7 +45,7 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
         }
 
         if (decaySoundInstance != null) { // ASYNC DECAY
-            decaySoundInstance.setVolumeImmediately(Math.max(0, (acceleration > 0 ? 10f : 0.7f) * (trainSpeedNormalized) * 1 - 0.2f));
+            decaySoundInstance.setVolumeImmediately(Math.max(0, (acceleration > 0 ? 10f : 0.7f) * (trainSpeedNormalized) * 1 - 0.6f));
 
             decaySoundInstance.setPitchImmediately(1);
 //            decaySoundInstance.targetVolume = Math.min(trainSpeedNormalized * 20, 3);
