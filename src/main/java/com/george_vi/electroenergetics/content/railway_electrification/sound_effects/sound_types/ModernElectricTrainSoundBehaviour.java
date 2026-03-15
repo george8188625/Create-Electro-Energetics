@@ -28,8 +28,8 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
         if (trainSpeed != 0 && (mainSoundInstance == null || mainSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(mainSoundInstance)))
             mainSoundInstance = playSound(pos, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get());
 
-        float trainSpeedNormalized = trainSpeed / (AllConfigs.server().trains.poweredTrainTopSpeed.getF() / 20) / 1.05f;
-//        Minecraft.getInstance().gui.setOverlayMessage(Component.literal(String.format("%.2f", trainSpeedNormalized)), false);
+        float trainSpeedNormalized = (4 * trainSpeed) / (3 * (AllConfigs.server().trains.poweredTrainTopSpeed.getF() / 20)) / 1.05f;
+        Minecraft.getInstance().gui.setOverlayMessage(Component.literal(String.format("%.2f", trainSpeedNormalized)), false);
         if (trainSpeed != 0) {
             switchPhasing();
 
@@ -81,18 +81,15 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
             }
         }
 
-        if (phasing == newPhasing)
+        if (phasing == newPhasing) 
             return;
-
-        boolean smoothFade = (newPhasing == Phasing.P3 && phasing == Phasing.P1) || (newPhasing == Phasing.P1 && phasing == Phasing.P3);
 
         phasing = newPhasing;
         ElectricTrainSoundInstance newInstance = new ElectricTrainSoundInstance(pos, phasing.soundEvent);
         newInstance.setPitchImmediately(mainSoundInstance.getPitch());
         newInstance.setVolumeImmediately(3);
 
-        if (!smoothFade)
-            Minecraft.getInstance().getSoundManager().stop(mainSoundInstance);
+        Minecraft.getInstance().getSoundManager().stop(mainSoundInstance);
         Minecraft.getInstance().getSoundManager().play(mainSoundInstance = newInstance);
 
 
@@ -100,12 +97,12 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
 
     private enum Phasing {
 
-        ASYNC(0, .15f, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get()),
-        P15(.15f, .25f, CEESoundEvents.TRAIN_GTO_P15.get()),
-        P9(.25f, .45f, CEESoundEvents.TRAIN_GTO_P9.get()),
-		P5(.45f, .7f, CEESoundEvents.TRAIN_GTO_P5.get()),
-        P3(.7f, .8f, CEESoundEvents.TRAIN_GTO_P3.get()),
-        P1(.8f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get());
+        ASYNC(0, .125f, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get()),
+        P15(.125f, .195f, CEESoundEvents.TRAIN_GTO_P15.get()),
+        P9(.195f, .345f, CEESoundEvents.TRAIN_GTO_P9.get()),
+		P5(.345f, .52f, CEESoundEvents.TRAIN_GTO_P5.get()),
+        P3(.52f, .62f, CEESoundEvents.TRAIN_GTO_P3.get()),
+        P1(.62f, Float.MAX_VALUE, CEESoundEvents.TRAIN_GTO_P1.get());
 
 		/* Let Top Speed = t                                        */
 		/* Speed:   0    0.15t   0.25t     0.45t    0.7t  0.8t    t */
