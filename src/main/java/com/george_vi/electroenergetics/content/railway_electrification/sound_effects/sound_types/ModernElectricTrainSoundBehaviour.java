@@ -29,7 +29,7 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
             mainSoundInstance = playSound(pos, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get());
 
         float trainSpeedNormalized = (4 * trainSpeed) / (3 * (AllConfigs.server().trains.poweredTrainTopSpeed.getF() / 20)) / 1.05f;
-        Minecraft.getInstance().gui.setOverlayMessage(Component.literal(String.format("%.2f", trainSpeedNormalized)), false);
+        //Minecraft.getInstance().gui.setOverlayMessage(Component.literal(String.format("%.2f", trainSpeedNormalized)), false);
         if (trainSpeed != 0) {
             switchPhasing();
 
