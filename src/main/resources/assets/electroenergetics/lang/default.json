@@ -107,6 +107,8 @@
   "electroenergetics.converter.kilo_voltage_symbol": "⚡ x1000",
   "electroenergetics.creative_battery.voltage": "Generated Voltage in Volts",
   "electroenergetics.creative_battery.voltage_symbol": "⚡",
+  "electroenergetics.creative_battery.phase_offset": "Phase offset",
+  "electroenergetics.creative_battery.phase_symbol": "~",
   "electroenergetics.creative_battery.kilo_voltage_symbol": "⚡ x1000",
   "electroenergetics.resistor.resistance": "Resistance in Ohms",
   "electroenergetics.resistor.milli_resistance_symbol": "Ω ÷1000",

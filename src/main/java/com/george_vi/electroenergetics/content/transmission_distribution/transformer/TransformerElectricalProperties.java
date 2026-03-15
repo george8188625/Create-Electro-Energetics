@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.transformer;
+package com.george_vi.electroenergetics.content.transmission_distribution.transformer;
 
 import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.simulation.simulator.CoupledProperties;

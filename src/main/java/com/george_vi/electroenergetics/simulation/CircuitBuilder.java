@@ -74,9 +74,11 @@ public class CircuitBuilder {
             microTickers.put(DataPacker.pack(n1, n2), ep);
 
         if (properties instanceof CoupledProperties cp && cp.isPrimary()) { // Mark the node so it's solved in the same circuit as the coupled nodes
-            WrappedIndexedNode n = getNode(cp.coupledNodes().node1());
-            if (n != null)
-                indexedNode1.invisibleAdjacency.add(n.ordinal);
+            WrappedIndexedNode in1 = getNode(cp.coupledNodes().node1());
+            if (in1 != null) {
+                indexedNode1.invisibleAdjacency.add(in1.ordinal);
+                in1.invisibleAdjacency.add(indexedNode1.ordinal);
+            }
         }
 
         indexedNode1.adjacency.put(n2, properties);

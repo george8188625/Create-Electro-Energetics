@@ -1,6 +1,7 @@
-package com.george_vi.electroenergetics.content.transformer;
+package com.george_vi.electroenergetics.content.transmission_distribution.transformer;
 
 import com.george_vi.electroenergetics.foundation.RMSHolder;
+import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -10,64 +11,32 @@ import net.minecraft.nbt.CompoundTag;
 public class TransformerBehaviour {
 
     public static void preTick(InWorldNode[] nodes, double ratio, BlockPos pos, BridgeCollector bridges, TransformerBehaviourDataHolder extraData) {
+        // 0 | R | 4 U_U_U 1
+        // 2 U_U_U 5 | R | 3
 
-        double rawLoad = extraData.load;
-        double rawFeed = -extraData.feed;
+        TransformerElectricalProperties ep = new TransformerElectricalProperties(ratio,
+                new DirectionalNodeConnection(nodes[4], nodes[1]),
+                new DirectionalNodeConnection(nodes[2], nodes[5]));
 
-        double lastPrimaryVoltage = extraData.lastPrimaryVoltage;
-        double lastSecondaryVoltage = extraData.lastSecondaryVoltage;
-        double averagePrimaryVoltage = extraData.averagePrimaryVoltage.getSigned();
-        double averageSecondaryVoltage = extraData.averageSecondaryVoltage.getSigned();
+        bridges.builder(pos)
+                .node(nodes[4])
+                .node(nodes[5])
+                .resistor(nodes[0], nodes[4], 0.1)
+                .resistor(nodes[5], nodes[3], 0.1)
+                .connect(nodes[5], nodes[2], ep.getOtherProperties())
+                .connect(nodes[1], nodes[4], ep);
 
-        if (Math.abs(lastPrimaryVoltage) < 0.1)
-            lastPrimaryVoltage = 0;
-        if (Math.abs(lastSecondaryVoltage) < 0.1)
-            lastSecondaryVoltage = 0;
-
-        if (Math.abs(averagePrimaryVoltage) < 0.1)
-            averagePrimaryVoltage = 0;
-        if (Math.abs(averageSecondaryVoltage) < 0.1)
-            averageSecondaryVoltage = 0;
-
-        if (extraData.backwards) {
-            double load = Math.max(0, rawFeed);
-
-            bridges.builder(pos)
-                    .node(nodes[4])
-                    .node(nodes[5])
-                    .resistor(nodes[0], nodes[4], 0.001)
-                    .resistor(nodes[2], nodes[5], Math.abs(averageSecondaryVoltage) < 1e-6d || Math.abs(load) < 1e-6d ? 1e+6d : (averageSecondaryVoltage / (load / averageSecondaryVoltage)))
-                    .energyLimitedSource(nodes[4], nodes[1], 5000_000, -averageSecondaryVoltage * ratio)
-                    .resistor(nodes[0], nodes[1], 50000000)
-                    .resistor(nodes[5], nodes[3], 0.0001);
-
-            if (Math.abs(lastPrimaryVoltage / ratio) > Math.abs(lastSecondaryVoltage) && load < 0.0001)
-                extraData.backwards = false;
-        } else {
-            double load = Math.max(0, rawLoad);
-
-            bridges.builder(pos)
-                    .node(nodes[4])
-                    .node(nodes[5])
-                    .resistor(nodes[0], nodes[4], 0.0001)
-                    .resistor(nodes[4], nodes[1], Math.abs(averagePrimaryVoltage) < 1e-6d || Math.abs(load) < 1e-6d ? 1e+6d : (averagePrimaryVoltage / (load / averagePrimaryVoltage)))
-                    .energyLimitedSource(nodes[2], nodes[5], 5000_000, -averagePrimaryVoltage / ratio)
-                    .resistor(nodes[2], nodes[3], 50000000)
-                    .resistor(nodes[5], nodes[3], 0.001);
-            if (Math.abs(lastPrimaryVoltage / ratio) < Math.abs(lastSecondaryVoltage) && load < 0.0001)
-                extraData.backwards = true;
-        }
     }
 
     public static double postTick(InWorldNode[] nodes, SimulationResults results, TransformerBehaviourDataHolder extraData) {
         double primaryVoltage = results.getVoltageAt(nodes[0], nodes[1]);
-        extraData.lastPrimaryVoltage = primaryVoltage;
         double secondaryVoltage = results.getVoltageAt(nodes[2], nodes[3]);
         double secondaryCurrent = results.getCurrentThrough(nodes[5], nodes[3]);
+        double primaryCurrent = results.getCurrentThrough(nodes[0], nodes[4]);
+        extraData.lastPrimaryVoltage = primaryVoltage;
         extraData.lastSecondaryVoltage = secondaryVoltage;
         double load = -secondaryCurrent * secondaryVoltage;
         extraData.load = load;
-        double primaryCurrent = results.getCurrentThrough(nodes[0], nodes[4]);
         double feed = primaryCurrent * primaryVoltage;
         extraData.feed = feed;
 

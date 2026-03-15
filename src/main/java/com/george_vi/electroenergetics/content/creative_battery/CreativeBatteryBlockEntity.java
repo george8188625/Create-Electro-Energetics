@@ -6,10 +6,7 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureS
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
-import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
-import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
-import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatter;
+import com.simibubi.create.foundation.blockEntity.behaviour.*;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
@@ -34,8 +31,10 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        voltage = new VoltageScrollValueBehaviour(CEELang.translate("creative_battery.voltage").component(), this, new ValueBox());
+        voltage = new VoltageScrollValueBehaviour(CEELang.translate("creative_battery.voltage").component(),
+                this, new ValueBox());
         voltage.withCallback(i -> this.updateVoltage());
+
         behaviours.add(voltage);
     }
 
@@ -64,7 +63,29 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
 
         @Override
         protected boolean isSideActive(BlockState state, Direction direction) {
-            return state.getValue(CreativeBatteryBlock.FACING).getAxis().isHorizontal() ? (direction.getAxis().isHorizontal() && direction.getAxis() != state.getValue(CreativeBatteryBlock.FACING).getAxis()) : direction.getAxis() == Direction.Axis.X;
+            return state.getValue(CreativeBatteryBlock.FACING).getAxis().isHorizontal() ?
+                    (direction.getAxis().isHorizontal() &&
+                            direction.getAxis() != state.getValue(CreativeBatteryBlock.FACING).getAxis()) :
+                    direction.getAxis() == Direction.Axis.X;
+        }
+    }
+
+    static class PhaseOffsetValueBox extends ValueBoxTransform.Sided {
+        @Override
+        protected Vec3 getSouthLocation() {
+            return VecHelper.voxelSpace(8, 8, 16);
+        }
+
+        @Override
+        public Vec3 getLocalOffset(LevelAccessor level, BlockPos pos, BlockState state) {
+            return super.getLocalOffset(level, pos, state);
+        }
+
+        @Override
+        protected boolean isSideActive(BlockState state, Direction direction) {
+            return state.getValue(CreativeBatteryBlock.AC) &&
+                    (state.getValue(CreativeBatteryBlock.FACING).getAxis().isHorizontal() ?
+                    (direction.getAxis().isVertical()) : direction.getAxis() == Direction.Axis.Z);
         }
     }
 }

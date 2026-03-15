@@ -10,6 +10,7 @@ import com.george_vi.electroenergetics.content.electronic_components.capacitor.C
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
+import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockItem;
 import com.george_vi.electroenergetics.content.potentiometer.PotentiometerBlock;
@@ -23,7 +24,7 @@ import com.george_vi.electroenergetics.content.connector.TripleConnectorBlock;
 import com.george_vi.electroenergetics.content.converter.ConverterBlock;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchBlock;
-import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlock;
+import com.george_vi.electroenergetics.content.transmission_distribution.hv_switch.HVSwitchBlock;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlock;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlock;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlock;
@@ -40,10 +41,10 @@ import com.george_vi.electroenergetics.content.relay.RelayBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
 import com.george_vi.electroenergetics.content.sign.WarningSignBlock;
-import com.george_vi.electroenergetics.content.transformer.RadiatorPanelBlock;
-import com.george_vi.electroenergetics.content.transformer.TransformerBlock;
-import com.george_vi.electroenergetics.content.transformer.TransformerCoreBlock;
-import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlock;
+import com.george_vi.electroenergetics.content.transmission_distribution.transformer.RadiatorPanelBlock;
+import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerBlock;
+import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreBlock;
+import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorBlock;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.simibubi.create.AllTags;
@@ -70,7 +71,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePrope
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 
-import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE;
+import static com.george_vi.electroenergetics.CreateElectroEnergetics.REGISTRATE;
 import static com.simibubi.create.api.behaviour.movement.MovementBehaviour.movementBehaviour;
 import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 
@@ -119,7 +120,10 @@ public class CEEBlocks {
     public static final BlockEntry<DoubleConnectorBlock> DOUBLE_CONNECTOR = REGISTRATE.block("double_connector", DoubleConnectorBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
+            .blockstate((c, p) ->
+                    DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                            bs -> p.modLoc(bs.getValue(DoubleConnectorBlock.STYLE) == DoubleConnectorBlock.Style.SHORT ? "block/double_connector/block" :
+                                    ("block/double_connector/block_" + bs.getValue(DoubleConnectorBlock.STYLE).suffix))))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -133,6 +137,22 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<HVCapacitorBlock> HV_CAPACITOR = REGISTRATE.block("high_voltage_capacitor", HVCapacitorBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) ->
+                    DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                            bs -> p.modLoc(bs.getValue(HVCapacitorBlock.SLICED) ?
+                            "block/high_voltage_capacitor/block_sliced" :
+                            "block/high_voltage_capacitor/block")))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::get, "/block"))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxVoltage(CEEConfigs.server().voltageValues.highVoltageCapacitorVoltage::get)))
             .build()
             .register();
 
@@ -214,7 +234,8 @@ public class CEEBlocks {
     public static final BlockEntry<BulbBlock> BROKEN_BULB = REGISTRATE.block("broken_bulb", BulbBlock::broken)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc(bs.getValue(BulbBlock.COMPACT) ? "block/bulb/block_compact" : "block/bulb/block")))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                    bs -> p.modLoc(bs.getValue(BulbBlock.COMPACT) ? "block/bulb/block_compact" : "block/bulb/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/bulb/item")))
@@ -224,7 +245,8 @@ public class CEEBlocks {
     public static final BlockEntry<CutOffSwitchBlock> CUT_OFF_SWITCH = REGISTRATE.block("cut_off_switch", properties -> new CutOffSwitchBlock(properties, false))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(CutOffSwitchBlock.CLOSED) ? p.modLoc("block/cut_off_switch/block_closed") : p.modLoc("block/cut_off_switch/block")))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                    bs -> bs.getValue(CutOffSwitchBlock.CLOSED) ? p.modLoc("block/cut_off_switch/block_closed") : p.modLoc("block/cut_off_switch/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -234,7 +256,8 @@ public class CEEBlocks {
     public static final BlockEntry<CutOffSwitchBlock> DOUBLE_SWITCH = REGISTRATE.block("double_switch", properties -> new CutOffSwitchBlock(properties, true))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(CutOffSwitchBlock.CLOSED) ? p.modLoc("block/double_switch/block_closed") : p.modLoc("block/double_switch/block")))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                    bs -> bs.getValue(CutOffSwitchBlock.CLOSED) ? p.modLoc("block/double_switch/block_closed") : p.modLoc("block/double_switch/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -244,7 +267,8 @@ public class CEEBlocks {
     public static final BlockEntry<RedstoneRelayBlock> REDSTONE_RELAY = REGISTRATE.block("redstone_relay", RedstoneRelayBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc((bs.getValue(RedstoneRelayBlock.INVERTED) ? "block/redstone_relay/block_inverted" : "block/redstone_relay/block") + (bs.getValue(RedstoneRelayBlock.POWERED) ? "_powered" : ""))))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                    bs -> p.modLoc((bs.getValue(RedstoneRelayBlock.INVERTED) ? "block/redstone_relay/block_inverted" : "block/redstone_relay/block") + (bs.getValue(RedstoneRelayBlock.POWERED) ? "_powered" : ""))))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -392,9 +416,13 @@ public class CEEBlocks {
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
-                    !(bs.getValue(VoltageRegulatorBlock.BOTTOM) || bs.getValue(VoltageRegulatorBlock.TOP)) ? AssetLookup.partialBaseModel(c, p, "middle") :
-                            bs.getValue(VoltageRegulatorBlock.BOTTOM) && bs.getValue(VoltageRegulatorBlock.TOP) ? AssetLookup.partialBaseModel(c, p) :
-                                    bs.getValue(VoltageRegulatorBlock.BOTTOM) ? AssetLookup.partialBaseModel(c, p, "bottom") : AssetLookup.partialBaseModel(c, p, "top")
+                    !(bs.getValue(VoltageRegulatorBlock.BOTTOM) || bs.getValue(VoltageRegulatorBlock.TOP)) ?
+                            AssetLookup.partialBaseModel(c, p, "middle") :
+                            bs.getValue(VoltageRegulatorBlock.BOTTOM) && bs.getValue(VoltageRegulatorBlock.TOP) ?
+                                    (bs.getValue(VoltageRegulatorBlock.SLICED) ? AssetLookup.partialBaseModel(c, p, "sliced") : AssetLookup.partialBaseModel(c, p)) :
+                                    bs.getValue(VoltageRegulatorBlock.BOTTOM) ?
+                                            AssetLookup.partialBaseModel(c, p, "bottom") :
+                                            AssetLookup.partialBaseModel(c, p, bs.getValue(VoltageRegulatorBlock.SLICED) ? "top_sliced" : "top")
             ))
             .transform(pickaxeOnly())
             .item()
@@ -553,7 +581,7 @@ public class CEEBlocks {
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/capacitor")))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
-                    .addMaxVoltage(() -> 500)))
+                    .addMaxVoltage(CEEConfigs.server().voltageValues.highVoltageCapacitorVoltage::get)))
             .build()
             .register();
 

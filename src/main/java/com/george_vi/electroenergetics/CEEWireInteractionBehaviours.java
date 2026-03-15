@@ -14,7 +14,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class CEEWireInteractionBehaviours {
     private static final DeferredRegister<WireInteractionBehaviour> WIRE_INTERACTION_BEHAVIOURS =
-            DeferredRegister.create(CEERegistries.WIRE_INTERACTION_BEHAVIOUR, CreateElecrtoEnergetics.ID);
+            DeferredRegister.create(CEERegistries.WIRE_INTERACTION_BEHAVIOUR, CreateElectroEnergetics.ID);
 
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> EMPTY = WIRE_INTERACTION_BEHAVIOURS.register("empty", WireInteractionBehaviour.Empty::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> BANNER = WIRE_INTERACTION_BEHAVIOURS.register("banner", BannerWireInteractionBehaviour::new);

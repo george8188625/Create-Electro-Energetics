@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.events;
 
 import com.george_vi.electroenergetics.CEERegistries;
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.commands.CEECommands;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
@@ -32,7 +32,7 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-@EventBusSubscriber(modid = CreateElecrtoEnergetics.ID)
+@EventBusSubscriber(modid = CreateElectroEnergetics.ID)
 public class GameEvents {
 
     @OnlyIn(Dist.CLIENT)

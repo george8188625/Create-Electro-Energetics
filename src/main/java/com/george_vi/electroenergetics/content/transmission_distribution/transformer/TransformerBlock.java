@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.transformer;
+package com.george_vi.electroenergetics.content.transmission_distribution.transformer;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;

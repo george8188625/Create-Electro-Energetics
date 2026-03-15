@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.content.accumulator;
 
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -44,15 +44,15 @@ public class AccumulatorBlockEntity extends SmartBlockEntity implements IHaveGog
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.electric_stats")
                 .forGoggles(tooltip);
 
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.stored_energy")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .add(CEELang.formatEnergy(energy))
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);

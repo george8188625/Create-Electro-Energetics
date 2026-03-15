@@ -2,7 +2,6 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.WireType;
-import com.simibubi.create.AllTags;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
@@ -19,7 +18,7 @@ import java.util.Map;
 public class CEEWireTypes {
 
     private static final DeferredRegister<WireType> WIRE_TYPES =
-            DeferredRegister.create(CEERegistries.WIRE_TYPE, CreateElecrtoEnergetics.ID);
+            DeferredRegister.create(CEERegistries.WIRE_TYPE, CreateElectroEnergetics.ID);
 
     public static final DeferredHolder<WireType, WireType> COPPER = WIRE_TYPES.register("copper", () -> new WireType.Builder(CEEPartialModels.COPPER_WIRE_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)

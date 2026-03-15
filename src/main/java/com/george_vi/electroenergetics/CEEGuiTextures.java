@@ -26,7 +26,7 @@ public enum CEEGuiTextures implements ScreenElement, TextureSheetSegment {
     }
 
     CEEGuiTextures(String name, int startX, int startY, int width, int height) {
-        this.location = CreateElecrtoEnergetics.rl("textures/gui/" + name + ".png");
+        this.location = CreateElectroEnergetics.rl("textures/gui/" + name + ".png");
         this.width = width;
         this.height = height;
         this.startX = startX;

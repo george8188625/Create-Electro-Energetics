@@ -33,8 +33,8 @@ public class SimulationTicker {
 
     Object2DoubleMap<InWorldNode> VOLTAGES = new Object2DoubleOpenHashMap<>();
     public SimulationResults lastResults;
-    public CircuitBuilder circuitBuilder;
-    public SimulationStats stats;
+    private CircuitBuilder circuitBuilder;
+    private SimulationStats stats;
     public List<SimulatorProfiler.ResultEntry> lastProfilerResults;
     public SimulationStats lastStats;
 

@@ -16,9 +16,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
+import java.util.function.DoubleSupplier;
+
 public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder> {
-    public CapacitorDevice(ResourceLocation id) {
+    public final DoubleSupplier maxVoltage;
+    public CapacitorDevice(ResourceLocation id, DoubleSupplier maxVoltage) {
         super(id);
+        this.maxVoltage = maxVoltage;
     }
 
     @Override
@@ -33,7 +37,7 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
         double voltage = results.getVoltageAt(pos, 0, 2);
 
-        extraData.temp = updateTemp(extraData.temp, (float) Math.abs(voltage));
+        extraData.temp = updateTemp(extraData.temp, (float) ((Math.abs(voltage) * 500) / maxVoltage.getAsDouble()));
 
         if (!CEEConfigs.server().componentDamage.get())
             return;

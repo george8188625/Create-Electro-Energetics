@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.cut_off_switch;
+package com.george_vi.electroenergetics.content.transmission_distribution.hv_switch;
 
 import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;

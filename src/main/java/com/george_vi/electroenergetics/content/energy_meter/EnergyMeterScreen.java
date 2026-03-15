@@ -2,10 +2,9 @@ package com.george_vi.electroenergetics.content.energy_meter;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEGuiTextures;
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.widget.IconButton;
-import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
@@ -94,16 +93,16 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
         number9 = (float) (Math.floor(number9 * 10) / 10f);
 
 
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 185, y + 27, 0, 243, 210 - (number0 * 210) + 6, 13, 30, 256, 256);
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 168, y + 27, 0, 243, 210 - (number1 * 210) + 6, 13, 30, 256, 256);
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 151, y + 27, 0, 243, 210 - (number2 * 210) + 6, 13, 30, 256, 256);
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 128, y + 27, 0, 243, 210 - (number3 * 210) + 6, 13, 30, 256, 256);
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 111, y + 27, 0, 243, 210 - (number4 * 210) + 6, 13, 30, 256, 256);
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 94, y + 27, 0, 243, 210 - (number5 * 210) + 6, 13, 30, 256, 256);
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 77, y + 27, 0, 243, 210 - (number6 * 210) + 6, 13, 30, 256, 256);
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 60, y + 27, 0, 243, 210 - (number7 * 210) + 6, 13, 30, 256, 256);
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 43, y + 27, 0, 243, 210 - (number8 * 210) + 6, 13, 30, 256, 256);
-        graphics.blit(CreateElecrtoEnergetics.rl("textures/gui/energy_meter.png"), x + 26, y + 27, 0, 243, 210 - (number9 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 185, y + 27, 0, 243, 210 - (number0 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 168, y + 27, 0, 243, 210 - (number1 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 151, y + 27, 0, 243, 210 - (number2 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 128, y + 27, 0, 243, 210 - (number3 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 111, y + 27, 0, 243, 210 - (number4 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 94, y + 27, 0, 243, 210 - (number5 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 77, y + 27, 0, 243, 210 - (number6 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 60, y + 27, 0, 243, 210 - (number7 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 43, y + 27, 0, 243, 210 - (number8 * 210) + 6, 13, 30, 256, 256);
+        graphics.blit(CreateElectroEnergetics.rl("textures/gui/energy_meter.png"), x + 26, y + 27, 0, 243, 210 - (number9 * 210) + 6, 13, 30, 256, 256);
 
         GuiGameElement.of(CEEBlocks.ENERGY_METER.asItem()).
                         <GuiGameElement.GuiRenderBuilder>at(guiLeft + CEEGuiTextures.ENERGY_METER.getWidth() + 6, guiTop + CEEGuiTextures.ENERGY_METER.getHeight() - 56, 100)
@@ -115,8 +114,8 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
             mouseY > resetY && mouseY <= resetY + 15) {
             graphics.renderComponentTooltip(font,
                     List.of(
-                            Lang.builder(CreateElecrtoEnergetics.ID).translate("gui.energy_meter.reset").component(),
-                            Lang.builder(CreateElecrtoEnergetics.ID).translate("gui.energy_meter.reset_tip_1")
+                            Lang.builder(CreateElectroEnergetics.ID).translate("gui.energy_meter.reset").component(),
+                            Lang.builder(CreateElectroEnergetics.ID).translate("gui.energy_meter.reset_tip_1")
                                     .style(ChatFormatting.DARK_GRAY)
                                     .style(ChatFormatting.ITALIC).component()
                     ), mouseX, mouseY);
@@ -127,18 +126,18 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
             if (be.owner == null || (Minecraft.getInstance().player != null && Minecraft.getInstance().player.getUUID().equals(be.owner)))
                 graphics.renderComponentTooltip(font,
                         List.of(
-                                Lang.builder(CreateElecrtoEnergetics.ID).translate(be.disconnected ? "gui.energy_meter.disconnected" : "gui.energy_meter.connected")
+                                Lang.builder(CreateElectroEnergetics.ID).translate(be.disconnected ? "gui.energy_meter.disconnected" : "gui.energy_meter.connected")
                                         .component(),
-                                Lang.builder(CreateElecrtoEnergetics.ID).translate(be.disconnected ? "gui.energy_meter.connect" : "gui.energy_meter.disconnect")
+                                Lang.builder(CreateElectroEnergetics.ID).translate(be.disconnected ? "gui.energy_meter.connect" : "gui.energy_meter.disconnect")
                                         .style(ChatFormatting.GRAY).component(),
-                                Lang.builder(CreateElecrtoEnergetics.ID).translate("gui.energy_meter.disconnect_tip_1")
+                                Lang.builder(CreateElectroEnergetics.ID).translate("gui.energy_meter.disconnect_tip_1")
                                         .style(ChatFormatting.DARK_GRAY)
                                         .style(ChatFormatting.ITALIC).component()
                         ), mouseX, mouseY);
             else
                 graphics.renderComponentTooltip(font,
                         List.of(
-                                Lang.builder(CreateElecrtoEnergetics.ID).translate(be.disconnected ? "gui.energy_meter.disconnected" : "gui.energy_meter.connected")
+                                Lang.builder(CreateElectroEnergetics.ID).translate(be.disconnected ? "gui.energy_meter.disconnected" : "gui.energy_meter.connected")
                                         .component()
                         ), mouseX, mouseY);
         }

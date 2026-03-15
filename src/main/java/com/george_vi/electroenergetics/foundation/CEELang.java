@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.foundation;
 
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangBuilder;
 import net.createmod.catnip.lang.LangNumberFormat;
@@ -9,7 +9,7 @@ import net.minecraft.network.chat.MutableComponent;
 
 public class CEELang extends Lang {
     public static LangBuilder builder() {
-        return new LangBuilder(CreateElecrtoEnergetics.ID);
+        return new LangBuilder(CreateElectroEnergetics.ID);
     }
 
     public static LangBuilder formatVoltage(double voltage) {

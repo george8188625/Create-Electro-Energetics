@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.content.converter;
 
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
@@ -69,11 +69,11 @@ public class ConverterBlockEntity extends SmartBlockEntity implements IHaveGoggl
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         if (Math.abs(power) <= 1)
             return false;
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.energy_consumption")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .add(power < 0 ? CEELang.formatPower(Math.abs(power)) : CEELang.formatFEPerTick(Math.abs(power / ConverterDevice.CONVERSION_RATE)))
                 .style(ChatFormatting.AQUA)
                 .space()
@@ -81,11 +81,11 @@ public class ConverterBlockEntity extends SmartBlockEntity implements IHaveGoggl
                         .withStyle(ChatFormatting.DARK_GRAY))
                 .forGoggles(tooltip, 1);
 
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.energy_generation")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .add(power > 0 ? CEELang.formatPower(Math.abs(power)) : CEELang.formatFEPerTick(Math.abs(power / ConverterDevice.CONVERSION_RATE)))
                 .style(ChatFormatting.AQUA)
                 .space()

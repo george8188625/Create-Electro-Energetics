@@ -40,7 +40,7 @@ public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     <T extends BasePacketPayload> CEEPackets(Class<T> clazz, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
         String name = this.name().toLowerCase(Locale.ROOT);
         this.type = new CatnipPacketRegistry.PacketType<>(
-                new CustomPacketPayload.Type<>(CreateElecrtoEnergetics.rl(name)),
+                new CustomPacketPayload.Type<>(CreateElectroEnergetics.rl(name)),
                 clazz, codec
         );
     }
@@ -52,7 +52,7 @@ public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     }
 
     public static void register() {
-        CatnipPacketRegistry packetRegistry = new CatnipPacketRegistry(CreateElecrtoEnergetics.ID, 1);
+        CatnipPacketRegistry packetRegistry = new CatnipPacketRegistry(CreateElectroEnergetics.ID, 1);
         for (CEEPackets packet : CEEPackets.values()) {
             packetRegistry.registerPacket(packet.type);
         }

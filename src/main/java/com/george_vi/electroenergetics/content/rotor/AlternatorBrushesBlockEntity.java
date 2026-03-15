@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.content.rotor;
 
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -67,27 +67,27 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
             totalStress += rotor.magnets * 48 * Math.abs(rotor.getSpeed());
         }
 
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.electric_stats")
                 .forGoggles(tooltip);
 
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.energy_generation")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .text(LangNumberFormat.format(Math.round(Math.abs(totalStress))))
                 .translate("generic.watts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
 
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.voltage")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .text(LangNumberFormat.format(Math.round(voltage)))
                 .translate("generic.volts")
                 .text(" / " + LangNumberFormat.format(Math.round(totalStress / 100)))

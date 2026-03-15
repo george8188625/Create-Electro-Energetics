@@ -8,20 +8,17 @@
     "S": {
       "tag": "c:plates/iron"
     },
-    "Z": {
-      "tag": "c:ingots/zinc"
-    },
     "c": {
-      "tag": "c:plates/copper"
+      "item": "electroenergetics:capacitor"
     }
   },
   "pattern": [
-    "ScS",
-    "SZS",
-    "C C"
+    "CSC",
+    "ccc",
+    "ccc"
   ],
   "result": {
     "count": 1,
-    "id": "electroenergetics:capacitor"
+    "id": "electroenergetics:high_voltage_capacitor"
   }
 }

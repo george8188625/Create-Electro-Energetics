@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.DoubleSupplier;
 
-import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE;
+import static com.george_vi.electroenergetics.CreateElectroEnergetics.REGISTRATE;
 
 public class CEEItems {
 

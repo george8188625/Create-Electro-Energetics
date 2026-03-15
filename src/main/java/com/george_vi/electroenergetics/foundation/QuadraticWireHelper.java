@@ -61,17 +61,20 @@ public class QuadraticWireHelper {
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, float detail) {
         float distance = (float) pos1.distanceTo(pos2);
 
-        double resolution = Math.ceil((distance * 2) / detail);
+        double resolution = Math.ceil(distance * 2);
         double invResolution = 1 / resolution;
-        List<Vec3> points = new ArrayList<>(Mth.ceil(resolution));
-        float a = (0.05f / distance) * dip * detail * detail;
+        int totalPoints = Mth.ceil(resolution / detail);
+        int ppp = Math.max(1, Mth.ceil(resolution / totalPoints));
+        List<Vec3> points = new ArrayList<>(totalPoints);
+        float a = (0.05f / distance) * dip;
         for (int x = 0; x < resolution; x++) {
             float particleLevel = (float) (a * x * (x - resolution));
             double pX = (pos2.x - pos1.x) * (invResolution) * x + pos1.x;
             double pY = (pos2.y - pos1.y) * (invResolution) * x + pos1.y + particleLevel;
             double pZ = (pos2.z - pos1.z) * (invResolution) * x + pos1.z;
             Vec3 point = new Vec3(pX, pY, pZ);
-            points.add(point);
+            if (x % ppp == 0)
+                points.add(point);
         }
         return points;
     }

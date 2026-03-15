@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.events;
 
 import com.george_vi.electroenergetics.CEERegistries;
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
@@ -33,15 +33,15 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-@EventBusSubscriber(modid = CreateElecrtoEnergetics.ID)
+@EventBusSubscriber(modid = CreateElectroEnergetics.ID)
 public class ModEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void gatherDataHighPriority(GatherDataEvent event) {
-        if (!event.getMods().contains(CreateElecrtoEnergetics.ID))
+        if (!event.getMods().contains(CreateElectroEnergetics.ID))
             return;
 
-        CreateElecrtoEnergetics.REGISTRATE.addDataGenerator(ProviderType.LANG, provider -> {
+        CreateElectroEnergetics.REGISTRATE.addDataGenerator(ProviderType.LANG, provider -> {
 
             JsonElement jsonElement = FilesHelper.loadJsonResource("assets/electroenergetics/lang/default.json");
             if (jsonElement == null)
@@ -51,13 +51,13 @@ public class ModEvents {
             for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet())
                 provider.add(entry.getKey(), entry.getValue().getAsString());
             PonderIndex.addPlugin(new CEEPonderPlugin());
-            PonderIndex.getLangAccess().provideLang(CreateElecrtoEnergetics.ID, provider::add);
+            PonderIndex.getLangAccess().provideLang(CreateElectroEnergetics.ID, provider::add);
         });
     }
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
-        if (!event.getMods().contains(CreateElecrtoEnergetics.ID))
+        if (!event.getMods().contains(CreateElectroEnergetics.ID))
             return;
 
         DataGenerator generator = event.getGenerator();
@@ -75,13 +75,14 @@ public class ModEvents {
         PonderIndex.addPlugin(new CEEPonderPlugin());
 
         RadialWrenchMenu.registerRotationProperty(DoubleConnectorBlock.ROLL, "Roll");
+        RadialWrenchMenu.registerRotationProperty(DoubleConnectorBlock.STYLE, "Style");
         RadialWrenchMenu.registerRotationProperty(ConnectorBlock.STYLE, "Style");
     }
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void registerGuiOverlays(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.CROSSHAIR, CreateElecrtoEnergetics.rl("electric_properties_overlay"), ElectricPropertiesOverlay.INSTANCE);
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, CreateElectroEnergetics.rl("electric_properties_overlay"), ElectricPropertiesOverlay.INSTANCE);
     }
 
     @SubscribeEvent

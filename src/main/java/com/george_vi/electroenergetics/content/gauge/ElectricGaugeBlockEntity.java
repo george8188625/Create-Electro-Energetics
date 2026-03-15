@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.gauge;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.compat.Mods;
@@ -87,7 +87,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
         CreateLang.translate("gui.gauge.info_header")
                 .forGoggles(tooltip);
 
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .translate(voltmeter ? "generic.voltage" : "generic.current")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
@@ -95,7 +95,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
         double v = Math.abs(voltmeter ? voltage : voltage / 0.01);
         if (v  > 1)
             v = Math.round(v);
-        Lang.builder(CreateElecrtoEnergetics.ID)
+        Lang.builder(CreateElectroEnergetics.ID)
                 .text(TooltipHelper.makeProgressBar(3, dialState < 0.01 ? 0 : dialState < 0.33 ? 1 : dialState < 0.66 ? 2 : 3))
                 .space()
                 .add(CreateLang.number(v))

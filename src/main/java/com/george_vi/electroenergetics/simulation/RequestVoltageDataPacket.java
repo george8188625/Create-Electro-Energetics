@@ -9,6 +9,7 @@ import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 
 public record RequestVoltageDataPacket(InWorldNode node) implements ServerboundPacketPayload {
 
@@ -19,7 +20,8 @@ public record RequestVoltageDataPacket(InWorldNode node) implements ServerboundP
 
     @Override
     public void handle(ServerPlayer player) {
-        if (node.getPosition(player.level()).distanceToSqr(player.position()) > 30)
+        Vec3 position = node.getPosition(player.level());
+        if (position == null || position.distanceToSqr(player.position()) > 30)
             return;
 
         InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel)player.level());

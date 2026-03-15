@@ -13,7 +13,7 @@ public class CEEDamageTypes {
             HV_ELECTROCUTION = key("hv_electrocution");
 
     private static ResourceKey<DamageType> key(String name) {
-        return ResourceKey.create(Registries.DAMAGE_TYPE, CreateElecrtoEnergetics.rl(name));
+        return ResourceKey.create(Registries.DAMAGE_TYPE, CreateElectroEnergetics.rl(name));
     }
 
     public static void bootstrap(BootstrapContext<DamageType> ctx) {

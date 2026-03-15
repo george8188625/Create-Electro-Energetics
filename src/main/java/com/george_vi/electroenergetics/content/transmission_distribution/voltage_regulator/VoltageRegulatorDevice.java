@@ -1,9 +1,9 @@
-package com.george_vi.electroenergetics.content.voltage_regulator;
+package com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator;
 
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.content.transformer.TransformerElectricalProperties;
+import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerElectricalProperties;
 import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -60,7 +60,7 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
         BridgeCollector.Builder builder = bridges.builder(pos);
 
         if (extraData.top && extraData.bottom)
-            builder.resistor(2, 3, CEEConfigs.server().resistanceValues.wireResistance.get());
+            builder.resistor(extraData.sliced == 0 ? 2 : 0, extraData.sliced == 0 ? 3 : 1, CEEConfigs.server().resistanceValues.wireResistance.get());
         else if (extraData.bottom)
             builder.resistor(0, 1, CEEConfigs.server().resistanceValues.wireResistance.get());
 
@@ -68,9 +68,14 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
             return;
 
         extraData.poleLength = findPoleLength(pos, level, bridges.getSD());
-        if (extraData.poleLength < 0) return;
+        if (extraData.poleLength < 0)
+            return;
 
-        NodeLayout nodes = resolveNodes(pos, extraData.poleLength);
+        DataHolder dh = getVoltageRegulatorData(bridges.getSD(), pos.above(extraData.poleLength));
+        if (dh == null)
+            return;
+
+        NodeLayout nodes = resolveNodes(pos, extraData.poleLength, dh.sliced);
 
         int prevSteps = extraData.steps;
         double ratio = updateStepsAndGetRatio(extraData);
@@ -102,23 +107,18 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
             return;
         }
 
+        DataHolder topData = extraData.top ? extraData : getVoltageRegulatorData(results.getSD(), pos.above(extraData.poleLength));
+        if (topData == null)
+            return;
+
+        NodeLayout nodes = resolveNodes(pos, extraData.poleLength, topData.sliced);
+
         double current;
         double inputVoltage;
-        if (extraData.top) {
-            // Single block
-            extraData.lastVoltage = results.getVoltageAt(pos, NODE_OUTPUT, NODE_GROUND_SINGLE);
-            inputVoltage = results.getVoltageAt(pos, NODE_INPUT, NODE_GROUND_SINGLE);
-            current = results.getCurrentThrough(pos, NODE_OUTPUT_DIV, NODE_OUTPUT);
-        } else {
-            // Multiblock
-            BlockPos topPos = pos.above(extraData.poleLength);
-            DataHolder topData = getVoltageRegulatorData(results.getSD(), topPos);
-            if (topData == null)
-                return;
-            extraData.lastVoltage = results.getVoltageAt(new InWorldNode(NODE_OUTPUT, topPos), new InWorldNode(NODE_GROUND, pos));
-            inputVoltage = results.getVoltageAt(new InWorldNode(NODE_INPUT, topPos), new InWorldNode(NODE_GROUND, pos));
-            current = results.getCurrentThrough(new InWorldNode(NODE_OUTPUT_DIV, pos), new InWorldNode(NODE_OUTPUT, topPos));
-        }
+
+        extraData.lastVoltage = results.getVoltageAt(nodes.output, nodes.ground);
+        inputVoltage = results.getVoltageAt(nodes.input, nodes.ground);
+        current = results.getCurrentThrough(nodes.outputDiv, nodes.output);
 
         if (extraData.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof VoltageRegulatorBlockEntity be)
@@ -160,23 +160,26 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
         return di.extraData() instanceof DataHolder dh ? dh : null;
     }
 
-    private NodeLayout resolveNodes(BlockPos bottomPos, int poleLength) {
+    private NodeLayout resolveNodes(BlockPos bottomPos, int poleLength, int sliced) {
+        if (poleLength < 0)
+            poleLength = 0;
+
         InWorldNode inputDiv  = new InWorldNode(NODE_INPUT_DIV,  bottomPos);
         InWorldNode outputDiv = new InWorldNode(NODE_OUTPUT_DIV, bottomPos);
 
+        BlockPos topPos = bottomPos.above(sliced == 0 ? poleLength : poleLength + 1);
         if (poleLength > 0) {
-            BlockPos topPos = bottomPos.above(poleLength);
             return new NodeLayout(
-                    new InWorldNode(NODE_INPUT,  topPos),
-                    new InWorldNode(NODE_OUTPUT, topPos),
+                    new InWorldNode(sliced == 2 ? NODE_OUTPUT : NODE_INPUT, topPos),
+                    new InWorldNode(sliced == 2 ? NODE_INPUT : NODE_OUTPUT, topPos),
                     new InWorldNode(NODE_GROUND, bottomPos),
                     inputDiv, outputDiv
             );
         } else {
             return new NodeLayout(
-                    new InWorldNode(NODE_INPUT,  bottomPos),
-                    new InWorldNode(NODE_OUTPUT, bottomPos),
-                    new InWorldNode(NODE_GROUND_SINGLE, bottomPos),
+                    new InWorldNode(sliced == 2 ? NODE_OUTPUT : NODE_INPUT, topPos),
+                    new InWorldNode(sliced == 2 ? NODE_INPUT : NODE_OUTPUT, topPos),
+                    new InWorldNode(sliced == 0 ? NODE_GROUND_SINGLE : NODE_GROUND, bottomPos),
                     inputDiv, outputDiv
             );
         }
@@ -208,6 +211,7 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
         dataHolder.top = tag.getBoolean("Top");
         dataHolder.bottom = tag.getBoolean("Bottom");
         dataHolder.poleLength = tag.getInt("PoleLength");
+        dataHolder.sliced = tag.getInt("Sliced");
         return dataHolder;
     }
 
@@ -223,6 +227,8 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
             tag.putBoolean("Bottom", true);
         if (extraData.top)
             tag.putBoolean("Top", true);
+        if (extraData.sliced != 0)
+            tag.putInt("Sliced", extraData.sliced);
         return tag;
     }
 
@@ -236,6 +242,7 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
         public boolean top;
         public int poleLength;
         public int stepTimeout = 0;
+        public int sliced;
     }
 
     private record NodeLayout(InWorldNode input, InWorldNode output, InWorldNode ground,

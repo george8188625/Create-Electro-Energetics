@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.function.UnaryOperator;
 
 public class CEEDataComponents {
-    private static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, CreateElecrtoEnergetics.ID);
+    private static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, CreateElectroEnergetics.ID);
 
     public static final DataComponentType<InWorldNode> SELECTED_NODE = register("selected_node", builder -> builder.persistent(InWorldNode.CODEC).networkSynchronized(InWorldNode.STREAM_CODEC));
     public static final DataComponentType<UUID> OWNER = register("owner", builder -> builder.persistent(UUIDUtil.CODEC).networkSynchronized(UUIDUtil.STREAM_CODEC));

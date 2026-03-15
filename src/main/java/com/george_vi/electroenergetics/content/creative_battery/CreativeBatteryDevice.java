@@ -28,14 +28,14 @@ public class CreativeBatteryDevice extends SimulatedDevice<CreativeBatteryDevice
                         .idealVoltageSource(0, 1, voltage);
             else
                 bridges.builder(pos)
-                        .connect(0, 1, new ACSource(voltage, 0));
+                        .connect(0, 1, new ACSource(voltage, extraData.phaseOffset, 0));
         } else {
             if (extraData.acFrequency == 0)
                 bridges.builder(pos)
                         .voltageSourceWithResistance(0, 1, 0.001d, voltage);
             else
                 bridges.builder(pos)
-                        .connect(0, 1, new ACSource(voltage, 0.001d));
+                        .connect(0, 1, new ACSource(voltage, extraData.phaseOffset, 0.001d));
         }
         bridges.defaultZeroPotential(new InWorldNode(0, pos), 200);
     }
@@ -45,6 +45,7 @@ public class CreativeBatteryDevice extends SimulatedDevice<CreativeBatteryDevice
         DataHolder dataHolder = new DataHolder();
         dataHolder.voltage = tag.contains("Voltage") ? tag.getDouble("Voltage") : 300;
         dataHolder.acFrequency = tag.getDouble("ACFrequency");
+        dataHolder.phaseOffset = tag.getFloat("PhaseOffset");
         return dataHolder;
     }
 
@@ -52,6 +53,7 @@ public class CreativeBatteryDevice extends SimulatedDevice<CreativeBatteryDevice
     public CompoundTag write(DataHolder extraData) {
         CompoundTag tag = new CompoundTag();
         tag.putDouble("Voltage", extraData.voltage);
+        tag.putFloat("PhaseOffset", extraData.phaseOffset);
         if (extraData.acFrequency != 0)
             tag.putDouble("ACFrequency", extraData.acFrequency);
         return tag;
@@ -60,25 +62,27 @@ public class CreativeBatteryDevice extends SimulatedDevice<CreativeBatteryDevice
     public static class DataHolder {
         public double voltage;
         public double acFrequency;
+        public float phaseOffset;
     }
 
     public static class ACSource extends MicroTickingElectricalProperties {
         double voltage;
         double seriesResistance;
+        float phaseOffset;
 
-        public ACSource(double voltage, double seriesResistance) {
+        public ACSource(double voltage, float phaseOffset, double seriesResistance) {
             this.voltage = voltage;
             this.seriesResistance = seriesResistance;
             this.resistance = seriesResistance == 0 ? 1e+11d : seriesResistance;
-
+            this.phaseOffset = phaseOffset;
         }
 
         @Override
         public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
             if (seriesResistance == 0)
-                this.voltageSource = Math.cos(((double) microTick / (totalMicroTicks)) * Mth.TWO_PI) * voltage;
+                this.voltageSource = Math.cos(((double) microTick / (totalMicroTicks)) * Mth.TWO_PI + phaseOffset * Mth.DEG_TO_RAD) * voltage;
             else
-                this.currentSource = Math.cos(((double) microTick / (totalMicroTicks)) * Mth.TWO_PI) * voltage / seriesResistance;
+                this.currentSource = Math.cos(((double) microTick / (totalMicroTicks)) * Mth.TWO_PI + phaseOffset * Mth.DEG_TO_RAD) * voltage / seriesResistance;
         }
     }
 }

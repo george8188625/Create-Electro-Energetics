@@ -9,7 +9,7 @@ import com.tterrag.registrate.util.entry.RegistryEntry;
 
 import java.util.function.Supplier;
 
-import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE;
+import static com.george_vi.electroenergetics.CreateElectroEnergetics.REGISTRATE;
 
 public class CEEDisplaySources {
     public static final RegistryEntry<DisplaySource, EnergyMeterDisplaySource> ENERGY_METER = simple("energy_meter", EnergyMeterDisplaySource::new);

@@ -5,6 +5,7 @@
     "electroenergetics:pole_mount",
     "electroenergetics:double_connector",
     "electroenergetics:triple_connector",
+    "electroenergetics:high_voltage_capacitor",
     "electroenergetics:quad_connector",
     "electroenergetics:ground_rod",
     "electroenergetics:creative_battery",

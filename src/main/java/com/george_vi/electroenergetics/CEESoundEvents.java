@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 public class CEESoundEvents {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
-            DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, CreateElecrtoEnergetics.ID);
+            DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, CreateElectroEnergetics.ID);
     public static final Supplier<SoundEvent> HUM = sound("hum");
     public static final Supplier<SoundEvent> SHORT_ARC = sound("short_arc");
     public static final Supplier<SoundEvent> ARC = sound("arc");
@@ -37,7 +37,7 @@ public class CEESoundEvents {
     public static final Supplier<SoundEvent> TRAIN_GTO_P15 = sound("train/gto/p15");
 
     private static @NotNull DeferredHolder<SoundEvent, SoundEvent> sound(String path) {
-        return SOUND_EVENTS.register(path, () -> SoundEvent.createVariableRangeEvent(CreateElecrtoEnergetics.rl(path)));
+        return SOUND_EVENTS.register(path, () -> SoundEvent.createVariableRangeEvent(CreateElectroEnergetics.rl(path)));
     }
 
     public static void register(IEventBus bus) {

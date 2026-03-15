@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_connector": {
+    "has_capacitor": {
       "conditions": {
         "items": [
           {
-            "items": "electroenergetics:connector"
+            "items": "electroenergetics:capacitor"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "electroenergetics:crafting/capacitor"
+        "recipe": "electroenergetics:crafting/high_voltage_capacitor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_connector"
+      "has_capacitor"
     ]
   ],
   "rewards": {
     "recipes": [
-      "electroenergetics:crafting/capacitor"
+      "electroenergetics:crafting/high_voltage_capacitor"
     ]
   }
 }

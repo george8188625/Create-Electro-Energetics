@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.fuse.fuse_held;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -44,7 +44,7 @@ public abstract class FuseHoldable {
             if (e.getValue() == this)
                 return e.getKey();
         }
-        return CreateElecrtoEnergetics.rl("empty");
+        return CreateElectroEnergetics.rl("empty");
     }
 
     public abstract boolean isValid(ItemStack stack);

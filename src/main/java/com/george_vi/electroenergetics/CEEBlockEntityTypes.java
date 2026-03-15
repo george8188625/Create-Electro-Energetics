@@ -9,6 +9,7 @@ import com.george_vi.electroenergetics.content.electronic_components.resistor.Re
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorRenderer;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlockEntity;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderRenderer;
+import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorBlockEntity;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockEntity;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbRenderer;
 import com.george_vi.electroenergetics.content.potentiometer.PotentiometerBlockEntity;
@@ -19,8 +20,8 @@ import com.george_vi.electroenergetics.content.railway_electrification.pantograp
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographRenderer;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlockEntity;
-import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlockEntity;
-import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchRenderer;
+import com.george_vi.electroenergetics.content.transmission_distribution.hv_switch.HVSwitchBlockEntity;
+import com.george_vi.electroenergetics.content.transmission_distribution.hv_switch.HVSwitchRenderer;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlockEntity;
@@ -30,15 +31,15 @@ import com.george_vi.electroenergetics.content.railway_electrification.third_rai
 import com.george_vi.electroenergetics.content.railway_electrification.third_rail.RailContactShoeRenderer;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlockEntity;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlockEntity;
-import com.george_vi.electroenergetics.content.transformer.TransformerBlockEntity;
-import com.george_vi.electroenergetics.content.transformer.TransformerCoreBlockEntity;
-import com.george_vi.electroenergetics.content.voltage_regulator.VoltageRegulatorBlockEntity;
+import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerBlockEntity;
+import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreBlockEntity;
+import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorBlockEntity;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.content.kinetics.base.ShaftRenderer;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
-import static com.george_vi.electroenergetics.CreateElecrtoEnergetics.REGISTRATE;
+import static com.george_vi.electroenergetics.CreateElectroEnergetics.REGISTRATE;
 
 public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<EnergyMeterBlockEntity> ENERGY_METER = REGISTRATE.blockEntity("energy_meter", EnergyMeterBlockEntity::new)
@@ -145,6 +146,10 @@ public class CEEBlockEntityTypes {
 
     public static final BlockEntityEntry<CapacitorBlockEntity> CAPACITOR = REGISTRATE.blockEntity("capacitor", CapacitorBlockEntity::new)
             .validBlock(CEEBlocks.CAPACITOR::get)
+            .register();
+
+    public static final BlockEntityEntry<HVCapacitorBlockEntity> HV_CAPACITOR = REGISTRATE.blockEntity("high_voltage_capacitor", HVCapacitorBlockEntity::new)
+            .validBlock(CEEBlocks.HV_CAPACITOR::get)
             .register();
 
     public static final BlockEntityEntry<IndicatorBulbBlockEntity> INDICATOR_BULB = REGISTRATE.blockEntity("indicator_bulb", IndicatorBulbBlockEntity::new)

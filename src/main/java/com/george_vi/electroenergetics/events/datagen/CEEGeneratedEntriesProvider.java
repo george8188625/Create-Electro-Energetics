@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.events.datagen;
 
 import com.george_vi.electroenergetics.CEEDamageTypes;
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -15,7 +15,7 @@ public class CEEGeneratedEntriesProvider extends DatapackBuiltinEntriesProvider 
     private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.DAMAGE_TYPE, CEEDamageTypes::bootstrap);
     public CEEGeneratedEntriesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, registries, BUILDER, Set.of(CreateElecrtoEnergetics.ID));
+        super(output, registries, BUILDER, Set.of(CreateElectroEnergetics.ID));
 
     }
 

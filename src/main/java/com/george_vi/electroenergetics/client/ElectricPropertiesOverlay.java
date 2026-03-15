@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.client;
 
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
@@ -77,7 +77,7 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
             graphics.drawString(mc.font, formattedVoltage, x - mc.font.width(formattedVoltage) / 2, y, color.getRGB());
 
             if (invalidConnection || connectionTooLong) {
-                MutableComponent component = Lang.builder(CreateElecrtoEnergetics.ID)
+                MutableComponent component = Lang.builder(CreateElectroEnergetics.ID)
                         .translate(connectionTooLong ? "wire_spool.too_far_away" : "wire_spool.invalid_connection")
                         .style(ChatFormatting.RED)
                         .component();

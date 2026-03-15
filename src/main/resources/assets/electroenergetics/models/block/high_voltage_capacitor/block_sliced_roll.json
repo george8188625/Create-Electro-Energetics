@@ -1,0 +1,24 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "electroenergetics:block/high_voltage_capacitor",
+		"particle": "electroenergetics:block/high_voltage_capacitor"
+	},
+	"elements": [
+		{
+			"from": [3, 0, 0],
+			"to": [13, 16, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 12, 8]},
+			"faces": {
+				"north": {"uv": [16, 6, 8, 1], "rotation": 90, "texture": "#0"},
+				"east": {"uv": [8, 0, 0, 8], "texture": "#0"},
+				"south": {"uv": [16, 1, 8, 6], "rotation": 90, "texture": "#0"},
+				"west": {"uv": [0, 0, 8, 8], "texture": "#0"},
+				"up": {"uv": [8, 11, 16, 16], "rotation": 90, "texture": "#0"},
+				"down": {"uv": [8, 6, 16, 11], "rotation": 270, "texture": "#0"}
+			}
+		}
+	]
+}

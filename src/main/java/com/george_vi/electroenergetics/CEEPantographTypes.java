@@ -7,7 +7,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class CEEPantographTypes {
     private static final DeferredRegister<PantographType> PANTOGRAPH_TYPE =
-            DeferredRegister.create(CEERegistries.PANTOGRAPH_TYPE, CreateElecrtoEnergetics.ID);
+            DeferredRegister.create(CEERegistries.PANTOGRAPH_TYPE, CreateElectroEnergetics.ID);
 
     public static final DeferredHolder<PantographType, PantographType> STANDARD = PANTOGRAPH_TYPE.register("standard", () -> new PantographType(3.25f, 0.25f, 0.5f, 2f));
     public static final DeferredHolder<PantographType, PantographType> DOUBLE = PANTOGRAPH_TYPE.register("double", () -> new PantographType(3.25f, 0.5f, 0.5f, 2f));

@@ -19,6 +19,21 @@ public class CEENodeConfigurations {
             .add(new Vec3(13/16f, 5/16f, 0.5f))
             .simple();
 
+    public static final NodeConfigurator DOUBLE_CONNECTOR_MEDIUM = new NodeConfigurator.Builder()
+            .add(new Vec3(3/16f, 8/16f, 0.5f))
+            .add(new Vec3(13/16f, 8/16f, 0.5f))
+            .simple();
+
+    public static final NodeConfigurator DOUBLE_CONNECTOR_LARGE = new NodeConfigurator.Builder()
+            .add(new Vec3(0/16f, 17/16f, 0.5f))
+            .add(new Vec3(16/16f, 17/16f, 0.5f))
+            .simple();
+
+    public static final NodeConfigurator DOUBLE_CONNECTOR_LARGE_ANGLED = new NodeConfigurator.Builder()
+            .add(new Vec3(-2/16f, 16/16f, 0.5f))
+            .add(new Vec3(18/16f, 16/16f, 0.5f))
+            .simple();
+
     public static final NodeConfigurator BULB = new NodeConfigurator.Builder()
             .add(new Vec3(2/16f, 3/16f, 0.5f))
             .add(new Vec3(14/16f, 3/16f, 0.5f))
@@ -97,6 +112,11 @@ public class CEENodeConfigurations {
             .add(new Vec3(3/16f, 8/16f, 13/16f))
             .add(new Vec3(13/16f, 8/16f, 13/16f))
             .simple(Direction.NORTH);
+
+    public static final NodeConfigurator HV_CAPACITOR = new NodeConfigurator.Builder()
+            .add(new Vec3(3/16f, 19/16f, 8/16f))
+            .add(new Vec3(13/16f, 19/16f, 8/16f))
+            .simple();
 
     public static final NodeConfigurator VOLTAGE_REGULATOR_TOP = new NodeConfigurator.Builder()
             .add(new Vec3(4/16f, 19/16f, 8/16f))

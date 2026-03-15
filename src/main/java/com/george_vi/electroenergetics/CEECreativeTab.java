@@ -13,7 +13,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class CEECreativeTab {
     private static final DeferredRegister<CreativeModeTab> REGISTER =
-            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateElecrtoEnergetics.ID);
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateElectroEnergetics.ID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_TAB = REGISTER.register("base",
             () -> CreativeModeTab.builder()
@@ -71,6 +71,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.ALTERNATOR_BRUSHES.asStack());
                         output.accept(CEEBlocks.MAGNET_BLOCK.asStack());
                         output.accept(CEEBlocks.ACCUMULATOR.asStack());
+                        output.accept(CEEBlocks.HV_CAPACITOR.asStack());
                         output.accept(CEEBlocks.CONVERTER.asStack());
                         output.accept(CEEBlocks.CONCRETE_POLE.asStack());
                         output.accept(CEEBlocks.POLE_MOUNT.asStack());

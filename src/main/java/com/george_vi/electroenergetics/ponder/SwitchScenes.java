@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchBlock;
-import com.george_vi.electroenergetics.content.cut_off_switch.HVSwitchBlockEntity;
+import com.george_vi.electroenergetics.content.transmission_distribution.hv_switch.HVSwitchBlockEntity;
 import com.george_vi.electroenergetics.content.relay.RelayBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.AllItems;

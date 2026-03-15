@@ -330,7 +330,8 @@ public class InfrastructureSavedData extends SavedData {
                     for (InWorldNode node : oldNodes) {
                         if (nodes.contains(node))
                             continue;
-                        getConnections(node).forEach(this::removeConnection);
+                        for (InWorldNodeConnection connection : getConnections(node))
+                            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
                         NODES.remove(node);
                         NODE_POSITIONS.remove(node);
                     }

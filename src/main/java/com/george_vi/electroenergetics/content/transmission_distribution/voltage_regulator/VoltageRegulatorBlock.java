@@ -1,7 +1,8 @@
-package com.george_vi.electroenergetics.content.voltage_regulator;
+package com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator;
 
 import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
@@ -47,17 +48,18 @@ import java.util.Map;
 public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock, IBE<VoltageRegulatorBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final BooleanProperty SLICED = BooleanProperty.create("sliced");
     public static final BooleanProperty TOP = BooleanProperty.create("top");
     public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
 
     public VoltageRegulatorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false).setValue(SLICED, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED, TOP, BOTTOM);
+        builder.add(FACING, WATERLOGGED, TOP, BOTTOM, SLICED);
     }
 
     @Override
@@ -65,6 +67,8 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof VoltageRegulatorBlockEntity be)
             tag.putDouble("Voltage", be.voltage.getVoltage());
+        if (state.getValue(SLICED))
+            tag.putInt("Sliced", state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 2 : 1);
         return tag;
     }
 
@@ -73,8 +77,19 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState below = context.getLevel().getBlockState(context.getClickedPos().below());
         BlockState above = context.getLevel().getBlockState(context.getClickedPos().above());
-        return withWater(defaultBlockState().setValue(BOTTOM, !CEEBlocks.CONCRETE_POLE.has(below))
-                .setValue(TOP, !CEEBlocks.VOLTAGE_REGULATOR.has(above)).setValue(FACING, CEEBlocks.VOLTAGE_REGULATOR.has(below) ? below.getValue(FACING) : CEEBlocks.VOLTAGE_REGULATOR.has(above) ? above.getValue(FACING) : context.getHorizontalDirection()), context);
+        Direction facing = CEEBlocks.VOLTAGE_REGULATOR.has(below) ? below.getValue(FACING) :
+                CEEBlocks.VOLTAGE_REGULATOR.has(above) ? above.getValue(FACING) :
+                    context.getHorizontalDirection();
+        boolean sliced = isValidDoubleConnector(above, facing);
+        return withWater(defaultBlockState().setValue(BOTTOM, !CEEBlocks.VOLTAGE_REGULATOR.has(below))
+                .setValue(TOP, !CEEBlocks.VOLTAGE_REGULATOR.has(above))
+                .setValue(FACING, facing).setValue(SLICED, sliced), context);
+    }
+
+    private static boolean isValidDoubleConnector(BlockState above, Direction facing) {
+        return CEEBlocks.DOUBLE_CONNECTOR.has(above) &&
+                above.getValue(DoubleConnectorBlock.FACING) == Direction.UP &&
+                above.getValue(DoubleConnectorBlock.ROLL) == (facing.getAxis() == Direction.Axis.X);
     }
 
     @Override
@@ -83,7 +98,8 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+                                     LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         BlockState below = level.getBlockState(pos.below());
         BlockState above = level.getBlockState(pos.above());
 
@@ -95,6 +111,8 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
                 level.scheduleTick(pos, this, 1);
             change = true;
         }
+
+        boolean sliced = isValidDoubleConnector(above, state.getValue(FACING));
 
         updateWater(level, state, pos);
 
@@ -109,13 +127,16 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
                 dataHolder.bottom = bottom;
             }
 
-            if (change)
+            if (change || sliced != state.getValue(SLICED))
                 for (InWorldNode node : sd.getNodesAt(pos)) {
                     List<InWorldNodeConnection> connections = sd.getConnections(node);
                     for (InWorldNodeConnection connection : connections)
-                        Containers.dropItemStack(sl, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(sd.removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
+                        Containers.dropItemStack(sl, pos.getX(), pos.getY(), pos.getZ(),
+                                new ItemStack(sd.removeConnection(connection).wireType().getDrops(),
+                                        CEEConfigs.server().wiresPerSpool.get()));
                 }
         }
+
 
         if (!bottom && direction == Direction.DOWN &&
                 below.getValue(FACING) != state.getValue(FACING))
@@ -125,7 +146,8 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
             level.setBlock(pos, state.setValue(FACING, above.getValue(FACING)), 3);
 
         return state.setValue(BOTTOM, bottom)
-                .setValue(TOP, top);
+                .setValue(TOP, top)
+                .setValue(SLICED, sliced);
     }
 
     @Override
@@ -142,6 +164,7 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
         if (device != null && device.extraData() instanceof VoltageRegulatorDevice.DataHolder dataHolder) {
             dataHolder.top = top;
             dataHolder.bottom = bottom;
+            dataHolder.sliced = state.getValue(SLICED) ? state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 2 : 1 : 0;
         }
     }
 
@@ -158,28 +181,34 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(BOTTOM) && state.getValue(TOP))
-            return CEENodeConfigurations.VOLTAGE_REGULATOR_BOTH.getNodes(state.getValue(FACING));
+            return state.getValue(SLICED) ?
+                    CEENodeConfigurations.VOLTAGE_REGULATOR_BOTTOM.getNodes(state.getValue(FACING)) :
+                    CEENodeConfigurations.VOLTAGE_REGULATOR_BOTH.getNodes(state.getValue(FACING));
         else if (state.getValue(BOTTOM) && !state.getValue(TOP))
             return CEENodeConfigurations.VOLTAGE_REGULATOR_BOTTOM.getNodes(state.getValue(FACING));
-        else if (!state.getValue(BOTTOM) && state.getValue(TOP))
+        else if (!state.getValue(BOTTOM) && state.getValue(TOP) && !state.getValue(SLICED))
             return CEENodeConfigurations.VOLTAGE_REGULATOR_TOP.getNodes(state.getValue(FACING));
         return Collections.emptyMap();
     }
 
     @Override
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
-        if (state.getValue(TOP))
-            return id == 0 ? CEELang.nodeLabel("input") : id == 1 ? CEELang.nodeLabel("output") : CEELang.nodeLabel("neutral");
-        return CEELang.nodeLabel("neutral");
+        if (state.getValue(TOP) && !state.getValue(SLICED))
+            return id == 0 ? CEELang.nodeLabel("input") :
+                    id == 1 ? CEELang.nodeLabel("output") :
+                    CEELang.nodeLabel("ground");
+        return CEELang.nodeLabel("ground");
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         if (state.getValue(BOTTOM) && state.getValue(TOP))
-            return CEENodeConfigurations.VOLTAGE_REGULATOR_BOTH.getNodePos(state.getValue(FACING), id);
+            return state.getValue(SLICED) ?
+                    CEENodeConfigurations.VOLTAGE_REGULATOR_BOTTOM.getNodePos(state.getValue(FACING), id) :
+                    CEENodeConfigurations.VOLTAGE_REGULATOR_BOTH.getNodePos(state.getValue(FACING), id);
         else if (state.getValue(BOTTOM) && !state.getValue(TOP))
             return CEENodeConfigurations.VOLTAGE_REGULATOR_BOTTOM.getNodePos(state.getValue(FACING), id);
-        else if (!state.getValue(BOTTOM) && state.getValue(TOP))
+        else if (!state.getValue(BOTTOM) && state.getValue(TOP) && !state.getValue(SLICED))
             return CEENodeConfigurations.VOLTAGE_REGULATOR_TOP.getNodePos(state.getValue(FACING), id);
         return null;
     }

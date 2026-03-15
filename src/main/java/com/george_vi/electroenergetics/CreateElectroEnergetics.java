@@ -18,15 +18,15 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 
-@Mod(CreateElecrtoEnergetics.ID)
-public class CreateElecrtoEnergetics
+@Mod(CreateElectroEnergetics.ID)
+public class CreateElectroEnergetics
 {
     public static final String ID = "electroenergetics";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static CreateRegistrate REGISTRATE;
 
-    public CreateElecrtoEnergetics(IEventBus modEventBus, ModContainer modContainer) {
+    public CreateElectroEnergetics(IEventBus modEventBus, ModContainer modContainer) {
         REGISTRATE = CreateRegistrate.create(ID)
                 .setTooltipModifierFactory(item ->
                         new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE)

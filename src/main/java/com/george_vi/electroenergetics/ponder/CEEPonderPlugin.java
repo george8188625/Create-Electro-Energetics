@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.CreateElecrtoEnergetics;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.simibubi.create.infrastructure.ponder.AllCreatePonderTags;
 import net.createmod.ponder.api.registration.PonderPlugin;
 import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 public class CEEPonderPlugin implements PonderPlugin {
     @Override
     public String getModId() {
-        return CreateElecrtoEnergetics.ID;
+        return CreateElectroEnergetics.ID;
     }
 
     @Override
@@ -93,28 +93,28 @@ public class CEEPonderPlugin implements PonderPlugin {
 
     @Override
     public void registerTags(PonderTagRegistrationHelper<ResourceLocation> helper) {
-        helper.registerTag(CreateElecrtoEnergetics.rl("electrical"))
+        helper.registerTag(CreateElectroEnergetics.rl("electrical"))
                 .addToIndex()
                 .item(CEEBlocks.CONNECTOR, true, false)
                 .title("Electrical Components")
                 .description("Components that use electricity")
                 .register();
 
-        helper.registerTag(CreateElecrtoEnergetics.rl("electricity_basics"))
+        helper.registerTag(CreateElectroEnergetics.rl("electricity_basics"))
                 .addToIndex()
                 .item(CEEBlocks.DIODE, true, false)
                 .title("Electricity Basics")
                 .description("How electricity works")
                 .register();
 
-        helper.registerTag(CreateElecrtoEnergetics.rl("electric_train_sound_changing"))
+        helper.registerTag(CreateElectroEnergetics.rl("electric_train_sound_changing"))
                 .addToIndex()
                 .item(CEEBlocks.ALTERNATOR_BRUSHES, true, false)
                 .title("Electric Train Sound Changers")
                 .description("These blocks change electric train sounds.")
                 .register();
 
-        helper.addToTag(CreateElecrtoEnergetics.rl("electrical"))
+        helper.addToTag(CreateElectroEnergetics.rl("electrical"))
                 .add(CEEBlocks.CONNECTOR.getId())
                 .add(CEEBlocks.DOUBLE_CONNECTOR.getId())
                 .add(CEEBlocks.TRIPLE_CONNECTOR.getId())
@@ -147,7 +147,7 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.GROUND_ROD.getId())
                 ;
 
-        helper.addToTag(CreateElecrtoEnergetics.rl("electricity_basics"))
+        helper.addToTag(CreateElectroEnergetics.rl("electricity_basics"))
                 .add(CEEBlocks.BULB.getId())
                 .add(CEEBlocks.VOLTMETER.getId())
                 .add(CEEBlocks.AMMETER.getId())
@@ -159,7 +159,7 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.GROUND_ROD.getId())
                 ;
 
-        helper.addToTag(CreateElecrtoEnergetics.rl("electric_train_sound_changing"))
+        helper.addToTag(CreateElectroEnergetics.rl("electric_train_sound_changing"))
                 .add(CEEBlocks.ALTERNATOR_BRUSHES.getId())
                 ;
 

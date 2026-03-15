@@ -39,9 +39,17 @@ public class    CEEShapes {
 
     public static final VoxelShaper BULB_COMPACT = shape(5,0, 5,11,10,11).forDirectional();
 
-    public static final VoxelShaper DOUBLE_CONNECTOR = shape(1,0, 6,15,7,10).forDirectional();
+    public static final VoxelShaper HV_CAPACITOR = shape(0,0, 3,16,16,13).forDirectional();
+    public static final VoxelShaper HV_CAPACITOR_ROLL = shape(3,0, 0,13,16,16).forDirectional();
 
+    public static final VoxelShaper DOUBLE_CONNECTOR = shape(1,0, 6,15,7,10).forDirectional();
     public static final VoxelShaper DOUBLE_CONNECTOR_ROLL = shape(6,0, 1,10,7,15).forDirectional();
+    public static final VoxelShaper DOUBLE_CONNECTOR_MEDIUM = shape(1,0, 6,15,10,10).forDirectional();
+    public static final VoxelShaper DOUBLE_CONNECTOR_MEDIUM_ROLL = shape(6,0, 1,10,10,15).forDirectional();
+    public static final VoxelShaper DOUBLE_CONNECTOR_LARGE = shape(-2,0, 6,18,19,10).forDirectional();
+    public static final VoxelShaper DOUBLE_CONNECTOR_LARGE_ROLL = shape(6,0, -2,10,19,18).forDirectional();
+    public static final VoxelShaper DOUBLE_CONNECTOR_LARGE_ANGLED = shape(-4,0, 6,20,18,10).forDirectional();
+    public static final VoxelShaper DOUBLE_CONNECTOR_LARGE_ANGLED_ROLL = shape(6,0, -4,10,18,20).forDirectional();
 
     public static final VoxelShaper CUT_OFF_SWITCH = shape(4,0, 4,12,5,12)
             .add(0,0, 6,16,5,10).forDirectional();
