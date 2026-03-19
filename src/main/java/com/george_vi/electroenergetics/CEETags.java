@@ -19,6 +19,7 @@ public class CEETags {
     public static final TagKey<Item> IRON_RAIL_COMPONENT = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("iron_rail_component"));
     public static final TagKey<Item> IRON_BUS_COMPONENT = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("iron_bus_component"));
     public static final TagKey<Item> IRON_PLATE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "plates/iron"));
+    public static final TagKey<Item> SEE_NODE_DATA = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("see_node_data"));
 
     public static final TagKey<Block> TRAIN_ELECTRIC_MOTOR = TagKey.create(Registries.BLOCK, CreateElectroEnergetics.rl("train_electric_motor"));
     public static final TagKey<Block> TRAIN_ACCUMULATOR = TagKey.create(Registries.BLOCK, CreateElectroEnergetics.rl("train_accumulator"));

@@ -5,7 +5,7 @@
 	"textures": {
 		"0": "electroenergetics:block/high_votlage_sign",
 		"1": "electroenergetics:block/grounding_sign",
-		"particle": "electroenergetics:block/high_votlage_sign"
+		"particle": "electroenergetics:block/grounding_sign"
 	},
 	"elements": [
 		{

@@ -52,7 +52,6 @@ public class WireElectrocutionModule {
     public void buildCircuit(CircuitBuilder builder) {
         if (!CEEConfigs.server().enableElectrocution.get())
             return;
-        SimulationTicker.profiler.push("electrocute");
         for (Entity entity : level.getAllEntities()) {
             if (!(entity instanceof Mob || entity instanceof ServerPlayer))
                 continue;
@@ -60,7 +59,6 @@ public class WireElectrocutionModule {
                 continue;
             computeElectrocutionFor(entity, builder);
         }
-        SimulationTicker.profiler.pop();
     }
     private void computeElectrocutionFor(Entity entity, CircuitBuilder builder) {
         Map<ConnectionEntry, ElectrocutionPart> electrocutionParts = new HashMap<>();
@@ -159,7 +157,6 @@ public class WireElectrocutionModule {
     public void finishSimulation(SimulationResults results) {
         if (!CEEConfigs.server().enableElectrocution.get())
             return;
-        SimulationTicker.profiler.push("electrocute");
 
         Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
         DamageSource damageSource = new DamageSource(registry.getHolderOrThrow(CEEDamageTypes.ELECTROCUTION));
@@ -216,7 +213,6 @@ public class WireElectrocutionModule {
             connectionEntry.isOvervolted = lastWireVoltage > wireType.maxInsulationVoltage();
 
         }
-        SimulationTicker.profiler.pop();
     }
 
     private record ElectrocutionEntry(Map<ConnectionEntry, Pair<ElectrocutionPart, AttachedNode>> nodes, AttachedNode centralNode,

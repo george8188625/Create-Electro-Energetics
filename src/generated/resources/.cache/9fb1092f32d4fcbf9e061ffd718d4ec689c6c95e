@@ -1,4 +1,4 @@
-// 1.21.1	2026-03-15T22:47:16.70760686	Recipes
+// 1.21.1	2026-03-19T21:43:13.75659622	Recipes
 e4558ff2c12de196a56a9f67ffe27050cdfe38f7 data/electroenergetics/advancement/recipes/decorations/stonecutting/electric_shock_sign.json
 1e443110466e17eb3a8f102e9fc77c86fc29380e data/electroenergetics/advancement/recipes/decorations/stonecutting/grounding_sign.json
 e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/recipes/decorations/stonecutting/high_voltage_sign.json
@@ -9,6 +9,7 @@ e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/reci
 75d049f35b4510d4a26a64d757e4654fb29a893a data/electroenergetics/advancement/recipes/misc/crafting/ammeter_from_voltmeter.json
 402da21c9c050ae88e4b7413bb5f87a245ab75cd data/electroenergetics/advancement/recipes/misc/crafting/bulb.json
 e5e367873afffc9a90f0b59f563825a0ecfc2050 data/electroenergetics/advancement/recipes/misc/crafting/buzzer.json
+4a68a2e754083825b0a0272a304eabe1f486d13d data/electroenergetics/advancement/recipes/misc/crafting/capacitor.json
 7134a865ef3747f1a2c05c82cfbc077420a4220b data/electroenergetics/advancement/recipes/misc/crafting/catenary_holder.json
 f7f57cb6ddb3dbf3f30b8fc6f1ada215a7632ffa data/electroenergetics/advancement/recipes/misc/crafting/clamp_meter.json
 f72346bd00e7f0d8156b4c407156afc007f4e80d data/electroenergetics/advancement/recipes/misc/crafting/concrete_pole.json
@@ -70,6 +71,7 @@ e1a3b4eb7dce267aef81eabd8fccc21e5eeb0f47 data/electroenergetics/recipe/crafting/
 d4c6154d2ceae7a1a8079e823af65f21d78d67cd data/electroenergetics/recipe/crafting/ammeter_from_voltmeter.json
 02f7dbd68a73680da275c039625880b8b1d0882a data/electroenergetics/recipe/crafting/bulb.json
 84d679168fc17afb895e761351a253e27b3f2ef7 data/electroenergetics/recipe/crafting/buzzer.json
+4e0593b754142b381b29cf0f75d9c57debca2f9b data/electroenergetics/recipe/crafting/capacitor.json
 49acef436a0c61d40340e3697f0043e7b3b1c2b7 data/electroenergetics/recipe/crafting/catenary_holder.json
 9deba83475f51b6c6cac36c24432596b716b39b1 data/electroenergetics/recipe/crafting/clamp_meter.json
 ca70ace641b1fcf9b5b7399e4c4c614c67da3e49 data/electroenergetics/recipe/crafting/concrete_pole.json

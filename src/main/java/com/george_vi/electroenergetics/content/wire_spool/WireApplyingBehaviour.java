@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.NodeVoltageHolder;
@@ -53,7 +54,7 @@ public class WireApplyingBehaviour {
         LocalPlayer player = mc.player;
         ItemStack heldItem = player.getMainHandItem();
 
-        if (!(heldItem.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(heldItem))) {
+        if (!(heldItem.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(heldItem) || heldItem.is(CEETags.SEE_NODE_DATA))) {
             ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
             return;
         }
@@ -104,9 +105,9 @@ public class WireApplyingBehaviour {
         } else
             ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
 
-        // Player is not looking at a node, return and say it's too far away
+        // Player is not looking at a node
 
-        if (hoveredNode == null)
+        if (hoveredNode == null || !(heldItem.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(heldItem)))
             return;
 
         // Player has selected a node and is looking at one

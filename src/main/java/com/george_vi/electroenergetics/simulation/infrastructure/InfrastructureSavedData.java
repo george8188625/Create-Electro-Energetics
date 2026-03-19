@@ -288,9 +288,9 @@ public class InfrastructureSavedData extends SavedData {
 
     public <T> void addDevice(BlockPos pos, SimulatedDevice<T> device, CompoundTag extraData, List<Integer> nodeIDs) {
         List<InWorldNode> nodes = nodeIDs.stream().map(id -> new InWorldNode(id, pos)).toList();
-
-        if (DEVICES.containsKey(pos)) {
-            SimulatedDeviceInstance<?> di = DEVICES.get(pos);
+        SimulatedDeviceInstance<?> di = DEVICES.get(pos);
+        if (di != null) {
+            di.invalidate();
             if (di.simulatedDevice() == device) {
                 List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
                 if (oldNodes != null && oldNodes.stream().map(InWorldNode::id).sorted().toList().equals(nodeIDs.stream().sorted().toList())) {
@@ -300,8 +300,6 @@ public class InfrastructureSavedData extends SavedData {
                             for (InWorldNodeConnection connection : getConnections(node)) {
                                 wireSimulationState.removeConnection(connection);
                                 wireSimulationState.addConnection(connection, getConnectionData(connection), false);
-//                                wireConnectionManager.wireRemoved(connection);
-//                                wireConnectionManager.wireAdded(connection, getConnectionData(connection));
                             }
                         }
                     }
@@ -344,10 +342,8 @@ public class InfrastructureSavedData extends SavedData {
 
                     for (InWorldNodeConnection connection : getConnections(node)) {
                         wireSimulationState.removeConnection(connection);
-//                        wireConnectionManager.wireRemoved(connection);
                         if (NODES.containsKey(connection.node1()) && NODES.containsKey(connection.node2()))
                             wireSimulationState.addConnection(connection, getConnectionData(connection), false);
-//                            wireConnectionManager.wireAdded(connection, getConnectionData(connection));
                     }
                 }
 
@@ -400,7 +396,9 @@ public class InfrastructureSavedData extends SavedData {
 
 
     public void removeDevice(BlockPos pos) {
-        DEVICES.remove(pos);
+        SimulatedDeviceInstance<?> di = DEVICES.remove(pos);
+        if (di != null)
+            di.invalidate();
         List<InWorldNode> nodes = NODES_BY_POS.get(pos);
         if (nodes != null)
             for (InWorldNode node : nodes) {

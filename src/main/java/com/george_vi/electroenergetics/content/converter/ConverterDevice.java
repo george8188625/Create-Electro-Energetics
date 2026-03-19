@@ -1,14 +1,13 @@
 package com.george_vi.electroenergetics.content.converter;
 
-import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
-import com.george_vi.electroenergetics.content.accumulator.AccumulatorDevice;
-import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -20,14 +19,13 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
     }
 
     static final int MAX_ENERGY = 100_000;
-    public static final double CONVERSION_RATE = 34;
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
-        if (extraData.isSource)
+        if (extraData.isSource) {
             bridges.builder(pos)
                     .energyLimitedSource(0, 1, extraData.storedEnergy, extraData.voltage);
-        else
+        } else
             bridges.builder(pos)
                     .resistor(0, 1, extraData.resistance == 0 ? 999999 : extraData.resistance);
     }
@@ -35,7 +33,7 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
 
-        double displayedPower = 0;
+        double displayedPower;
         double vd = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
         if (extraData.isSource) {
 
@@ -46,9 +44,12 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
 
             if (extraData.storedEnergy < MAX_ENERGY && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
-                IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()), state.getValue(ConverterBlock.FACING));
+                IEnergyStorage energyStorage = level.getCapability(
+                        Capabilities.EnergyStorage.BLOCK,
+                        pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()),
+                        state.getValue(ConverterBlock.FACING));
                 if (energyStorage != null)
-                    extraData.storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - extraData.storedEnergy) / CONVERSION_RATE), false) * CONVERSION_RATE;
+                    extraData.storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - extraData.storedEnergy) / CEEConfigs.server().wattFeTConversionRate.get()), false) * CEEConfigs.server().wattFeTConversionRate.get();
             }
 
             displayedPower = power;
@@ -60,9 +61,12 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
 
             if (extraData.storedEnergy > 0 && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
-                IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()), state.getValue(ConverterBlock.FACING));
+                IEnergyStorage energyStorage = level.getCapability(
+                        Capabilities.EnergyStorage.BLOCK,
+                        pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()),
+                        state.getValue(ConverterBlock.FACING));
                 if (energyStorage != null)
-                    extraData.storedEnergy -= energyStorage.receiveEnergy((int) (extraData.storedEnergy / CONVERSION_RATE), false) * CONVERSION_RATE;
+                    extraData.storedEnergy -= energyStorage.receiveEnergy((int) (extraData.storedEnergy / CEEConfigs.server().wattFeTConversionRate.get()), false) * CEEConfigs.server().wattFeTConversionRate.get();
             }
 
             displayedPower = -power;
@@ -70,6 +74,9 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
                 extraData.resistance = Math.max(20, vd / (Math.max((MAX_ENERGY - extraData.storedEnergy), 0.01) / vd));
 
         }
+
+        extraData.storedEnergy = Mth.clamp(extraData.storedEnergy, 0, MAX_ENERGY);
+
         if (extraData.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ConverterBlockEntity be)
                 extraData.be = be;
@@ -78,8 +85,10 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
             if (extraData.be.isRemoved())
                 extraData.be = null;
             else {
-                if (Math.abs(extraData.be.power - displayedPower) > 1) {
+                if (Math.abs(extraData.be.power - displayedPower) > 1 ||
+                        Math.abs(extraData.be.storedEnergy - extraData.storedEnergy) > 10) {
                     extraData.be.power = displayedPower;
+                    extraData.be.storedEnergy = extraData.storedEnergy;
                     extraData.be.sendData();
                 }
             }

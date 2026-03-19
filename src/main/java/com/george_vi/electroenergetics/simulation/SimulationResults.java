@@ -144,9 +144,15 @@ public class SimulationResults {
         int id2 = nodeId2 << microTickBits;
         if (microTickBits == 0)
             return voltages[id1] - voltages[id2];
+
         double rms = 0;
-        for (int j = 0; j < microTicks; j++)
-            rms += (voltages[id1|j] - voltages[id2|j]) * (voltages[id1|j] - voltages[id2|j]);
+        for (int j = 0; j < microTicks; j++) {
+            double v1 = voltages[id1 | j];
+            double v2 = voltages[id2 | j];
+            rms += (v1 - v2) * (v1 - v2);
+        }
+        if (Math.abs(rms) < 0.001) // no need to sqrt a zero
+            return 0;
         rms /= microTicks;
         rms = Math.sqrt(rms);
         return rms;

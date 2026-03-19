@@ -157,7 +157,7 @@ public class CircuitBuilder {
                 continue;
             visited[i] = true;
             WrappedIndexedNode node = allIndexedNodes.get(i);
-            Set<WrappedIndexedNode> networkNodes = new HashSet<>();
+            Set<WrappedIndexedNode> networkNodes = new HashSet<>(64);
             networkNodes.add(node);
             dfsInner(node, visited, networkNodes, false);
             allNetworks.add(networkNodes);

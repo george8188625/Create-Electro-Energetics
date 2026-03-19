@@ -109,7 +109,7 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (InWorldNode) obj;
         return this.id == that.id &&
-                Objects.equals(this.sourcePos, that.sourcePos);
+                this.sourcePos.equals(that.sourcePos);
     }
 
     @Override
