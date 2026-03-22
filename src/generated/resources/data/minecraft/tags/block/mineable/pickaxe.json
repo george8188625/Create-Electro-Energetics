@@ -48,6 +48,7 @@
     "electroenergetics:high_voltage_sign",
     "electroenergetics:electric_shock_sign",
     "electroenergetics:grounding_sign",
-    "electroenergetics:potentiometer"
+    "electroenergetics:potentiometer",
+    "electroenergetics:resistive_heater"
   ]
 }

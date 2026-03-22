@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * This is a type class for devices.
- * Devices are data structures for blocks with electric behaviour that allows them to tick, even tho they are unloaded.
+ * Devices are data structures for blocks with electric behavior that allows them to tick, even tho they are unloaded.
  * Devices use a separate object for storing data.
  * @param <T> the data holder class type
  */
@@ -92,5 +92,10 @@ public abstract class SimulatedDevice<T> {
         return newTemp;
     }
 
-
+    /**
+     * @return if the device should tick
+     */
+    public boolean ticks() {
+        return true;
+    }
 }

@@ -29,7 +29,7 @@ public class Network {
     public boolean voltageSourcesInMatrix = false;
     List<CoupledProperties> coupledProperties;
 
-    public Network(Set<WrappedIndexedNode> allNodes, CircuitBuilder builder, InfrastructureSavedData sd) {
+    public Network(Collection<WrappedIndexedNode> allNodes, CircuitBuilder builder, InfrastructureSavedData sd) {
         this.allNodes = new HashSet<>(allNodes);
         this.builder = builder;
         this.sd = sd;

@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 public interface DeviceBlock {
@@ -27,6 +28,7 @@ public interface DeviceBlock {
      * @param id ID of the node (block-local)
      * @return position of the node (relative to the bottom corner of the block)
      */
+    @Nullable
     Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id);
 
     /**

@@ -23,4 +23,9 @@ public class WrappedIndexedNode {
         this.node = node;
         this.ordinal = ordinal;
     }
+
+    @Override
+    public int hashCode() {
+        return ordinal * 31 + ordinal;
+    }
 }

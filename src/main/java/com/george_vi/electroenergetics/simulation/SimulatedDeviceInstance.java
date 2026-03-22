@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.simulation;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +21,11 @@ public final class SimulatedDeviceInstance<T> {
         this.pos = pos;
         this.extraData = extraData;
         this.nodes = nodes;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static SimulatedDeviceInstance<?> read(SimulatedDevice<?> device, BlockPos pos, CompoundTag data, List<InWorldNode> nodes) {
+        return new SimulatedDeviceInstance(device, pos, device.read(data), nodes);
     }
 
     public void invalidate() {
@@ -75,4 +81,11 @@ public final class SimulatedDeviceInstance<T> {
                 "nodes=" + nodes + ']';
     }
 
+    public void runPostTick(ServerLevel level, SimulationResults results) {
+        simulatedDevice.postTick(pos(), level, results, extraData());
+    }
+
+    public void runPreTick(ServerLevel level, BridgeCollector collector) {
+        simulatedDevice.preTick(pos(), level, collector, extraData());
+    }
 }

@@ -53,6 +53,7 @@
   "block.electroenergetics.rail_contact_shoe": "Rail Contact Shoe",
   "block.electroenergetics.redstone_relay": "Redstone Relay",
   "block.electroenergetics.relay": "Relay",
+  "block.electroenergetics.resistive_heater": "Resistive Heater",
   "block.electroenergetics.resistor": "Resistor",
   "block.electroenergetics.transformer": "Transformer",
   "block.electroenergetics.transformer_core": "Transformer Core",

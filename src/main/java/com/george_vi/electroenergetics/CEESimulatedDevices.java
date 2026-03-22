@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.content.connector.ConnectorDevice;
 import com.george_vi.electroenergetics.content.converter.ConverterDevice;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchDevice;
+import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_switch.HVSwitchDevice;
 import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchDevice;
@@ -76,6 +77,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice<?> TRANSFORMER_CORE = register(new TransformerCoreDevice(CreateElectroEnergetics.rl("transformer_core")));
     public static final SimulatedDevice<?> INDICATOR_BULB = register(new IndicatorBulbDevice(CreateElectroEnergetics.rl("indicator_bulb")));
     public static final SimulatedDevice<?> POTENTIOMETER = register(new PotentiometerDevice(CreateElectroEnergetics.rl("potentiometer")));
+    public static final SimulatedDevice<?> RESISTIVE_HEATER = register(new ResistiveHeaterDevice(CreateElectroEnergetics.rl("resistive_heater")));
 
     public static SimulatedDevice<?> register(SimulatedDevice<?> device) {
         BY_ID.put(device.getID(), device);

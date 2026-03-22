@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.simulation.simulator.MicroTickingElectric
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -148,22 +149,22 @@ public class CircuitBuilder {
         return indexedNode;
     }
 
-    List<Set<WrappedIndexedNode>> allNetworks;
-    public List<Set<WrappedIndexedNode>> dfs() {
-        List<Set<WrappedIndexedNode>> allNetworks = new ArrayList<>(allIndexedNodes.size());
+    List<List<WrappedIndexedNode>> allNetworks;
+    public List<List<WrappedIndexedNode>> dfs() {
+        List<List<WrappedIndexedNode>> allNetworks = new ArrayList<>(allIndexedNodes.size());
         boolean[] visited = new boolean[allIndexedNodes.size()];
         for (int i = 0; i < allIndexedNodes.size(); i++) {
             if (visited[i])
                 continue;
             visited[i] = true;
             WrappedIndexedNode node = allIndexedNodes.get(i);
-            Set<WrappedIndexedNode> networkNodes = new HashSet<>(64);
+            List<WrappedIndexedNode> networkNodes = new ArrayList<>();
             networkNodes.add(node);
             dfsInner(node, visited, networkNodes, false);
             allNetworks.add(networkNodes);
         }
         NetworksLoop:
-        for (Set<WrappedIndexedNode> networkNodes : allNetworks) {
+        for (List<WrappedIndexedNode> networkNodes : allNetworks) {
             WrappedIndexedNode highestPriorityGround = null;
             int highestPriority = Integer.MIN_VALUE;
 
@@ -191,7 +192,7 @@ public class CircuitBuilder {
                 continue;
             visited[i] = true;
             WrappedIndexedNode node = allIndexedNodes.get(i);
-            Set<WrappedIndexedNode> networkNodes = new HashSet<>();
+            List<WrappedIndexedNode> networkNodes = new ArrayList<>();
             networkNodes.add(node);
             dfsInner(node, visited, networkNodes, true);
             allNetworks.add(networkNodes);
@@ -200,12 +201,13 @@ public class CircuitBuilder {
         return allNetworks;
     }
 
-    private void dfsInner(WrappedIndexedNode startNode, boolean[] visited, Set<WrappedIndexedNode> networkNodes, boolean invis) {
+    private void dfsInner(WrappedIndexedNode startNode, boolean[] visited, List<WrappedIndexedNode> networkNodes, boolean invis) {
         Deque<WrappedIndexedNode> stack = new ArrayDeque<>();
         stack.push(startNode);
         while (!stack.isEmpty()) {
             WrappedIndexedNode node = stack.pop();
-            for (int i : node.adjacency.keySet()) {
+            for (IntIterator it = node.adjacency.keySet().iterator(); it.hasNext(); ) {
+                int i = it.nextInt();
                 if (visited[i])
                     continue;
                 visited[i] = true;

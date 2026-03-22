@@ -32,10 +32,12 @@ import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
 public class InfrastructureSavedData extends SavedData {
     Map<BlockPos, SimulatedDeviceInstance<?>> DEVICES = new TreeMap<>();
+    Map<BlockPos, SimulatedDeviceInstance<?>> TICKING_DEVICES = new HashMap<>();
     Map<InWorldNode, List<InWorldNode>> NODES = new HashMap<>();
     Map<InWorldNode, Vec3> NODE_POSITIONS = new HashMap<>();
     Map<BlockPos, List<InWorldNode>> NODES_BY_POS = new HashMap<>();
@@ -159,6 +161,7 @@ public class InfrastructureSavedData extends SavedData {
     static InfrastructureSavedData load(ServerLevel level, CompoundTag compoundTag, HolderLookup.Provider provider) {
         InfrastructureSavedData sd = new InfrastructureSavedData(level);
         sd.DEVICES = new HashMap<>();
+        sd.TICKING_DEVICES = new HashMap<>();
         sd.NODES = new HashMap<>();
         sd.NODES_BY_POS = new HashMap<>();
         sd.CONNECTION_DATA = new HashMap<>();
@@ -230,7 +233,10 @@ public class InfrastructureSavedData extends SavedData {
                 LOGGER.warn("Could not load device: {} at pos: {} in: {}. No device with such ID, removing...", tag.getString("ID"), pos.toShortString(), level.dimension().location());
                 return;
             }
-            sd.DEVICES.put(pos, new SimulatedDeviceInstance(device, pos, device.read(tag.getCompound("ExtraData")), sd.NODES_BY_POS.getOrDefault(pos, new ArrayList<>())));
+            SimulatedDeviceInstance<?> di = SimulatedDeviceInstance.read(device, pos, tag.getCompound("ExtraData"), sd.NODES_BY_POS.getOrDefault(pos, new ArrayList<>()));
+            sd.DEVICES.put(pos, di);
+            if (device.ticks())
+                sd.TICKING_DEVICES.put(pos, di);
         });
 
         // Read Railway Catenary
@@ -287,13 +293,15 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public <T> void addDevice(BlockPos pos, SimulatedDevice<T> device, CompoundTag extraData, List<Integer> nodeIDs) {
+        // I'm sorry, this is a mess.
         List<InWorldNode> nodes = nodeIDs.stream().map(id -> new InWorldNode(id, pos)).toList();
         SimulatedDeviceInstance<?> di = DEVICES.get(pos);
         if (di != null) {
             di.invalidate();
-            if (di.simulatedDevice() == device) {
+            if (di.simulatedDevice() == device) { // Set a device of the same type. It's possible nodes might have changed
                 List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
                 if (oldNodes != null && oldNodes.stream().map(InWorldNode::id).sorted().toList().equals(nodeIDs.stream().sorted().toList())) {
+                    // Nodes changed
                     for (InWorldNode node : oldNodes) {
                         Vec3 newPos = node.getPosition(level);
                         if (NODE_POSITIONS.replace(node, newPos) != newPos) {
@@ -308,8 +316,10 @@ public class InfrastructureSavedData extends SavedData {
                         for (BlockPos neighbour : catenaryConnections) {
                             BlockState startingState = level.getBlockState(pos);
                             BlockState endingState = level.getBlockState(neighbour);
-                            boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
-                            boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+                            boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) &&
+                                    startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+                            boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) &&
+                                    endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
                             boolean isLow = isStartingLow || isEndingLow;
                             CatenaryConnectionData connectionData = CATENARY_DATA.get(new CatenaryConnection(pos, neighbour));
                             if (connectionData != null && connectionData.isLow != isLow) {
@@ -329,7 +339,8 @@ public class InfrastructureSavedData extends SavedData {
                         if (nodes.contains(node))
                             continue;
                         for (InWorldNodeConnection connection : getConnections(node))
-                            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
+                            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
+                                    new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
                         NODES.remove(node);
                         NODE_POSITIONS.remove(node);
                     }
@@ -348,8 +359,11 @@ public class InfrastructureSavedData extends SavedData {
                 }
 
                 return;
-            } else {
-                DEVICES.put(pos, new SimulatedDeviceInstance<>(device, pos, device.read(extraData), nodes));
+            } else { // New device
+                SimulatedDeviceInstance<T> ndi = new SimulatedDeviceInstance<>(device, pos, device.read(extraData), nodes);
+                DEVICES.put(pos, ndi);
+                if (device.ticks())
+                    TICKING_DEVICES.put(pos, ndi);
 
                 List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
                 if (oldNodes != null)
@@ -375,11 +389,14 @@ public class InfrastructureSavedData extends SavedData {
         }
 
 
-        DEVICES.put(pos, new SimulatedDeviceInstance<>(device, pos, device.read(extraData), nodes));
+        SimulatedDeviceInstance<T> ndi = new SimulatedDeviceInstance<>(device, pos, device.read(extraData), nodes);
+        DEVICES.put(pos, ndi);
+        if (device.ticks())
+            TICKING_DEVICES.put(pos, ndi);
 
         for (InWorldNode node : nodes) {
             Vec3 nodePos = node.getPosition(level);
-            // shouldn't ever happen, but it's better to be safe
+            // Shouldn't ever happen, but it's better to be safe.
             if (nodePos == null)
                 continue;
             NODES.put(node, new ArrayList<>());
@@ -394,9 +411,9 @@ public class InfrastructureSavedData extends SavedData {
         addDevice(pos, device, new CompoundTag(), nodeIDs);
     }
 
-
     public void removeDevice(BlockPos pos) {
         SimulatedDeviceInstance<?> di = DEVICES.remove(pos);
+        TICKING_DEVICES.remove(pos);
         if (di != null)
             di.invalidate();
         List<InWorldNode> nodes = NODES_BY_POS.get(pos);
@@ -419,6 +436,10 @@ public class InfrastructureSavedData extends SavedData {
 
     public Collection<SimulatedDeviceInstance<?>> getDevices() {
         return new ArrayList<>(DEVICES.values());
+    }
+
+    public Collection<SimulatedDeviceInstance<?>> getTickingDevices() {
+        return new ArrayList<>(TICKING_DEVICES.values());
     }
 
     public SimulatedDeviceInstance<?> getDevice(BlockPos pos) {

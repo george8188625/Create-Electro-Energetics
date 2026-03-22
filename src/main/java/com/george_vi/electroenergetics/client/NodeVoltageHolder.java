@@ -61,7 +61,7 @@ public class NodeVoltageHolder {
 
         }
 
-        double rmsVoltage = Math.sqrt(sum);
+        double rmsVoltage = Math.sqrt(sum / e1.voltages.length);
         // Flip RMS so that for mostly-DC negative voltages, the RMS is also negative.
         if (min < 0 && max < 0)
             rmsVoltage = -rmsVoltage;

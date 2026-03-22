@@ -1,6 +1,7 @@
-package com.george_vi.electroenergetics.content.electric_pump;
+package com.george_vi.electroenergetics.content.resistive_heater;
 
-import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
+import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -9,24 +10,16 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-public class ElectricPumpDevice extends SimulatedDevice<ElectricPumpDevice.DataHolder> {
-    public ElectricPumpDevice(ResourceLocation id) {
+public class ResistiveHeaterDevice extends SimulatedDevice<ResistiveHeaterDevice.DataHolder> {
+
+    public ResistiveHeaterDevice(ResourceLocation id) {
         super(id);
     }
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
-        if (extraData.be == null && level.isLoaded(pos))
-            if (level.getBlockEntity(pos) instanceof ElectricPumpBlockEntity be)
-                extraData.be = be;
-
-        if (extraData.be != null) {
-            if (extraData.be.isRemoved())
-                extraData.be = null;
-            else {
-                bridges.builder(pos).resistor(0, 1, extraData.be.getResistance());
-            }
-        }
+        bridges.builder(pos)
+                .resistor(0, 1, 45);
     }
 
     @Override
@@ -34,29 +27,32 @@ public class ElectricPumpDevice extends SimulatedDevice<ElectricPumpDevice.DataH
         double vd = results.getVoltageAt(pos, 0, 1);
 
         if (extraData.be == null && level.isLoaded(pos))
-            if (level.getBlockEntity(pos) instanceof ElectricPumpBlockEntity be)
+            if (level.getBlockEntity(pos) instanceof ResistiveHeaterBlockEntity be)
                 extraData.be = be;
 
         if (extraData.be != null) {
             if (extraData.be.isRemoved())
                 extraData.be = null;
             else {
-                extraData.be.setVoltage((float) vd);
+                extraData.be.setVoltage((float) Math.abs(vd));
             }
         }
     }
 
     @Override
     public DataHolder read(CompoundTag tag) {
-        return new DataHolder();
+        DataHolder dataHolder = new DataHolder();
+        return dataHolder;
     }
 
     @Override
     public CompoundTag write(DataHolder extraData) {
-        return new CompoundTag();
+        CompoundTag tag = new CompoundTag();
+        return tag;
     }
 
     public static class DataHolder {
-        public ElectricPumpBlockEntity be;
+        public ResistiveHeaterBlockEntity be;
+
     }
 }

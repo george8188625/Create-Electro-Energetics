@@ -1,0 +1,304 @@
+{
+  "variants": {
+    "blaze=fading,facing=east,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=fading,facing=east,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=fading,facing=east,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=fading,facing=east,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=fading,facing=north,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=fading,facing=north,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=fading,facing=north,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=fading,facing=north,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=fading,facing=south,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=fading,facing=south,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=fading,facing=south,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=fading,facing=south,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=fading,facing=west,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=fading,facing=west,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=fading,facing=west,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=fading,facing=west,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=kindled,facing=east,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=kindled,facing=east,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=kindled,facing=east,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=kindled,facing=east,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=kindled,facing=north,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=kindled,facing=north,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=kindled,facing=north,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=kindled,facing=north,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=kindled,facing=south,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=kindled,facing=south,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=kindled,facing=south,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=kindled,facing=south,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=kindled,facing=west,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=kindled,facing=west,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=kindled,facing=west,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=kindled,facing=west,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=none,facing=east,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=none,facing=east,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=none,facing=east,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=none,facing=east,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=none,facing=north,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=none,facing=north,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=none,facing=north,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=none,facing=north,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=none,facing=south,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=none,facing=south,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=none,facing=south,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=none,facing=south,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=none,facing=west,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=none,facing=west,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=none,facing=west,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=none,facing=west,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=seething,facing=east,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=seething,facing=east,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=seething,facing=east,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=seething,facing=east,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=seething,facing=north,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=seething,facing=north,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=seething,facing=north,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=seething,facing=north,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=seething,facing=south,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=seething,facing=south,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=seething,facing=south,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=seething,facing=south,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=seething,facing=west,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=seething,facing=west,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=seething,facing=west,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=seething,facing=west,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=smouldering,facing=east,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=smouldering,facing=east,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=smouldering,facing=east,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=smouldering,facing=east,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 90
+    },
+    "blaze=smouldering,facing=north,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=smouldering,facing=north,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=smouldering,facing=north,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=smouldering,facing=north,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block"
+    },
+    "blaze=smouldering,facing=south,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=smouldering,facing=south,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=smouldering,facing=south,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=smouldering,facing=south,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 180
+    },
+    "blaze=smouldering,facing=west,lit=false,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=smouldering,facing=west,lit=false,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=smouldering,facing=west,lit=true,waterlogged=false": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    },
+    "blaze=smouldering,facing=west,lit=true,waterlogged=true": {
+      "model": "electroenergetics:block/resistive_heater/block",
+      "y": 270
+    }
+  }
+}

@@ -9,6 +9,8 @@ import com.george_vi.electroenergetics.content.electronic_components.resistor.Re
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorRenderer;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlockEntity;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderRenderer;
+import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlockEntity;
+import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterRenderer;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorBlockEntity;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockEntity;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbRenderer;
@@ -160,6 +162,11 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<PotentiometerBlockEntity> POTENTIOMETER = REGISTRATE.blockEntity("potentiometer", PotentiometerBlockEntity::new)
             .validBlock(CEEBlocks.POTENTIOMETER::get)
             .renderer(() -> PotentiometerRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<ResistiveHeaterBlockEntity> RESISTIVE_HEATER = REGISTRATE.blockEntity("resistive_heater", ResistiveHeaterBlockEntity::new)
+            .validBlock(CEEBlocks.RESISTIVE_HEATER::get)
+            .renderer(() -> ResistiveHeaterRenderer::new)
             .register();
 
 

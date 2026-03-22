@@ -555,6 +555,18 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_andesite_alloy", has(AllItems.ANDESITE_ALLOY))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/radiator_panel"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.RESISTIVE_HEATER)
+                .pattern("ccc")
+                .pattern("CAC")
+                .pattern("ASA")
+                .define('C', CEEBlocks.CONNECTOR)
+                .define('S', CEETags.IRON_PLATE)
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('c', Items.COAL_BLOCK)
+                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/resistive_heater"));
+
+
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEBlocks.HIGH_VOLTAGE_SIGN, 2)
                 .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))
                 .save(recipeOutput, CreateElectroEnergetics.rl("stonecutting/high_voltage_sign"));

@@ -79,13 +79,11 @@ public class SimulationTicker {
 
         profiler.popPush("preTick");
 
-        Collection<SimulatedDeviceInstance<?>> devices = sd.getDevices();
+        Collection<SimulatedDeviceInstance<?>> devices = sd.getTickingDevices();
         // PreTick
         BridgeCollector bridgeCollector = new BridgeCollector(circuitBuilder, sd);
-        for (SimulatedDeviceInstance deviceInstance : devices) {
-            SimulatedDevice device = deviceInstance.simulatedDevice();
-            device.preTick(deviceInstance.pos(), level, bridgeCollector, deviceInstance.extraData());
-        }
+        for (SimulatedDeviceInstance<?> deviceInstance : devices)
+            deviceInstance.runPreTick(level, bridgeCollector);
 
         profiler.popPush("addToGraphEvent");
 
@@ -99,7 +97,7 @@ public class SimulationTicker {
         long thrStart = System.nanoTime();
 
         future = electricalWorkerThread.submit(() -> {
-            List<Set<WrappedIndexedNode>> networks = circuitBuilder.dfs();
+            List<List<WrappedIndexedNode>> networks = circuitBuilder.dfs();
             stats.totalNodes = circuitBuilder.allNodes().size();
             stats.totalSeparatedNodes = new int[networks.size()];
             stats.totalOptimizedNodes = new int[networks.size()];
@@ -112,7 +110,7 @@ public class SimulationTicker {
             List<Network> allNetworks = new ArrayList<>(networks.size());
             int l = 0;
             int k = 0;
-            for (Set<WrappedIndexedNode> networkNodes : networks) {
+            for (List<WrappedIndexedNode> networkNodes : networks) {
                 stats.totalSeparatedNodes[l] = networkNodes.size();
                 l++;
                 if (networkNodes.size() == 1)
@@ -230,16 +228,15 @@ public class SimulationTicker {
             }
         }
 
-        if (simulationResults == null) {
+        if (simulationResults == null)
             return;
-        }
 
         profiler.push(level.dimension().location().toString());
 
         profiler.push("postTick");
 
-        for (SimulatedDeviceInstance device : sd.getDevices())
-            device.simulatedDevice().postTick(device.pos(), level, simulationResults, device.extraData());
+        for (SimulatedDeviceInstance<?> device : sd.getTickingDevices())
+            device.runPostTick(level, simulationResults);
 
         profiler.popPush("finish");
 

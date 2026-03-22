@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.wire.attachments;
 
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CEEWireAttachments;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
@@ -20,7 +21,7 @@ public class DamperWireInteractionBehaviour extends WireInteractionBehaviour {
 
     @Override
     public boolean isActiveFor(ItemStack stack) {
-        return stack.getItem() == Items.IRON_INGOT;
+        return stack.is(CEETags.WIRE_DAMPER_ITEM);
     }
 
     @Override

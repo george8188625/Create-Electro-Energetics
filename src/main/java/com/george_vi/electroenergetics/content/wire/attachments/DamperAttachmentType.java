@@ -1,18 +1,16 @@
 package com.george_vi.electroenergetics.content.wire.attachments;
 
-import com.george_vi.electroenergetics.CEEBlocks;
-import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEPartialModels;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.content.wire.WireAttachmentType;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.AllBlocks;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -40,11 +38,13 @@ public class DamperAttachmentType extends WireAttachmentType {
 
     @Override
     public List<ItemStack> getDrops(WireAttachment attachment, Level level) {
-        return List.of(Items.IRON_INGOT.getDefaultInstance());
+        Item item = CEETags.itemFromTag(CEETags.WIRE_DAMPER_ITEM);
+        return List.of(item.getDefaultInstance());
     }
 
     @Override
     public List<ItemStack> getItemRequirements(WireAttachment attachment) {
-        return List.of(Items.IRON_INGOT.getDefaultInstance());
+        Item item = CEETags.itemFromTag(CEETags.WIRE_DAMPER_ITEM);
+        return List.of(item.getDefaultInstance());
     }
 }

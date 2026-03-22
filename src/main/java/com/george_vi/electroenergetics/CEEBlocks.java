@@ -10,6 +10,8 @@ import com.george_vi.electroenergetics.content.electronic_components.capacitor.C
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
+import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlock;
+import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlockEntity;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockItem;
@@ -48,6 +50,7 @@ import com.george_vi.electroenergetics.content.transmission_distribution.voltage
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.simibubi.create.AllTags;
+import com.simibubi.create.api.boiler.BoilerHeater;
 import com.simibubi.create.content.kinetics.gauge.GaugeGenerator;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.BlockStateGen;
@@ -57,6 +60,7 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
@@ -581,7 +585,7 @@ public class CEEBlocks {
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/capacitor")))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
-                    .addMaxVoltage(CEEConfigs.server().voltageValues.highVoltageCapacitorVoltage::get)))
+                    .addMaxVoltage(CEEConfigs.server().voltageValues.capacitorVoltage::get)))
             .build()
             .register();
 
@@ -657,6 +661,22 @@ public class CEEBlocks {
                     .addMaxPower(() -> 1300)))
             .build()
             .register();
+
+    public static final BlockEntry<ResistiveHeaterBlock> RESISTIVE_HEATER = REGISTRATE.block("resistive_heater", ResistiveHeaterBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.get(), bs -> AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .onRegister((b) -> BoilerHeater.REGISTRY.register(b, ((level, pos, state) -> {
+                if (level.getBlockEntity(pos) instanceof ResistiveHeaterBlockEntity be)
+                    return state.getValue(ResistiveHeaterBlock.LIT) ? Mth.clamp(be.heat * 4, 0, 1.5f) : -1;
+                return -1;
+            })))
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .build()
+            .register();
+
 
     public static void register() {
 

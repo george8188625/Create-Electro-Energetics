@@ -22,7 +22,7 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
-        if (extraData.isSource) {
+        if (extraData.isSource && extraData.storedEnergy > 1) {
             bridges.builder(pos)
                     .energyLimitedSource(0, 1, extraData.storedEnergy, extraData.voltage);
         } else
@@ -34,7 +34,7 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
 
         double displayedPower;
-        double vd = Math.abs(results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1));
+        double vd = Math.abs(results.getVoltageAt(pos, 0, 1));
         if (extraData.isSource) {
 
             double current = results.getCurrentThrough(pos, 0, 1);

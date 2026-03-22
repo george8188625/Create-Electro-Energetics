@@ -5,6 +5,7 @@
   "package": "com.george_vi.electroenergetics.mixins",
   "refmap": "electroenergetics.refmap.json",
   "compatibilityLevel": "JAVA_21",
+  "plugin": "com.george_vi.electroenergetics.CEEMixinPlugin",
   "client": [
     "LevelRendererAccessor",
     "CarriageSoundsMixin"

@@ -2,15 +2,10 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.WireType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +17,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> COPPER = WIRE_TYPES.register("copper", () -> new WireType.Builder(CEEPartialModels.COPPER_WIRE_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
-            .droppedItem(() -> getFromTag(CEETags.COPPER_WIRE))
+            .droppedItem(() -> CEETags.itemFromTag(CEETags.COPPER_WIRE))
             .spoolItem(CEEItems.COPPER_WIRE_SPOOL::get)
             .maxTemperature(() -> 5000)
             .maxLength(CEEConfigs.server().maxWireLength::get)
@@ -71,7 +66,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> IRON_BUS = WIRE_TYPES.register("iron_bus", () -> new WireType.Builder(CEEPartialModels.IRON_BUS_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.ironWireResistance::get)
-            .droppedItem(() -> getFromTag(CEETags.IRON_BUS_COMPONENT))
+            .droppedItem(() -> CEETags.itemFromTag(CEETags.IRON_BUS_COMPONENT))
             .spoolItem(CEEItems.IRON_BUS_SPOOL::get)
             .maxTemperature(() -> 10000)
             .maxLength(CEEConfigs.server().maxBusWireLength::get)
@@ -80,8 +75,8 @@ public class CEEWireTypes {
             .build());
 
     public static final DeferredHolder<WireType, WireType> IRON_RAIL = WIRE_TYPES.register("iron_rail", () -> new WireType.Builder(CEEPartialModels.IRON_RAIL_SEGMENT)
-            .resistance(CEEConfigs.server().resistanceValues.ironWireResistance::get)
-            .droppedItem(() -> getFromTag(CEETags.IRON_RAIL_COMPONENT))
+            .resistance(CEEConfigs.server().resistanceValues.ironRailResistance::get)
+            .droppedItem(() -> CEETags.itemFromTag(CEETags.IRON_RAIL_COMPONENT))
             .spoolItem(CEEItems.IRON_BUS_SPOOL::get)
             .maxTemperature(() -> 15000)
             .maxLength(CEEConfigs.server().maxBusWireLength::get)
@@ -91,7 +86,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> ELECTRUM = WIRE_TYPES.register("electrum", () -> new WireType.Builder(CEEPartialModels.ELECTRUM_WIRE_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.electrumWireResistance::get)
-            .droppedItem(() -> getFromTag(CEETags.ELECTRUM_WIRE))
+            .droppedItem(() -> CEETags.itemFromTag(CEETags.ELECTRUM_WIRE))
             .spoolItem(CEEItems.ELECTRUM_WIRE_SPOOL::get)
             .maxTemperature(() -> 3540)
             .maxLength(CEEConfigs.server().maxWireLength::get)
@@ -118,10 +113,4 @@ public class CEEWireTypes {
         WIRE_TYPES.register(bus);
     }
 
-    private static @NotNull Item getFromTag(TagKey<Item> tag) {
-        var it = BuiltInRegistries.ITEM.getTagOrEmpty(tag).iterator();
-        if (!it.hasNext())
-            return Items.AIR;
-        return it.next().value();
-    }
 }

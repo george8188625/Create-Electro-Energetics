@@ -6,17 +6,17 @@ import com.george_vi.electroenergetics.content.railway_electrification.ElectricT
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.mixin_interfaces.ICEETrainExtension;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.graph.DimensionPalette;
 import com.simibubi.create.content.trains.graph.TrackGraph;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -54,18 +54,23 @@ public class TrainMixin implements ICEETrainExtension {
         return electroenergetics$electricTrainData;
     }
 
-    @Inject(method = "write", at=@At("RETURN"), remap = false)
-    public void electroEnergetics$write(DimensionPalette dimensions, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
+    // Wrap method so its compatible with Create: Power Loader
+    @WrapMethod(method = "write")
+    public CompoundTag electroEnergetics$write(DimensionPalette dimensions, HolderLookup.Provider registries, @NotNull Operation<CompoundTag> original) {
+        CompoundTag tag = original.call(dimensions, registries);
         ResourceLocation id = CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getKey(electroenergetics$soundType);
-        CompoundTag tag = cir.getReturnValue();
         if (id != null)
             tag.putString("CEETrainSoundType", id.toString());
         tag.putInt("CEEAccumulators", electroenergetics$electricTrainData.accumulators);
         tag.putDouble("CEEAccumulatorCharge", electroenergetics$electricTrainData.accumulatorCharge);
+        tag.putBoolean("CEECreativeSource", electroenergetics$electricTrainData.hasCreativeSource);
+        return tag;
     }
 
-    @Inject(method = "read", at=@At("RETURN"), remap = false)
-    private static void electroEnergetics$read(CompoundTag tag, HolderLookup.Provider registries, Map<UUID, TrackGraph> trackNetworks, DimensionPalette dimensions, CallbackInfoReturnable<Train> cir) {
+    // Wrap method so its compatible with Create: Power Loader
+    @WrapMethod(method = "read")
+    private static Train electroEnergetics$read(CompoundTag tag, HolderLookup.Provider registries, Map<UUID, TrackGraph> trackNetworks, DimensionPalette dimensions, Operation<Train> original) {
+        Train originalTrain = original.call(tag, registries, trackNetworks, dimensions);
         String id = tag.getString("CEETrainSoundType");
         ResourceLocation location = ResourceLocation.tryParse(id);
         ElectricTrainSoundType soundType = null;
@@ -73,11 +78,11 @@ public class TrainMixin implements ICEETrainExtension {
             soundType = CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.get(location);
         if (soundType == null)
             soundType = CEEElectricTrainSoundTypes.MODERN.get();
-
-        ICEETrainExtension train = (ICEETrainExtension) cir.getReturnValue();
+        ICEETrainExtension train = (ICEETrainExtension) originalTrain;
         train.setSoundType(soundType);
         train.getElectricTrainData().accumulators = tag.getInt("CEEAccumulators");
         train.getElectricTrainData().accumulatorCharge = tag.getDouble("CEEAccumulatorCharge");
+        train.getElectricTrainData().hasCreativeSource = tag.getBoolean("CEECreativeSource");
+        return originalTrain;
     }
-
 }

@@ -41,7 +41,8 @@ public class WireElectrocutionModule {
     final WireSimulationState wireSimulationState;
     final Map<Entity, ElectrocutionEntry> electrocutions = new HashMap<>();
 
-
+    DamageSource damageSource;
+    DamageSource hvDamageSource;
 
     public WireElectrocutionModule(InfrastructureSavedData sd, ServerLevel level, WireSimulationState wireSimulationState) {
         this.sd = sd;
@@ -159,8 +160,10 @@ public class WireElectrocutionModule {
             return;
 
         Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-        DamageSource damageSource = new DamageSource(registry.getHolderOrThrow(CEEDamageTypes.ELECTROCUTION));
-        DamageSource hvDamageSource = new DamageSource(registry.getHolderOrThrow(CEEDamageTypes.HV_ELECTROCUTION));
+        if (damageSource == null)
+            damageSource = new DamageSource(registry.getHolderOrThrow(CEEDamageTypes.ELECTROCUTION));
+        if (hvDamageSource == null)
+            hvDamageSource = new DamageSource(registry.getHolderOrThrow(CEEDamageTypes.HV_ELECTROCUTION));
         for (Iterator<Map.Entry<Entity, ElectrocutionEntry>> iterator = electrocutions.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<Entity, ElectrocutionEntry> e = iterator.next();
             Entity entity = e.getKey();

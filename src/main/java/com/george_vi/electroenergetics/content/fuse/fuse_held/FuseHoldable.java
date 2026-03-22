@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.fuse.fuse_held;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -69,7 +70,7 @@ public abstract class FuseHoldable {
 
         @Override
         public NonNullList<ItemStack> getDrops(CompoundTag data) {
-            return NonNullList.of(Items.AIR.getDefaultInstance(), Items.COPPER_INGOT.getDefaultInstance());
+            return NonNullList.of(Items.AIR.getDefaultInstance(), CEETags.itemFromTag(CEETags.FUSE_BYPASS_ITEM).getDefaultInstance());
         }
 
         @Override
@@ -81,7 +82,7 @@ public abstract class FuseHoldable {
 
         @Override
         public boolean isValid(ItemStack stack) {
-            return stack.is(Items.COPPER_INGOT);
+            return stack.is(CEETags.FUSE_BYPASS_ITEM);
         }
     }
 
