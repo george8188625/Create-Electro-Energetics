@@ -33,7 +33,7 @@ Download from [here](https://github.com/george8188625/Create-Electro-Energetics/
 
 **If you really need a stable version:**
 <br>
-Latest stable version: [Build 65](https://github.com/george8188625/Create-Electro-Energetics/releases/tag/autobuild-65)
+Latest stable version: [Build 70](https://github.com/george8188625/Create-Electro-Energetics/releases/tag/autobuild-70)
 
 The mod will **release** after the latest version is confirmed to be stable, and the following features are implemented:
 - All ponders
