@@ -35,6 +35,10 @@ public class CEESoundEvents {
     public static final Supplier<SoundEvent> TRAIN_GTO_P9 = sound("train/gto/p9");
     public static final Supplier<SoundEvent> TRAIN_GTO_P11 = sound("train/gto/p11");
     public static final Supplier<SoundEvent> TRAIN_GTO_P15 = sound("train/gto/p15");
+    public static final Supplier<SoundEvent> TRAIN_IGBT_ASYNC = sound("train/igbt/async");
+    public static final Supplier<SoundEvent> TRAIN_IGBT_ASYNC_START = sound("train/igbt/async_start");
+    public static final Supplier<SoundEvent> TRAIN_IGBT_ASYNC_DECAY = sound("train/igbt/async_decay");
+
 
     private static @NotNull DeferredHolder<SoundEvent, SoundEvent> sound(String path) {
         return SOUND_EVENTS.register(path, () -> SoundEvent.createVariableRangeEvent(CreateElectroEnergetics.rl(path)));
