@@ -66,7 +66,7 @@ public class IGBTElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour
                 }
 
                 if (trainSpeedNormalized >= 0.357f && trainSpeedNormalized < 0.44f) { //Async Quickrise
-                    decaySoundInstance.setPitchImmediately(Mth.lerp(20f * (trainSpeedNormalized - 0.357f), 1.12f, 2f));
+                    decaySoundInstance.setPitchImmediately(Mth.lerp(18f * (trainSpeedNormalized - 0.357f), 1.12f, 2f));
                     decaySoundInstance.setVolumeImmediately(Math.max(-120f * (trainSpeedNormalized - 0.357f) + 2.4f, 0));
                 }
             }
@@ -125,7 +125,7 @@ public class IGBTElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour
                 }
 
                 if (trainSpeedNormalized >= 0.357f && trainSpeedNormalized < 0.44f) { //Async Quickrise
-                    decayStaticSoundInstance.setPitchImmediately(Mth.lerp(20f * (trainSpeedNormalized - 0.357f), 1.12f, 2f));
+                    decayStaticSoundInstance.setPitchImmediately(Mth.lerp(18f * (trainSpeedNormalized - 0.357f), 1.12f, 2f));
                     decayStaticSoundInstance.setVolumeImmediately(Math.max(-40f * (trainSpeedNormalized - 0.357f) + 2.4f, 0));
                 }
             }
@@ -165,7 +165,7 @@ public class IGBTElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour
                 }
 
                 if (trainSpeedNormalized >= 0.357f && trainSpeedNormalized < 0.44f) {//Async Quickrise
-                    staticSoundInstance.setPitchImmediately(Mth.lerp(20f * (trainSpeedNormalized - 0.357f), 1.12f, 2f));
+                    staticSoundInstance.setPitchImmediately(Mth.lerp(18f * (trainSpeedNormalized - 0.357f), 1.12f, 2f));
                     staticSoundInstance.setVolumeImmediately(Math.max(-20f * (trainSpeedNormalized - 0.357f) + 1f, 0));
                 }
             }
