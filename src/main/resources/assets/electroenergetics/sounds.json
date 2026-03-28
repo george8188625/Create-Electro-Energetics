@@ -131,6 +131,42 @@
     ],
     "subtitle": "electroenergetics.subtitle.electric_train"
   },
+  "train/igbt/async": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/igbt/async"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/igbt/async_decay": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/igbt/async_decay"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/igbt/async_decay2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/igbt/async_decay2"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
+  "train/igbt/async_start": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:train/igbt/async_start"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.electric_train"
+  },
   "train/gto/p1": {
     "sounds": [
       {

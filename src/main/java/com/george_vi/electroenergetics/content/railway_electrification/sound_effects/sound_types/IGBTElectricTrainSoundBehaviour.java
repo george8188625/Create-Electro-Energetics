@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSoundInstance;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 
@@ -12,6 +13,7 @@ public class IGBTElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour
     ElectricTrainSoundInstance staticStartSoundInstance;
     ElectricTrainSoundInstance staticSoundInstance;
     ElectricTrainSoundInstance decaySoundInstance;
+    ElectricTrainSoundInstance decayStaticSoundInstance;
 
     float prevTrainSpeed;
     Phasing phasing = Phasing.ASYNC;
@@ -21,17 +23,20 @@ public class IGBTElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour
         super.tick();
         trainSpeed *= 1.05f;
 
+        //NORMAL
         if (trainSpeed != 0 && phasing == Phasing.ASYNC && (staticStartSoundInstance == null || staticStartSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(staticStartSoundInstance)))
             staticStartSoundInstance = playSound(pos, CEESoundEvents.TRAIN_IGBT_ASYNC_START.get());
         if (trainSpeed != 0 && phasing == Phasing.ASYNC && (staticSoundInstance == null || staticSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(staticSoundInstance)))
             staticSoundInstance = playSound(pos, CEESoundEvents.TRAIN_IGBT_ASYNC.get());
         if (trainSpeed != 0 && phasing == Phasing.ASYNC && (decaySoundInstance == null || decaySoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(decaySoundInstance)))
             decaySoundInstance = playSound(pos, CEESoundEvents.TRAIN_IGBT_ASYNC_DECAY.get());
+        if (trainSpeed != 0 && phasing == Phasing.ASYNC && (decayStaticSoundInstance == null || decayStaticSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(decayStaticSoundInstance)))
+            decayStaticSoundInstance = playSound(pos, CEESoundEvents.TRAIN_IGBT_ASYNC_DECAY2.get());
         if (trainSpeed != 0 && (mainSoundInstance == null || mainSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(mainSoundInstance)))
             mainSoundInstance = playSound(pos, CEESoundEvents.TRAIN_GTO_ASYNC_RISE.get());
 
         float trainSpeedNormalized = (4 * trainSpeed) / (3 * (AllConfigs.server().trains.poweredTrainTopSpeed.getF() / 20)) / 1.05f;
-//        Minecraft.getInstance().gui.setOverlayMessage(Component.literal(String.format("%.2f", trainSpeedNormalized)), false);
+        //Minecraft.getInstance().gui.setOverlayMessage(Component.literal(String.format("%.2f", trainSpeedNormalized)), false);
         if (trainSpeed != 0) {
             switchPhasing();
 
@@ -46,11 +51,33 @@ public class IGBTElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour
             mainSoundInstance.keepAlive();
         }
 
-        if (decaySoundInstance != null) { // ASYNC DECAY
-            decaySoundInstance.setVolumeImmediately(Math.max(0, (acceleration > 0 ? 10f : 0.7f) * (trainSpeedNormalized) * 1 - 0.6f));
+        if (decaySoundInstance != null) { // ASYNC DECAY 1
+            if (acceleration > 0) {
+                if (trainSpeedNormalized < 0.357f) {
+                    decaySoundInstance.setVolumeImmediately(Math.max(0, (10f * trainSpeedNormalized) * 1 - 0.6f));
+                }
 
-            decaySoundInstance.setPitchImmediately(1);
-//            decaySoundInstance.targetVolume = Math.min(trainSpeedNormalized * 20, 3);
+                if (trainSpeedNormalized < 0.14f) { //Async Static
+                    decaySoundInstance.setPitchImmediately(1f) ;
+                }
+
+                if (trainSpeedNormalized >= 0.14f && trainSpeedNormalized < 0.357f) { //Async Slowrise
+                    decaySoundInstance.setPitchImmediately(Mth.lerp(4.5f * (trainSpeedNormalized - 0.14f), 1f, 1.12f));
+                }
+
+                if (trainSpeedNormalized >= 0.357f && trainSpeedNormalized < 0.44f) { //Async Quickrise
+                    decaySoundInstance.setPitchImmediately(Mth.lerp(20f * (trainSpeedNormalized - 0.357f), 1.12f, 2f));
+                    decaySoundInstance.setVolumeImmediately(Math.max(-120f * (trainSpeedNormalized - 0.357f) + 2.4f, 0));
+                }
+            }
+
+            if (acceleration < 0) {
+                if (trainSpeedNormalized < 0.44f) {
+                    decaySoundInstance.setVolumeImmediately(Math.max(0, (10f * trainSpeedNormalized) * 1 - 0.6f));
+                    decaySoundInstance.setPitchImmediately(1f);
+                }
+            }
+
             decaySoundInstance.setPos(pos);
             decaySoundInstance.keepAlive();
             if (phasing != Phasing.ASYNC || trainSpeed == 0) {
@@ -60,13 +87,19 @@ public class IGBTElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour
         }
 
         if (staticStartSoundInstance != null) { // ASYNC STATIC START
+            //Minecraft.getInstance().gui.setOverlayMessage(Component.literal(String.format("%.2f", staticSoundInstance.targetVolume)), false);
             staticStartSoundInstance.setPitchImmediately(1f);
-            if (trainSpeedNormalized <= 0.01 || trainSpeed == 0) {
-                staticStartSoundInstance.targetVolume = Math.min(trainSpeedNormalized * 300, 3);
-            }
+            if (acceleration > 0) {
+                if (trainSpeedNormalized < 0.05f) {
+                    staticStartSoundInstance.setVolumeImmediately(Math.min(trainSpeedNormalized * 50, 1f));
+                }
 
-            if (trainSpeedNormalized > 0.01 || trainSpeed == 0 || trainSpeedNormalized < 0.076f) {
-                staticStartSoundInstance.targetVolume = Math.max((-500/11) * (trainSpeedNormalized - 0.066f) , 0);
+                if (trainSpeedNormalized >= 0.05f && trainSpeedNormalized < 0.15f) {
+                    staticStartSoundInstance.setVolumeImmediately(Math.max((-25/14) * (trainSpeedNormalized - (14/25)) , 0));
+                }
+            }
+            else {
+                staticStartSoundInstance.setVolumeImmediately(0f);
             }
 
             staticStartSoundInstance.setPos(pos);
@@ -77,16 +110,75 @@ public class IGBTElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour
             }
         }
 
+        if (decayStaticSoundInstance != null) { // ASYNC STATIC DECAY (DECAY 2)
+            if (acceleration > 0) {
+                if (trainSpeedNormalized < 0.14f) { //Async Static
+                    decayStaticSoundInstance.setPitchImmediately(1f);
+                }
+
+                if (trainSpeedNormalized >= 0.14f && trainSpeedNormalized < 0.37f) { //Async Slowrise
+                    decayStaticSoundInstance.setPitchImmediately(Mth.lerp(4.5f * (trainSpeedNormalized - 0.14f), 1f, 1.12f));
+                }
+
+                if (trainSpeedNormalized < 0.357f) {
+                    decayStaticSoundInstance.setVolumeImmediately(Math.min(2.4f * trainSpeedNormalized / 0.357f, 2.4f));
+                }
+
+                if (trainSpeedNormalized >= 0.357f && trainSpeedNormalized < 0.44f) { //Async Quickrise
+                    decayStaticSoundInstance.setPitchImmediately(Mth.lerp(20f * (trainSpeedNormalized - 0.357f), 1.12f, 2f));
+                    decayStaticSoundInstance.setVolumeImmediately(Math.max(-40f * (trainSpeedNormalized - 0.357f) + 2.4f, 0));
+                }
+            }
+
+            if (acceleration < 0) {
+                if (trainSpeedNormalized < 0.44f) {
+                    decayStaticSoundInstance.setVolumeImmediately(Math.min(2.4f * trainSpeedNormalized / 0.357f, 2.4f));
+                    decayStaticSoundInstance.setPitchImmediately(1f);
+                }
+            }
+
+            decayStaticSoundInstance.setPos(pos);
+            decayStaticSoundInstance.keepAlive();
+            if (phasing != Phasing.ASYNC || trainSpeed == 0) {
+                Minecraft.getInstance().getSoundManager().stop(decayStaticSoundInstance);
+                decayStaticSoundInstance = null;
+            }
+        }
+
         if (staticSoundInstance != null) { // ASYNC STATIC
-            staticSoundInstance.setPitchImmediately(1f);
-            if (trainSpeedNormalized <= 0.025 || trainSpeed == 0) {
-                staticSoundInstance.targetVolume = Math.min(trainSpeedNormalized * 120, 3);
-            }
+            //Minecraft.getInstance().gui.setOverlayMessage(Component.literal(String.format("%.2f", staticSoundInstance.targetVolume)), false);
+            if (acceleration > 0) {
+                if (trainSpeedNormalized < 0.05f) {
+                    staticSoundInstance.setVolumeImmediately(Math.min(2.7f * trainSpeedNormalized / 0.05f, 2.7f));
+                }
 
-            if (trainSpeedNormalized > 0.025 || trainSpeed == 0 || trainSpeedNormalized < 0.33) {
-                staticSoundInstance.targetVolume = Math.max((-600/61) * (trainSpeedNormalized - 0.305f), 3);
-            }
+                if (trainSpeedNormalized >= 0.05f && trainSpeedNormalized < 0.357f) {
+                    staticSoundInstance.setVolumeImmediately(Math.max((-2.7f/0.2f) * (trainSpeedNormalized - 0.44f), 0));
+                }
 
+                if (trainSpeedNormalized < 0.14f) { //Async Static
+                    staticSoundInstance.setPitchImmediately(1f);
+                }
+
+                if (trainSpeedNormalized >= 0.14f && trainSpeedNormalized < 0.37f) { //Async Slowrise
+                    staticSoundInstance.setPitchImmediately(Mth.lerp(4.5f * (trainSpeedNormalized - 0.14f), 1f, 1.12f));
+                }
+
+                if (trainSpeedNormalized >= 0.357f && trainSpeedNormalized < 0.44f) {//Async Quickrise
+                    staticSoundInstance.setPitchImmediately(Mth.lerp(20f * (trainSpeedNormalized - 0.357f), 1.12f, 2f));
+                    staticSoundInstance.setVolumeImmediately(Math.max(-20f * (trainSpeedNormalized - 0.357f) + 1f, 0));
+                }
+            }
+            if (acceleration < 0) {
+                if (trainSpeedNormalized < 0.05f) { //Async Static
+                    staticSoundInstance.setPitchImmediately(1f);
+                    staticSoundInstance.setVolumeImmediately(Math.min(2.7f * trainSpeedNormalized / 0.05f, 2.7f));
+                    }
+                if (trainSpeedNormalized >= 0.05f && trainSpeedNormalized < 0.44f) {
+                    staticSoundInstance.setPitchImmediately(1f);
+                    staticSoundInstance.setVolumeImmediately(Math.max((-2.7f / 0.2f) * (trainSpeedNormalized - 0.44f), 0));
+                }
+            }
             staticSoundInstance.setPos(pos);
             staticSoundInstance.keepAlive();
             if (phasing != Phasing.ASYNC || trainSpeed == 0) {
@@ -94,8 +186,11 @@ public class IGBTElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour
                 staticSoundInstance = null;
             }
         }
+
         this.prevTrainSpeed = trainSpeed;
     }
+
+
 
     void switchPhasing() {
         float trainSpeedNormalized = trainSpeed / (AllConfigs.server().trains.poweredTrainTopSpeed.getF() / 20);
