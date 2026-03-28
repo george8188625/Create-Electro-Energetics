@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ModernElectricTrainSoundBehaviour;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.DCElectricTrainSoundBehaviour;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.IGBTElectricTrainSoundBehaviour;
 import com.google.common.base.Suppliers;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import net.neoforged.bus.api.IEventBus;
@@ -15,6 +16,7 @@ public class CEEElectricTrainSoundTypes {
 
     public static final DeferredHolder<ElectricTrainSoundType, ElectricTrainSoundType> MODERN = ELECTRIC_TRAIN_SOUND_TYPE.register("modern", () -> new ElectricTrainSoundType(() -> ModernElectricTrainSoundBehaviour::new, CreateElectroEnergetics.rl("modern"), Object2IntMaps::emptyMap));
     public static final DeferredHolder<ElectricTrainSoundType, ElectricTrainSoundType> DC = ELECTRIC_TRAIN_SOUND_TYPE.register("dc", () -> new ElectricTrainSoundType(() -> DCElectricTrainSoundBehaviour::new, CreateElectroEnergetics.rl("dc"), Suppliers.memoize(() -> Object2IntMaps.singleton(CEEBlocks.ALTERNATOR_BRUSHES.get(), 10))));
+    public static final DeferredHolder<ElectricTrainSoundType, ElectricTrainSoundType> IGBT = ELECTRIC_TRAIN_SOUND_TYPE.register("igbt", () -> new ElectricTrainSoundType(() -> IGBTElectricTrainSoundBehaviour::new, CreateElectroEnergetics.rl("igbt"), Suppliers.memoize(() -> Object2IntMaps.singleton(CEEBlocks.MAGNET_BLOCK.get(), 10))));
 
     public static void register(IEventBus bus) {
         ELECTRIC_TRAIN_SOUND_TYPE.register(bus);
