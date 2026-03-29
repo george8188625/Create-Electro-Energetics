@@ -39,7 +39,9 @@ public class TransformerCoreDevice extends SimulatedDevice<TransformerCoreDevice
         if (ratio == 0)
             ratio = 1;
         BlockPos otherPos = pos.relative(facing);
-        InWorldNode[] nodes = new InWorldNode[] {new InWorldNode(0, pos), new InWorldNode(1, pos), new InWorldNode(0, otherPos), new InWorldNode(1, otherPos), new InWorldNode(2, pos), new InWorldNode(3, pos)};
+        InWorldNode[] nodes = new InWorldNode[] {new InWorldNode(0, pos), new InWorldNode(1, pos),
+                new InWorldNode(0, otherPos), new InWorldNode(1, otherPos),
+                new InWorldNode(2, pos), new InWorldNode(3, pos)};
 
         TransformerBehaviour.preTick(nodes, ratio, pos, bridges, extraData.transformerData);
 
@@ -52,7 +54,9 @@ public class TransformerCoreDevice extends SimulatedDevice<TransformerCoreDevice
             return; // the block with positive facing is the controller
 
         BlockPos otherPos = pos.relative(facing);
-        InWorldNode[] nodes = new InWorldNode[] {new InWorldNode(0, pos), new InWorldNode(1, pos), new InWorldNode(0, otherPos), new InWorldNode(1, otherPos), new InWorldNode(2, pos), new InWorldNode(3, pos)};
+        InWorldNode[] nodes = new InWorldNode[] {new InWorldNode(0, pos), new InWorldNode(1, pos),
+                new InWorldNode(0, otherPos), new InWorldNode(1, otherPos),
+                new InWorldNode(2, pos), new InWorldNode(3, pos)};
 
         double power = TransformerBehaviour.postTick(nodes, results, extraData.transformerData);
 

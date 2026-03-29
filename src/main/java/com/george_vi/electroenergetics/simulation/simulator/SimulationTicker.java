@@ -7,6 +7,8 @@ import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnectio
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.*;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.util.*;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -59,6 +61,8 @@ public class SimulationTicker {
     }
 
     public void tick() {
+        if (level.tickRateManager().isFrozen())
+            return;
         microTickBits = CEEConfigs.server().simulationConfig.microTickBits.get();
         microTicks = 1 << microTickBits;
 
@@ -109,10 +113,7 @@ public class SimulationTicker {
 
             List<Network> allNetworks = new ArrayList<>(networks.size());
             int l = 0;
-            int k = 0;
             for (List<WrappedIndexedNode> networkNodes : networks) {
-                stats.totalSeparatedNodes[l] = networkNodes.size();
-                l++;
                 if (networkNodes.size() == 1)
                     continue;
                 if (networkNodes.size() == 2) {
@@ -142,8 +143,9 @@ public class SimulationTicker {
 
                 if (CEEConfigs.server().simulationConfig.optimizeGraph.get())
                     network.optimize();
-                stats.totalOptimizedNodes[k] = network.allNodes.size();
-                k++;
+                stats.totalSeparatedNodes[l] = networkNodes.size();
+                stats.totalOptimizedNodes[l] = network.allNodes.size();
+                l++;
                 network.mapToSimNodes();
                 allNetworks.add(network);
                 stats.totalMicroTickers += network.microTicked.size();

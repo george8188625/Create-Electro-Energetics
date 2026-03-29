@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.electronic_components.resistor;
 
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

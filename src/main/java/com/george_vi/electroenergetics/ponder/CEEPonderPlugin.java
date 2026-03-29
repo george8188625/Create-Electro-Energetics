@@ -161,6 +161,7 @@ public class CEEPonderPlugin implements PonderPlugin {
 
         helper.addToTag(CreateElectroEnergetics.rl("electric_train_sound_changing"))
                 .add(CEEBlocks.ALTERNATOR_BRUSHES.getId())
+                .add(CEEBlocks.MAGNET_BLOCK.getId())
                 ;
 
         helper.addToTag(AllCreatePonderTags.TRAIN_RELATED)

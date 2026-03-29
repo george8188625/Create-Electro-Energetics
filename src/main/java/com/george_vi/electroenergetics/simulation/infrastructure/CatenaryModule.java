@@ -11,7 +11,7 @@ import com.george_vi.electroenergetics.mixin_interfaces.ICEETrainExtension;
 import com.george_vi.electroenergetics.mixin_interfaces.IPantographList;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.Train;

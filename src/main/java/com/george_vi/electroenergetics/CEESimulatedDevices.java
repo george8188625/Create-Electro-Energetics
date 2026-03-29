@@ -9,6 +9,7 @@ import com.george_vi.electroenergetics.content.converter.ConverterDevice;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchDevice;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterDevice;
+import com.george_vi.electroenergetics.content.rotor.ThreePhaseAlternatorBrushesDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_switch.HVSwitchDevice;
 import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchDevice;
@@ -59,6 +60,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice<?> VOLTMETER = register(new GaugeDevice(CreateElectroEnergetics.rl("voltmeter"), true));
     public static final SimulatedDevice<?> AMMETER = register(new GaugeDevice(CreateElectroEnergetics.rl("ammeter"), false));
     public static final SimulatedDevice<?> ALTERNATOR_BRUSHES = register(new AlternatorBrushesDevice(CreateElectroEnergetics.rl("alternator_brushes")));
+    public static final SimulatedDevice<?> THREE_PHASE_ALTERNATOR_BRUSHES = register(new ThreePhaseAlternatorBrushesDevice(CreateElectroEnergetics.rl("three_phase_alternator_brushes")));
     public static final SimulatedDevice<?> FUSE = register(new FuseDevice(CreateElectroEnergetics.rl("fuse")));
     public static final SimulatedDevice<?> ACCUMULATOR = register(new AccumulatorDevice(CreateElectroEnergetics.rl("accumulator")));
     public static final SimulatedDevice<?> CONVERTER = register(new ConverterDevice(CreateElectroEnergetics.rl("converter")));

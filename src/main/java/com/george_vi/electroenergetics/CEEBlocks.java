@@ -12,6 +12,7 @@ import com.george_vi.electroenergetics.content.electronic_components.resistor.Re
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlock;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlockEntity;
+import com.george_vi.electroenergetics.content.rotor.ThreePhaseAlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockItem;
@@ -456,8 +457,20 @@ public class CEEBlocks {
             .build()
             .register();
 
+    public static final BlockEntry<ThreePhaseAlternatorBrushesBlock> THREE_PHASE_ALTERNATOR_BRUSHES = REGISTRATE.block("three_phase_alternator_brushes", ThreePhaseAlternatorBrushesBlock::new)
+            .tag(CEETags.TRAIN_SOUND_MODIFIER)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate(BlockStateGen.directionalBlockProvider(true))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .build()
+            .register();
+
 
     public static final BlockEntry<Block> MAGNET_BLOCK = REGISTRATE.block("magnet", Block::new)
+            .tag(CEETags.TRAIN_SOUND_MODIFIER)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(BlockStateGen.simpleCubeAll("magnet"))
@@ -669,7 +682,7 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .onRegister((b) -> BoilerHeater.REGISTRY.register(b, ((level, pos, state) -> {
                 if (level.getBlockEntity(pos) instanceof ResistiveHeaterBlockEntity be)
-                    return state.getValue(ResistiveHeaterBlock.LIT) ? Mth.clamp(be.heat * 4, 0, 1.5f) : -1;
+                    return state.getValue(ResistiveHeaterBlock.LIT) ? Mth.clamp(be.heat, 0, 1.5f) : -1;
                 return -1;
             })))
             .item()

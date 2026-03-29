@@ -2,11 +2,9 @@ package com.george_vi.electroenergetics.simulation.infrastructure;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
-import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
-import net.createmod.catnip.data.Couple;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;

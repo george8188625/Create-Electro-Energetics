@@ -6,7 +6,7 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;

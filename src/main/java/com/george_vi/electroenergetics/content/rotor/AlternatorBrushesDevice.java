@@ -1,12 +1,11 @@
 package com.george_vi.electroenergetics.content.rotor;
 
-import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
 import com.george_vi.electroenergetics.foundation.base.GeneratingDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

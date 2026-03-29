@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.nodes.Node;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -16,6 +16,10 @@ public class WrappedIndexedNode {
      */
     public IntList invisibleAdjacency = new IntArrayList(8);
     public double groundConductance = 0d;
+
+    // PER NETWORK DATA
+    public int localNetworkID;
+    public Int2ObjectArrayMap<ElectricalProperties> localAdjacencyOverride = null;
 
     public WrappedIndexedNode(Node node, int ordinal) {
         if (node == null)

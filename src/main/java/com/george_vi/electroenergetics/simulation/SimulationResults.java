@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import net.minecraft.core.BlockPos;

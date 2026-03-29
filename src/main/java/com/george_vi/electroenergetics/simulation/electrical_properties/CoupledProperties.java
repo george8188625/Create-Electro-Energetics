@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.simulation.simulator;
+package com.george_vi.electroenergetics.simulation.electrical_properties;
 
 import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 

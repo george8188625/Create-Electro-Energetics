@@ -102,9 +102,10 @@ public class CEEBlockEntityTypes {
             .validBlock(CEEBlocks.ALTERNATOR_ROTOR::get)
             .renderer(() -> KineticBlockEntityRenderer::new)
             .register();
+
     public static final BlockEntityEntry<AlternatorBrushesBlockEntity> ALTERNATOR_BRUSHES = REGISTRATE.blockEntity("alternator_brushes", AlternatorBrushesBlockEntity::new)
             .visual(() -> SingleAxisRotatingVisual::shaft, false)
-            .validBlock(CEEBlocks.ALTERNATOR_BRUSHES)
+            .validBlocks(CEEBlocks.ALTERNATOR_BRUSHES, CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES)
             .renderer(() -> ShaftRenderer::new)
             .register();
 

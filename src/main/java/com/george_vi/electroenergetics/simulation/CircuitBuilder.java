@@ -2,9 +2,9 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
-import com.george_vi.electroenergetics.simulation.simulator.CoupledProperties;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
-import com.george_vi.electroenergetics.simulation.simulator.MicroTickingElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.CoupledProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;

@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.transmission_distribution.transformer;
 
 import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
-import com.george_vi.electroenergetics.simulation.simulator.CoupledProperties;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.CoupledProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 
 public class TransformerElectricalProperties extends ElectricalProperties implements CoupledProperties {
     final DirectionalNodeConnection primaryNodes;

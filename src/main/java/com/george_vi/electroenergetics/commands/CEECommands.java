@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.commands;
 
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.simulation.infrastructure.ConnectionEntry;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
@@ -29,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -110,31 +112,17 @@ public class CEECommands {
             Level level = entry.getKey();
             SimulationStats stats = entry.getValue();
             source.sendSuccess(() -> Component.literal("totalNodes: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalNodes)).withStyle(orange)), false);
-            Arrays.sort(stats.totalSeparatedNodes);
             Arrays.sort(stats.totalOptimizedNodes);
-            source.sendSuccess(() -> Component.literal("perNetwork:").withStyle(blue), false);
-            for (int i = stats.totalSeparatedNodes.length - 1; i >= 0; i--) {
-                if (stats.totalSeparatedNodes.length - 1 - i >= 4) {
-                    source.sendSuccess(() -> Component.literal("  ...").withStyle(blue), false);
-                    break;
-                }
+            Arrays.sort(stats.totalSeparatedNodes);
+            source.sendSuccess(() -> Component.literal("perNetwork: ").withStyle(blue)
+                    .append(Component.literal(Arrays.toString(stats.totalSeparatedNodes)).withStyle(orange)), false);
 
-                int finalI = i;
-                source.sendSuccess(() -> Component.literal(" ⊢ ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalSeparatedNodes[finalI])).withStyle(orange)), false);
-            }
+            source.sendSuccess(() -> Component.literal("optimized: ").withStyle(blue)
+                    .append(Component.literal(Arrays.toString(stats.totalOptimizedNodes)).withStyle(orange)), false);
 
-            source.sendSuccess(() -> Component.literal("optimized:").withStyle(blue), false);
-            for (int i = stats.totalOptimizedNodes.length - 1; i >= 0; i--) {
-                if (stats.totalOptimizedNodes.length - 1 - i >= 4) {
-                    source.sendSuccess(() -> Component.literal("  ...").withStyle(blue), false);
-                    break;
-                }
-
-                int finalI = i;
-                source.sendSuccess(() -> Component.literal(" ⊢ ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalOptimizedNodes[finalI])).withStyle(orange)), false);
-            }
             source.sendSuccess(() -> Component.literal("totalDevices: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalDevices)).withStyle(orange)), false);
             source.sendSuccess(() -> Component.literal("totalMicroTickers: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalMicroTickers)).withStyle(orange)), false);
+            source.sendSuccess(() -> Component.literal("mtpt: ").withStyle(blue).append(Component.literal(String.valueOf(2 < CEEConfigs.server().simulationConfig.microTickBits.get())).withStyle(orange)), false);
 
         }
 

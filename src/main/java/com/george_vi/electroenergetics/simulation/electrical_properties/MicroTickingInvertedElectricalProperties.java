@@ -1,6 +1,6 @@
-package com.george_vi.electroenergetics.simulation.simulator;
+package com.george_vi.electroenergetics.simulation.electrical_properties;
 
-public class MicroTickingInvertedElectricalProperties extends ElectricalProperties {
+public final class MicroTickingInvertedElectricalProperties extends ElectricalProperties {
     MicroTickingElectricalProperties original;
     public MicroTickingInvertedElectricalProperties(MicroTickingElectricalProperties original) {
         super(1, 0, 0);

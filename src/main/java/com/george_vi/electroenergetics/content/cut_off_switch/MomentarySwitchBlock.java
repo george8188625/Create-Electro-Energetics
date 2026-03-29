@@ -73,7 +73,7 @@ public class MomentarySwitchBlock extends DirectionalRolledDeviceBlock {
             if (device != null && device.extraData() instanceof MomentarySwitchDevice.DataHolder dataHolder) {
                 if (dataHolder.closedTicks == -1)
                     level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
-                dataHolder.closedTicks = 4;
+                dataHolder.closedTicks = 5;
             } else
                 level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
         }

@@ -2,17 +2,19 @@ package com.george_vi.electroenergetics.content.electronic_components.capacitor;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.foundation.electrical_properties.CapacitorProperties;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.simulation.simulator.MicroTickingElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
@@ -27,6 +29,8 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
 
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+        extraData.properties.capacitance = extraData.capacitance;
+
         bridges.builder(pos)
                 .node(2)
                 .connect(0, 2, extraData.properties)
@@ -35,6 +39,8 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
+        extraData.lastVoltage = extraData.properties.lastVoltage;
+
         double voltage = results.getVoltageAt(pos, 0, 2);
 
         extraData.temp = updateTemp(extraData.temp, (float) ((Math.abs(voltage) * 500) / maxVoltage.getAsDouble()));
@@ -60,7 +66,7 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
         dataHolder.lastVoltage = tag.getDouble("LastVoltage");
         dataHolder.capacitance = tag.getDouble("Capacitance");
         dataHolder.temp = tag.getFloat("Temp");
-        dataHolder.properties = new CapacitorProperties(dataHolder);
+        dataHolder.properties = new CapacitorProperties();
         return dataHolder;
     }
 
@@ -78,34 +84,5 @@ public class CapacitorDevice extends SimulatedDevice<CapacitorDevice.DataHolder>
         public double capacitance;
         public float temp;
         public CapacitorProperties properties;
-    }
-
-    static class CapacitorProperties extends MicroTickingElectricalProperties {
-        final DataHolder extraData;
-
-        CapacitorProperties(DataHolder extraData) {
-            this.extraData = extraData;
-        }
-
-        @Override
-        public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
-            tickCapacitor(totalMicroTicks);
-        }
-
-        @Override
-        public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
-            extraData.lastVoltage = allVoltages[(n1 << microTickBits) | (microTick)] - allVoltages[(n2 << microTickBits) | (microTick)];
-        }
-
-        private void tickCapacitor(int totalMicroTicks) {
-            double capacitance = extraData.capacitance + 0.000001;
-            double timeStep = 0.05 / totalMicroTicks;
-
-            double conductance = capacitance / timeStep;
-            double historyCurrent = conductance * extraData.lastVoltage;
-
-            this.resistance = 1 / conductance;
-            this.currentSource = -historyCurrent;
-        }
     }
 }

@@ -36,7 +36,7 @@ public class FuseHeldIndicatorBulb extends FuseHoldable {
     public void postTick(CompoundTag data, int id1, int id2, SimulationResults results, Level level, BlockPos pos) {
         float light = (float) Math.min(1, Math.abs(results.getVoltageAt(pos, id1, id2) / 70));
         float lastLight = data.getFloat("Light");
-        if (Math.abs(light - lastLight) > 0.02) {
+        if (Math.abs(light - lastLight) > 0.01) {
             data.putFloat("Light", light);
             data.putBoolean("UpdateThisTick", true);
         }
@@ -71,34 +71,47 @@ public class FuseHeldIndicatorBulb extends FuseHoldable {
                 .light(light)
                 .disableDiffuse()
                 .scale(0.5f, 0.75f, 0.5f)
-                .renderInto(pose, buffer.getBuffer(lightStrength > 0.05f ? RenderTypes.additive() : RenderType.translucent()));
+                .renderInto(pose, buffer.getBuffer(lightStrength > 0.01f ? RenderTypes.additive() : RenderType.translucent()));
 
 
-        if (lightStrength > 0.05f) {
-            float factor = lightStrength;
-            int newColor = ((int)(((color.getMapColor().col >> 16) & 0xFF) * factor) << 16)
-                    | ((int)(((color.getMapColor().col >> 8) & 0xFF) * factor) << 8)
-                    | ((int)((color.getMapColor().col & 0xFF) * factor));
+        if (lightStrength > 0.01) {
+            float factor = lightStrength * 2;
+            int newColor = ((int)(((color.getFireworkColor() >> 16) & 0xFF) * factor) << 16)
+                    | ((int)(((color.getFireworkColor() >> 8) & 0xFF) * factor) << 8)
+                    | ((int)((color.getFireworkColor() & 0xFF) * factor));
 
             CachedBuffers.partial(CEEPartialModels.INDICATOR_BULB_GLOW, Blocks.ANDESITE.defaultBlockState())
                     .color(newColor)
                     .light(0xf000f0)
                     .disableDiffuse()
                     .translate(0/16f, 7/16f, 8/16f)
-                    .scale(1f, 2.5f, 1f)
+                    .scale(1.25f, 2.55f, 1.25f)
                     .translate(-4/16f, -5/16f, -8/16f)
                     .renderInto(pose, buffer.getBuffer(RenderTypes.additive()));
 
-            int cubeColor = ((int)(((0xffffff >> 16) & 0xFF) * factor) << 16)
-                    | ((int)(((0xffffff >> 8) & 0xFF) * factor) << 8)
-                    | ((int)((0xffffff & 0xFF) * factor));
+            int cubeColor = ((int)(255 * factor) << 16)
+                    | ((int)(255 * factor) << 8)
+                    | ((int)(255 * factor));
 
             CachedBuffers.partial(CEEPartialModels.INDICATOR_BULB_CUBE, Blocks.ANDESITE.defaultBlockState())
                     .color(cubeColor)
                     .light(0xf000f0)
                     .disableDiffuse()
                     .translate(0/16f, 7/16f, 8/16f)
-                    .scale(0.5f, 2.15f, 0.5f)
+                    .scale(1, 2.5f, 1)
+                    .translate(-4/16f, -5/16f, -8/16f)
+                    .renderInto(pose, buffer.getBuffer(RenderTypes.additive()));
+
+            int glowColor = ((int)(255 * factor * 3) << 16)
+                    | ((int)(255 * factor * 3) << 8)
+                    | ((int)(255 * factor * 3));
+
+            CachedBuffers.partial(CEEPartialModels.INDICATOR_BULB_CUBE, Blocks.ANDESITE.defaultBlockState())
+                    .color(glowColor)
+                    .light(0xf000f0)
+                    .disableDiffuse()
+                    .translate(0/16f, 7/16f, 8/16f)
+                    .scale(0.75f, 2.15f, 0.75f)
                     .translate(-4/16f, -5/16f, -8/16f)
                     .renderInto(pose, buffer.getBuffer(RenderTypes.additive()));
         }

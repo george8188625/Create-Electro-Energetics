@@ -1,33 +1,34 @@
-package com.george_vi.electroenergetics.simulation.simulator;
+package com.george_vi.electroenergetics.simulation.electrical_properties;
 
 import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
-import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 
 import java.util.*;
 
-public class DissolvedProperties extends ElectricalProperties {
+public class DissolvedProperties extends ElectricalProperties implements IDissolvedProperties {
     public final List<WrappedIndexedNode> originalNodes;
-    public final List<Double> originalResistances;
+    public final List<ElectricalProperties> originalResistances;
 
-    public DissolvedProperties(LinkedList<WrappedIndexedNode> originalNodes, List<Double> originalResistances) {
-        super(originalResistances.stream().mapToDouble(d -> d).sum(), 0, 0);
+    public DissolvedProperties(List<WrappedIndexedNode> originalNodes, List<ElectricalProperties> originalResistances) {
+        super(originalResistances.stream().mapToDouble(ElectricalProperties::resistance).sum(), 0, 0);
         this.originalNodes = originalNodes;
         this.originalResistances = originalResistances;
     }
 
+    @Override
     public void getVoltages(double v1, double v2, double[] toFill, int microTickBits, int microTick) {
-        double totalResistance = originalResistances.stream().mapToDouble(c -> c).sum();
+        double totalResistance = resistance;
         double current = (v1 - v2) / totalResistance;
 
         double currentVoltage = v1;
         for (int i = 0; i < originalResistances.size(); i++) {
             WrappedIndexedNode nextNode = originalNodes.get(i + 1);
 
-            double voltageDrop = current * originalResistances.get(i);
+            ElectricalProperties properties = originalResistances.get(i);
+            double voltageDrop = current * properties.resistance;
+
             currentVoltage = currentVoltage - voltageDrop;
 
             toFill[(nextNode.ordinal << microTickBits) | microTick] = currentVoltage;
-
         }
     }
 

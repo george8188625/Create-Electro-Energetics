@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.simulation.simulator;
+package com.george_vi.electroenergetics.simulation.electrical_properties;
 
 import net.neoforged.fml.loading.FMLEnvironment;
 
@@ -49,9 +49,9 @@ public class ElectricalProperties {
     @Override
     public String toString() {
         return "{ " +
-                (conductance() != 0 ? "R=" + resistance + " " : "") +
-                (isVoltageSource() ? "Vs=" + voltageSource + " " : "") +
-                (isCurrentSource() ? "Is=" + currentSource + " }" : "}");
+                (conductance() != 0 ? "R=" + resistance() + " " : "") +
+                (isVoltageSource() ? "Vs=" + voltageSource() + " " : "") +
+                (isCurrentSource() ? "Is=" + currentSource() + " }" : "}");
     }
 
     public double resistance() {
@@ -95,12 +95,6 @@ public class ElectricalProperties {
     public int hashCode() {
         return Objects.hash(resistance, voltageSource, currentSource, isForcedVoltageSource);
     }
-
-
-//    public ElectricalProperties add(ElectricalProperties properties) {
-//        double addedConductance = (properties.conductance() + conductance());
-//        return new ElectricalProperties(addedConductance == 0 ? 1e+11d : 1 / addedConductance, properties.voltageSource() + voltageSource(), properties.currentSource() + currentSource(), properties.isForcedVoltageSource || isForcedVoltageSource);
-//    }
 
     public boolean isSimpleResistor() {
         return !isCurrentSource() && !isVoltageSource();

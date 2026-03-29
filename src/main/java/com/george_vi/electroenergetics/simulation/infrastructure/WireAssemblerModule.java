@@ -1,12 +1,10 @@
 package com.george_vi.electroenergetics.simulation.infrastructure;
 
-import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
-import com.george_vi.electroenergetics.simulation.simulator.ElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
-import net.createmod.catnip.data.Pair;
 import net.minecraft.server.level.ServerLevel;
 
 import java.util.*;

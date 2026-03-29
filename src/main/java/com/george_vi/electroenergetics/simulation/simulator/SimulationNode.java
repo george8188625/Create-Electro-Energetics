@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
-import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
+import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 
 public class SimulationNode {
     final WrappedIndexedNode correspondingNode;

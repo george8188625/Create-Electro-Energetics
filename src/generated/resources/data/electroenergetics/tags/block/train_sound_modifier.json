@@ -1,5 +1,7 @@
 {
   "values": [
-    "electroenergetics:alternator_brushes"
+    "electroenergetics:alternator_brushes",
+    "electroenergetics:three_phase_alternator_brushes",
+    "electroenergetics:magnet"
   ]
 }

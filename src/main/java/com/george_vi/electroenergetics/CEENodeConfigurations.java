@@ -205,4 +205,11 @@ public class CEENodeConfigurations {
             .add(new Vec3(5/16f, 4/16f, 2/16f))
             .add(new Vec3(11/16f, 4/16f, 2/16f))
             .simple(Direction.NORTH);
+
+    public static final NodeConfigurator THREE_PHASE_BRUSH = new NodeConfigurator.Builder()
+            .add(new Vec3(8/16f, 8/16f, 2/16f))
+            .add(new Vec3(11/16f, 8/16f, 14/16f))
+            .add(new Vec3(8/16f, 8/16f, 14/16f))
+            .add(new Vec3(5/16f, 8/16f, 14/16f))
+            .simple();
 }

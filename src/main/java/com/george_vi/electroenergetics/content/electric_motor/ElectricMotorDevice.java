@@ -25,15 +25,18 @@ public class ElectricMotorDevice extends SimulatedDevice<ElectricMotorDevice.Dat
             if (extraData.be.isRemoved())
                 extraData.be = null;
             else {
+                double load = Mth.clamp(extraData.be.load, 0.1, 3);
+                if (Double.isNaN(load))
+                    load = 0;
                 bridges.builder(pos)
-                        .resistor(0, 1, 0.8 * Math.min(CEEConfigs.server().resistanceValues.motorResistance.get() * 3, CEEConfigs.server().resistanceValues.motorResistance.get() / Mth.clamp(extraData.be.load, 0.1, 3)));
+                        .resistor(0, 1, 0.8 * Math.min(CEEConfigs.server().resistanceValues.motorResistance.get() * 3, CEEConfigs.server().resistanceValues.motorResistance.get() / load));
             }
         }
     }
 
     @Override
     public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
-        double vd = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
+        double vd = results.getVoltageAt(pos, 0, 1);
 
         if (extraData.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ElectricMotorBlockEntity be)

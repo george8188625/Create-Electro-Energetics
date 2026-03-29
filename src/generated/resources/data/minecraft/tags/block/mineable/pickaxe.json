@@ -30,6 +30,7 @@
     "electroenergetics:voltage_regulator",
     "electroenergetics:alternator_rotor",
     "electroenergetics:alternator_brushes",
+    "electroenergetics:three_phase_alternator_brushes",
     "electroenergetics:magnet",
     "electroenergetics:converter",
     "electroenergetics:catenary_holder",

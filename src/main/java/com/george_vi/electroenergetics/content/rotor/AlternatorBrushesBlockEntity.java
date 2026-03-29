@@ -51,8 +51,15 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
         SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(worldPosition);
 
-        if (deviceInstance == null || !(deviceInstance.extraData() instanceof AlternatorBrushesDevice.DataHolder dataHolder))
+        if (deviceInstance == null || !(deviceInstance.extraData() instanceof AlternatorBrushesDevice.DataHolder dataHolder)) {
+            if (deviceInstance.extraData() instanceof ThreePhaseAlternatorBrushesDevice.DataHolder dataHolder) {
+                dataHolder.stress = totalStress;
+                dataHolder.voltage = totalStress / 100;
+                dataHolder.otherBrush = otherBrush;
+                dataHolder.rpmSpeed.set(getSpeed());
+            }
             return;
+        }
 
         dataHolder.stress = totalStress;
         dataHolder.voltage = totalStress / 100;

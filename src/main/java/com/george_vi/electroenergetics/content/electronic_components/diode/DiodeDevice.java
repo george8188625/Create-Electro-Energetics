@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.electronic_components.diode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.simulation.simulator.MicroTickingElectricalProperties;
+import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

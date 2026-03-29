@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics;
 
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.simibubi.create.AllCreativeModeTabs;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -84,6 +85,9 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.POTENTIOMETER.asStack());
                         output.accept(CEEBlocks.RESISTOR.asStack());
                         output.accept(CEEBlocks.CREATIVE_RESISTOR.asStack());
+                        if (CEEConfigs.client().showACContent.get()) {
+                            output.accept(CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES.asStack());
+                        }
                         output.accept(CEEBlocks.HIGH_VOLTAGE_SIGN.asStack());
                         output.accept(CEEBlocks.ELECTRIC_SHOCK_SIGN.asStack());
                         output.accept(CEEBlocks.GROUNDING_SIGN.asStack());
