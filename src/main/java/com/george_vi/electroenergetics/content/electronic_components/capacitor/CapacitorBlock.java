@@ -33,7 +33,7 @@ public class CapacitorBlock extends DirectionalRolledDeviceBlock implements IBE<
     protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof CapacitorBlockEntity be)
-            tag.putDouble("Capacitance", be.indexToCapacitance(be.capacitance.value));
+            tag.putDouble("Capacitance", be.capacitance.getCapacitance());
         return tag;
     }
 

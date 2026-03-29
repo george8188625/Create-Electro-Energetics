@@ -56,7 +56,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
                 dataHolder.stress = totalStress;
                 dataHolder.voltage = totalStress / 100;
                 dataHolder.otherBrush = otherBrush;
-                dataHolder.rpmSpeed.set(getSpeed());
+                dataHolder.rpmSpeed = getSpeed();
             }
             return;
         }

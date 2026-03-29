@@ -85,7 +85,7 @@ public class SimulationTicker {
 
         Collection<SimulatedDeviceInstance<?>> devices = sd.getTickingDevices();
         // PreTick
-        BridgeCollector bridgeCollector = new BridgeCollector(circuitBuilder, sd);
+        BridgeCollector bridgeCollector = new BridgeCollector(circuitBuilder, sd, microTicks);
         for (SimulatedDeviceInstance<?> deviceInstance : devices)
             deviceInstance.runPreTick(level, bridgeCollector);
 

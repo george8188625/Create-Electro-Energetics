@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.gauge;
 
+import com.george_vi.electroenergetics.foundation.RMSHolder;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -26,7 +27,8 @@ public class GaugeDevice extends SimulatedDevice<GaugeDevice.DataHolder> {
             return;
 
         double vd = results.getVoltageAt(pos, 0, 1);
-
+        extraData.rmsVoltages.add(vd);
+        vd = extraData.rmsVoltages.get();
         if (extraData.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ElectricGaugeBlockEntity be)
                 extraData.be = be;
@@ -43,15 +45,21 @@ public class GaugeDevice extends SimulatedDevice<GaugeDevice.DataHolder> {
 
     @Override
     public DataHolder read(CompoundTag tag) {
-        return new DataHolder();
+        DataHolder dataHolder = new DataHolder();
+        dataHolder.rmsVoltages = new RMSHolder(2);
+        dataHolder.rmsVoltages.read(tag, "Voltages");
+        return dataHolder;
     }
 
     @Override
     public CompoundTag write(DataHolder extraData) {
-        return new CompoundTag();
+        CompoundTag tag = new CompoundTag();
+        extraData.rmsVoltages.write(tag, "Voltages");
+        return tag;
     }
 
     public static class DataHolder {
         public ElectricGaugeBlockEntity be;
+        public RMSHolder rmsVoltages;
     }
 }

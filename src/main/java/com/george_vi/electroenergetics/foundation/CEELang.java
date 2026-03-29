@@ -104,14 +104,19 @@ public class CEELang extends Lang {
                     .text(String.format("%.1f", capacitance))
                     .translate("generic.farads");
 
-        if (Math.abs(capacitance) >= 0.001)
+        if (Math.abs(capacitance) >= 1e-3d)
             return builder()
-                    .text(String.format("%.2f", capacitance * 1000))
+                    .text(String.format("%.2f", capacitance * 1_000))
                     .translate("generic.millifarads");
 
+        if (Math.abs(capacitance) >= 1e-6d)
+            return builder()
+                    .text(String.format("%.2f", capacitance * 1_000_000))
+                    .translate("generic.microfarads");
+
         return builder()
-                .text(String.format("%.1f", capacitance * 1000000))
-                .translate("generic.microfarads");
+                .text(String.format("%.1f", capacitance * 1_000_000_000))
+                .translate("generic.nanofarads");
     }
 
     public static LangBuilder translate(String langKey, Object... args) {

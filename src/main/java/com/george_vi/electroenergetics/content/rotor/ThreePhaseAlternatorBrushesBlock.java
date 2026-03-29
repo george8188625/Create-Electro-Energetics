@@ -4,12 +4,14 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
@@ -45,6 +47,14 @@ public class ThreePhaseAlternatorBrushesBlock extends DirectionalKineticBlock im
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return CEENodeConfigurations.THREE_PHASE_BRUSH.getNodePos(state.getValue(FACING).getOpposite(), id);
+    }
+
+    @Override
+    public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
+        return id == 0 ? CEELang.nodeLabel("neutral") :
+                id == 1 ? CEELang.nodeLabel("phase_1") :
+                id == 2 ? CEELang.nodeLabel("phase_2") :
+                        CEELang.nodeLabel("phase_3");
     }
 
     @Override

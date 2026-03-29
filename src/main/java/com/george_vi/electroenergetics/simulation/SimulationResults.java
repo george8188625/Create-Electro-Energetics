@@ -131,19 +131,38 @@ public class SimulationResults {
         return new DirectionalNodeConnection(node1, node2);
     }
 
+    public double getVoltageAtSqr(BlockPos pos, int n1, int n2) {
+        return getVoltageAtSqr(new InWorldNode(n1, pos), new InWorldNode(n2, pos));
+    }
+
     public double getVoltageAt(BlockPos pos, int n1, int n2) {
         return getVoltageAt(new InWorldNode(n1, pos), new InWorldNode(n2, pos));
     }
 
     public double getVoltageAt(Node n1, Node n2) {
+        if (microTickBits == 0) {
+            int nodeId1 = circuitBuilder.nodeIndexes.getInt(n1);
+            int nodeId2 = circuitBuilder.nodeIndexes.getInt(n2);
+            if (nodeId1 == -1 || nodeId2 == -1)
+                return 0;
+            int id1 = nodeId1 << microTickBits;
+            int id2 = nodeId2 << microTickBits;
+            return voltages[id1] - voltages[id2];
+        }
+        return Math.sqrt(getVoltageAtSqr(n1, n2));
+    }
+
+    public double getVoltageAtSqr(Node n1, Node n2) {
         int nodeId1 = circuitBuilder.nodeIndexes.getInt(n1);
         int nodeId2 = circuitBuilder.nodeIndexes.getInt(n2);
         if (nodeId1 == -1 || nodeId2 == -1)
             return 0;
         int id1 = nodeId1 << microTickBits;
         int id2 = nodeId2 << microTickBits;
-        if (microTickBits == 0)
-            return voltages[id1] - voltages[id2];
+        if (microTickBits == 0) {
+            double v = voltages[id1] - voltages[id2];
+            return v * v;
+        }
 
         double rms = 0;
         for (int j = 0; j < microTicks; j++) {
@@ -151,10 +170,7 @@ public class SimulationResults {
             double v2 = voltages[id2 | j];
             rms += (v1 - v2) * (v1 - v2);
         }
-        if (Math.abs(rms) < 0.001) // no need to sqrt a zero
-            return 0;
         rms /= microTicks;
-        rms = Math.sqrt(rms);
         return rms;
     }
 
@@ -164,8 +180,7 @@ public class SimulationResults {
             return new double[0];
         int id = nodeID << microTickBits;
         double[] r = new double[microTicks];
-        for (int j = 0; j < microTicks; j++)
-            r[j] = voltages[id|j];
+        System.arraycopy(voltages, id, r, 0, microTicks);
         return r;
     }
 }

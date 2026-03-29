@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.potentiometer;
 
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.foundation.ResistanceScrollValueBehaviour;
+import com.george_vi.electroenergetics.foundation.scroll_value.ResistanceScrollValueBehaviour;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;

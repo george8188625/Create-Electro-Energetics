@@ -44,7 +44,7 @@
   "electroenergetics.nodes.neutral": "Neutral",
   "electroenergetics.nodes.positive": "Positive",
   "electroenergetics.nodes.negative": "Negative",
-  "electroenergetics.nodes.phase_2": "L1",
+  "electroenergetics.nodes.phase_1": "L1",
   "electroenergetics.nodes.phase_2": "L2",
   "electroenergetics.nodes.phase_3": "L3",
   "electroenergetics.nodes.primary": "Primary",
@@ -91,6 +91,7 @@
   "electroenergetics.generic.farads": "F",
   "electroenergetics.generic.millifarads": "mF",
   "electroenergetics.generic.microfarads": "μF",
+  "electroenergetics.generic.nanofarads": "nF",
 
   "electroenergetics.subtitle.hum": "Hum",
   "electroenergetics.subtitle.arcing": "Arcing",
@@ -118,7 +119,9 @@
   "electroenergetics.resistor.resistance_symbol": "Ω",
   "electroenergetics.resistor.kilo_resistance_symbol": "Ω x1000",
   "electroenergetics.capacitor.capacitance": "Capacitor Capacitance in Farads",
-  "electroenergetics.capacitor.capacitance_symbol": "🔋",
+  "electroenergetics.capacitor.nano_capacitance_symbol": "🔋 ÷1000",
+  "electroenergetics.capacitor.micro_capacitance_symbol": "🔋",
+  "electroenergetics.capacitor.milli_capacitance_symbol": "🔋 x1000",
 
   "block.electroenergetics.emergency_stop_button.tooltip.summary": "A _Big Red Button_ useful in _emergencies_.",
   "block.electroenergetics.emergency_stop_button.tooltip.condition1": "When R-Clicked",

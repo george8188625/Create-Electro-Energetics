@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor;
 
 import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.scroll_value.CapacitanceScrollValueBehaviour;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.google.common.collect.ImmutableList;
@@ -29,20 +30,11 @@ public class HVCapacitorBlockEntity extends SmartBlockEntity {
         super(type, pos, state);
     }
 
-    protected ScrollValueBehaviour capacitance;
+    protected CapacitanceScrollValueBehaviour capacitance;
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        capacitance = new ScrollValueBehaviour(CEELang.translate("capacitor.capacitance").component(), this, new ValueBox()) {
-            @Override
-            public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-                return new ValueSettingsBoard(label, max, 10, ImmutableList.of(CEELang.translate("capacitor.capacitance_symbol").component()),
-                        new ValueSettingsFormatter(valueSettings -> CEELang.formatCapacitance(indexToCapacitance(valueSettings.value())).component()));
-            }
-        };
-        capacitance.between(0, 190);
-        capacitance.value = 1;
-        capacitance.withFormatter(v -> CEELang.formatCapacitance(indexToCapacitance(v)).string());
+        capacitance = new CapacitanceScrollValueBehaviour(CEELang.translate("capacitor.capacitance").component(), this, new ValueBox());
         capacitance.withCallback(i -> this.updateCapacitance());
         behaviours.add(capacitance);
     }
@@ -54,15 +46,8 @@ public class HVCapacitorBlockEntity extends SmartBlockEntity {
         SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null && deviceInstance.extraData() instanceof HVCapacitorDevice.DataHolder dataHolder) {
-            dataHolder.capacitance = indexToCapacitance(capacitance.value);
+            dataHolder.capacitance = capacitance.getCapacitance();
         }
-    }
-
-    double indexToCapacitance(int i) {
-        if (i < 100)
-            return i / 100000d;
-        i -= 100;
-        return (i + 10) / 10000d;
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {

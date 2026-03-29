@@ -46,7 +46,7 @@ public class HVCapacitorBlock extends DirectionalRolledDeviceBlock implements IB
     protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof HVCapacitorBlockEntity be)
-            tag.putDouble("Capacitance", be.indexToCapacitance(be.capacitance.value));
+            tag.putDouble("Capacitance", be.capacitance.getCapacitance());
         if (state.getValue(SLICED))
             tag.putString("Facing", state.getValue(FACING).getSerializedName());
         return tag;

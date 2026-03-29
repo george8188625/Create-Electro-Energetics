@@ -8,10 +8,12 @@ import net.minecraft.core.BlockPos;
 public class BridgeCollector {
     final InfrastructureSavedData sd;
     final CircuitBuilder circuitBuilder;
+    final int microTicks;
 
-    public BridgeCollector(CircuitBuilder circuitBuilder, InfrastructureSavedData sd) {
+    public BridgeCollector(CircuitBuilder circuitBuilder, InfrastructureSavedData sd, int microTicks) {
         this.sd = sd;
         this.circuitBuilder = circuitBuilder;
+        this.microTicks = microTicks;
     }
 
 
@@ -53,6 +55,10 @@ public class BridgeCollector {
 
     public Builder builder(BlockPos pos) {
         return new Builder(this, pos);
+    }
+
+    public int microTicks() {
+        return microTicks;
     }
 
     public static class Builder {

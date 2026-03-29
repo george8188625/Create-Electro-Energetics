@@ -27,10 +27,8 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
         if (level.isLoaded(pos)) {
-
             SimulatedDeviceInstance<?> deviceInstance = extraData.otherBrush == null ? null : bridges.getSD().getDevice(extraData.otherBrush);
             ElectricalProperties wire = ElectricalProperties.resistor(0.05);
-            extraData.rpmSpeedModifier.set(RandomSource.create(pos.asLong()).nextFloat() * 0.05);
             extraData.phaseA.targetVoltage = extraData.voltage;
             extraData.phaseB.targetVoltage = extraData.voltage;
             extraData.phaseC.targetVoltage = extraData.voltage;
@@ -39,6 +37,9 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
             extraData.phaseA.resistance = extraData.phaseB.resistance = extraData.phaseC.resistance = 1;
             extraData.phaseA.currentSource = extraData.phaseB.currentSource = extraData.phaseC.currentSource = 0;
             extraData.phaseA.stress = extraData.phaseB.stress = extraData.phaseC.stress = extraData.stress;
+            extraData.virtualRotor.totalMicroTicks = bridges.microTicks();
+            extraData.virtualRotor.rpm = (float) (extraData.rpmSpeed + RandomSource.create(pos.asLong()).nextFloat() * 0.0006);
+            extraData.virtualRotor.stress = extraData.stress;
             if (deviceInstance == null || extraData.otherBrush.compareTo(pos) > 0) {
                 bridges.builder(pos)
                         .connect(1, 0, extraData.phaseA)
@@ -80,10 +81,9 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
         DataHolder dataHolder = new DataHolder();
         dataHolder.stress = tag.getFloat("Stress");
         dataHolder.voltage = tag.getFloat("Voltage");
-        dataHolder.rpmSpeedModifier.set(tag.getFloat("RPMOffset"));
-        dataHolder.rpmSpeed.set(tag.getFloat("RPMSpeed"));
-        dataHolder.currentRotation.set(tag.getFloat("CurrentRotation"));
+        dataHolder.rpmSpeed = tag.getFloat("RPM");
         dataHolder.storedEnergy.set(tag.getFloat("StoredEnergy"));
+        dataHolder.virtualRotor.angle = tag.getFloat("Angle");
         dataHolder.otherBrush = tag.contains("OtherBrush") ? NBTHelper.readBlockPos(tag, "OtherBrush") : null;
         return dataHolder;
     }
@@ -93,9 +93,8 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
         CompoundTag tag = new CompoundTag();
         tag.putFloat("Stress", extraData.stress);
         tag.putFloat("Voltage", extraData.voltage);
-        tag.putDouble("RPMOffset", extraData.rpmSpeedModifier.get());
-        tag.putDouble("RPMSpeed", extraData.rpmSpeed.get());
-        tag.putDouble("CurrentRotation", extraData.currentRotation.get());
+        tag.putFloat("RMP", extraData.rpmSpeed);
+        tag.putFloat("Angle", (float) extraData.virtualRotor.angle);
         tag.putDouble("StoredEnergy", extraData.storedEnergy.get());
         if (extraData.otherBrush != null)
             tag.put("OtherBrush", NbtUtils.writeBlockPos(extraData.otherBrush));
@@ -105,16 +104,18 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
     public static class DataHolder {
         public float voltage;
         public float stress;
+        public float rpmSpeed;
         public AtomicDouble storedEnergy = new AtomicDouble();
-        public AtomicDouble rpmSpeed = new AtomicDouble();
-        public AtomicDouble rpmSpeedModifier = new AtomicDouble();
-        public AtomicDouble currentRotation = new AtomicDouble();
         public AtomicInteger workCounter = new AtomicInteger();
+        public VirtualRotor virtualRotor = new VirtualRotor();
         public BlockPos otherBrush;
         public AlternatorBrushesBlockEntity be;
-        public PhaseWindingProperties phaseA = new PhaseWindingProperties(0, currentRotation, rpmSpeed, rpmSpeedModifier, storedEnergy, workCounter);
-        public PhaseWindingProperties phaseB = new PhaseWindingProperties(120, currentRotation, rpmSpeed, rpmSpeedModifier, storedEnergy, workCounter);
-        public PhaseWindingProperties phaseC = new PhaseWindingProperties(240, currentRotation, rpmSpeed, rpmSpeedModifier, storedEnergy, workCounter);
+        public PhaseWindingProperties phaseA = new PhaseWindingProperties(0,
+                storedEnergy, workCounter, virtualRotor);
+        public PhaseWindingProperties phaseB = new PhaseWindingProperties(120,
+                storedEnergy, workCounter, virtualRotor);
+        public PhaseWindingProperties phaseC = new PhaseWindingProperties(240,
+                storedEnergy, workCounter, virtualRotor);
     }
 
     public static class PhaseWindingProperties extends MicroTickingElectricalProperties {
@@ -122,26 +123,26 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
         public double targetVoltage;
         public double v;
         public double stress;
-        final AtomicDouble currentAngle;
-        final AtomicDouble rpmSpeed;
-        final AtomicDouble rpmSpeedModifier;
         final AtomicDouble storedEnergy;
         final AtomicInteger workCounter;
+        final VirtualRotor virtualRotor;
 
 
-        public PhaseWindingProperties(float offset, AtomicDouble currentAngle, AtomicDouble rpmSpeed,
-                                      AtomicDouble rpmSpeedModifier, AtomicDouble storedEnergy, AtomicInteger workCounter) {
+        public PhaseWindingProperties(float offset, AtomicDouble storedEnergy, AtomicInteger workCounter,
+                                      VirtualRotor virtualRotor) {
             this.offset = offset;
-            this.currentAngle = currentAngle;
-            this.rpmSpeed = rpmSpeed;
-            this.rpmSpeedModifier = rpmSpeedModifier;
             this.storedEnergy = storedEnergy;
             this.workCounter = workCounter;
+            this.virtualRotor = virtualRotor;
         }
 
         @Override
         public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
-            v = targetVoltage * Math.sin(Math.toRadians((currentAngle.get() + offset) % 360));
+            if (workCounter.getAndIncrement() % 3 == 0) {
+                virtualRotor.advance();
+            }
+            double angle = virtualRotor.angle + offset;
+            v = targetVoltage * Math.sin(Math.toRadians(angle));
 
             double energy = storedEnergy.get();
             if (energy <= 0) {
@@ -160,18 +161,24 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
 
         @Override
         public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
+            double angle = virtualRotor.angle + offset;
             double vd = allVoltages[(n2 << microTickBits) | (microTick)] - allVoltages[(n1 << microTickBits) | (microTick)];
-            double current = (vd - v) / this.resistance;
+            double current = (v - vd) / this.resistance;
 
             double powerDelivered = Math.abs(current * vd);
-            storedEnergy.addAndGet(-powerDelivered / 3.0);
+            storedEnergy.addAndGet(-powerDelivered / totalMicroTicks);
 
-            if (workCounter.incrementAndGet() % 3 == 0) { // if this is the last one executed in this micro tick
+            double torque = -current * Math.cos(Math.toRadians(angle));
+
+            virtualRotor.torqueAccumulated += torque;
+
+            int iig = workCounter.incrementAndGet();
+            if (iig % 6 == 0) { // if this is the last one executed in this micro tick
                 storedEnergy.updateAndGet(e -> Mth.clamp(e + (stress / totalMicroTicks), 0, stress * 10));
-                currentAngle.updateAndGet(s -> {
-                    double delta = (((rpmSpeed.floatValue() + rpmSpeedModifier.floatValue()) / 128f) * 360 / totalMicroTicks);
-                    return (s + delta) % 360;
-                });
+            }
+
+            if (iig == totalMicroTicks * 6) { // if this is the last one executed in this game tick
+                virtualRotor.swing();
             }
         }
     }

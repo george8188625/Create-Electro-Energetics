@@ -1,5 +1,6 @@
-package com.george_vi.electroenergetics.foundation;
+package com.george_vi.electroenergetics.foundation.scroll_value;
 
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
@@ -37,15 +38,15 @@ public class VoltageScrollValueBehaviour extends ScrollValueBehaviour {
 
         if (value <= 1_000_000) {
             if (value <= 100_000)
-                return new ValueSettings(1, value / 1_000);
+                return new ValueSettings(0, value / 1_000);
             else
-                return new ValueSettings(1, (value / 10_000) + 90);
+                return new ValueSettings(0, (value / 10_000) + 90);
         }
 
         if (value <= 100_000_000)
-            return new ValueSettings(2, value / 1_000_000);
+            return new ValueSettings(1, value / 1_000_000);
         else
-            return new ValueSettings(2, (value / 10_000_000) + 90);
+            return new ValueSettings(1, (value / 10_000_000) + 90);
 
     }
 
