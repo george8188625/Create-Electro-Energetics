@@ -43,6 +43,7 @@
     "electroenergetics:buzzer",
     "electroenergetics:relay",
     "electroenergetics:capacitor",
+    "electroenergetics:inductor",
     "electroenergetics:momentary_switch",
     "electroenergetics:emergency_stop_button",
     "electroenergetics:indicator_bulb",
@@ -50,6 +51,7 @@
     "electroenergetics:electric_shock_sign",
     "electroenergetics:grounding_sign",
     "electroenergetics:potentiometer",
-    "electroenergetics:resistive_heater"
+    "electroenergetics:resistive_heater",
+    "electroenergetics:synchroscope"
   ]
 }

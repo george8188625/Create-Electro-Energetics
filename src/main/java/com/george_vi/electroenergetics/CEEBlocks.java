@@ -8,11 +8,13 @@ import com.george_vi.electroenergetics.content.cut_off_switch.EmergencyStopBlock
 import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchBlock;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorBlock;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
+import com.george_vi.electroenergetics.content.electronic_components.inductor.InductorBlock;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlock;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlockEntity;
 import com.george_vi.electroenergetics.content.rotor.ThreePhaseAlternatorBrushesBlock;
+import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockItem;
@@ -602,6 +604,18 @@ public class CEEBlocks {
             .build()
             .register();
 
+    public static final BlockEntry<InductorBlock> INDUCTOR = REGISTRATE.block("inductor", InductorBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/inductor")))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/inductor")))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxVoltage(CEEConfigs.server().voltageValues.inductorVoltage::get)))
+            .build()
+            .register();
+
     public static final BlockEntry<MomentarySwitchBlock> MOMENTARY_SWITCH = REGISTRATE.block("momentary_switch", MomentarySwitchBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
@@ -685,6 +699,21 @@ public class CEEBlocks {
                     return state.getValue(ResistiveHeaterBlock.LIT) ? Mth.clamp(be.heat, 0, 1.5f) : -1;
                 return -1;
             })))
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .build()
+            .register();
+
+    public static final BlockEntry<SynchroscopeBlock> SYNCHROSCOPE = REGISTRATE.block("synchroscope", SynchroscopeBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
+                    ConfiguredModel.builder()
+                            .modelFile(AssetLookup.partialBaseModel(c, p))
+                            .rotationY((int) state.getValue(EnergyMeterBlock.FACING).getOpposite().toYRot())
+                            .build()
+            )))
+            .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()

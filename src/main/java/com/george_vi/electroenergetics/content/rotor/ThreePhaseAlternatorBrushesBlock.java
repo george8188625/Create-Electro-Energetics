@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
+import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
@@ -89,6 +90,23 @@ public class ThreePhaseAlternatorBrushesBlock extends DirectionalKineticBlock im
             sd.removeDevice(pos);
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
+        super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
+        if (!(level instanceof ServerLevel sl))
+            return;
+
+
+        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+        ThreePhaseAlternatorBrushesDevice.DataHolder data = sd.getDeviceData(pos, ThreePhaseAlternatorBrushesDevice.DataHolder.class);
+        if (data == null)
+            return;
+        Direction fastDirection = state.getValue(FACING).getAxis().isVertical() ? Direction.EAST : state.getValue(FACING).getClockWise();
+        data.fast = level.hasSignal(pos.relative(fastDirection), fastDirection.getOpposite());
+        Direction slowDirection = state.getValue(FACING).getAxis().isVertical() ? Direction.WEST : state.getValue(FACING).getCounterClockWise();
+        data.slow = level.hasSignal(pos.relative(slowDirection), slowDirection.getOpposite());
     }
 
     @Override

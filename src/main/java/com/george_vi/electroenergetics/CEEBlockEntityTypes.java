@@ -5,12 +5,15 @@ import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntityRenderer;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorBlockEntity;
+import com.george_vi.electroenergetics.content.electronic_components.inductor.InductorBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorRenderer;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlockEntity;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderRenderer;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlockEntity;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterRenderer;
+import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeBlockEntity;
+import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeRenderer;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorBlockEntity;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockEntity;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbRenderer;
@@ -151,6 +154,10 @@ public class CEEBlockEntityTypes {
             .validBlock(CEEBlocks.CAPACITOR::get)
             .register();
 
+    public static final BlockEntityEntry<InductorBlockEntity> INDUCTOR = REGISTRATE.blockEntity("inductor", InductorBlockEntity::new)
+            .validBlock(CEEBlocks.INDUCTOR::get)
+            .register();
+
     public static final BlockEntityEntry<HVCapacitorBlockEntity> HV_CAPACITOR = REGISTRATE.blockEntity("high_voltage_capacitor", HVCapacitorBlockEntity::new)
             .validBlock(CEEBlocks.HV_CAPACITOR::get)
             .register();
@@ -168,6 +175,11 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<ResistiveHeaterBlockEntity> RESISTIVE_HEATER = REGISTRATE.blockEntity("resistive_heater", ResistiveHeaterBlockEntity::new)
             .validBlock(CEEBlocks.RESISTIVE_HEATER::get)
             .renderer(() -> ResistiveHeaterRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<SynchroscopeBlockEntity> SYNCHROSCOPE = REGISTRATE.blockEntity("synchroscope", SynchroscopeBlockEntity::new)
+            .validBlock(CEEBlocks.SYNCHROSCOPE::get)
+            .renderer(() -> SynchroscopeRenderer::new)
             .register();
 
 

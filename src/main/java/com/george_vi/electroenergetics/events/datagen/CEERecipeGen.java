@@ -525,6 +525,16 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/capacitor"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.INDUCTOR)
+                .pattern(" S ")
+                .pattern("CcC")
+                .pattern(" S ")
+                .define('C', CEEBlocks.CONNECTOR)
+                .define('S', CEETags.IRON_PLATE)
+                .define('c', CEEItems.COPPER_WIRE_SPOOL)
+                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/inductor"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ACCUMULATOR)
                 .pattern("CAC")
                 .pattern("ZAc")

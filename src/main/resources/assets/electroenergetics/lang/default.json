@@ -92,6 +92,10 @@
   "electroenergetics.generic.millifarads": "mF",
   "electroenergetics.generic.microfarads": "μF",
   "electroenergetics.generic.nanofarads": "nF",
+  "electroenergetics.generic.henry": "H",
+  "electroenergetics.generic.millihenry": "mH",
+  "electroenergetics.generic.microhenry": "μH",
+  "electroenergetics.generic.nanohenry": "nH",
 
   "electroenergetics.subtitle.hum": "Hum",
   "electroenergetics.subtitle.arcing": "Arcing",
@@ -122,6 +126,10 @@
   "electroenergetics.capacitor.nano_capacitance_symbol": "🔋 ÷1000",
   "electroenergetics.capacitor.micro_capacitance_symbol": "🔋",
   "electroenergetics.capacitor.milli_capacitance_symbol": "🔋 x1000",
+  "electroenergetics.inductor.inductance": "Inductor Inductance in Henrys",
+  "electroenergetics.inductor.nano_inductance_symbol": "🧲 ÷1000",
+  "electroenergetics.inductor.micro_inductance_symbol": "🧲",
+  "electroenergetics.inductor.milli_inductance_symbol": "🧲 x1000",
 
   "block.electroenergetics.emergency_stop_button.tooltip.summary": "A _Big Red Button_ useful in _emergencies_.",
   "block.electroenergetics.emergency_stop_button.tooltip.condition1": "When R-Clicked",

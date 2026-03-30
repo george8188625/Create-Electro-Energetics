@@ -82,11 +82,13 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.RAIL_CONTACT_SHOE.asStack());
                         output.accept(CEEBlocks.DIODE.asStack());
                         output.accept(CEEBlocks.CAPACITOR.asStack());
+                        output.accept(CEEBlocks.INDUCTOR.asStack());
                         output.accept(CEEBlocks.POTENTIOMETER.asStack());
                         output.accept(CEEBlocks.RESISTOR.asStack());
                         output.accept(CEEBlocks.CREATIVE_RESISTOR.asStack());
                         if (CEEConfigs.client().showACContent.get()) {
                             output.accept(CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES.asStack());
+                            output.accept(CEEBlocks.SYNCHROSCOPE.asStack());
                         }
                         output.accept(CEEBlocks.HIGH_VOLTAGE_SIGN.asStack());
                         output.accept(CEEBlocks.ELECTRIC_SHOCK_SIGN.asStack());

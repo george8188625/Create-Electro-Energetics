@@ -38,7 +38,9 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
             extraData.phaseA.currentSource = extraData.phaseB.currentSource = extraData.phaseC.currentSource = 0;
             extraData.phaseA.stress = extraData.phaseB.stress = extraData.phaseC.stress = extraData.stress;
             extraData.virtualRotor.totalMicroTicks = bridges.microTicks();
-            extraData.virtualRotor.rpm = (float) (extraData.rpmSpeed + RandomSource.create(pos.asLong()).nextFloat() * 0.0006);
+            extraData.virtualRotor.rpm = (float) (extraData.rpmSpeed + RandomSource.create(pos.asLong()).nextFloat() * 0.0006)
+            + extraData.controlModifier;
+
             extraData.virtualRotor.stress = extraData.stress;
             if (deviceInstance == null || extraData.otherBrush.compareTo(pos) > 0) {
                 bridges.builder(pos)
@@ -51,6 +53,13 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
                 bridges.bridge(new InWorldNode(2, pos), new InWorldNode(2, extraData.otherBrush), wire);
                 bridges.bridge(new InWorldNode(3, pos), new InWorldNode(3, extraData.otherBrush), wire);
             }
+        }
+
+        if (extraData.slow == extraData.fast) {
+            extraData.controlModifier *= 0.995f;
+        } else {
+            float v = extraData.slow ? -0.01f : 0.01f;
+            extraData.controlModifier = Mth.clamp(extraData.controlModifier + v, -1f, 1f);
         }
     }
 
@@ -79,18 +88,22 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
     @Override
     public DataHolder read(CompoundTag tag) {
         DataHolder dataHolder = new DataHolder();
+        dataHolder.controlModifier = tag.getFloat("ControlModifier");
         dataHolder.stress = tag.getFloat("Stress");
         dataHolder.voltage = tag.getFloat("Voltage");
         dataHolder.rpmSpeed = tag.getFloat("RPM");
         dataHolder.storedEnergy.set(tag.getFloat("StoredEnergy"));
         dataHolder.virtualRotor.angle = tag.getFloat("Angle");
         dataHolder.otherBrush = tag.contains("OtherBrush") ? NBTHelper.readBlockPos(tag, "OtherBrush") : null;
+        dataHolder.fast = tag.getBoolean("Fast");
+        dataHolder.slow = tag.getBoolean("Slow");
         return dataHolder;
     }
 
     @Override
     public CompoundTag write(DataHolder extraData) {
         CompoundTag tag = new CompoundTag();
+        tag.putFloat("ControlModifier", extraData.controlModifier);
         tag.putFloat("Stress", extraData.stress);
         tag.putFloat("Voltage", extraData.voltage);
         tag.putFloat("RMP", extraData.rpmSpeed);
@@ -98,6 +111,10 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
         tag.putDouble("StoredEnergy", extraData.storedEnergy.get());
         if (extraData.otherBrush != null)
             tag.put("OtherBrush", NbtUtils.writeBlockPos(extraData.otherBrush));
+        if (extraData.slow)
+            tag.putBoolean("Slow", true);
+        if (extraData.fast)
+            tag.putBoolean("Fast", true);
         return tag;
     }
 
@@ -109,6 +126,9 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
         public AtomicInteger workCounter = new AtomicInteger();
         public VirtualRotor virtualRotor = new VirtualRotor();
         public BlockPos otherBrush;
+        public boolean fast;
+        public boolean slow;
+        public float controlModifier;
         public AlternatorBrushesBlockEntity be;
         public PhaseWindingProperties phaseA = new PhaseWindingProperties(0,
                 storedEnergy, workCounter, virtualRotor);

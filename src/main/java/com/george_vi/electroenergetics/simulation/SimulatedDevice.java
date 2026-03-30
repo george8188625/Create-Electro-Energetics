@@ -69,7 +69,6 @@ public abstract class SimulatedDevice<T> {
             ((ServerLevel)level).sendParticles(ParticleTypes.SMOKE, pPos.x, pPos.y, pPos.z, 5, 0.2, 0.2, 0.2, 0);
     }
 
-
     /**
      * When heat > 0, the temperature rises, until it settles into a value. That value depends on the heat value.
      * This is the formula for the value, the temperature settles into, where h - heat

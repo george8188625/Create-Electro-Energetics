@@ -9,6 +9,7 @@ public class CVoltages extends ConfigBase {
     public final ConfigDouble heavilyInsulatedWireMaxVoltage = d(20000, 0, "heavilyInsulatedWireMaxVoltage", "[in Volts]");
     public final ConfigDouble highVoltageCapacitorVoltage = d(25000, 0, "highVoltageCapacitorVoltage", "[in Volts]");
     public final ConfigDouble capacitorVoltage = d(500, 0, "capacitorVoltage", "[in Volts]");
+    public final ConfigDouble inductorVoltage = d(500, 0, "inductorVoltage", "[in Volts]");
 
     @Override
     public String getName() {

@@ -6,7 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class    CEEShapes {
+public class CEEShapes {
     public static final VoxelShaper CONNECTOR = shape(6,0, 6,10,10,10).forDirectional();
 
     public static final VoxelShaper CONNECTOR_SHORT = shape(6,0, 6,10,7,10).forDirectional();
@@ -88,6 +88,7 @@ public class    CEEShapes {
     public static final VoxelShaper BUZZER = shape(5, 0, 5, 11, 4, 11).forDirectional();
 
     public static final VoxelShaper CAPACITOR = shape(4, 0, 4, 12, 10, 12).forDirectional();
+    public static final VoxelShaper INDUCTOR = shape(4, 0, 4, 12, 15, 12).forDirectional();
 
     public static final VoxelShaper MOMENTARY_SWITCH = shape(1,0, 6,15,4,10).forDirectional();
 

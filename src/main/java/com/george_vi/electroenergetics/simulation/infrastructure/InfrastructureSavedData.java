@@ -602,4 +602,13 @@ public class InfrastructureSavedData extends SavedData {
     public Set<CatenaryConnection> getAllCatenaryConnections() {
        return CATENARY_DATA.keySet();
     }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getDeviceData(BlockPos pos, Class<T> clazz) {
+        SimulatedDeviceInstance<?> di = getDevice(pos);
+        if (di == null)
+            return null;
+        Object data = di.extraData();
+        return clazz.isInstance(data) ? (T) data : null;
+    }
 }

@@ -119,6 +119,27 @@ public class CEELang extends Lang {
                 .translate("generic.nanofarads");
     }
 
+    public static LangBuilder formatInductance(double capacitance) {
+        if (Math.abs(capacitance) >= 1)
+            return builder()
+                    .text(String.format("%.1f", capacitance))
+                    .translate("generic.henry");
+
+        if (Math.abs(capacitance) >= 1e-3d)
+            return builder()
+                    .text(String.format("%.2f", capacitance * 1_000))
+                    .translate("generic.millihenry");
+
+        if (Math.abs(capacitance) >= 1e-6d)
+            return builder()
+                    .text(String.format("%.2f", capacitance * 1_000_000))
+                    .translate("generic.microhenry");
+
+        return builder()
+                .text(String.format("%.1f", capacitance * 1_000_000_000))
+                .translate("generic.nanohenry");
+    }
+
     public static LangBuilder translate(String langKey, Object... args) {
         return builder().translate(langKey, args);
     }
