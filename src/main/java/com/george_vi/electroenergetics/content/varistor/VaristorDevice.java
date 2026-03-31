@@ -23,11 +23,14 @@ public class VaristorDevice extends SimulatedDevice<VaristorDevice.DataHolder> {
         super(id);
         this.maxVoltage = maxVoltage;
     }
-
+    //todo Node configurations
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
         bridges.builder(pos)
-                .connect(0, 1, extraData.properties);
+                .resistor(0, 1, extraData.properties.tickVaristor(
+                        extraData.voltageAtVaristor,
+                        300
+                ));
     }
 
     @Override

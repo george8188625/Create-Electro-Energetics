@@ -49,15 +49,15 @@ public class VaristorBlock extends DirectionalRolledDeviceBlock implements IBE<V
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
-            return CEENodeConfigurations.DOUBLE_CONNECTOR.rotate(new Vec3(0, -90, 0)).getNodes(state.getValue(FACING));
-        return CEENodeConfigurations.DOUBLE_CONNECTOR.getNodes(state.getValue(FACING));
+            return CEENodeConfigurations.MOMENTARY_SWITCH.rotate(new Vec3(0, -90, 0)).getNodes(state.getValue(FACING));
+        return CEENodeConfigurations.MOMENTARY_SWITCH.getNodes(state.getValue(FACING));
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
-            return CEENodeConfigurations.DOUBLE_CONNECTOR.rotate(new Vec3(0, -90, 0)).getNodePos(state.getValue(FACING), id);
-        return CEENodeConfigurations.DOUBLE_CONNECTOR.getNodePos(state.getValue(FACING), id);
+            return CEENodeConfigurations.MOMENTARY_SWITCH.rotate(new Vec3(0, -90, 0)).getNodePos(state.getValue(FACING), id);
+        return CEENodeConfigurations.MOMENTARY_SWITCH.getNodePos(state.getValue(FACING), id);
     }
 
     @Override
