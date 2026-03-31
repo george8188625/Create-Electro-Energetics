@@ -50,6 +50,7 @@ import com.george_vi.electroenergetics.content.transmission_distribution.transfo
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorBlock;
+import com.george_vi.electroenergetics.content.varistor.VaristorBlock;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.simibubi.create.AllTags;
@@ -556,6 +557,18 @@ public class CEEBlocks {
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/creative_resistor")))
             .properties(p -> p.rarity(Rarity.EPIC))
+            .build()
+            .register();
+
+    public static final BlockEntry<VaristorBlock> VARISTOR = REGISTRATE.block("varistor", VaristorBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/varistor")))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/varistor")))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxVoltage(CEEConfigs.server().voltageValues.varistorVoltage::get)))
             .build()
             .register();
 

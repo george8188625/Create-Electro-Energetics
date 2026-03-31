@@ -36,6 +36,7 @@ import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorDevice;
+import com.george_vi.electroenergetics.content.varistor.VaristorDevice;
 import com.george_vi.electroenergetics.foundation.base.TemporaryDevice;
 import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import net.minecraft.resources.ResourceLocation;
@@ -70,6 +71,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice<?> CONCRETE_POLE = register(new ConcretePoleDevice(CreateElectroEnergetics.rl("concrete_pole")));
     public static final SimulatedDevice<?> HV_SWITCH = register(new HVSwitchDevice(CreateElectroEnergetics.rl("high_voltage_switch")));
     public static final SimulatedDevice<?> DIODE = register(new DiodeDevice(CreateElectroEnergetics.rl("diode")));
+    public static final SimulatedDevice<?> VARISTOR = register(new VaristorDevice(CreateElectroEnergetics.rl("varistor"), CEEConfigs.server().voltageValues.varistorVoltage::get));
     public static final SimulatedDevice<?> RESISTOR = register(new ResistorDevice(CreateElectroEnergetics.rl("resistor")));
     public static final SimulatedDevice<?> CREATIVE_RESISTOR = register(new CreativeResistorDevice(CreateElectroEnergetics.rl("creative_resistor")));
     public static final SimulatedDevice<?> FUSE_HOLDER = register(new FuseHolderDevice(CreateElectroEnergetics.rl("fuse_holder")));

@@ -62,6 +62,7 @@
   "block.electroenergetics.transformer_core": "Transformer Core",
   "block.electroenergetics.tri_polar_energy_meter": "Tri Polar Energy Meter",
   "block.electroenergetics.triple_connector": "Triple Connector",
+  "block.electroenergetics.varistor": "Varistor",
   "block.electroenergetics.voltage_regulator": "Voltage Regulator",
   "block.electroenergetics.voltmeter": "Voltmeter",
   "death.attack.electroenergetics.electrocution": "%1$s was electrocuted",

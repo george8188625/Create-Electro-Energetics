@@ -39,6 +39,7 @@ import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlockEntity;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerBlockEntity;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreBlockEntity;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorBlockEntity;
+import com.george_vi.electroenergetics.content.varistor.VaristorBlockEntity;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.content.kinetics.base.ShaftRenderer;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
@@ -152,6 +153,10 @@ public class CEEBlockEntityTypes {
 
     public static final BlockEntityEntry<CapacitorBlockEntity> CAPACITOR = REGISTRATE.blockEntity("capacitor", CapacitorBlockEntity::new)
             .validBlock(CEEBlocks.CAPACITOR::get)
+            .register();
+
+    public static final BlockEntityEntry<VaristorBlockEntity> VARISTOR = REGISTRATE.blockEntity("varistor", VaristorBlockEntity::new)
+            .validBlock(CEEBlocks.VARISTOR::get)
             .register();
 
     public static final BlockEntityEntry<InductorBlockEntity> INDUCTOR = REGISTRATE.blockEntity("inductor", InductorBlockEntity::new)

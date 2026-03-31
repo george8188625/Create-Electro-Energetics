@@ -23,31 +23,39 @@ import net.minecraft.world.level.block.Blocks;
 public class FuseHeldVaristor extends FuseHoldable {
 
     VaristorDevice device = new VaristorDevice(CreateElectroEnergetics.rl("varistor_fuse"), CEEConfigs.server().voltageValues.varistorVoltage::get);
-    VaristorDevice.DataHolder extraData = new VaristorDevice.DataHolder();
-    VaristorProperties properties = new VaristorProperties(extraData);
-//Todo could we hold a VaristorDevice as a Variable?
+    VaristorDevice.DataHolder dataholder = new VaristorDevice.DataHolder();
+    VaristorProperties properties = new VaristorProperties(dataholder);
 
-    //Problem: we never write the current voltage into the actual DataHolder, whcih tickVaristor reads from
+    //Todo could we hold a VaristorDevice as a Variable?
+    //todo Problem: we never write the current voltage into the actual DataHolder, which tickVaristor reads from
 
     @Override
     public void preTick(CompoundTag data, int id1, int id2, BridgeCollector.Builder builder, Level level, BlockPos pos) {
-        var readData = device.read(data);
-        if (readData instanceof VaristorDevice.DataHolder dataHolder) {
-            builder.connect(id1, id2, dataHolder.properties);
+        if (!data.contains("VoltageAtVaristor")) {
+            data.putDouble("VoltageAtVaristor", 1_000_000);
         }
+        builder.resistor(
+                id1,
+                id2,
+                properties.tickVaristor(
+                        data.getDouble("VoltageAtVaristor"),
+                        300
+                )
+        );
+
 
     }
 
     @Override
     public void postTick(CompoundTag data, int id1, int id2, SimulationResults results, Level level, BlockPos pos) {
-        //data.putDouble("VoltageAtVaristor", results.getVoltageAt(pos, id1, id2));
-        var readData = device.read(data);
+        data.putDouble("VoltageAtVaristor", results.getVoltageAt(pos, id1));
+         /*var readData = device.read(data);
         if (readData instanceof VaristorDevice.DataHolder) {
             device.postTick(pos, level, results, readData);
         }
             else {
             data = device.write(new VaristorDevice.DataHolder());
-        }
+        }*/
 
 
     }

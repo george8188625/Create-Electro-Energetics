@@ -39,6 +39,7 @@
     "electroenergetics:diode",
     "electroenergetics:resistor",
     "electroenergetics:creative_resistor",
+    "electroenergetics:varistor",
     "electroenergetics:fuse_holder",
     "electroenergetics:buzzer",
     "electroenergetics:relay",
