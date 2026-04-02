@@ -7,8 +7,9 @@
   "compatibilityLevel": "JAVA_21",
   "plugin": "com.george_vi.electroenergetics.CEEMixinPlugin",
   "client": [
-    "LevelRendererAccessor",
-    "CarriageSoundsMixin"
+    "CarriageSoundsMixin",
+    "SchematicRendererMixin",
+    "LevelRendererAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

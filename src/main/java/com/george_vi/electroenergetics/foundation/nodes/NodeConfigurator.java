@@ -1,20 +1,23 @@
 package com.george_vi.electroenergetics.foundation.nodes;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class NodeConfigurator {
-    protected final List<Vec3> nodes;
+    protected final Int2ObjectMap<Vec3> nodes;
     protected final Direction origin;
 
-    public NodeConfigurator(List<Vec3> nodes, Direction origin) {
-        this.nodes = List.copyOf(nodes);
+    public NodeConfigurator(Int2ObjectMap<Vec3> nodes, Direction origin) {
+        this.nodes = new Int2ObjectArrayMap<>(nodes);
         this.origin = origin;
     }
 
@@ -23,39 +26,40 @@ public class NodeConfigurator {
     }
 
     public Vec3 getNodePos(Direction direction, int id) {
-        List<Vec3> nodes = rotate(origin, direction);
-        if (id >= nodes.size())
-            return Vec3.ZERO;
+        Int2ObjectMap<Vec3> nodes = rotate(origin, direction);
         return nodes.get(id);
     }
 
     public Map<Integer, Vec3> getNodes(Direction direction) {
-        Map<Integer, Vec3> result = new HashMap<>();
-        List<Vec3> nodes = rotate(origin, direction);
-        for (int i = 0; i < nodes.size(); i++)
-            result.put(i, nodes.get(i));
-
-        return result;
+        return rotate(origin, direction);
     }
 
-    protected List<Vec3> rotate(Direction origin, Direction direction) {
+    protected Int2ObjectMap<Vec3> rotate(Direction origin, Direction direction) {
         return getRotatedNodes(rotationValues(origin).reverse().add(rotationValues(direction)));
     }
 
-    protected List<Vec3> getRotatedNodes(Vec3 vec) {
-        List<Vec3> result = new ArrayList<>();
-        for (Vec3 node : nodes)
-            result.add(VecHelper.rotate(node.subtract(VecHelper.CENTER_OF_ORIGIN), vec.x, vec.y, vec.z).add(VecHelper.CENTER_OF_ORIGIN));
+    protected Int2ObjectMap<Vec3> getRotatedNodes(Vec3 vec) {
+        Int2ObjectMap<Vec3> result = new Int2ObjectArrayMap<>();
+        nodes.forEach((id, node) ->
+                result.put(id.intValue(),
+                        VecHelper.rotate(node.subtract(VecHelper.CENTER_OF_ORIGIN), vec.x, vec.y, vec.z)
+                                .add(VecHelper.CENTER_OF_ORIGIN)));
 
         return result;
     }
 
 
     public static class Builder {
-        List<Vec3> nodes = new ArrayList<>();
+        Int2ObjectMap<Vec3> nodes = new Int2ObjectArrayMap<>();
+        int id = 0;
 
         public Builder add(Vec3 pos) {
-            nodes.add(pos);
+            nodes.put(id++, pos);
+            return this;
+        }
+
+        public Builder skip(int ids) {
+            id += ids;
             return this;
         }
 

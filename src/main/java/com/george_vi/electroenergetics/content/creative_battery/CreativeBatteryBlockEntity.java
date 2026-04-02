@@ -27,7 +27,7 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        voltage = new VoltageScrollValueBehaviour(CEELang.translate("creative_battery.voltage").component(),
+        voltage = new VoltageScrollValueBehaviour(CEELang.translateDirect("creative_battery.voltage"),
                 this, new ValueBox());
         voltage.withCallback(i -> this.updateVoltage());
 
@@ -63,25 +63,6 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
                     (direction.getAxis().isHorizontal() &&
                             direction.getAxis() != state.getValue(CreativeBatteryBlock.FACING).getAxis()) :
                     direction.getAxis() == Direction.Axis.X;
-        }
-    }
-
-    static class PhaseOffsetValueBox extends ValueBoxTransform.Sided {
-        @Override
-        protected Vec3 getSouthLocation() {
-            return VecHelper.voxelSpace(8, 8, 16);
-        }
-
-        @Override
-        public Vec3 getLocalOffset(LevelAccessor level, BlockPos pos, BlockState state) {
-            return super.getLocalOffset(level, pos, state);
-        }
-
-        @Override
-        protected boolean isSideActive(BlockState state, Direction direction) {
-            return state.getValue(CreativeBatteryBlock.AC) &&
-                    (state.getValue(CreativeBatteryBlock.FACING).getAxis().isHorizontal() ?
-                    (direction.getAxis().isVertical()) : direction.getAxis() == Direction.Axis.Z);
         }
     }
 }

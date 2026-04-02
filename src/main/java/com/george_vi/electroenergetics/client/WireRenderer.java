@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -213,7 +214,7 @@ public class WireRenderer {
                         QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag());
 
                 if (renderImmediately)
-                    renderWire(renderedPoints, pos1, pos2, pose, buffer, levelRenderer, wireData.wireType());
+                    level(renderedPoints, pos1, pos2, pose, buffer, levelRenderer, wireData.wireType(), mc.level);
 
                 if (points.size() >= 10) {
                     if (isBlock1Outer) {
@@ -261,7 +262,7 @@ public class WireRenderer {
 
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 3);
 
-                renderWire(points, pos1, pos2, pose, buffer, levelRenderer, CEEWireTypes.IRON.get());
+                level(points, pos1, pos2, pose, buffer, levelRenderer, CEEWireTypes.IRON.get(), mc.level);
             }
         }
 
@@ -270,7 +271,7 @@ public class WireRenderer {
         mc.level.getProfiler().pop();
     }
 
-    public static void renderWire(List<Vec3> points, Vec3 pos1, Vec3 pos2, PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireType wireType) {
+    public static void level(List<Vec3> points, Vec3 pos1, Vec3 pos2, PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireType wireType, BlockAndTintGetter level) {
         Minecraft mc = Minecraft.getInstance();
         double miny = pos1.y;
         for (Vec3 point : points)
@@ -290,9 +291,33 @@ public class WireRenderer {
                     .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                            maxLightLevel(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
-                                    LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
+                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
+                            maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
+                                    LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
+                    .renderInto(pose, buffer.getBuffer(RenderType.solid()));
+        }
+    }
+
+    public static void renderWire(List<Vec3> points, Vec3 pos1, Vec3 pos2, PoseStack pose, MultiBufferSource buffer, WireType wireType, BlockAndTintGetter level) {
+        Minecraft mc = Minecraft.getInstance();
+        double miny = pos1.y;
+        for (Vec3 point : points)
+            miny = Math.min(miny, point.y());
+
+        for (int i = 0; i < points.size(); i++) {
+            Vec3 point = points.get(i);
+
+            if (point.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                continue;
+            Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
+            CachedBuffers.partial(wireType.getModel(), Blocks.ANDESITE.defaultBlockState())
+                    .translate(point)
+                    .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                    .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                    .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
+                            maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
+                                    LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
                     .renderInto(pose, buffer.getBuffer(RenderType.solid()));
         }
     }

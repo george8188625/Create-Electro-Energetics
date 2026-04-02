@@ -14,6 +14,7 @@ import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterB
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterRenderer;
 import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeBlockEntity;
 import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeRenderer;
+import com.george_vi.electroenergetics.content.transmission_distribution.current_transformer.CurrentTransformerBlockEntity;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorBlockEntity;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockEntity;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbRenderer;
@@ -180,6 +181,10 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<SynchroscopeBlockEntity> SYNCHROSCOPE = REGISTRATE.blockEntity("synchroscope", SynchroscopeBlockEntity::new)
             .validBlock(CEEBlocks.SYNCHROSCOPE::get)
             .renderer(() -> SynchroscopeRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<CurrentTransformerBlockEntity> CURRENT_TRANSFORMER = REGISTRATE.blockEntity("current_transformer", CurrentTransformerBlockEntity::new)
+            .validBlock(CEEBlocks.CURRENT_TRANSFORMER::get)
             .register();
 
 

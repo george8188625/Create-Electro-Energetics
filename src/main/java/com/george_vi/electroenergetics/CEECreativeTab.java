@@ -66,6 +66,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.TRANSFORMER_CORE.asStack());
                         output.accept(CEEBlocks.TRANSFORMER.asStack());
                         output.accept(CEEBlocks.VOLTAGE_REGULATOR.asStack());
+                        output.accept(CEEBlocks.CURRENT_TRANSFORMER.asStack());
                         output.accept(CEEBlocks.ELECTRIC_MOTOR.asStack());
                         output.accept(CEEBlocks.ELECTRIC_PUMP.asStack());
                         output.accept(CEEBlocks.ALTERNATOR_ROTOR.asStack());

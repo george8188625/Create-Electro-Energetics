@@ -28,6 +28,7 @@
     "electroenergetics:transformer_core",
     "electroenergetics:radiator_panel",
     "electroenergetics:voltage_regulator",
+    "electroenergetics:current_transformer",
     "electroenergetics:alternator_rotor",
     "electroenergetics:alternator_brushes",
     "electroenergetics:three_phase_alternator_brushes",

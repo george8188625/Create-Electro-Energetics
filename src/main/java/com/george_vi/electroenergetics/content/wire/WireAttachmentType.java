@@ -21,7 +21,12 @@ public abstract class WireAttachmentType {
     public abstract float getHeight(WireAttachment attachment);
 
     @OnlyIn(Dist.CLIENT)
-    public abstract void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch);
+    public abstract void render(PoseStack pose, MultiBufferSource buffer, WireAttachment attachment, Vec3 pos, int light, float pitch);
+
+    @OnlyIn(Dist.CLIENT)
+    public void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
+        render(pose, buffer, attachment, pos, light, pitch);
+    };
 
     @OnlyIn(Dist.CLIENT)
     public void renderChain(PoseStack pose, MultiBufferSource buffer, int light) {
@@ -48,7 +53,7 @@ public abstract class WireAttachmentType {
         }
 
         @Override
-        public void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
+        public void render(PoseStack pose, MultiBufferSource buffer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
 
         }
 

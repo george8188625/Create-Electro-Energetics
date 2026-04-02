@@ -9,7 +9,7 @@
       "item": "create:shaft"
     },
     "W": {
-      "item": "electroenergetics:wire_spool"
+      "item": "electroenergetics:inductor"
     }
   },
   "pattern": [

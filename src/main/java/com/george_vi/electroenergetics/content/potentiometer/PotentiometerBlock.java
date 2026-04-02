@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
@@ -12,6 +13,7 @@ import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -111,6 +113,12 @@ public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<Po
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
         return face == Direction.UP;
+    }
+
+    @Override
+    public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
+        return id == 1 ? CEELang.nodeLabel("wiper") :
+                DeviceBlock.super.getNodeLabel(level, pos, state, id);
     }
 
     @Override

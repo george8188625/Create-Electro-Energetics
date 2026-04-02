@@ -3,23 +3,32 @@ package com.george_vi.electroenergetics.content.gauge;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
+import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.scroll_value.ScalingScrollValueBehaviour;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
+import com.simibubi.create.content.kinetics.gauge.GaugeBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 import dan200.computercraft.api.peripheral.PeripheralCapability;
 import net.createmod.catnip.lang.Lang;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import java.util.List;
@@ -32,6 +41,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public final boolean voltmeter;
     public double voltage;
     public AbstractComputerBehaviour computerBehaviour;
+    public ScalingScrollValueBehaviour scaling;
     public int redstoneSignal;
 
     ElectricGaugeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, boolean voltmeter) {
@@ -93,6 +103,7 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
                 .forGoggles(tooltip);
 
         double v = Math.abs(voltmeter ? voltage : voltage / 0.01);
+        v *= scaling.getScale();
         if (v  > 1)
             v = Math.round(v);
         Lang.builder(CreateElectroEnergetics.ID)
@@ -110,7 +121,14 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+        scaling = new ScalingScrollValueBehaviour(CEELang.translateDirect("gauge.scaling"), this, new ValueBox());
+        scaling.withCallback(i -> updateScale());
         behaviours.add(computerBehaviour = CCProxy.behaviour(this));
+        behaviours.add(scaling);
+    }
+
+    private void updateScale() {
+
     }
 
     @Override
@@ -138,5 +156,33 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public void setValue(double v) {
         dialTarget = (float) Mth.clamp(voltmeter ? v / 1000 : v / 40, 0, 1);
         sendData();
+    }
+
+    static class ValueBox extends ValueBoxTransform.Sided {
+
+        @Override
+        protected Vec3 getSouthLocation() {
+            return VecHelper.voxelSpace(8, 8, 14);
+        }
+
+        @Override
+        public Vec3 getLocalOffset(LevelAccessor level, BlockPos pos, BlockState state) {
+            return super.getLocalOffset(level, pos, state);
+        }
+
+        @Override
+        protected boolean isSideActive(BlockState state, Direction direction) {
+            Direction facing = state.getValue(ElectricGaugeBlock.FACING);
+            boolean axisAlongFirst = state.getValue(GaugeBlock.AXIS_ALONG_FIRST_COORDINATE);
+            if (facing.getAxis().isVertical())
+                return direction == facing;
+            if (facing.getAxis() == Direction.Axis.X)
+                return axisAlongFirst ?
+                        direction.getAxis() == Direction.Axis.Z :
+                        direction.getAxis().isVertical();
+            return axisAlongFirst ?
+                    direction.getAxis().isVertical() :
+                    direction.getAxis() == Direction.Axis.X;
+        }
     }
 }

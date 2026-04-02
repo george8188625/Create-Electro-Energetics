@@ -20,7 +20,7 @@ public class VoltageDisplaySource extends NumericSingleLineDisplaySource {
     protected MutableComponent provideLine(DisplayLinkContext context, DisplayTargetStats stats) {
         if (!(context.getSourceBlockEntity() instanceof ElectricGaugeBlockEntity be) || !be.voltmeter)
             return ZERO.copy();
-        return CEELang.formatVoltage(Math.abs(be.voltage)).component();
+        return CEELang.formatVoltage(Math.abs(be.voltage * be.scaling.getScale())).component();
     }
 
     @Override
