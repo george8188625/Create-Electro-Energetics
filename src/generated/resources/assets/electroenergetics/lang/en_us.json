@@ -324,6 +324,7 @@
   "electroenergetics.transformer.ratio_symbol": "÷",
   "electroenergetics.transformer.turns": "Turns",
   "electroenergetics.transformer.turns_symbol": "↻",
+  "electroenergetics.varistor.voltageAtOneAmp": "Voltage at One Ampere",
   "electroenergetics.voltage_regulator.kilo_voltage_symbol": "⚡ x1000",
   "electroenergetics.voltage_regulator.voltage": "Targeted Voltage in Volts",
   "electroenergetics.voltage_regulator.voltage_symbol": "⚡",

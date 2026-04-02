@@ -8,7 +8,6 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureS
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
-import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,25 +24,25 @@ public class VaristorBlockEntity extends SmartBlockEntity {
         super(type, pos, state);
     }
 
-    protected ScrollValueBehaviour voltageAtOneAmp;
+    protected VoltageScrollValueBehaviour voltageAtOneAmp;
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-//todo translation
         voltageAtOneAmp = new VoltageScrollValueBehaviour(CEELang.translate("varistor.voltageAtOneAmp").component(), this, new VaristorValueBox());
-        voltageAtOneAmp.setValue(300);
-        voltageAtOneAmp.withCallback(this::updateVoltageAtOneAmp);
+        voltageAtOneAmp.setValue(300_000);
+        voltageAtOneAmp.withCallback(i->this.updateVoltageAtOneAmp());
         behaviours.add(voltageAtOneAmp);
     }
 
-    private void updateVoltageAtOneAmp(int val) {
+
+    private void updateVoltageAtOneAmp() {
         if (!(level instanceof ServerLevel sl))
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
         SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
         if (deviceInstance != null && deviceInstance.extraData() instanceof VaristorDevice.DataHolder dataHolder) {
-            dataHolder.voltageAtOneAmp = val/1000;
+            dataHolder.voltageAtOneAmp = (int) (voltageAtOneAmp.getValue() / 1000);
         }
     }
 

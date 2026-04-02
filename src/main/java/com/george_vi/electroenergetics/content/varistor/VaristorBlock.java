@@ -34,7 +34,6 @@ public class VaristorBlock extends DirectionalRolledDeviceBlock implements IBE<V
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof VaristorBlockEntity be) {
             tag.putDouble("VoltageAtOneAmp", be.voltageAtOneAmp.value);
-            tag.putFloat("Tangent", 0.4f);
         }
         return tag;
     }

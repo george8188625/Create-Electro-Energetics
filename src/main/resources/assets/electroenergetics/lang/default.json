@@ -131,6 +131,7 @@
   "electroenergetics.inductor.nano_inductance_symbol": "🧲 ÷1000",
   "electroenergetics.inductor.micro_inductance_symbol": "🧲",
   "electroenergetics.inductor.milli_inductance_symbol": "🧲 x1000",
+  "electroenergetics.varistor.voltageAtOneAmp": "Voltage at One Ampere",
   "electroenergetics.gauge.scaling": "Gauge Scaling",
   "electroenergetics.gauge.scaling_symbol": "÷",
   "electroenergetics.gauge.scaling_forward": "x",

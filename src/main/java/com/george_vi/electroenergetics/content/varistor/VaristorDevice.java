@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.varistor;
 
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -23,14 +24,13 @@ public class VaristorDevice extends SimulatedDevice<VaristorDevice.DataHolder> {
         super(id);
         this.maxVoltage = maxVoltage;
     }
-    //todo Node configurations
     @Override
     public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+        extraData.properties.voltageAtOneAmp = extraData.voltageAtOneAmp;
+        extraData.properties.voltageAtContact = extraData.voltageAtVaristor;
+
         bridges.builder(pos)
-                .resistor(0, 1, extraData.properties.tickVaristor(
-                        extraData.voltageAtVaristor,
-                        300
-                ));
+                .connect(0,1, extraData.properties);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class VaristorDevice extends SimulatedDevice<VaristorDevice.DataHolder> {
         if (!CEEConfigs.server().componentDamage.get())
             return;
 
-        if (extraData.temp > 17000) {
+        if (extraData.temp > CEEWireTypes.IRON.get().getMaxTemperature() * 2 / 3) {
             if (level.isLoaded(pos)) {
                 CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.SMALL));
                 ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0,0, 0);
@@ -62,7 +62,7 @@ public class VaristorDevice extends SimulatedDevice<VaristorDevice.DataHolder> {
         dataHolder.voltageAtOneAmp = tag.getInt("VoltageAtOneAmp");
         dataHolder.temp = tag.getFloat("Temp");
         dataHolder.voltageAtVaristor = tag.getDouble("VoltageAtVaristor");
-        dataHolder.properties = new VaristorProperties(dataHolder);
+        dataHolder.properties = new VaristorProperties();
         return dataHolder;
     }
 
@@ -84,7 +84,7 @@ public class VaristorDevice extends SimulatedDevice<VaristorDevice.DataHolder> {
         public int voltageAtOneAmp;
         public float temp;
         public double voltageAtVaristor;
-        public VaristorProperties properties=new VaristorProperties(this);
+        public VaristorProperties properties;
 
     }
 
