@@ -16,6 +16,6 @@ public class ElectricGaugePeripheral extends SyncedPeripheral<ElectricGaugeBlock
 
     @LuaFunction
     public final float getValue() {
-        return (float) (blockEntity.voltmeter ? blockEntity.voltage : blockEntity.voltage / 0.01);
+        return (float) (blockEntity.voltmeter ? blockEntity.voltage : blockEntity.voltage / 0.01) * blockEntity.scaling.getValue();
     }
 }

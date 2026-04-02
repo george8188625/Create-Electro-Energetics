@@ -34,7 +34,7 @@ public class BuntingAttachmentType extends WireAttachmentType {
     }
 
     @Override
-    public void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
+    public void render(PoseStack pose, MultiBufferSource buffer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
         Minecraft mc = Minecraft.getInstance();
         if (!ModList.get().isLoaded("supplementaries"))
             return;

@@ -109,6 +109,7 @@ dependencies {
     implementation("cc.tweaked:cc-tweaked-1.21.1-forge:1.116.1")
     runtimeOnly("curse.maven:spark-361579:6225208")
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+    implementation "curse.maven:create-blueprinted-1487864:7767092"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

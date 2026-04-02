@@ -41,6 +41,7 @@
   "electroenergetics.nodes.feed": "Feed",
   "electroenergetics.nodes.load": "Load",
   "electroenergetics.nodes.coil": "Coil",
+  "electroenergetics.nodes.wiper": "Wiper",
   "electroenergetics.nodes.neutral": "Neutral",
   "electroenergetics.nodes.positive": "Positive",
   "electroenergetics.nodes.negative": "Negative",
@@ -130,6 +131,10 @@
   "electroenergetics.inductor.nano_inductance_symbol": "🧲 ÷1000",
   "electroenergetics.inductor.micro_inductance_symbol": "🧲",
   "electroenergetics.inductor.milli_inductance_symbol": "🧲 x1000",
+  "electroenergetics.gauge.scaling": "Gauge Scaling",
+  "electroenergetics.gauge.scaling_symbol": "÷",
+  "electroenergetics.gauge.scaling_forward": "x",
+  "electroenergetics.gauge.scaling_backward": "÷",
 
   "block.electroenergetics.emergency_stop_button.tooltip.summary": "A _Big Red Button_ useful in _emergencies_.",
   "block.electroenergetics.emergency_stop_button.tooltip.condition1": "When R-Clicked",

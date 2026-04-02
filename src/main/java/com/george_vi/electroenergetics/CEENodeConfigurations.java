@@ -212,4 +212,22 @@ public class CEENodeConfigurations {
             .add(new Vec3(8/16f, 8/16f, 14/16f))
             .add(new Vec3(5/16f, 8/16f, 14/16f))
             .simple();
+
+    public static final NodeConfigurator CURRENT_TRANSFORMER_BOTH = new NodeConfigurator.Builder()
+            .add(new Vec3(8/16f, 14/16f, 3/16f))
+            .add(new Vec3(8/16f, 14/16f, 13/16f))
+            .add(new Vec3(5/16f, 4/16f, 3/16f))
+            .add(new Vec3(11/16f, 4/16f, 3/16f))
+            .simple(Direction.NORTH);
+
+    public static final NodeConfigurator CURRENT_TRANSFORMER_TOP = new NodeConfigurator.Builder()
+            .add(new Vec3(8/16f, 14/16f, 3/16f))
+            .add(new Vec3(8/16f, 14/16f, 13/16f))
+            .simple(Direction.NORTH);
+
+    public static final NodeConfigurator CURRENT_TRANSFORMER_BOTTOM = new NodeConfigurator.Builder()
+            .skip(2)
+            .add(new Vec3(5/16f, 4/16f, 3/16f))
+            .add(new Vec3(11/16f, 4/16f, 3/16f))
+            .simple(Direction.NORTH);
 }

@@ -16,7 +16,7 @@ public class AmperageDisplaySource extends NumericSingleLineDisplaySource {
     protected MutableComponent provideLine(DisplayLinkContext context, DisplayTargetStats stats) {
         if (!(context.getSourceBlockEntity() instanceof ElectricGaugeBlockEntity be) || be.voltmeter)
             return ZERO.copy();
-        return CEELang.formatAmperage(Math.abs(be.voltage / 0.01d)).component();
+        return CEELang.formatAmperage(Math.abs(be.voltage / 0.01d) * be.scaling.getScale()).component();
     }
 
     @Override

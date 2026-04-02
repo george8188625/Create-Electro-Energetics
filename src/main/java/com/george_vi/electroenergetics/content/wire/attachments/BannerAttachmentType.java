@@ -42,12 +42,8 @@ public class BannerAttachmentType extends WireAttachmentType {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
+    public void render(PoseStack pose, MultiBufferSource buffer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
         Minecraft mc = Minecraft.getInstance();
-        Frustum frustum = levelRenderer.getFrustum();
-        if (!frustum.isVisible(AABB.ofSize(pos, 1.2f, 4, 1.2f).setMaxY(pos.y())))
-            return;
-
         BannerPatternLayers pattern = null;
         if (attachment.data.contains("Pattern"))
             pattern = BannerPatternLayers.CODEC
@@ -74,7 +70,16 @@ public class BannerAttachmentType extends WireAttachmentType {
         msr.rotateYDegrees(180);
         msr.translate(0, 0, 0.07);
         BannerRenderer.renderPatterns(pose, buffer, light, OverlayTexture.NO_OVERLAY, flag, ModelBakery.BANNER_BASE, true, color, pattern);
+    }
 
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
+        Frustum frustum = levelRenderer.getFrustum();
+        if (!frustum.isVisible(AABB.ofSize(pos, 1.2f, 4, 1.2f).setMaxY(pos.y())))
+            return;
+
+        render(pose, buffer, attachment, pos, light, pitch);
     }
 
     @Override

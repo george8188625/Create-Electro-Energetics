@@ -147,4 +147,12 @@ public class CEELang extends Lang {
     public static MutableComponent nodeLabel(String key, Object... args) {
         return Component.translatable("electroenergetics.nodes." + key, args);
     }
+
+    public static MutableComponent translateDirect(String key, Object... args) {
+        return Component.translatable("electroenergetics." + key, args);
+    }
+
+    public static String string(String key, Object... args) {
+        return Component.translatable("electroenergetics." + key, args).getString();
+    }
 }

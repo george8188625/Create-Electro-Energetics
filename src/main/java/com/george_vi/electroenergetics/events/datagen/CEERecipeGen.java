@@ -116,7 +116,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("BWB")
                 .pattern("WSW")
                 .pattern("BWB")
-                .define('W', CEEItems.WIRE_SPOOL)
+                .define('W', CEEBlocks.INDUCTOR)
                 .define('S', AllBlocks.SHAFT)
                 .define('B', AllBlocks.INDUSTRIAL_IRON_BLOCK)
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
@@ -388,6 +388,18 @@ public class CEERecipeGen extends RecipeProvider {
                 .define('P', AllItems.PRECISION_MECHANISM)
                 .unlockedBy("has_transformer", has(CEEBlocks.TRANSFORMER))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/voltage_regulator"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.CURRENT_TRANSFORMER)
+                .pattern("CAC")
+                .pattern("TwT")
+                .pattern("CSC")
+                .define('A', AllBlocks.ANDESITE_ALLOY_BLOCK)
+                .define('w', CEETags.COPPER_WIRE)
+                .define('S', CEEItems.WIRE_SPOOL)
+                .define('C', CEEBlocks.CONNECTOR)
+                .define('T', ItemTags.TERRACOTTA)
+                .unlockedBy("has_transformer", has(CEEBlocks.TRANSFORMER))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/current_transformer"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.HV_SWITCH)
                 .pattern(" Sn")

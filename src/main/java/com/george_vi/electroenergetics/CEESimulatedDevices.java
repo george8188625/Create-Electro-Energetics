@@ -12,6 +12,7 @@ import com.george_vi.electroenergetics.content.electronic_components.inductor.In
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterDevice;
 import com.george_vi.electroenergetics.content.rotor.ThreePhaseAlternatorBrushesDevice;
 import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeDevice;
+import com.george_vi.electroenergetics.content.transmission_distribution.current_transformer.CurrentTransformerDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_switch.HVSwitchDevice;
 import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchDevice;
@@ -86,6 +87,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice<?> RESISTIVE_HEATER = register(new ResistiveHeaterDevice(CreateElectroEnergetics.rl("resistive_heater")));
     public static final SimulatedDevice<?> SYNCHROSCOPE = register(new SynchroscopeDevice(CreateElectroEnergetics.rl("synchroscope")));
     public static final SimulatedDevice<?> INDUCTOR = register(new InductorDevice(CreateElectroEnergetics.rl("inductor"), CEEConfigs.server().voltageValues.inductorVoltage::get));
+    public static final SimulatedDevice<?> CURRENT_TRANSFORMER = register(new CurrentTransformerDevice(CreateElectroEnergetics.rl("current_transformer")));
 
     public static SimulatedDevice<?> register(SimulatedDevice<?> device) {
         BY_ID.put(device.getID(), device);

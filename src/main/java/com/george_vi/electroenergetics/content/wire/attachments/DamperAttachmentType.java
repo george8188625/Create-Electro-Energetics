@@ -29,7 +29,7 @@ public class DamperAttachmentType extends WireAttachmentType {
     }
 
     @Override
-    public void render(PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
+    public void render(PoseStack pose, MultiBufferSource buffer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
         CachedBuffers.partial(CEEPartialModels.WIRE_DAMPER_ATTACHMENT, Blocks.ANDESITE.defaultBlockState())
                 .light(light)
                 .rotateZDegrees(-pitch + 180)

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy_block"
+    },
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "S": {
+      "item": "electroenergetics:wire_spool"
+    },
+    "T": {
+      "tag": "minecraft:terracotta"
+    },
+    "w": {
+      "tag": "c:wires/copper"
+    }
+  },
+  "pattern": [
+    "CAC",
+    "TwT",
+    "CSC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:current_transformer"
+  }
+}

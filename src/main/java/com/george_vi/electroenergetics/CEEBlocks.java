@@ -15,6 +15,7 @@ import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterB
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlockEntity;
 import com.george_vi.electroenergetics.content.rotor.ThreePhaseAlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeBlock;
+import com.george_vi.electroenergetics.content.transmission_distribution.current_transformer.CurrentTransformerBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_capacitor.HVCapacitorBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockItem;
@@ -435,6 +436,24 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<CurrentTransformerBlock> CURRENT_TRANSFORMER = REGISTRATE.block("current_transformer", CurrentTransformerBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
+                    !(bs.getValue(CurrentTransformerBlock.BOTTOM) || bs.getValue(CurrentTransformerBlock.TOP)) ?
+                            AssetLookup.partialBaseModel(c, p, "middle") :
+                            bs.getValue(CurrentTransformerBlock.BOTTOM) && bs.getValue(CurrentTransformerBlock.TOP) ?
+                                    AssetLookup.partialBaseModel(c, p) :
+                                    bs.getValue(CurrentTransformerBlock.BOTTOM) ?
+                                            AssetLookup.partialBaseModel(c, p, "bottom") :
+                                            AssetLookup.partialBaseModel(c, p, "top")
+            ))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()
             .register();
 

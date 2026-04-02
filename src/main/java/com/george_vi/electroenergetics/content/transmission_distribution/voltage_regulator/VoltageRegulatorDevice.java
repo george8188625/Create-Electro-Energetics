@@ -22,7 +22,6 @@ import net.minecraft.world.phys.Vec3;
 public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevice.DataHolder> {
     private static final double INPUT_RESISTANCE = 0.01;
     private static final double OUTPUT_RESISTANCE = 0.01;
-    private static final double VOLTAGE_TOLERANCE = 5.0;
     private static final double RATIO_PER_STEP = 0.01;
     private static final int MAX_STEPS = 32;
 
