@@ -142,6 +142,8 @@
   "electroenergetics.gui.goggles.secondary_voltage": "Secondary Coil Voltage:",
   "electroenergetics.gui.goggles.stored_energy": "Stored Energy:",
   "electroenergetics.gui.goggles.voltage": "Voltage:",
+  "electroenergetics.hint.synchroscope_misconfigured": "It appears this _Synchroscope_ has not been wired correctly. Ensure the _phases_ are connected in a consistent order.",
+  "electroenergetics.hint.synchroscope_misconfigured.title": "Misconfigured",
   "electroenergetics.inductor.inductance": "Inductor Inductance in Henrys",
   "electroenergetics.inductor.micro_inductance_symbol": "🧲",
   "electroenergetics.inductor.milli_inductance_symbol": "🧲 x1000",

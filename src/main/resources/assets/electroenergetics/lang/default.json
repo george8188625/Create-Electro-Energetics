@@ -136,6 +136,9 @@
   "electroenergetics.gauge.scaling_forward": "x",
   "electroenergetics.gauge.scaling_backward": "÷",
 
+  "electroenergetics.hint.synchroscope_misconfigured": "It appears this _Synchroscope_ has not been wired correctly. Ensure the _phases_ are connected in a consistent order.",
+  "electroenergetics.hint.synchroscope_misconfigured.title": "Misconfigured",
+
   "block.electroenergetics.emergency_stop_button.tooltip.summary": "A _Big Red Button_ useful in _emergencies_.",
   "block.electroenergetics.emergency_stop_button.tooltip.condition1": "When R-Clicked",
   "block.electroenergetics.emergency_stop_button.tooltip.behaviour1": "Changes state into _Engaged_, and opens its _Internal Switch_.",

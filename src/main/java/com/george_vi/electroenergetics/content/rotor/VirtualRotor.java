@@ -27,7 +27,7 @@ public class VirtualRotor {
     }
 
     void swing() {
-        double inertia = 50000;
+        double inertia = 30000;
         double damping = 0.1;
         double nominalOmega = 360 * (rpm * (40.0 / 256.0)) / 20 / totalMicroTicks;
 

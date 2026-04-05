@@ -38,15 +38,19 @@ public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhas
             extraData.phaseA.currentSource = extraData.phaseB.currentSource = extraData.phaseC.currentSource = 0;
             extraData.phaseA.stress = extraData.phaseB.stress = extraData.phaseC.stress = extraData.stress;
             extraData.virtualRotor.totalMicroTicks = bridges.microTicks();
-            extraData.virtualRotor.rpm = (float) (extraData.rpmSpeed + RandomSource.create(pos.asLong()).nextFloat() * 0.0006)
-            + extraData.controlModifier;
+            boolean reversed = extraData.rpmSpeed < 0;
+            extraData.virtualRotor.rpm = Math.abs(extraData.rpmSpeed) +
+                    RandomSource.create(pos.asLong()).nextFloat() * 0.009f +
+                    extraData.controlModifier;
+
 
             extraData.virtualRotor.stress = extraData.stress;
             if (deviceInstance == null || extraData.otherBrush.compareTo(pos) > 0) {
+                // Swaps phase A and C if reversed, since speed is passed as an absolute value
                 bridges.builder(pos)
-                        .connect(1, 0, extraData.phaseA)
+                        .connect(1, 0, reversed ? extraData.phaseC : extraData.phaseA)
                         .connect(2, 0, extraData.phaseB)
-                        .connect(3, 0, extraData.phaseC);
+                        .connect(3, 0, reversed ? extraData.phaseA : extraData.phaseC);
             } else {
                 bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, extraData.otherBrush), wire);
                 bridges.bridge(new InWorldNode(1, pos), new InWorldNode(1, extraData.otherBrush), wire);

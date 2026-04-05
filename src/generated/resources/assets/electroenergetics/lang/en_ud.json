@@ -142,6 +142,8 @@
   "electroenergetics.gui.goggles.secondary_voltage": ":ǝbɐʇןoΛ ןıoƆ ʎɹɐpuoɔǝS",
   "electroenergetics.gui.goggles.stored_energy": ":ʎbɹǝuƎ pǝɹoʇS",
   "electroenergetics.gui.goggles.voltage": ":ǝbɐʇןoΛ",
+  "electroenergetics.hint.synchroscope_misconfigured": "˙ɹǝpɹo ʇuǝʇsısuoɔ ɐ uı pǝʇɔǝuuoɔ ǝɹɐ ‾sǝsɐɥd‾ ǝɥʇ ǝɹnsuƎ ˙ʎןʇɔǝɹɹoɔ pǝɹıʍ uǝǝq ʇou sɐɥ ‾ǝdoɔsoɹɥɔuʎS‾ sıɥʇ sɹɐǝddɐ ʇI",
+  "electroenergetics.hint.synchroscope_misconfigured.title": "pǝɹnbıɟuoɔsıW",
   "electroenergetics.inductor.inductance": "sʎɹuǝH uı ǝɔuɐʇɔnpuI ɹoʇɔnpuI",
   "electroenergetics.inductor.micro_inductance_symbol": "??",
   "electroenergetics.inductor.milli_inductance_symbol": "000Ɩx ??",
