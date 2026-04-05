@@ -87,6 +87,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.POTENTIOMETER.asStack());
                         output.accept(CEEBlocks.RESISTOR.asStack());
                         output.accept(CEEBlocks.CREATIVE_RESISTOR.asStack());
+                        output.accept(CEEBlocks.VARISTOR.asStack());
                         if (CEEConfigs.client().showACContent.get()) {
                             output.accept(CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES.asStack());
                             output.accept(CEEBlocks.SYNCHROSCOPE.asStack());

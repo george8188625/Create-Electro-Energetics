@@ -20,6 +20,15 @@ public class FuseHolderBlockEntity extends SmartBlockEntity {
     Pair<FuseHoldable, CompoundTag> firstFuse;
     Pair<FuseHoldable, CompoundTag> secondFuse;
 
+    public Pair<Pair<FuseHoldable, CompoundTag>, Pair<FuseHoldable, CompoundTag>> getFuseData() {
+        return Pair.of(firstFuse, secondFuse);
+    }
+
+    public void removeFuse(boolean firstFuse, boolean secondFuse) {
+        if (firstFuse) this.firstFuse=null;
+        if (secondFuse) this.secondFuse=null;
+    }
+
     public FuseHolderBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
