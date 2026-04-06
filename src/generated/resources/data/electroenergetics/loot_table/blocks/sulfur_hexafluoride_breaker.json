@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:any_of",
+          "terms": [
+            {
+              "block": "electroenergetics:sulfur_hexafluoride_breaker",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "base": "true"
+              }
+            }
+          ]
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "electroenergetics:sulfur_hexafluoride_breaker"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "electroenergetics:blocks/sulfur_hexafluoride_breaker"
+}

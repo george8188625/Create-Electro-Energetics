@@ -60,7 +60,7 @@ public class InfrastructureSavedData extends SavedData {
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public InfrastructureSavedData(ServerLevel level) {
+    private InfrastructureSavedData(ServerLevel level) {
         this.level = level;
         wireSimulationState = new WireSimulationState(this, level);
         wireAssemblerModule = new WireAssemblerModule(this, level, this.wireSimulationState);
@@ -444,6 +444,12 @@ public class InfrastructureSavedData extends SavedData {
 
     public SimulatedDeviceInstance<?> getDevice(BlockPos pos) {
         return DEVICES.get(pos);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> SimulatedDeviceInstance<T> getDevice(BlockPos pos, Class<T> clazz) {
+        SimulatedDeviceInstance<?> di = DEVICES.get(pos);
+        return di == null || !clazz.isInstance(di.extraData()) ? null : (SimulatedDeviceInstance<T>) di;
     }
 
     public List<InWorldNodeConnection> getConnections(InWorldNode node) {

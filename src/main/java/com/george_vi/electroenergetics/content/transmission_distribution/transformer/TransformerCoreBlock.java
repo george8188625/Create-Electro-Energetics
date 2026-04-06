@@ -98,8 +98,8 @@ public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWat
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide && player.isCreative()) {
-            Direction facing = state.getValue(FACING);
+        Direction facing = state.getValue(FACING);
+        if (!level.isClientSide && (player.isCreative() || !player.hasCorrectToolForDrops(state, level, pos)) && (facing == Direction.SOUTH || facing == Direction.WEST)) {
             BlockPos otherPos = pos.relative(facing);
             BlockState otherState = level.getBlockState(otherPos);
             if (otherState.is(state.getBlock()) && otherState.getValue(FACING) == facing.getOpposite()) {

@@ -61,6 +61,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.VOLTMETER.asStack());
                         output.accept(CEEBlocks.FUSE.asStack());
                         output.accept(CEEBlocks.FUSE_HOLDER.asStack());
+                        output.accept(CEEBlocks.SF6_BREAKER.asStack());
                         output.accept(CEEBlocks.GROUND_ROD.asStack());
                         output.accept(CEEBlocks.RADIATOR_PANEL.asStack());
                         output.accept(CEEBlocks.TRANSFORMER_CORE.asStack());
@@ -77,6 +78,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.CONVERTER.asStack());
                         output.accept(CEEBlocks.RESISTIVE_HEATER.asStack());
                         output.accept(CEEBlocks.CONCRETE_POLE.asStack());
+                        output.accept(CEEBlocks.INSULATOR.asStack());
                         output.accept(CEEBlocks.POLE_MOUNT.asStack());
                         output.accept(CEEBlocks.CATENARY_HOLDER.asStack());
                         output.accept(CEEBlocks.PANTOGRAPH.asStack());

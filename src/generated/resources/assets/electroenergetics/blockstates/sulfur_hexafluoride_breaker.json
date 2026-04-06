@@ -1,0 +1,32 @@
+{
+  "variants": {
+    "axis=x,base=false,waterlogged=false": {
+      "model": "electroenergetics:block/sulfur_hexafluoride_breaker/block_top",
+      "y": 90
+    },
+    "axis=x,base=false,waterlogged=true": {
+      "model": "electroenergetics:block/sulfur_hexafluoride_breaker/block_top",
+      "y": 90
+    },
+    "axis=x,base=true,waterlogged=false": {
+      "model": "electroenergetics:block/sulfur_hexafluoride_breaker/block",
+      "y": 90
+    },
+    "axis=x,base=true,waterlogged=true": {
+      "model": "electroenergetics:block/sulfur_hexafluoride_breaker/block",
+      "y": 90
+    },
+    "axis=z,base=false,waterlogged=false": {
+      "model": "electroenergetics:block/sulfur_hexafluoride_breaker/block_top"
+    },
+    "axis=z,base=false,waterlogged=true": {
+      "model": "electroenergetics:block/sulfur_hexafluoride_breaker/block_top"
+    },
+    "axis=z,base=true,waterlogged=false": {
+      "model": "electroenergetics:block/sulfur_hexafluoride_breaker/block"
+    },
+    "axis=z,base=true,waterlogged=true": {
+      "model": "electroenergetics:block/sulfur_hexafluoride_breaker/block"
+    }
+  }
+}

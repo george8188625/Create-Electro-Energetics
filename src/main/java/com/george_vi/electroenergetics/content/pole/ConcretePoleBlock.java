@@ -83,7 +83,7 @@ public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterl
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
+    protected SimulatedDevice<?> getDevice() {
         return CEESimulatedDevices.CONCRETE_POLE;
     }
 

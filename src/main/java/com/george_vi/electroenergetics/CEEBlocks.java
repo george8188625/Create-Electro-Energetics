@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerBlock;
+import com.george_vi.electroenergetics.content.connector.*;
 import com.george_vi.electroenergetics.content.cut_off_switch.EmergencyStopBlock;
 import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchBlock;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorBlock;
@@ -23,10 +24,6 @@ import com.george_vi.electroenergetics.content.potentiometer.PotentiometerBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographMovementBehaviour;
-import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
-import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
-import com.george_vi.electroenergetics.content.connector.QuadConnectorBlock;
-import com.george_vi.electroenergetics.content.connector.TripleConnectorBlock;
 import com.george_vi.electroenergetics.content.converter.ConverterBlock;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchBlock;
@@ -47,6 +44,7 @@ import com.george_vi.electroenergetics.content.relay.RelayBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
 import com.george_vi.electroenergetics.content.sign.WarningSignBlock;
+import com.george_vi.electroenergetics.content.transmission_distribution.sf6_breaker.SF6BreakerBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.RadiatorPanelBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreBlock;
@@ -98,6 +96,16 @@ public class CEEBlocks {
             .build()
             .register();
 
+    public static final BlockEntry<InsulatorBlock> INSULATOR = REGISTRATE.block("insulator", InsulatorBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
+            .blockstate((c, p) -> p.directionalBlock(c.get(), bs -> AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
     public static final BlockEntry<ConcretePoleBlock> CONCRETE_POLE = REGISTRATE.block("concrete_pole", ConcretePoleBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
@@ -109,6 +117,23 @@ public class CEEBlocks {
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block_middle"))
+            .build()
+            .register();
+
+    public static final BlockEntry<SF6BreakerBlock> SF6_BREAKER = REGISTRATE.block("sulfur_hexafluoride_breaker", SF6BreakerBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) ->
+                    BlockStateGen.horizontalAxisBlock(c, p, bs ->
+                            bs.getValue(SF6BreakerBlock.BASE) ?
+                                    AssetLookup.partialBaseModel(c, p) :
+                                    AssetLookup.partialBaseModel(c, p, "top")))
+            .transform(pickaxeOnly())
+            .loot((lt, b) -> lt.add(b, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1f)).add(LootItem.lootTableItem(b.asItem())).when(
+                    LootItemBlockStatePropertyCondition.hasBlockStateProperties(b).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SF6BreakerBlock.BASE, true))
+            ))))
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()
             .register();
 

@@ -1,7 +1,9 @@
 {
   "values": [
     "electroenergetics:connector",
+    "electroenergetics:insulator",
     "electroenergetics:concrete_pole",
+    "electroenergetics:sulfur_hexafluoride_breaker",
     "electroenergetics:pole_mount",
     "electroenergetics:double_connector",
     "electroenergetics:triple_connector",

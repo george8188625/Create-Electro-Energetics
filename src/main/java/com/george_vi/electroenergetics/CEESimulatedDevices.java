@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.content.accumulator.AccumulatorDevice;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerDevice;
 import com.george_vi.electroenergetics.content.connector.ConnectorDevice;
+import com.george_vi.electroenergetics.content.connector.InsulatorDevice;
 import com.george_vi.electroenergetics.content.converter.ConverterDevice;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchDevice;
@@ -34,6 +35,7 @@ import com.george_vi.electroenergetics.content.potentiometer.PotentiometerDevice
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayDevice;
 import com.george_vi.electroenergetics.content.relay.RelayDevice;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesDevice;
+import com.george_vi.electroenergetics.content.transmission_distribution.sf6_breaker.SF6BreakerDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorDevice;
@@ -49,6 +51,7 @@ public class CEESimulatedDevices {
 
     public static final SimulatedDevice<?> TEMPORARY = register(new TemporaryDevice(CreateElectroEnergetics.rl("temporary")));
     public static final SimulatedDevice<?> CONNECTOR = register(new ConnectorDevice(CreateElectroEnergetics.rl("connector")));
+    public static final SimulatedDevice<?> INSULATOR = register(new InsulatorDevice(CreateElectroEnergetics.rl("insulator")));
     public static final SimulatedDevice<?> CREATIVE_BATTERY = register(new CreativeBatteryDevice(CreateElectroEnergetics.rl("creative_battery")));
     public static final SimulatedDevice<?> BULB = register(new BulbDevice(CreateElectroEnergetics.rl("bulb")));
     public static final SimulatedDevice<?> CUT_OFF_SWITCH = register(new CutOffSwitchDevice(CreateElectroEnergetics.rl("cut_off_switch"), 1));
@@ -86,6 +89,7 @@ public class CEESimulatedDevices {
     public static final SimulatedDevice<?> SYNCHROSCOPE = register(new SynchroscopeDevice(CreateElectroEnergetics.rl("synchroscope")));
     public static final SimulatedDevice<?> INDUCTOR = register(new InductorDevice(CreateElectroEnergetics.rl("inductor"), CEEConfigs.server().voltageValues.inductorVoltage::get));
     public static final SimulatedDevice<?> CURRENT_TRANSFORMER = register(new CurrentTransformerDevice(CreateElectroEnergetics.rl("current_transformer")));
+    public static final SimulatedDevice<?> SF6_BREAKER = register(new SF6BreakerDevice(CreateElectroEnergetics.rl("sulfur_hexafluoride_breaker")));
 
     public static SimulatedDevice<?> register(SimulatedDevice<?> device) {
         BY_ID.put(device.getID(), device);

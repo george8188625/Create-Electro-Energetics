@@ -11,6 +11,7 @@ import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.BlockPos;
@@ -43,7 +44,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, SimpleWaterloggedBlock {
+public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, ProperWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<Style> STYLE = EnumProperty.create("style", Style.class);
@@ -54,7 +55,7 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
+    protected SimulatedDevice<?> getDevice() {
         return CEESimulatedDevices.CONNECTOR;
     }
 
@@ -74,9 +75,9 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
                 BlockState targetState = context.getLevel().getBlockState(targetPos);
                 if (CEEBlocks.HV_SWITCH.has(targetState))
                     if (targetState.getValue(HVSwitchBlock.FACING) == direction.getOpposite())
-                        return super.getStateForPlacement(context).setValue(FACING, facing).setValue(STYLE, Style.LONG);
+                        return withWater(defaultBlockState().setValue(FACING, facing).setValue(STYLE, Style.LONG), context);
             }
-        return super.getStateForPlacement(context).setValue(FACING, facing);
+        return withWater(defaultBlockState().setValue(FACING, facing), context);
     }
 
     @Override
@@ -91,16 +92,14 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Si
     @Override
     protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
                                      LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-        }
+        updateWater(level, state, pos);
 
-        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+        return state;
     }
 
     @Override
     protected FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+        return fluidState(state);
     }
 
     @Override

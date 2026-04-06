@@ -1,4 +1,4 @@
-// 1.21.1	2026-04-05T18:46:16.586897833	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-04-06T15:20:06.888654289	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -33,6 +33,7 @@ b8106082a71e6c422a4d7d9cee78d37c9c0c6a92 assets/electroenergetics/blockstates/fu
 55a48ccd09ddf603503b6a0b06a5726b406c1021 assets/electroenergetics/blockstates/high_voltage_switch.json
 98f65bbd7c83f0d40161fa52baa73c19b08cf01a assets/electroenergetics/blockstates/indicator_bulb.json
 1989549c3f9e751e978c4128413be5f309ad9349 assets/electroenergetics/blockstates/inductor.json
+0ba45835f3793ff7bfdc6e974dfca7bb13752a06 assets/electroenergetics/blockstates/insulator.json
 34d20a50d936348285542ca43b2e608bf1071f00 assets/electroenergetics/blockstates/magnet.json
 b03cab75fda8ca7893b43daf72281270c4f00480 assets/electroenergetics/blockstates/momentary_switch.json
 9488c3b67a62aed0016025ad18628271963226de assets/electroenergetics/blockstates/pantograph.json
@@ -45,6 +46,7 @@ cc52e079373119965caa4ec35c98d09af30c5ac0 assets/electroenergetics/blockstates/re
 1ffecaf8ebba0c08952b8ac1230bd6c611a3b696 assets/electroenergetics/blockstates/relay.json
 587e64bfe8c77d31d084176cec41f209de32a9d9 assets/electroenergetics/blockstates/resistive_heater.json
 cb188994d08b02c1478fa6467297e808ee9cf9f7 assets/electroenergetics/blockstates/resistor.json
+6a5ed193fc3cc63565182d42ae94a652b3c76d55 assets/electroenergetics/blockstates/sulfur_hexafluoride_breaker.json
 21483e06953c4048b9742a56e66a5776f5e02ff5 assets/electroenergetics/blockstates/synchroscope.json
 8dd69ade947fd9e612a9efb86cca1bc8d7343b38 assets/electroenergetics/blockstates/three_phase_alternator_brushes.json
 1d6614f80d85c6300b750e52a5d49328d5126b2b assets/electroenergetics/blockstates/transformer.json
@@ -53,8 +55,8 @@ d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tr
 600c5f36375220f10093b0281d61f9d813217cec assets/electroenergetics/blockstates/triple_connector.json
 5c608672ee1daf0018f0be749795561d9bdd5b6e assets/electroenergetics/blockstates/voltage_regulator.json
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
-1f9f76cf1cef1b682fb3978893a85dbd5576b8b6 assets/electroenergetics/lang/en_ud.json
-6732f16bb922d4a8402e74c4b6a6631f16c438a1 assets/electroenergetics/lang/en_us.json
+bd62fe77203234d9a8c163c6ecb8f4bf437fe29e assets/electroenergetics/lang/en_ud.json
+04180ba08a179ab93b80f5d7309000a5a2453735 assets/electroenergetics/lang/en_us.json
 765c328111edefba08ab581cf90002ac3163c985 assets/electroenergetics/models/block/creative_battery.json
 41220aad614f77bd1e09d645e147029acb992cf5 assets/electroenergetics/models/block/creative_battery_ac.json
 f2a0a8c7269e5b0a9318f61027d189a0c74da680 assets/electroenergetics/models/block/magnet.json
@@ -103,6 +105,7 @@ ef969b51574a3c34c5065d5fcd6ad4a20f228994 assets/electroenergetics/models/item/hi
 c822c194901ce488341c54faf52ee2089de7aba8 assets/electroenergetics/models/item/indicator_bulb.json
 28ef45e6ffd3ff47e750062af53e6c5b709ead67 assets/electroenergetics/models/item/inductor.json
 b25c94a73840b99cfa7e51d61c9c12047b5acf85 assets/electroenergetics/models/item/insulated_wire.json
+e8a5fee025fb48212c37f86e611df19ab975be99 assets/electroenergetics/models/item/insulator.json
 4c07f5681525c0d52462a87400b079d916048c1c assets/electroenergetics/models/item/iron_bus_spool.json
 33afb4e42b5ed5a75134b96d46f26aaf151157b8 assets/electroenergetics/models/item/iron_rail_spool.json
 0d557c6662c5d780ec65495e82129151de048228 assets/electroenergetics/models/item/iron_wire.json
@@ -120,6 +123,7 @@ d5c50b7cca9584f68480854b9c7446fb3c62192d assets/electroenergetics/models/item/mo
 b0f1292dbd5ac7e7e9b418a984733e06bb9f1b5d assets/electroenergetics/models/item/relay.json
 e4e57f242093ed5e544cee1a2040264c0d2e0c4b assets/electroenergetics/models/item/resistive_heater.json
 aa635768e1faba0fab8baef4cb21c4a62fe3bf14 assets/electroenergetics/models/item/resistor.json
+1f167ee4db8613e13c0c62ace8d19298dcb51e77 assets/electroenergetics/models/item/sulfur_hexafluoride_breaker.json
 aba46716aa75c0ef698f1cd72e85c7fc9d97d38c assets/electroenergetics/models/item/synchroscope.json
 399bd4d29245b9e69a77af56d2af6352bf837950 assets/electroenergetics/models/item/three_phase_alternator_brushes.json
 900188a8b751b26dfbc84fdbb5968366a303cec7 assets/electroenergetics/models/item/transformer.json
@@ -167,6 +171,7 @@ e1568ee509449f56f2d0e6bf941b8b3bb9c88697 data/electroenergetics/loot_table/block
 484d5f1153f8c63debe90a362a1ac31c9072b601 data/electroenergetics/loot_table/blocks/high_voltage_switch.json
 97c62d5913b3a7fa709d43056fc3f47a2429317a data/electroenergetics/loot_table/blocks/indicator_bulb.json
 41bb87976597fb4eb6d6cc443ab612853ac12c56 data/electroenergetics/loot_table/blocks/inductor.json
+bf07b156493b9a78e5cc43f4004e2c860c3e6f10 data/electroenergetics/loot_table/blocks/insulator.json
 e95b7119250fc92a1da72e7b54133e49927e8719 data/electroenergetics/loot_table/blocks/magnet.json
 6bc3f9ce29768f1b8fcedd87a63ed475b8f90001 data/electroenergetics/loot_table/blocks/momentary_switch.json
 7e0cb95cbf8b4e82f332e8d4d50747ce8a9f0eda data/electroenergetics/loot_table/blocks/pantograph.json
@@ -179,6 +184,7 @@ b8f180b56322f2f491d2c632fe915aa7f419dfff data/electroenergetics/loot_table/block
 36f91badeb03f314aa5ff0bbda774229ca85294b data/electroenergetics/loot_table/blocks/relay.json
 3a42a633751ab57deb7bd65a54b1b3a19f85385e data/electroenergetics/loot_table/blocks/resistive_heater.json
 7a4c84d675bc6217d6c998eda733753032ba5048 data/electroenergetics/loot_table/blocks/resistor.json
+344cbfda278c4dd1a0f7ea001b12833a91adeb01 data/electroenergetics/loot_table/blocks/sulfur_hexafluoride_breaker.json
 913cf683086d8bde2d0bf748fa549c1c288bf7da data/electroenergetics/loot_table/blocks/synchroscope.json
 1aa5ce640ce5ff9ca42ae7ff7be4656874516c04 data/electroenergetics/loot_table/blocks/three_phase_alternator_brushes.json
 913b9bdcace66a8856fea0522aa64b416c94ced1 data/electroenergetics/loot_table/blocks/transformer.json
@@ -189,4 +195,4 @@ f3eee256afdc2c974db137095ff397fb1d928acc data/electroenergetics/loot_table/block
 cebbbb548b3077845ff201773a97a64bd08ed537 data/electroenergetics/loot_table/blocks/voltmeter.json
 98bbd0520dae6a99af74617611f47379d90ede27 data/electroenergetics/tags/block/train_electric_motor.json
 f3fdf7ab8ca0a87b6a9f1cd9d21a1c8c7c930d79 data/electroenergetics/tags/block/train_sound_modifier.json
-e36e10392cc0daf1ab553c0e07af4451d2efc37d data/minecraft/tags/block/mineable/pickaxe.json
+3e821bae964d9687514a0705394ffee5fec6d4cf data/minecraft/tags/block/mineable/pickaxe.json

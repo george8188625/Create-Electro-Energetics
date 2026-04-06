@@ -13,6 +13,7 @@ public class CEESoundEvents {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
             DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, CreateElectroEnergetics.ID);
     public static final Supplier<SoundEvent> HUM = sound("hum");
+    public static final Supplier<SoundEvent> SF6_TRIP = sound("sulfur_hexafluoride_breaker_trip");
     public static final Supplier<SoundEvent> SHORT_ARC = sound("short_arc");
     public static final Supplier<SoundEvent> ARC = sound("arc");
     public static final Supplier<SoundEvent> VOLTAGE_REGULATOR = sound("voltage_regulator");

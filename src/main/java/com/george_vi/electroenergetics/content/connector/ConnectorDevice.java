@@ -24,6 +24,11 @@ public class ConnectorDevice extends SimulatedDevice<ConnectorDevice.DataHolder>
         return tag;
     }
 
+    @Override
+    public boolean ticks() {
+        return false;
+    }
+
     public static class DataHolder {
         public boolean isHVSwitchTarget;
     }

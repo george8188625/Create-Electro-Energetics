@@ -132,6 +132,15 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_copper_nugget", has(CEETags.COPPER_NUGGET))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/connector"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.INSULATOR, 6)
+                .pattern(" T ")
+                .pattern(" A ")
+                .pattern(" T ")
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('T', ItemTags.TERRACOTTA)
+                .unlockedBy("has_terracotta", has(ItemTags.TERRACOTTA))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/insulator"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.CONNECTOR, 2)
                 .pattern("C")
                 .define('C', CEEBlocks.DOUBLE_CONNECTOR)

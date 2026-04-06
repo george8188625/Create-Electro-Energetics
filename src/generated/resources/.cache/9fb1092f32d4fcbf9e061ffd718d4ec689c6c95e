@@ -1,4 +1,4 @@
-// 1.21.1	2026-04-02T20:56:24.243795539	Recipes
+// 1.21.1	2026-04-06T13:43:23.573764584	Recipes
 e4558ff2c12de196a56a9f67ffe27050cdfe38f7 data/electroenergetics/advancement/recipes/decorations/stonecutting/electric_shock_sign.json
 1e443110466e17eb3a8f102e9fc77c86fc29380e data/electroenergetics/advancement/recipes/decorations/stonecutting/grounding_sign.json
 e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/recipes/decorations/stonecutting/high_voltage_sign.json
@@ -42,6 +42,7 @@ babdf5fc3cdc6ce6fd59ca06277f5774a1e33113 data/electroenergetics/advancement/reci
 866eb1a3aa987fbdfe1f88ad1aa3f8daf04e7aa7 data/electroenergetics/advancement/recipes/misc/crafting/indicator_bulb.json
 6e73a7a52a216617eb6e6804987444282ff8474d data/electroenergetics/advancement/recipes/misc/crafting/inductor.json
 c306175636fc6d01ac5fbdb49a1dd77542f62853 data/electroenergetics/advancement/recipes/misc/crafting/insulated_wire.json
+9b1edec91c79d2d508af48e33fa640c10a3ac7fd data/electroenergetics/advancement/recipes/misc/crafting/insulator.json
 8961589f4669cb8e397a520ec7cc089af5e97c00 data/electroenergetics/advancement/recipes/misc/crafting/iron_bus_spool.json
 4ba8f9f052ee090bb9df903be3280f68d42b6299 data/electroenergetics/advancement/recipes/misc/crafting/iron_rail_spool.json
 4bc804c4319804748e2f32bd56e7d396cabf862f data/electroenergetics/advancement/recipes/misc/crafting/iron_wire.json
@@ -107,6 +108,7 @@ e29829f1256fce5fba6be1ac0e1caef5d4627a0a data/electroenergetics/recipe/crafting/
 8ca987b4e92d42a9cc0ee8e8b0ca64dd92b8e3d3 data/electroenergetics/recipe/crafting/indicator_bulb.json
 2fd9e3743a149bd535784a645a72e06819e98b0b data/electroenergetics/recipe/crafting/inductor.json
 01a607602d1a7f9442cb8f57263cba75eeedf789 data/electroenergetics/recipe/crafting/insulated_wire.json
+817f2c7558ef474558d7d6ba58ea70ae04ad31a5 data/electroenergetics/recipe/crafting/insulator.json
 38a0792036dfb5eb7645c841fb0aebf58be0c8c9 data/electroenergetics/recipe/crafting/iron_bus_spool.json
 a72901c126f76d415711c631be5438c4505a4701 data/electroenergetics/recipe/crafting/iron_rail_spool.json
 7b8b384be74c65aeb6e15fcad30e8c4cc7090029 data/electroenergetics/recipe/crafting/iron_wire.json
