@@ -1,9 +1,9 @@
 package com.george_vi.electroenergetics.content.accumulator;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class AccumulatorBlock extends SimpleDeviceBlock implements IBE<AccumulatorBlockEntity> {
+public class AccumulatorBlock extends SimpleElectricalDeviceBlock<AccumulatorDevice> implements IBE<AccumulatorBlockEntity> {
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -52,8 +52,8 @@ public class AccumulatorBlock extends SimpleDeviceBlock implements IBE<Accumulat
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.ACCUMULATOR;
+    public SimulatedDeviceType<AccumulatorDevice> getDevice() {
+        return CEESimulatedDevices.ACCUMULATOR.get();
     }
 
     @Override

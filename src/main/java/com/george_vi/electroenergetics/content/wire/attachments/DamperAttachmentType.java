@@ -6,7 +6,6 @@ import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.content.wire.WireAttachmentType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.createmod.catnip.render.CachedBuffers;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.Item;

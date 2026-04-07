@@ -4,8 +4,8 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
@@ -14,7 +14,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -36,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class ResistiveHeaterBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock, IBE<ResistiveHeaterBlockEntity> {
+public class ResistiveHeaterBlock extends SimpleElectricalDeviceBlock<ResistiveHeaterDevice> implements ProperWaterloggedBlock, IBE<ResistiveHeaterBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<BlazeBurnerBlock.HeatLevel> HEAT_LEVEL = BlazeBurnerBlock.HEAT_LEVEL;
@@ -88,8 +87,8 @@ public class ResistiveHeaterBlock extends SimpleDeviceBlock implements ProperWat
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.RESISTIVE_HEATER;
+    public SimulatedDeviceType<ResistiveHeaterDevice> getDevice() {
+        return CEESimulatedDevices.RESISTIVE_HEATER.get();
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.wire.interaction;
 
-import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.client.WireRenderer;
+import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;

@@ -1,24 +1,26 @@
 package com.george_vi.electroenergetics.content.pole;
 
-import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.simulation.BridgeCollector;
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.electroenergetics.simulation.BridgeCollector;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-public class ConcretePoleDevice extends SimulatedDevice<ConcretePoleDevice.DataHolder> {
-    public ConcretePoleDevice(ResourceLocation id) {
-        super(id);
+public class ConcretePoleDevice extends SimpleElectricalDevice {
+    public boolean top;
+    public boolean bottom;
+
+    public ConcretePoleDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
-        if (extraData.bottom) {
+    public void preTick(BridgeCollector bridges) {
+        if (this.bottom) {
             int length = 0;
             // Incremented by 2
             // The reason this can be done is that there is no possible way to skip an end of a pole if it's in a correct state.
@@ -26,15 +28,15 @@ public class ConcretePoleDevice extends SimulatedDevice<ConcretePoleDevice.DataH
             // If it lands in the right place, it lands in the right place.
             // A pole always ends with a top-most pole state.
             for (int i = 1; i + pos.getY() < level.getMaxBuildHeight(); i += 2) {
-                SimulatedDeviceInstance<?> di = bridges.getSD().getDevice(pos.above(i));
-                if (di == null || di.simulatedDevice() != CEESimulatedDevices.CONCRETE_POLE || !(di.extraData() instanceof DataHolder dataHolder)) {
+                ConcretePoleDevice device = deviceSD.getDevice(pos.above(i), ConcretePoleDevice.class);
+                if (device == null) {
                     length = i - 1;
-                    SimulatedDeviceInstance<?> ndi = bridges.getSD().getDevice(pos.above(length));
-                    if (ndi == null || ndi.simulatedDevice() != CEESimulatedDevices.CONCRETE_POLE || !(ndi.extraData() instanceof DataHolder dataHolder && dataHolder.top))
+                    ConcretePoleDevice device1 = deviceSD.getDevice(pos.above(i), ConcretePoleDevice.class);
+                    if (device1 == null)
                         return;
                     break;
                 }
-                else if (dataHolder.top) {
+                else if (device.top) {
                     length = i;
                     break;
                 }
@@ -44,7 +46,7 @@ public class ConcretePoleDevice extends SimulatedDevice<ConcretePoleDevice.DataH
                 bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, pos.above(length)), CEEConfigs.server().resistanceValues.wireResistance.get() * length, 0, 0);
         }
 
-        if (extraData.top || extraData.bottom)
+        if (top || bottom)
             bridges.builder(pos)
                     .resistor(0, 1, CEEConfigs.server().resistanceValues.wireResistance.get())
                     .resistor(1, 2, CEEConfigs.server().resistanceValues.wireResistance.get())
@@ -54,25 +56,17 @@ public class ConcretePoleDevice extends SimulatedDevice<ConcretePoleDevice.DataH
     }
 
     @Override
-    public DataHolder read(CompoundTag tag) {
-        DataHolder dataHolder = new DataHolder();
-        dataHolder.top = tag.getBoolean("Top");
-        dataHolder.bottom = tag.getBoolean("Bottom");
-        return dataHolder;
+    public void read(CompoundTag tag) {
+        top = tag.getBoolean("Top");
+        bottom = tag.getBoolean("Bottom");
     }
 
     @Override
-    public CompoundTag write(DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        if (extraData.bottom)
+    public void write(CompoundTag tag) {
+        if (bottom)
             tag.putBoolean("Bottom", true);
-        if (extraData.top)
+        if (top)
             tag.putBoolean("Top", true);
-        return tag;
     }
 
-    public static class DataHolder {
-        public boolean top;
-        public boolean bottom;
-    }
 }

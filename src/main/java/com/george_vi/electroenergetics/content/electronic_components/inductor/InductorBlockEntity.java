@@ -3,8 +3,8 @@ package com.george_vi.electroenergetics.content.electronic_components.inductor;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.InductanceScrollValueBehaviour;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
@@ -24,24 +24,24 @@ public class InductorBlockEntity extends SmartBlockEntity {
         super(type, pos, state);
     }
 
-    protected InductanceScrollValueBehaviour capacitance;
+    protected InductanceScrollValueBehaviour inductance;
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        capacitance = new InductanceScrollValueBehaviour(CEELang.translate("capacitor.inductance").component(), this, new ValueBox());
-        capacitance.withCallback(i -> this.updateInductance());
-        behaviours.add(capacitance);
+        inductance = new InductanceScrollValueBehaviour(CEELang.translate("capacitor.inductance").component(), this, new ValueBox());
+        inductance.withCallback(i -> this.updateInductance());
+        behaviours.add(inductance);
     }
 
     private void updateInductance() {
         if (!(level instanceof ServerLevel sl))
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
+        InductorDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, InductorDevice.class);
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof InductorDevice.DataHolder dataHolder) {
-            dataHolder.inductance = capacitance.getInductance();
-        }
+        if (device != null)
+            device.inductance = inductance.getInductance();
+
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {

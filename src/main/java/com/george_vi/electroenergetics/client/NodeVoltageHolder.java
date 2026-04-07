@@ -1,7 +1,6 @@
 package com.george_vi.electroenergetics.client;
 
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import it.unimi.dsi.fastutil.doubles.DoubleObjectPair;
 import net.createmod.catnip.animation.AnimationTickHolder;
 
 import java.util.HashMap;

@@ -2,7 +2,6 @@ package com.george_vi.electroenergetics.content.railway_electrification.pantogra
 
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
 import com.george_vi.electroenergetics.simulation.infrastructure.ConnectionEntry;
-import com.george_vi.electroenergetics.simulation.infrastructure.WireSimulationState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 

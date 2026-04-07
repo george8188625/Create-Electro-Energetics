@@ -1,15 +1,18 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
+import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
 import com.george_vi.electroenergetics.simulation.electrical_properties.*;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
 import com.george_vi.electroenergetics.simulation.optimization.SimpleTopologyOptimizationEntry;
 import com.george_vi.electroenergetics.simulation.optimization.StarToDeltaEntry;
 import com.george_vi.electroenergetics.simulation.optimization.TopologyOptimizationEntry;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
-import it.unimi.dsi.fastutil.ints.*;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 

@@ -1,14 +1,10 @@
 package com.george_vi.electroenergetics.mixins;
 
-import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEPartialModels;
-import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.client.WireRenderer;
-import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
-import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
@@ -25,10 +21,8 @@ import net.createmod.catnip.render.SuperRenderTypeBuffer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -75,9 +69,9 @@ public class SchematicRendererMixin {
                 pos2 = connection.node2().sourcePos().getCenter();
             }
 
-            boolean isBlock1Outer = state1.getBlock() instanceof DeviceBlock db &&
+            boolean isBlock1Outer = state1.getBlock() instanceof ElectricalDeviceBlock<?> db &&
                     db.isOuterInsulator(schematic, connection.node1().sourcePos(), state1, connection.node1().id());
-            boolean isBlock2Outer = state2.getBlock() instanceof DeviceBlock db &&
+            boolean isBlock2Outer = state2.getBlock() instanceof ElectricalDeviceBlock<?> db &&
                     db.isOuterInsulator(schematic, connection.node2().sourcePos(), state2, connection.node2().id());
 
             for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {

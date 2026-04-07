@@ -1,10 +1,10 @@
 package com.george_vi.electroenergetics.content.ground_rod;
 
 import com.george_vi.electroenergetics.CEEShapes;
-import com.george_vi.electroenergetics.CEETags;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.CEETags;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,7 +26,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class GroundRodBlock extends SimpleDeviceBlock implements IWrenchable, SimpleWaterloggedBlock {
+public class GroundRodBlock extends SimpleElectricalDeviceBlock<GroundRodDevice> implements IWrenchable, SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public GroundRodBlock(Properties properties) {
@@ -35,8 +35,8 @@ public class GroundRodBlock extends SimpleDeviceBlock implements IWrenchable, Si
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.GROUND_ROD;
+    public SimulatedDeviceType<GroundRodDevice> getDevice() {
+        return CEESimulatedDevices.GROUND_ROD.get();
     }
 
     @Override

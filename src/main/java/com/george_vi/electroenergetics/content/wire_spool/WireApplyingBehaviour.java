@@ -6,14 +6,14 @@ import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.NodeVoltageHolder;
+import com.george_vi.electroenergetics.client.WireRenderer;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
-import com.george_vi.electroenergetics.client.WireRenderer;
-import com.george_vi.electroenergetics.foundation.*;
-import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.RequestVoltageDataPacket;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.simibubi.create.AllSpecialTextures;
@@ -67,13 +67,16 @@ public class WireApplyingBehaviour {
             selectedNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
             BlockState selectedState = level.getBlockState(selectedNode.sourcePos());
 
-            if (!(selectedState.getBlock() instanceof DeviceBlock db))
+            if (!(selectedState.getBlock() instanceof ElectricalDeviceBlock<?> db))
                 return;
 
-            selectedPos = selectedNode.toGlobalPos(db.getNodePosition(level, pos, selectedState, selectedNode.id()));
-            Outliner.getInstance().showAABB("electroenergetics_selected_node", AABB.ofSize(selectedPos, 4/16f, 4/16f, 4/16f), 3)
-                    .colored(FontHelper.Palette.STANDARD_CREATE.primary().getColor().getValue())
-                    .withFaceTexture(AllSpecialTextures.SELECTION);
+            Vec3 nodePosition = db.getNodePosition(level, pos, selectedState, selectedNode.id());
+            if (nodePosition != null) {
+                selectedPos = selectedNode.toGlobalPos(nodePosition);
+                Outliner.getInstance().showAABB("electroenergetics_selected_node", AABB.ofSize(selectedPos, 4 / 16f, 4 / 16f, 4 / 16f), 3)
+                        .colored(FontHelper.Palette.STANDARD_CREATE.primary().getColor().getValue())
+                        .withFaceTexture(AllSpecialTextures.SELECTION);
+            }
         }
 
         InWorldNode hoveredNode = InWorldNode.closestNode(level, mc.hitResult.getLocation(), 1.5f);
@@ -83,7 +86,7 @@ public class WireApplyingBehaviour {
 
         BlockState hoveredBlockState = level.getBlockState(pos);
 
-        if (hoveredBlockState.getBlock() instanceof DeviceBlock db) {
+        if (hoveredBlockState.getBlock() instanceof ElectricalDeviceBlock<?> db) {
 
             for (Map.Entry<Integer, Vec3> n : db.getNodePositions(level, pos, hoveredBlockState).entrySet()) {
                 int nodeId = n.getKey();
@@ -114,7 +117,7 @@ public class WireApplyingBehaviour {
 
         BlockState state = level.getBlockState(hoveredNode.sourcePos());
 
-        if (!(state.getBlock() instanceof DeviceBlock db))
+        if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
             return;
         hoveredPos = db.getNodePosition(level, pos, state, hoveredNode.id());
         if (hoveredPos == null)

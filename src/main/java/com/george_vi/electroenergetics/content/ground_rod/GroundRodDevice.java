@@ -1,30 +1,21 @@
 package com.george_vi.electroenergetics.content.ground_rod;
 
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-public class GroundRodDevice extends SimulatedDevice<Void> {
-    public GroundRodDevice(ResourceLocation id) {
-        super(id);
+public class GroundRodDevice extends SimpleElectricalDevice {
+
+    public GroundRodDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, Void extraData) {
+    public void preTick(BridgeCollector bridges) {
         bridges.builder(pos)
                 .ground(0, 1);
-    }
-
-    @Override
-    public Void read(CompoundTag tag) {
-        return null;
-    }
-
-    @Override
-    public CompoundTag write(Void extraData) {
-        return new CompoundTag();
     }
 }

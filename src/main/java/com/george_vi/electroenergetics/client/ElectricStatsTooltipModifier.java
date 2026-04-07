@@ -2,7 +2,6 @@ package com.george_vi.electroenergetics.client;
 
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.simibubi.create.api.registry.SimpleRegistry;
-import com.simibubi.create.content.equipment.goggles.GogglesItem;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.item.TooltipModifier;
 import com.simibubi.create.foundation.utility.CreateLang;

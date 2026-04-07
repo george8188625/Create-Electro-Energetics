@@ -1,44 +1,26 @@
 package com.george_vi.electroenergetics.content.connector;
 
-import com.george_vi.electroenergetics.CEESoundEvents;
-import com.george_vi.electroenergetics.content.transmission_distribution.sf6_breaker.SF6BreakerDevice;
-import com.george_vi.electroenergetics.foundation.VirtualRedstoneDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.foundation.device.SimpleNonTickingElectricalDevice;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.simulateddevices.device.VirtualRedstoneDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 
-public class InsulatorDevice extends SimulatedDevice<InsulatorDevice.DataHolder> implements VirtualRedstoneDevice<InsulatorDevice.DataHolder> {
-    public InsulatorDevice(ResourceLocation id) {
-        super(id);
+public class InsulatorDevice extends SimpleNonTickingElectricalDevice implements VirtualRedstoneDevice {
+    public boolean powered;
+    public byte[] power = new byte[Direction.values().length];
+    
+    public InsulatorDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public DataHolder read(CompoundTag tag) {
-        DataHolder dataHolder = new DataHolder();
-        return dataHolder;
-    }
-
-    @Override
-    public CompoundTag write(DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        return tag;
-    }
-
-    @Override
-    public boolean ticks() {
-        return false;
-    }
-
-    @Override
-    public void updateRedstoneInput(Level level, BlockPos pos, Direction direction, InsulatorDevice.DataHolder extraData, int power) {
-        byte[] powerLevels = extraData.power;
+    public void updateRedstoneInput(int power, Direction direction) {
+        byte[] powerLevels = this.power;
         powerLevels[direction.ordinal()] = (byte) power;
-        boolean prevPowered = extraData.powered;
         boolean p = false;
         for (byte b : powerLevels) {
             if (b > 0) {
@@ -46,16 +28,22 @@ public class InsulatorDevice extends SimulatedDevice<InsulatorDevice.DataHolder>
                 break;
             }
         }
-        extraData.powered = p;
-
-        if (p != prevPowered) {
-            Vec3 pPos = Vec3.atCenterOf(pos);
-            level.playSound(null, pPos.x, pPos.y, pPos.z, CEESoundEvents.SF6_TRIP.get(), SoundSource.BLOCKS, 0.5f, 1f);
-        }
+        this.powered = p;
     }
 
-    public static class DataHolder {
-        public boolean powered;
-        public byte[] power = new byte[Direction.values().length];
+    @Override
+    public void read(CompoundTag tag) {
+        this.powered = tag.getBoolean("Closed");
+        byte[] arr = tag.getByteArray("Powered");
+        if (arr.length == this.power.length)
+            this.power = arr;
     }
+
+    @Override
+    public void write(CompoundTag tag) {
+        tag.putByteArray("Power", this.power);
+        if (this.powered)
+            tag.putBoolean("Powered", true);
+    }
+
 }

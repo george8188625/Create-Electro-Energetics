@@ -12,7 +12,6 @@ import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.phys.AABB;
 
 public class TransformerScenes {

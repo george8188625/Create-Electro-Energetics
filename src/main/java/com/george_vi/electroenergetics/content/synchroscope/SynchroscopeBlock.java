@@ -4,16 +4,14 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlockEntity;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -34,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class SynchroscopeBlock extends SimpleDeviceBlock implements IWrenchable, IBE<SynchroscopeBlockEntity>, ProperWaterloggedBlock {
+public class SynchroscopeBlock extends SimpleElectricalDeviceBlock<SynchroscopeDevice> implements IWrenchable, IBE<SynchroscopeBlockEntity>, ProperWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -43,8 +41,8 @@ public class SynchroscopeBlock extends SimpleDeviceBlock implements IWrenchable,
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.SYNCHROSCOPE;
+    public SimulatedDeviceType<SynchroscopeDevice> getDevice() {
+        return CEESimulatedDevices.SYNCHROSCOPE.get();
     }
 
     @Override

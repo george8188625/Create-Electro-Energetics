@@ -2,8 +2,7 @@ package com.george_vi.electroenergetics.content.transmission_distribution.curren
 
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.ScalingScrollValueBehaviour;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -49,11 +48,11 @@ public class CurrentTransformerBlockEntity extends SmartBlockEntity implements I
     private void updateScale() {
         if (!(level instanceof ServerLevel sl))
             return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof CurrentTransformerDevice.DataHolder dataHolder) {
-            dataHolder.ratio = scaling.getScale();
+        CurrentTransformerDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, CurrentTransformerDevice.class);
+
+        if (device != null) {
+            device.ratio = scaling.getScale();
         }
 
         if (!getBlockState().getValue(CurrentTransformerBlock.BOTTOM))

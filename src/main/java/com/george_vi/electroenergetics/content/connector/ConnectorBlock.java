@@ -5,10 +5,9 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_switch.HVSwitchBlock;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
@@ -26,7 +25,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -34,7 +32,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -44,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, ProperWaterloggedBlock {
+public class ConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDevice> implements IWrenchable, ProperWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<Style> STYLE = EnumProperty.create("style", Style.class);
@@ -55,8 +52,8 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Pr
     }
 
     @Override
-    protected SimulatedDevice<?> getDevice() {
-        return CEESimulatedDevices.CONNECTOR;
+    public SimulatedDeviceType<ConnectorDevice> getDevice() {
+        return CEESimulatedDevices.CONNECTOR.get();
     }
 
     @Override
@@ -126,15 +123,16 @@ public class ConnectorBlock extends SimpleDeviceBlock implements IWrenchable, Pr
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> instance = sd.getDevice(pos);
-        if (instance != null && instance.extraData() instanceof ConnectorDevice.DataHolder dataHolder) {
+
+        ConnectorDevice device = DevicesSavedData.load(level).getDevice(pos, ConnectorDevice.class);
+
+        if (device != null) {
             if (state.getValue(STYLE) == Style.LONG && state.getValue(FACING) == Direction.UP)
-                dataHolder.isHVSwitchTarget = true;
+                device.isHVSwitchTarget = true;
             else
-                dataHolder.isHVSwitchTarget = false;
+                device.isHVSwitchTarget = false;
         }
     }
 

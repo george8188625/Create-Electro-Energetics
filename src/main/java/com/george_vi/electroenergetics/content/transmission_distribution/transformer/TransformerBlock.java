@@ -3,9 +3,9 @@ package com.george_vi.electroenergetics.content.transmission_distribution.transf
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class TransformerBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock, IBE<TransformerBlockEntity> {
+public class TransformerBlock extends SimpleElectricalDeviceBlock<TransformerDevice> implements ProperWaterloggedBlock, IBE<TransformerBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -49,7 +49,7 @@ public class TransformerBlock extends SimpleDeviceBlock implements ProperWaterlo
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof TransformerBlockEntity be)
             tag.putDouble("Ratio", TransformerBlockEntity.indexToRatio(be.ratio.value));
@@ -81,8 +81,8 @@ public class TransformerBlock extends SimpleDeviceBlock implements ProperWaterlo
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.TRANSFORMER;
+    public SimulatedDeviceType<TransformerDevice> getDevice() {
+        return CEESimulatedDevices.TRANSFORMER.get();
     }
 
     @Override

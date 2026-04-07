@@ -1,19 +1,21 @@
 package com.george_vi.electroenergetics.mixins;
 
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
-import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.simibubi.create.content.schematics.SchematicPrinter;
 import com.simibubi.create.content.schematics.cannon.MaterialChecklist;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -48,24 +50,12 @@ public class SchematicPrinterMixin {
                 return;
             electroEnergetics$wirePhase = true;
             InfrastructureSavedData sd = InfrastructureSavedData.load(blockReader.getLevel());
+            DevicesSavedData deviceSD = DevicesSavedData.load(blockReader.getLevel());
 
             for (Map.Entry<InWorldNodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
                 InWorldNodeConnection connection = e.getKey();
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
-                if (sd.getDevice(node1.sourcePos()) == null) {
-                    SimulatedDeviceInstance<?> di = sl.getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
-                    if (di == null)
-                        continue;
-                    sd.addDevice(node1.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
-                }
-
-                if (sd.getDevice(node2.sourcePos()) == null) {
-                    SimulatedDeviceInstance<?> di = sl.getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
-                    if (di == null)
-                        continue;
-                    sd.addDevice(node2.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
-                }
 
                 if (!sd.getConnections(node1).contains(connection)) {
                     currentPos = BlockPos.containing(QuadraticWireHelper.posAt(node1.sourcePos().getCenter(), node2.sourcePos().getCenter(), 0.5f));
@@ -131,24 +121,22 @@ public class SchematicPrinterMixin {
             if (sl.getWireConnections().isEmpty())
                 return;
             InfrastructureSavedData sd = InfrastructureSavedData.load(blockReader.getLevel());
+            DevicesSavedData deviceSD = DevicesSavedData.load(blockReader.getLevel());
             for (Map.Entry<InWorldNodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
                 InWorldNodeConnection connection = e.getKey();
                 WireData wireData = e.getValue();
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
-                if (sd.getDevice(node1.sourcePos()) == null) {
-                    SimulatedDeviceInstance<?> di = sl.getDevices().stream().filter(d -> d.pos().equals(node1.sourcePos())).toList().getFirst();
-                    if (di == null)
-                        continue;
-                    sd.addDevice(node1.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
-                }
 
-                if (sd.getDevice(node2.sourcePos()) == null) {
-                    SimulatedDeviceInstance<?> di = sl.getDevices().stream().filter(d -> d.pos().equals(node2.sourcePos())).toList().getFirst();
-                    if (di == null)
-                        continue;
-                    sd.addDevice(node2.sourcePos(), di.simulatedDevice(), di.write(), di.nodes().stream().map(InWorldNode::id).toList());
-                }
+                if (deviceSD.getDevice(node1.sourcePos()) == null)
+                    deviceSD.addDevice(CEESimulatedDevices.TEMPORARY.get(), node1.sourcePos(), new CompoundTag());
+                if (deviceSD.getDevice(node2.sourcePos()) == null)
+                    deviceSD.addDevice(CEESimulatedDevices.TEMPORARY.get(), node2.sourcePos(), new CompoundTag());
+
+                if (!sd.hasNode(node1))
+                    sd.addTemporaryNode(node1);
+                if (!sd.hasNode(node2))
+                    sd.addTemporaryNode(node2);
 
                 if (!sd.getConnections(node1).contains(connection)) {
                     sd.setConnectionData(sd.connect(node1, node2, wireData.wireType()), wireData);

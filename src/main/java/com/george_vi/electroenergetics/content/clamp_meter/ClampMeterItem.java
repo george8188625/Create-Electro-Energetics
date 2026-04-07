@@ -1,14 +1,14 @@
 package com.george_vi.electroenergetics.content.clamp_meter;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
+import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.NodeVoltageHolder;
+import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
-import com.george_vi.electroenergetics.client.WireRenderer;
-import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
-import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.createmod.catnip.animation.AnimationTickHolder;

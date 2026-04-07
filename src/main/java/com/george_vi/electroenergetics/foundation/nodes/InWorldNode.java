@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.foundation.nodes;
 
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.data.Pair;
@@ -13,7 +13,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 /**
@@ -50,21 +53,12 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
 
         List<Pair<Vec3, InWorldNode>> nodes = new ArrayList<>();
 
-        List<BlockPos> offsets = new ArrayList<>();
-        Vec3 relativePos = new Vec3(clickedPos.x() % 1, clickedPos.y() % 1, clickedPos.z() % 1);
-        int xDirection = relativePos.x < 0.5 ? -1 : 1;
-        int yDirection = relativePos.y < 0.5 ? -1 : 1;
-        int zDirection = relativePos.z < 0.5 ? -1 : 1;
-
-        for (int x = 0; x < 2; x++)
-            for (int y = 0; y < 2; y++)
-                for (int z = 0; z < 2; z++)
-                    offsets.add(new BlockPos(x * xDirection, y * yDirection, z * zDirection));
+        List<BlockPos> offsets = getNodeSearchBlockPositions(clickedPos);
 
         for (BlockPos offset : offsets) {
             BlockPos pos = BlockPos.containing(clickedPos).offset(offset);
             BlockState state = level.getBlockState(pos);
-            if (state.getBlock() instanceof DeviceBlock db)
+            if (state.getBlock() instanceof ElectricalDeviceBlock<?> db)
                 for (Map.Entry<Integer, Vec3> e : db.getNodePositions(level, pos, state).entrySet())
                     nodes.add(Pair.of(e.getValue(), new InWorldNode(e.getKey(), pos)));
         }
@@ -76,9 +70,23 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
                 .orElse(null);
     }
 
+    private static @NotNull List<BlockPos> getNodeSearchBlockPositions(Vec3 clickedPos) {
+        List<BlockPos> offsets = new ArrayList<>();
+        Vec3 relativePos = new Vec3(clickedPos.x() % 1, clickedPos.y() % 1, clickedPos.z() % 1);
+        int xDirection = relativePos.x < 0.5 ? -1 : 1;
+        int yDirection = relativePos.y < 0.5 ? -1 : 1;
+        int zDirection = relativePos.z < 0.5 ? -1 : 1;
+
+        for (int x = 0; x < 2; x++)
+            for (int y = 0; y < 2; y++)
+                for (int z = 0; z < 2; z++)
+                    offsets.add(new BlockPos(x * xDirection, y * yDirection, z * zDirection));
+        return offsets;
+    }
+
     public Vec3 getPosition(Level level) {
         BlockState state = level.getBlockState(sourcePos);
-        if (!(state.getBlock() instanceof DeviceBlock db))
+        if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
             return null;
         Vec3 localPos = db.getNodePosition(level, sourcePos, state, id);
         if (localPos == null)

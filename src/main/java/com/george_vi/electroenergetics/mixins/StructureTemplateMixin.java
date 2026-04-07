@@ -3,29 +3,32 @@ package com.george_vi.electroenergetics.mixins;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
-import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
-import com.george_vi.electroenergetics.simulation.*;
+import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -46,9 +49,6 @@ import java.util.stream.Collectors;
 @Mixin(StructureTemplate.class)
 public class StructureTemplateMixin {
     @Unique
-    List<SimulatedDeviceInstance> electroEnergetics$allDevices = new ArrayList<>();
-
-    @Unique
     List<Pair<InWorldNodeConnection, WireData>> electroEnergetics$allWireConnections = new ArrayList<>();
 
     @Inject(method = "fillFromWorld(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Vec3i;ZLnet/minecraft/world/level/block/Block;)V", at=@At("HEAD"), remap = false)
@@ -64,10 +64,6 @@ public class StructureTemplateMixin {
 
         if (level instanceof ServerLevel sl) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            electroEnergetics$allDevices = sd.getDevices().stream().filter(d -> d.pos().getX() >= pos.getX() && d.pos().getX() < pos.getX() + size.getX() &&
-                                                                        d.pos().getY() >= pos.getY() && d.pos().getY() < pos.getY() + size.getY() &&
-                                                                        d.pos().getZ() >= pos.getZ() && d.pos().getZ() < pos.getZ() + size.getZ())
-                    .map(d -> new SimulatedDeviceInstance(d.simulatedDevice(), d.pos().subtract(pos), d.extraData(), d.nodes().stream().map(n -> new InWorldNode(((InWorldNode)n).id(), ((InWorldNode)n).sourcePos().subtract(pos))).toList())).toList();
             Set<InWorldNode> allNodes = sd.getNodes().stream().filter(d -> d.sourcePos().getX() >= pos.getX() && d.sourcePos().getX() < pos.getX() + size.getX() &&
                     d.sourcePos().getY() >= pos.getY() && d.sourcePos().getY() < pos.getY() + size.getY() &&
                     d.sourcePos().getZ() >= pos.getZ() && d.sourcePos().getZ() < pos.getZ() + size.getZ()).collect(Collectors.toSet());
@@ -110,40 +106,12 @@ public class StructureTemplateMixin {
                             new InWorldNode(node2.id(), node2.sourcePos().subtract(pos))), wireData));
                 }
             }
-
-            for (BlockPos devicePos : devicePositions) {
-                BlockState state = level.getBlockState(devicePos);
-                if (state.getBlock() instanceof DeviceBlock db) {
-                    // Connector as placeholder, since the blocks should be ticked after being loaded, so the proper device should be added.
-                    electroEnergetics$allDevices.add(new SimulatedDeviceInstance(CEESimulatedDevices.TEMPORARY, devicePos.subtract(pos), null, db.getNodePositions(level, devicePos, state).keySet().stream().map(id -> new InWorldNode(id, devicePos)).toList()));
-                }
-            }
         }
     }
 
     @Inject(method = "save", at=@At("HEAD"), remap = false)
     public void save(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
-        if (electroEnergetics$allDevices.isEmpty())
-            return;
         CompoundTag ceeTag = new CompoundTag();
-
-        ListTag deviceList = new ListTag();
-        for (SimulatedDeviceInstance<?> deviceInstance : electroEnergetics$allDevices) {
-            CompoundTag deviceTag = new CompoundTag();
-
-            deviceTag.put("Pos", NbtUtils.writeBlockPos(deviceInstance.pos()));
-            deviceTag.putString("ID", deviceInstance.simulatedDevice().getID().toString());
-            deviceTag.put("ExtraData", deviceInstance.write());
-
-            ListTag deviceNodeList = new ListTag();
-            for (InWorldNode node : deviceInstance.nodes())
-                deviceNodeList.add(InWorldNode.CODEC.encodeStart(NbtOps.INSTANCE, node).getOrThrow());
-
-            deviceTag.put("Nodes", deviceNodeList);
-
-            deviceList.add(deviceTag);
-        }
-        ceeTag.put("Devices", deviceList);
 
         ListTag connectionList = new ListTag();
         for (Pair<InWorldNodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
@@ -179,18 +147,6 @@ public class StructureTemplateMixin {
         if (!CEEConfigs.server().saveInfrastructureInSchematics.get())
             return;
         CompoundTag ceeTag = tag.getCompound("electroenergetics_data");
-        NBTHelper.iterateCompoundList(ceeTag.getList("Devices", Tag.TAG_COMPOUND), deviceTag -> {
-            BlockPos pos = NBTHelper.readBlockPos(deviceTag, "Pos");
-            SimulatedDevice device = CEESimulatedDevices.get(ResourceLocation.parse(deviceTag.getString("ID")));
-            if (device == null) {
-                InfrastructureSavedData.LOGGER.warn("Could not load device: {} at pos: {}, while trying to load a schematic, removing...", deviceTag.getString("ID"), pos.toShortString());
-                return;
-            }
-
-            ListTag nodeListTag = deviceTag.getList("Nodes", Tag.TAG_INT_ARRAY);
-
-            electroEnergetics$allDevices.add(new SimulatedDeviceInstance(device, pos, device.read(deviceTag.getCompound("ExtraData")), nodeListTag.stream().map(t -> InWorldNode.CODEC.decode(NbtOps.INSTANCE, t).getOrThrow().getFirst()).toList()));
-        });
 
         NBTHelper.iterateCompoundList(ceeTag.getList("Connections", Tag.TAG_COMPOUND), connectionTag -> {
             InWorldNode node1 = InWorldNode.CODEC.decode(NbtOps.INSTANCE, connectionTag.get("Node1")).getOrThrow().getFirst();
@@ -221,9 +177,6 @@ public class StructureTemplateMixin {
 
     @Inject(method = "placeInWorld", at=@At("HEAD"), remap = false)
     public void placeInWorld(ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, RandomSource random, int flags, CallbackInfoReturnable<Boolean> cir) {
-        if (electroEnergetics$allDevices.isEmpty())
-            return;
-
         BoundingBox boundingBox = settings.getBoundingBox();
 
         ServerLevel level;
@@ -231,11 +184,6 @@ public class StructureTemplateMixin {
             level = (ServerLevel) serverLevel;
         else if (serverLevel instanceof SchematicLevel) {
             if (serverLevel instanceof ISchematicInfrastructureList slm) {
-                for (SimulatedDeviceInstance deviceInstance : electroEnergetics$allDevices) {
-                    if (boundingBox == null || boundingBox.isInside(deviceInstance.pos().offset(offset)))
-                        slm.getDevices().add(new SimulatedDeviceInstance(deviceInstance.simulatedDevice(), StructureTemplate.calculateRelativePosition(settings, deviceInstance.pos()).offset(offset), deviceInstance.extraData(), deviceInstance.nodes()));
-                }
-
                 for (Pair<InWorldNodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
                     InWorldNode node1 = new InWorldNode(wireDataPair.getFirst().node1().id(), StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node1().sourcePos()).offset(offset));
                     InWorldNode node2 = new InWorldNode(wireDataPair.getFirst().node2().id(), StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node2().sourcePos()).offset(offset));
@@ -248,15 +196,24 @@ public class StructureTemplateMixin {
             return;
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-
-        for (SimulatedDeviceInstance<?> deviceInstance : electroEnergetics$allDevices) {
-            if (boundingBox == null || boundingBox.isInside(deviceInstance.pos().offset(offset)))
-                sd.addDevice(StructureTemplate.calculateRelativePosition(settings, deviceInstance.pos()).offset(offset), deviceInstance.simulatedDevice(), deviceInstance.write(), deviceInstance.nodes().stream().map(InWorldNode::id).toList());
-        }
+        DevicesSavedData deviceSD = DevicesSavedData.load(level);
 
         for (Pair<InWorldNodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
-            InWorldNode node1 = new InWorldNode(wireDataPair.getFirst().node1().id(), StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node1().sourcePos()).offset(offset));
-            InWorldNode node2 = new InWorldNode(wireDataPair.getFirst().node2().id(), StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node2().sourcePos()).offset(offset));
+            BlockPos pos1 = StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node1().sourcePos()).offset(offset);
+            InWorldNode node1 = new InWorldNode(wireDataPair.getFirst().node1().id(), pos1);
+            BlockPos pos2 = StructureTemplate.calculateRelativePosition(settings, wireDataPair.getFirst().node2().sourcePos()).offset(offset);
+            InWorldNode node2 = new InWorldNode(wireDataPair.getFirst().node2().id(), pos2);
+
+            if (deviceSD.getDevice(pos1) == null)
+                deviceSD.addDevice(CEESimulatedDevices.TEMPORARY.get(), pos1, new CompoundTag());
+            if (deviceSD.getDevice(pos2) == null)
+                deviceSD.addDevice(CEESimulatedDevices.TEMPORARY.get(), pos2, new CompoundTag());
+
+            if (!sd.hasNode(node1))
+                sd.addTemporaryNode(node1);
+            if (!sd.hasNode(node2))
+                sd.addTemporaryNode(node2);
+
             WireData wireData = wireDataPair.getSecond();
             sd.setConnectionData(sd.connect(node1, node2, wireData.wireType()), wireData);
         }

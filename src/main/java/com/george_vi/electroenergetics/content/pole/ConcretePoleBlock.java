@@ -3,10 +3,9 @@ package com.george_vi.electroenergetics.content.pole;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
@@ -50,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock {
+public class ConcretePoleBlock extends SimpleElectricalDeviceBlock<ConcretePoleDevice> implements ProperWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
     public static final BooleanProperty TOP = BooleanProperty.create("top");
@@ -83,8 +82,8 @@ public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterl
     }
 
     @Override
-    protected SimulatedDevice<?> getDevice() {
-        return CEESimulatedDevices.CONCRETE_POLE;
+    public SimulatedDeviceType<ConcretePoleDevice> getDevice() {
+        return CEESimulatedDevices.CONCRETE_POLE.get();
     }
 
     @Override
@@ -127,11 +126,10 @@ public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterl
         boolean bottom = !CEEBlocks.CONCRETE_POLE.has(below);
         boolean top = !CEEBlocks.CONCRETE_POLE.has(above);
         if (level instanceof ServerLevel sl) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            SimulatedDeviceInstance<?> device = sd.getDevice(pos);
-            if (device != null && device.extraData() instanceof ConcretePoleDevice.DataHolder dataHolder) {
-                dataHolder.top = top;
-                dataHolder.bottom = bottom;
+            ConcretePoleDevice device = DevicesSavedData.load(sl).getDevice(pos, ConcretePoleDevice.class);
+            if (device != null) {
+                device.top = top;
+                device.bottom = bottom;
             }
         }
 
@@ -147,7 +145,7 @@ public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterl
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         BlockState below = level.getBlockState(pos.below());
         BlockState above = level.getBlockState(pos.above());
@@ -155,11 +153,10 @@ public class ConcretePoleBlock extends SimpleDeviceBlock implements ProperWaterl
         boolean bottom = !CEEBlocks.CONCRETE_POLE.has(below);
         boolean top = !CEEBlocks.CONCRETE_POLE.has(above);
 
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> device = sd.getDevice(pos);
-        if (device != null && device.extraData() instanceof ConcretePoleDevice.DataHolder dataHolder) {
-            dataHolder.top = top;
-            dataHolder.bottom = bottom;
+        ConcretePoleDevice device = DevicesSavedData.load(level).getDevice(pos, ConcretePoleDevice.class);
+        if (device != null) {
+            device.top = top;
+            device.bottom = bottom;
         }
     }
 

@@ -1,9 +1,10 @@
 package com.george_vi.electroenergetics.content.potentiometer;
 
+import com.george_vi.electroenergetics.content.fuse.FuseHolderDevice;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.ResistanceScrollValueBehaviour;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
@@ -45,10 +46,10 @@ public class PotentiometerBlockEntity extends KineticBlockEntity {
             float prevProgress = progress;
             progress = Mth.clamp(progress + getSpeed() / 1000, 0, 1);
             if (prevProgress != progress) {
-                InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-                SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(worldPosition);
-                if (deviceInstance != null && deviceInstance.extraData() instanceof PotentiometerDevice.DataHolder dataHolder)
-                    dataHolder.progress = progress;
+                PotentiometerDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, PotentiometerDevice.class);
+
+                if (device != null)
+                    device.progress = progress;
                 sendData();
             }
         } else {
@@ -59,12 +60,11 @@ public class PotentiometerBlockEntity extends KineticBlockEntity {
     private void updateResistance() {
         if (!(level instanceof ServerLevel sl))
             return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof PotentiometerDevice.DataHolder dataHolder) {
-            dataHolder.resistance = resistance.getResistance();
-        }
+        PotentiometerDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, PotentiometerDevice.class);
+
+        if (device != null)
+            device.resistance = resistance.getResistance();
     }
 
     @Override

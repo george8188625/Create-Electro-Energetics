@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
@@ -18,14 +18,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class BuzzerBlock extends DirectionalRolledDeviceBlock implements IBE<BuzzerBlockEntity> {
+public class BuzzerBlock extends DirectionalRolledDeviceBlock<BuzzerDevice> implements IBE<BuzzerBlockEntity> {
     public BuzzerBlock(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.BUZZER;
     }
 
     @Override
@@ -55,5 +50,10 @@ public class BuzzerBlock extends DirectionalRolledDeviceBlock implements IBE<Buz
     @Override
     public BlockEntityType<? extends BuzzerBlockEntity> getBlockEntityType() {
         return CEEBlockEntityTypes.BUZZER.get();
+    }
+
+    @Override
+    public SimulatedDeviceType<BuzzerDevice> getDevice() {
+        return CEESimulatedDevices.BUZZER.get();
     }
 }

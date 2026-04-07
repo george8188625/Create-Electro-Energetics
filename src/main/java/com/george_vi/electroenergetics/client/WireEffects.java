@@ -6,7 +6,7 @@ import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import net.createmod.catnip.data.Pair;
@@ -39,9 +39,9 @@ public class WireEffects {
             BlockState state1 = mc.level.getBlockState(connection.node1().sourcePos());
             BlockState state2 = mc.level.getBlockState(connection.node2().sourcePos());
 
-            if (state1.getBlock() instanceof DeviceBlock db)
+            if (state1.getBlock() instanceof ElectricalDeviceBlock<?> db)
                 pos1 = db.getNodePosition(mc.level, connection.node1().sourcePos(), state1, connection.node1().id());
-            if (state2.getBlock() instanceof DeviceBlock db)
+            if (state2.getBlock() instanceof ElectricalDeviceBlock<?> db)
                 pos2 = db.getNodePosition(mc.level, connection.node2().sourcePos(), state2, connection.node2().id());
 
             if (pos1 == null || pos2 == null)

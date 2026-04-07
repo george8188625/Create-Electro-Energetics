@@ -1,15 +1,14 @@
 package com.george_vi.electroenergetics;
 
+import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.fuse.FuseHoldables;
-import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
-
 import net.createmod.catnip.lang.FontHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -48,8 +47,10 @@ public class CreateElectroEnergetics
         CEECreativeTab.register(modEventBus);
         CEEDataComponents.register(modEventBus);
         CEEWireAttachments.register(modEventBus);
+        CEESimulatedDevices.register(modEventBus);
         CEEElectricTrainSoundTypes.register(modEventBus);
         CEEWireInteractionBehaviours.register(modEventBus);
+        CEESimulatedDeviceFeatureTypes.register(modEventBus);
         CEEConfigs.register(modLoadingContext, modContainer);
 
         FuseHoldables.register();

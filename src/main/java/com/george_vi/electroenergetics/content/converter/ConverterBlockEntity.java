@@ -4,8 +4,7 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -37,7 +36,7 @@ import net.neoforged.neoforge.energy.EnergyStorage;
 import java.util.List;
 
 public class ConverterBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
-    SimulatedDeviceInstance<?> converterDevice = null;
+    ConverterDevice converterDevice = null;
 
     public ConverterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -72,13 +71,13 @@ public class ConverterBlockEntity extends SmartBlockEntity implements IHaveGoggl
     private void updateVoltage() {
         if (!(level instanceof ServerLevel sl))
             return;
+
         if (converterDevice == null || !converterDevice.isValid()) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            converterDevice = sd.getDevice(getBlockPos());
+            converterDevice = DevicesSavedData.load(sl).getDevice(getBlockPos(), ConverterDevice.class);
         }
 
-        if (converterDevice != null && converterDevice.extraData() instanceof ConverterDevice.DataHolder dataHolder) {
-            dataHolder.voltage = voltage.value * 10;
+        if (converterDevice != null) {
+            converterDevice.voltage = voltage.value * 10;
         }
     }
 
@@ -89,8 +88,7 @@ public class ConverterBlockEntity extends SmartBlockEntity implements IHaveGoggl
             return;
 
         if (converterDevice == null || !converterDevice.isValid()) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            converterDevice = sd.getDevice(getBlockPos());
+            converterDevice = DevicesSavedData.load(sl).getDevice(getBlockPos(), ConverterDevice.class);
         }
     }
 
@@ -177,9 +175,8 @@ public class ConverterBlockEntity extends SmartBlockEntity implements IHaveGoggl
 
         @Override
         public int getEnergyStored() {
-            if (be.converterDevice != null &&
-                    be.converterDevice.extraData() instanceof ConverterDevice.DataHolder dataHolder)
-                return Mth.floor(dataHolder.storedEnergy / CEEConfigs.server().wattFeTConversionRate.get());
+            if (be.converterDevice != null)
+                return Mth.floor(be.converterDevice.storedEnergy / CEEConfigs.server().wattFeTConversionRate.get());
             return be.level.isClientSide ? Mth.floor(be.storedEnergy / CEEConfigs.server().wattFeTConversionRate.get()) : 0;
         }
 

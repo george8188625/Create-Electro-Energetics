@@ -9,12 +9,12 @@ import com.george_vi.electroenergetics.content.railway_electrification.catenary.
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
-import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
+import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
 import com.george_vi.electroenergetics.simulation.WireType;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
@@ -181,9 +181,9 @@ public class WireRenderer {
                 pos2 = connection.node2().sourcePos().getCenter();
             }
 
-            boolean isBlock1Outer = state1.getBlock() instanceof DeviceBlock db &&
+            boolean isBlock1Outer = state1.getBlock() instanceof ElectricalDeviceBlock<?> db &&
                     db.isOuterInsulator(mc.level, connection.node1().sourcePos(), state1, connection.node1().id());
-            boolean isBlock2Outer = state2.getBlock() instanceof DeviceBlock db &&
+            boolean isBlock2Outer = state2.getBlock() instanceof ElectricalDeviceBlock<?> db &&
                     db.isOuterInsulator(mc.level, connection.node2().sourcePos(), state2, connection.node2().id());
 
             mc.getProfiler().popPush("renderWireAttachments");

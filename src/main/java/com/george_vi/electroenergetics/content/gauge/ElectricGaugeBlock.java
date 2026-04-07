@@ -3,8 +3,8 @@ package com.george_vi.electroenergetics.content.gauge;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.kinetics.gauge.GaugeBlock;
 import com.simibubi.create.foundation.block.IBE;
 import net.createmod.catnip.levelWrappers.WrappedLevel;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class ElectricGaugeBlock extends SimpleDeviceBlock implements IBE<ElectricGaugeBlockEntity> {
+public class ElectricGaugeBlock extends SimpleElectricalDeviceBlock<GaugeDevice> implements IBE<ElectricGaugeBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final ElectricGaugeShaper SHAPE = ElectricGaugeShaper.make();
     public final boolean voltmeter;
@@ -48,8 +48,8 @@ public class ElectricGaugeBlock extends SimpleDeviceBlock implements IBE<Electri
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return voltmeter ? CEESimulatedDevices.VOLTMETER : CEESimulatedDevices.AMMETER;
+    public SimulatedDeviceType<GaugeDevice> getDevice() {
+        return voltmeter ? CEESimulatedDevices.VOLTMETER.get() : CEESimulatedDevices.AMMETER.get();
     }
 
     @Override

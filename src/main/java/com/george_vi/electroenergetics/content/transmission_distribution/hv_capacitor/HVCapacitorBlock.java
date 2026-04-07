@@ -2,9 +2,8 @@ package com.george_vi.electroenergetics.content.transmission_distribution.hv_cap
 
 import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.Map;
 
-public class HVCapacitorBlock extends DirectionalRolledDeviceBlock implements IBE<HVCapacitorBlockEntity> {
+public class HVCapacitorBlock extends DirectionalRolledDeviceBlock<HVCapacitorDevice> implements IBE<HVCapacitorBlockEntity> {
     public static final BooleanProperty SLICED = BooleanProperty.create("sliced");
 
     public HVCapacitorBlock(Properties properties) {
@@ -38,12 +37,12 @@ public class HVCapacitorBlock extends DirectionalRolledDeviceBlock implements IB
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.HV_CAPACITOR;
+    public SimulatedDeviceType<HVCapacitorDevice> getDevice() {
+        return CEESimulatedDevices.HV_CAPACITOR.get();
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof HVCapacitorBlockEntity be)
             tag.putDouble("Capacitance", be.capacitance.getCapacitance());
@@ -72,13 +71,11 @@ public class HVCapacitorBlock extends DirectionalRolledDeviceBlock implements IB
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> instance = sd.getDevice(pos);
-        if (instance != null && instance.extraData() instanceof HVCapacitorDevice.DataHolder dataHolder) {
-            dataHolder.facing = state.getValue(SLICED) ? state.getValue(FACING) : null;
-        }
+        HVCapacitorDevice device = DevicesSavedData.load(level).getDevice(pos, HVCapacitorDevice.class);
+        if (device != null)
+            device.facing = state.getValue(SLICED) ? state.getValue(FACING) : null;
     }
 
     @Override

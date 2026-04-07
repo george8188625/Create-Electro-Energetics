@@ -2,11 +2,9 @@ package com.george_vi.electroenergetics.content.bulb;
 
 import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,7 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbBlockEntity> {
+public class BulbBlock extends DirectionalRolledDeviceBlock<BulbDevice> implements IBE<BulbBlockEntity> {
     public static final IntegerProperty LIGHT = IntegerProperty.create("light", 0, 15);
     public static final BooleanProperty COMPACT = BooleanProperty.create("compact");
     public final boolean broken;
@@ -48,7 +46,7 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (broken)
             tag.putBoolean("Destroyed", true);
@@ -60,8 +58,8 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.BULB;
+    public SimulatedDeviceType<BulbDevice> getDevice() {
+        return CEESimulatedDevices.BULB.get();
     }
 
     @Override
@@ -78,12 +76,12 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
     }
 
     @Override
-    protected BlockState updateShape(
-            BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+                                     LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         if (level instanceof ServerLevel sl) {
-            SimulatedDeviceInstance<?> deviceInstance = InfrastructureSavedData.load(sl).getDevice(pos);
-            if (deviceInstance != null && deviceInstance.extraData() instanceof BulbDevice.DataHolder dataHolder)
-                dataHolder.destroyed = broken;
+            BulbDevice device = DevicesSavedData.load(sl).getDevice(pos, BulbDevice.class);
+            if (device != null)
+                device.destroyed = broken;
         }
 
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
@@ -94,10 +92,10 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
         if (!stack.is(CEETags.BULB_REPAIR_ITEM) || !broken)
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-        if (level instanceof ServerLevel serverLevel) {
-            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null && device.extraData() instanceof BulbDevice.DataHolder dataHolder)
-                dataHolder.destroyed = false;
+        if (level instanceof ServerLevel sl) {
+            BulbDevice device = DevicesSavedData.load(sl).getDevice(pos, BulbDevice.class);
+            if (device != null)
+                device.destroyed = false;
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
         }
 
@@ -141,10 +139,6 @@ public class BulbBlock extends DirectionalRolledDeviceBlock implements IBE<BulbB
                 CEENodeConfigurations.BULB.getNodePos(state.getValue(FACING), id);
     }
 
-    @Override
-    protected boolean shouldReplaceDeviceFor(BlockState thisState, BlockState newState) {
-        return thisState.getBlock().getClass() != newState.getBlock().getClass();
-    }
 
     @Override
     public Class<BulbBlockEntity> getBlockEntityClass() {

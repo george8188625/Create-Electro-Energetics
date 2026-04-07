@@ -1,0 +1,192 @@
+package com.george_vi.electroenergetics.content.energy_meter;
+
+import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.simibubi.create.AllItems;
+import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import com.simibubi.create.foundation.block.IBE;
+import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import net.createmod.catnip.gui.ScreenOpener;
+import net.createmod.catnip.platform.CatnipServices;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.UsernameCache;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class TriPolarEnergyMeterBlock extends SimpleElectricalDeviceBlock<TriPolarEnergyMeterDevice> implements IWrenchable, IBE<EnergyMeterBlockEntity>, ProperWaterloggedBlock {
+    public static final BooleanProperty INVERTED = BlockStateProperties.INVERTED;
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+
+    public TriPolarEnergyMeterBlock(Properties properties) {
+        super(properties);
+        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        withBlockEntityDo(level, pos, be -> be.owner = be.owner == null ? placer.getUUID() : be.owner);
+    }
+
+    @Override
+    public SimulatedDeviceType<TriPolarEnergyMeterDevice> getDevice() {
+        return CEESimulatedDevices.TRI_POLAR_ENERGY_METER.get();
+    }
+
+    @Override
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("Closed", true);
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof EnergyMeterBlockEntity be) {
+            tag.putDouble("TotalEnergy", be.totalEnergy);
+        }
+        return tag;
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (AllItems.WRENCH.isIn(stack) || stack.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(stack))
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> withBlockEntityDo(level, pos, be -> this.displayScreen(be, player)));
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @OnlyIn(value = Dist.CLIENT)
+    protected void displayScreen(EnergyMeterBlockEntity be, Player player) {
+        if (player instanceof LocalPlayer)
+            ScreenOpener.open(new EnergyMeterScreen(be));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(INVERTED, WATERLOGGED, FACING);
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return CEEShapes.ENERGY_METER.get(state.getValue(FACING));
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return withWater(defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(INVERTED, (context.getPlayer().isShiftKeyDown()) ^ (context.getNearestLookingVerticalDirection() == Direction.DOWN)), context);
+    }
+
+    @Override
+    protected BlockState updateShape(
+            BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        updateWater(level, state, pos);
+        return state;
+    }
+
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        return fluidState(state);
+    }
+
+    @Override
+    public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        if (state.getValue(INVERTED))
+            return CEENodeConfigurations.TRI_POLAR_METERING_MIRRORED.getNodes(state.getValue(FACING));
+        return CEENodeConfigurations.TRI_POLAR_METERING.getNodes(state.getValue(FACING));
+    }
+
+    @Override
+    public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
+        if (state.getValue(INVERTED))
+            return CEENodeConfigurations.TRI_POLAR_METERING_MIRRORED.getNodePos(state.getValue(FACING), id);
+        return CEENodeConfigurations.TRI_POLAR_METERING.getNodePos(state.getValue(FACING), id);
+    }
+
+    @Override
+    public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
+        return id == 0 ? Component.translatable("electroenergetics.nodes.feed") :
+               id == 2 ? Component.translatable("electroenergetics.nodes.feed") :
+               id == 3 ? Component.translatable("electroenergetics.nodes.load") :
+               id == 5 ? Component.translatable("electroenergetics.nodes.load") :
+                        Component.translatable("electroenergetics.nodes.neutral");
+    }
+
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        List<ItemStack> drops = new ArrayList<>(super.getDrops(state, params));
+        if (!(params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof EnergyMeterBlockEntity be))
+            return drops;
+
+        for (int i = 0; i < drops.size(); i++) {
+            ItemStack drop = drops.get(i);
+            if (drop.getItem() instanceof EnergyMeterItem) {
+                drop.set(CEEDataComponents.ENERGY, be.totalEnergy);
+                if (be.owner != null) {
+                    drop.set(CEEDataComponents.OWNER, be.owner);
+                    String username = UsernameCache.getLastKnownUsername(be.owner);
+                    drop.set(CEEDataComponents.OWNER_NAME, username == null ? "Unknown Player" : username);
+                }
+                drops.set(i, drop);
+            }
+        }
+
+        return drops;
+    }
+
+    @Override
+    public Class<EnergyMeterBlockEntity> getBlockEntityClass() {
+        return EnergyMeterBlockEntity.class;
+    }
+
+    @Override
+    public BlockEntityType<? extends EnergyMeterBlockEntity> getBlockEntityType() {
+        return CEEBlockEntityTypes.ENERGY_METER.get();
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
+    }
+}

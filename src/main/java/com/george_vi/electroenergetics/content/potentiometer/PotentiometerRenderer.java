@@ -1,6 +1,5 @@
 package com.george_vi.electroenergetics.content.potentiometer;
 
-import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;

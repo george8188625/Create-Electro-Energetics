@@ -1,19 +1,21 @@
 package com.george_vi.electroenergetics.events;
 
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.CEESimulatedDeviceFeatureTypes;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
+import com.george_vi.electroenergetics.client.WireEffects;
+import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.commands.CEECommands;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.content.wire.WireSync;
-import com.george_vi.electroenergetics.client.WireEffects;
-import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.WireSparkEffectTicker;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
@@ -151,8 +153,8 @@ public class GameEvents {
     public static void spawnMob(MobSpawnEvent.SpawnPlacementCheck event) {
         if (event.getSpawnType() != MobSpawnType.NATURAL || event.getResult() == MobSpawnEvent.SpawnPlacementCheck.Result.FAIL)
             return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load(event.getLevel().getLevel());
-        boolean foundBulb = sd.getDevices().stream().filter(d -> d.simulatedDevice() instanceof BulbDevice && d.pos().getCenter().distanceToSqr(event.getPos().getCenter()) <= 400).anyMatch(d -> true);
+        DevicesSavedData sd = DevicesSavedData.load(event.getLevel().getLevel());
+        boolean foundBulb = sd.getDevices(CEESimulatedDeviceFeatureTypes.TICKING_ELECTRICAL.get()).stream().filter(d -> d instanceof BulbDevice && d.pos.getCenter().distanceToSqr(event.getPos().getCenter()) <= 400).anyMatch(d -> true);
         if (foundBulb)
             event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
     }

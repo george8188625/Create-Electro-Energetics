@@ -1,21 +1,26 @@
 package com.george_vi.electroenergetics.content.energy_meter;
 
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-public class TriPolarEnergyMeterDevice extends SimulatedDevice<EnergyMeterDevice.DataHolder> {
-    public TriPolarEnergyMeterDevice(ResourceLocation id) {
-        super(id);
+public class TriPolarEnergyMeterDevice extends SimpleElectricalDevice {
+    public double totalEnergy;
+    public boolean isClosed;
+    public EnergyMeterBlockEntity be;
+
+    public TriPolarEnergyMeterDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, EnergyMeterDevice.DataHolder extraData) {
-        if (extraData.isClosed) {
+    public void preTick(BridgeCollector bridges) {
+        if (this.isClosed) {
             bridges.builder(pos).resistor(0, 3, 0.001);
             bridges.builder(pos).resistor(2, 5, 0.001);
             bridges.builder(pos).resistor(1, 4, 0.001);
@@ -25,7 +30,8 @@ public class TriPolarEnergyMeterDevice extends SimulatedDevice<EnergyMeterDevice
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, EnergyMeterDevice.DataHolder extraData) {
+    public void postTick(SimulationResults results) {
+
         double vd1 = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 3);
         double vd2 = results.getVoltageAt(pos, 2) - results.getVoltageAt(pos, 5);
         double v1 = results.getVoltageAt(pos, 0) - results.getVoltageAt(pos, 1);
@@ -34,42 +40,38 @@ public class TriPolarEnergyMeterDevice extends SimulatedDevice<EnergyMeterDevice
         double amps1 = vd1 / 0.001;
         double amps2 = vd2 / 0.001;
 
-        if (Math.abs(amps1) > 0.01 && extraData.isClosed)
-            extraData.totalEnergy += (amps1 * v1 / 72000) / 1000;
+        if (Math.abs(amps1) > 0.01 && this.isClosed)
+            this.totalEnergy += (amps1 * v1 / 72000) / 1000;
 
-        if (Math.abs(amps2) > 0.01 && extraData.isClosed)
-            extraData.totalEnergy -= (amps2 * v2 / 72000) / 1000;
+        if (Math.abs(amps2) > 0.01 && this.isClosed)
+            this.totalEnergy -= (amps2 * v2 / 72000) / 1000;
 
         if (!level.isLoaded(pos))
             return;
 
-        if (extraData.be == null && level.isLoaded(pos))
+        if (this.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof EnergyMeterBlockEntity be)
-                extraData.be = be;
+                this.be = be;
 
-        if (extraData.be != null) {
-            if (extraData.be.isRemoved())
-                extraData.be = null;
+        if (this.be != null) {
+            if (this.be.isRemoved())
+                this.be = null;
             else {
-                extraData.be.setTotalEnergy((float) extraData.totalEnergy);
-                extraData.be.activePower = extraData.isClosed ? amps1 * v1 - amps2 * v2 : 0;
+                this.be.setTotalEnergy((float) this.totalEnergy);
+                this.be.activePower = this.isClosed ? amps1 * v1 - amps2 * v2 : 0;
             }
         }
     }
 
     @Override
-    public EnergyMeterDevice.DataHolder read(CompoundTag tag) {
-        EnergyMeterDevice.DataHolder dataHolder = new EnergyMeterDevice.DataHolder();
-        dataHolder.totalEnergy = tag.getDouble("TotalEnergy");
-        dataHolder.isClosed = tag.getBoolean("Closed");
-        return dataHolder;
+    public void read(CompoundTag tag) {
+        this.totalEnergy = tag.getDouble("TotalEnergy");
+        this.isClosed = tag.getBoolean("Closed");
     }
 
     @Override
-    public CompoundTag write(EnergyMeterDevice.DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        tag.putDouble("TotalEnergy", extraData.totalEnergy);
-        tag.putBoolean("Closed", extraData.isClosed);
-        return tag;
+    public void write(CompoundTag tag) {
+        tag.putDouble("TotalEnergy", this.totalEnergy);
+        tag.putBoolean("Closed", this.isClosed);
     }
 }

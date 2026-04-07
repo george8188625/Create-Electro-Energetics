@@ -7,6 +7,7 @@ public class InductorProperties extends MicroTickingElectricalProperties {
     /**
      * <p>This is a saved state for the inductor that defines its current level.</p>
      * <p>Read only during the postTick phase.</p>
+     * <p>Write only during the preTick phase.</p>
      */
     public double lastCurrent;
 

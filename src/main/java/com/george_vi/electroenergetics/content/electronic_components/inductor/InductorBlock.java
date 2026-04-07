@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,21 +19,21 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class InductorBlock extends DirectionalRolledDeviceBlock implements IBE<InductorBlockEntity> {
+public class InductorBlock extends DirectionalRolledDeviceBlock<InductorDevice> implements IBE<InductorBlockEntity> {
     public InductorBlock(Properties properties) {
         super(properties);
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.INDUCTOR;
+    public SimulatedDeviceType<InductorDevice> getDevice() {
+        return CEESimulatedDevices.INDUCTOR.get();
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof InductorBlockEntity be)
-            tag.putDouble("Inductance", be.capacitance.getInductance());
+            tag.putDouble("Inductance", be.inductance.getInductance());
         return tag;
     }
 

@@ -1,10 +1,9 @@
 package com.george_vi.electroenergetics.content.transmission_distribution.transformer;
 
 import com.george_vi.electroenergetics.*;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
@@ -35,11 +34,12 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock, IBE<TransformerCoreBlockEntity> {
+public class TransformerCoreBlock extends SimpleElectricalDeviceBlock<TransformerCoreDevice> implements ProperWaterloggedBlock, IBE<TransformerCoreBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -61,7 +61,7 @@ public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWat
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof TransformerCoreBlockEntity be) {
             Direction facing = state.getValue(TransformerCoreBlock.FACING);
@@ -97,7 +97,7 @@ public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWat
     }
 
     @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public @NotNull BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         Direction facing = state.getValue(FACING);
         if (!level.isClientSide && (player.isCreative() || !player.hasCorrectToolForDrops(state, level, pos)) && (facing == Direction.SOUTH || facing == Direction.WEST)) {
             BlockPos otherPos = pos.relative(facing);
@@ -113,27 +113,12 @@ public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWat
         return super.playerWillDestroy(level, pos, state, player);
     }
 
-//    @Override
-//    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-//        super.onRemove(state, level, pos, newState, movedByPiston);
-//        if (!level.isClientSide && newState.getBlock() != state.getBlock()) {
-//            Direction facing = state.getValue(FACING);
-//            BlockPos otherPos = pos.relative(facing);
-//            BlockState otherState = level.getBlockState(otherPos);
-//            if (otherState.is(state.getBlock()) && otherState.getValue(FACING) == facing.getOpposite()) {
-//                BlockState newOtherState = otherState.getFluidState().is(Fluids.WATER) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState();
-//                level.setBlock(otherPos, newOtherState, 51);
-//            }
-//        }
-//    }
-
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(pos);
-        if (deviceInstance != null && deviceInstance.extraData() instanceof TransformerCoreDevice.DataHolder dataHolder)
-            dataHolder.facing = state.getValue(FACING);
+        TransformerCoreDevice device = DevicesSavedData.load(level).getDevice(pos, TransformerCoreDevice.class);
+        if (device != null)
+            device.facing = state.getValue(FACING);
     }
 
     @Override
@@ -142,8 +127,8 @@ public class TransformerCoreBlock extends SimpleDeviceBlock implements ProperWat
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.TRANSFORMER_CORE;
+    public SimulatedDeviceType<TransformerCoreDevice> getDevice() {
+        return CEESimulatedDevices.TRANSFORMER_CORE.get();
     }
 
     @Override

@@ -3,9 +3,8 @@ package com.george_vi.electroenergetics.content.indicator_bulb;
 import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConfigurator;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
@@ -36,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock implements IBE<IndicatorBulbBlockEntity> {
+public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock<IndicatorBulbDevice> implements IBE<IndicatorBulbBlockEntity> {
     public static IntegerProperty SIDE = IntegerProperty.create("side", 0, 2);
 
     public IndicatorBulbBlock(Properties properties) {
@@ -163,10 +162,10 @@ public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock implements 
 
         return firstSlot;
     }
-    
+
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.INDICATOR_BULB;
+    public SimulatedDeviceType<IndicatorBulbDevice> getDevice() {
+        return CEESimulatedDevices.INDICATOR_BULB.get();
     }
 
     @Override
@@ -207,12 +206,11 @@ public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock implements 
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(pos);
-        if (deviceInstance != null && deviceInstance.extraData() instanceof IndicatorBulbDevice.DataHolder dataHolder)
-            dataHolder.side = state.getValue(SIDE).byteValue();
+        IndicatorBulbDevice device = DevicesSavedData.load(level).getDevice(pos, IndicatorBulbDevice.class);
+        if (device != null)
+            device.side = state.getValue(SIDE).byteValue();
     }
 
     @Override
@@ -228,10 +226,5 @@ public class IndicatorBulbBlock extends DirectionalRolledDeviceBlock implements 
     @Override
     public boolean canSelfConnect(Level level, BlockPos pos, BlockState state, int id1, int id2) {
         return !((id1 == 1 && id2 == 0) || (id1 == 0 && id2 == 1) || (id1 == 2 && id2 == 3) || (id1 == 3 && id2 == 2));
-    }
-
-    @Override
-    protected boolean shouldReplaceDeviceFor(BlockState thisState, BlockState newState) {
-        return thisState.getBlock().getClass() != newState.getBlock().getClass();
     }
 }

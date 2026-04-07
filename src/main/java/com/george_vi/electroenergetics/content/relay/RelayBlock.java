@@ -5,9 +5,8 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +27,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class RelayBlock extends DirectionalRolledDeviceBlock {
+public class RelayBlock extends DirectionalRolledDeviceBlock<RelayDevice> {
     public static final BooleanProperty INVERTED = BlockStateProperties.INVERTED;
 
     public RelayBlock(Properties properties) {
@@ -43,15 +42,15 @@ public class RelayBlock extends DirectionalRolledDeviceBlock {
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Inverted", state.getValue(INVERTED));
         return tag;
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.RELAY;
+    public SimulatedDeviceType<RelayDevice> getDevice() {
+        return CEESimulatedDevices.RELAY.get();
     }
 
     @Override
@@ -83,9 +82,10 @@ public class RelayBlock extends DirectionalRolledDeviceBlock {
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         if (context.getLevel() instanceof ServerLevel serverLevel) {
-            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
-            if (device != null && device.extraData() instanceof RelayDevice.DataHolder dataHolder)
-                dataHolder.inverted = !state.getValue(INVERTED);
+            RelayDevice device = DevicesSavedData.load(serverLevel).getDevice(context.getClickedPos(), RelayDevice.class);
+
+            if (device != null)
+                device.inverted = !state.getValue(INVERTED);
             serverLevel.setBlockAndUpdate(context.getClickedPos(), state.cycle(INVERTED));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(context.getLevel(), context.getClickedPos());
         }

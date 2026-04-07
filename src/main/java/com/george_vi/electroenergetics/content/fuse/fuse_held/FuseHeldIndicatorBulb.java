@@ -4,7 +4,6 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -13,11 +12,9 @@ import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
@@ -75,7 +72,7 @@ public class FuseHeldIndicatorBulb extends FuseHoldable {
 
 
         if (lightStrength > 0.01) {
-            float factor = lightStrength * 2;
+            float factor = Mth.clamp(lightStrength * 2, 0, 1);
             int newColor = ((int)(((color.getFireworkColor() >> 16) & 0xFF) * factor) << 16)
                     | ((int)(((color.getFireworkColor() >> 8) & 0xFF) * factor) << 8)
                     | ((int)((color.getFireworkColor() & 0xFF) * factor));

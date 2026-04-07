@@ -1,15 +1,14 @@
 package com.george_vi.electroenergetics.content.connector;
 
 import com.george_vi.electroenergetics.CEEBlocks;
-import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
+import com.george_vi.electroenergetics.CEEShapes;
+import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorBlock;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConfigurator;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.math.VoxelShaper;
@@ -33,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class DoubleConnectorBlock extends DirectionalRolledDeviceBlock implements IWrenchable {
+public class DoubleConnectorBlock extends DirectionalRolledDeviceBlock<DoubleConnectorDevice> implements IWrenchable {
     public static final EnumProperty<Style> STYLE = EnumProperty.create("style", Style.class);
 
     public DoubleConnectorBlock(Properties properties) {
@@ -42,8 +41,8 @@ public class DoubleConnectorBlock extends DirectionalRolledDeviceBlock implement
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.CONNECTOR;
+    public SimulatedDeviceType<DoubleConnectorDevice> getDevice() {
+        return CEESimulatedDevices.DOUBLE_CONNECTOR.get();
     }
 
     @Override

@@ -3,8 +3,9 @@ package com.george_vi.electroenergetics.content.railway_electrification.catenary
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.content.connector.ConnectorDevice;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.createmod.catnip.lang.Lang;
@@ -30,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class CatenaryHolderBlock extends SimpleDeviceBlock implements IBE<CatenaryHolderBlockEntity>, ProperWaterloggedBlock {
+public class CatenaryHolderBlock extends SimpleElectricalDeviceBlock<ConnectorDevice> implements IBE<CatenaryHolderBlockEntity>, ProperWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<Style> STYLE = EnumProperty.create("style", Style.class);
 
@@ -56,8 +57,8 @@ public class CatenaryHolderBlock extends SimpleDeviceBlock implements IBE<Catena
     }
 
     @Override
-    protected SimulatedDevice<?> getDevice() {
-        return CEESimulatedDevices.CONNECTOR;
+    public SimulatedDeviceType<ConnectorDevice> getDevice() {
+        return CEESimulatedDevices.CONNECTOR.get();
     }
 
     @Override

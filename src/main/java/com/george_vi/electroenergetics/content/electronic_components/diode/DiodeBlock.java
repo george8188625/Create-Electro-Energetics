@@ -4,8 +4,8 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class DiodeBlock extends SimpleDeviceBlock implements IWrenchable, ProperWaterloggedBlock {
+public class DiodeBlock extends SimpleElectricalDeviceBlock<DiodeDevice> implements IWrenchable, ProperWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -54,8 +54,8 @@ public class DiodeBlock extends SimpleDeviceBlock implements IWrenchable, Proper
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.DIODE;
+    public SimulatedDeviceType<DiodeDevice> getDevice() {
+        return CEESimulatedDevices.DIODE.get();
     }
 
     @Override

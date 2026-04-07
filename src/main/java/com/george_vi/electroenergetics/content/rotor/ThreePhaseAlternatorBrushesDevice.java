@@ -1,145 +1,139 @@
 package com.george_vi.electroenergetics.content.rotor;
 
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.google.common.util.concurrent.AtomicDouble;
 import net.createmod.catnip.nbt.NBTHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ThreePhaseAlternatorBrushesDevice extends SimulatedDevice<ThreePhaseAlternatorBrushesDevice.DataHolder> {
-    public ThreePhaseAlternatorBrushesDevice(ResourceLocation id) {
-        super(id);
+public class ThreePhaseAlternatorBrushesDevice extends SimpleElectricalDevice {
+
+    public float voltage;
+    public float stress;
+    public float rpmSpeed;
+    public AtomicDouble storedEnergy = new AtomicDouble();
+    public AtomicInteger workCounter = new AtomicInteger();
+    public VirtualRotor virtualRotor = new VirtualRotor();
+    public BlockPos otherBrush;
+    public boolean fast;
+    public boolean slow;
+    public float controlModifier;
+    public AlternatorBrushesBlockEntity be;
+    public PhaseWindingProperties phaseA = new PhaseWindingProperties(0,
+            storedEnergy, workCounter, virtualRotor);
+    public PhaseWindingProperties phaseB = new PhaseWindingProperties(120,
+            storedEnergy, workCounter, virtualRotor);
+    public PhaseWindingProperties phaseC = new PhaseWindingProperties(240,
+            storedEnergy, workCounter, virtualRotor);
+    
+    public ThreePhaseAlternatorBrushesDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+    public void preTick(BridgeCollector bridges) {
         if (level.isLoaded(pos)) {
-            SimulatedDeviceInstance<?> deviceInstance = extraData.otherBrush == null ? null : bridges.getSD().getDevice(extraData.otherBrush);
+            ThreePhaseAlternatorBrushesDevice device = this.otherBrush == null ? null :
+                    deviceSD.getDevice(this.otherBrush, ThreePhaseAlternatorBrushesDevice.class);
             ElectricalProperties wire = ElectricalProperties.resistor(0.05);
-            extraData.phaseA.targetVoltage = extraData.voltage;
-            extraData.phaseB.targetVoltage = extraData.voltage;
-            extraData.phaseC.targetVoltage = extraData.voltage;
+            this.phaseA.targetVoltage = this.voltage;
+            this.phaseB.targetVoltage = this.voltage;
+            this.phaseC.targetVoltage = this.voltage;
 
-            extraData.workCounter.set(0);
-            extraData.phaseA.resistance = extraData.phaseB.resistance = extraData.phaseC.resistance = 1;
-            extraData.phaseA.currentSource = extraData.phaseB.currentSource = extraData.phaseC.currentSource = 0;
-            extraData.phaseA.stress = extraData.phaseB.stress = extraData.phaseC.stress = extraData.stress;
-            extraData.virtualRotor.totalMicroTicks = bridges.microTicks();
-            boolean reversed = extraData.rpmSpeed < 0;
-            extraData.virtualRotor.rpm = Math.abs(extraData.rpmSpeed) +
+            this.workCounter.set(0);
+            this.phaseA.resistance = this.phaseB.resistance = this.phaseC.resistance = 1;
+            this.phaseA.currentSource = this.phaseB.currentSource = this.phaseC.currentSource = 0;
+            this.phaseA.stress = this.phaseB.stress = this.phaseC.stress = this.stress;
+            this.virtualRotor.totalMicroTicks = bridges.microTicks();
+            boolean reversed = this.rpmSpeed < 0;
+            this.virtualRotor.rpm = Math.abs(this.rpmSpeed) +
                     RandomSource.create(pos.asLong()).nextFloat() * 0.009f +
-                    extraData.controlModifier;
+                    this.controlModifier;
 
-
-            extraData.virtualRotor.stress = extraData.stress;
-            if (deviceInstance == null || extraData.otherBrush.compareTo(pos) > 0) {
+            this.virtualRotor.stress = this.stress;
+            if (device == null || this.otherBrush.compareTo(pos) > 0) {
                 // Swaps phase A and C if reversed, since speed is passed as an absolute value
                 bridges.builder(pos)
-                        .connect(1, 0, reversed ? extraData.phaseC : extraData.phaseA)
-                        .connect(2, 0, extraData.phaseB)
-                        .connect(3, 0, reversed ? extraData.phaseA : extraData.phaseC);
+                        .connect(1, 0, reversed ? this.phaseC : this.phaseA)
+                        .connect(2, 0, this.phaseB)
+                        .connect(3, 0, reversed ? this.phaseA : this.phaseC);
             } else {
-                bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, extraData.otherBrush), wire);
-                bridges.bridge(new InWorldNode(1, pos), new InWorldNode(1, extraData.otherBrush), wire);
-                bridges.bridge(new InWorldNode(2, pos), new InWorldNode(2, extraData.otherBrush), wire);
-                bridges.bridge(new InWorldNode(3, pos), new InWorldNode(3, extraData.otherBrush), wire);
+                bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, this.otherBrush), wire);
+                bridges.bridge(new InWorldNode(1, pos), new InWorldNode(1, this.otherBrush), wire);
+                bridges.bridge(new InWorldNode(2, pos), new InWorldNode(2, this.otherBrush), wire);
+                bridges.bridge(new InWorldNode(3, pos), new InWorldNode(3, this.otherBrush), wire);
             }
         }
 
-        if (extraData.slow == extraData.fast) {
-            extraData.controlModifier *= 0.995f;
+        if (this.slow == this.fast) {
+            this.controlModifier *= 0.995f;
         } else {
-            float v = extraData.slow ? -0.01f : 0.01f;
-            extraData.controlModifier = Mth.clamp(extraData.controlModifier + v, -1f, 1f);
+            float v = this.slow ? -0.01f : 0.01f;
+            this.controlModifier = Mth.clamp(this.controlModifier + v, -1f, 1f);
         }
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
-        if (extraData.otherBrush == null || extraData.otherBrush.compareTo(pos) > 0)
-            super.postTick(pos, level, results, extraData);
-
-        if (extraData.be == null && level.isLoaded(pos))
+    public void postTick(SimulationResults results) {
+        if (this.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof AlternatorBrushesBlockEntity be)
-                extraData.be = be;
+                this.be = be;
 
-        if (extraData.be != null) {
-            if (extraData.be.isRemoved())
-                extraData.be = null;
+        if (this.be != null) {
+            if (this.be.isRemoved())
+                this.be = null;
             else {
                 float v = (float) results.getVoltageAt(pos, 1, 0);
-                if (Math.abs(extraData.be.voltage - v) > 2) {
-                    extraData.be.voltage = v;
-                    extraData.be.sendData();
+                if (Math.abs(this.be.voltage - v) > 2) {
+                    this.be.voltage = v;
+                    this.be.sendData();
                 }
             }
         }
     }
 
     @Override
-    public DataHolder read(CompoundTag tag) {
-        DataHolder dataHolder = new DataHolder();
-        dataHolder.controlModifier = tag.getFloat("ControlModifier");
-        dataHolder.stress = tag.getFloat("Stress");
-        dataHolder.voltage = tag.getFloat("Voltage");
-        dataHolder.rpmSpeed = tag.getFloat("RPM");
-        dataHolder.storedEnergy.set(tag.getFloat("StoredEnergy"));
-        dataHolder.virtualRotor.angle = tag.getFloat("Angle");
-        dataHolder.otherBrush = tag.contains("OtherBrush") ? NBTHelper.readBlockPos(tag, "OtherBrush") : null;
-        dataHolder.fast = tag.getBoolean("Fast");
-        dataHolder.slow = tag.getBoolean("Slow");
-        return dataHolder;
+    public void read(CompoundTag tag) {
+        this.controlModifier = tag.getFloat("ControlModifier");
+        this.stress = tag.getFloat("Stress");
+        this.voltage = tag.getFloat("Voltage");
+        this.rpmSpeed = tag.getFloat("RPM");
+        this.storedEnergy.set(tag.getFloat("StoredEnergy"));
+        this.virtualRotor.angle = tag.getFloat("Angle");
+        this.otherBrush = tag.contains("OtherBrush") ? NBTHelper.readBlockPos(tag, "OtherBrush") : null;
+        this.fast = tag.getBoolean("Fast");
+        this.slow = tag.getBoolean("Slow");
     }
 
     @Override
-    public CompoundTag write(DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        tag.putFloat("ControlModifier", extraData.controlModifier);
-        tag.putFloat("Stress", extraData.stress);
-        tag.putFloat("Voltage", extraData.voltage);
-        tag.putFloat("RMP", extraData.rpmSpeed);
-        tag.putFloat("Angle", (float) extraData.virtualRotor.angle);
-        tag.putDouble("StoredEnergy", extraData.storedEnergy.get());
-        if (extraData.otherBrush != null)
-            tag.put("OtherBrush", NbtUtils.writeBlockPos(extraData.otherBrush));
-        if (extraData.slow)
+    public void write(CompoundTag tag) {
+        tag.putFloat("ControlModifier", this.controlModifier);
+        tag.putFloat("Stress", this.stress);
+        tag.putFloat("Voltage", this.voltage);
+        tag.putFloat("RPM", this.rpmSpeed);
+        tag.putFloat("Angle", (float) this.virtualRotor.angle);
+        tag.putDouble("StoredEnergy", this.storedEnergy.get());
+        if (this.otherBrush != null)
+            tag.put("OtherBrush", NbtUtils.writeBlockPos(this.otherBrush));
+        if (this.slow)
             tag.putBoolean("Slow", true);
-        if (extraData.fast)
+        if (this.fast)
             tag.putBoolean("Fast", true);
-        return tag;
-    }
-
-    public static class DataHolder {
-        public float voltage;
-        public float stress;
-        public float rpmSpeed;
-        public AtomicDouble storedEnergy = new AtomicDouble();
-        public AtomicInteger workCounter = new AtomicInteger();
-        public VirtualRotor virtualRotor = new VirtualRotor();
-        public BlockPos otherBrush;
-        public boolean fast;
-        public boolean slow;
-        public float controlModifier;
-        public AlternatorBrushesBlockEntity be;
-        public PhaseWindingProperties phaseA = new PhaseWindingProperties(0,
-                storedEnergy, workCounter, virtualRotor);
-        public PhaseWindingProperties phaseB = new PhaseWindingProperties(120,
-                storedEnergy, workCounter, virtualRotor);
-        public PhaseWindingProperties phaseC = new PhaseWindingProperties(240,
-                storedEnergy, workCounter, virtualRotor);
     }
 
     public static class PhaseWindingProperties extends MicroTickingElectricalProperties {

@@ -6,9 +6,8 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
@@ -31,7 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class EmergencyStopBlock extends DirectionalRolledDeviceBlock {
+public class EmergencyStopBlock extends DirectionalRolledDeviceBlock<CutOffSwitchDevice> {
     public static final BooleanProperty ACTIVATED = BooleanProperty.create("activated");
 
     public EmergencyStopBlock(Properties properties) {
@@ -40,8 +39,8 @@ public class EmergencyStopBlock extends DirectionalRolledDeviceBlock {
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.CUT_OFF_SWITCH;
+    public SimulatedDeviceType<CutOffSwitchDevice> getDevice() {
+        return CEESimulatedDevices.CUT_OFF_SWITCH.get();
     }
 
     @Override
@@ -51,7 +50,7 @@ public class EmergencyStopBlock extends DirectionalRolledDeviceBlock {
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Closed", !state.getValue(ACTIVATED));
         return tag;
@@ -70,9 +69,9 @@ public class EmergencyStopBlock extends DirectionalRolledDeviceBlock {
         boolean activate = !player.isShiftKeyDown();
 
         if (level instanceof ServerLevel serverLevel) {
-            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null && device.extraData() instanceof CutOffSwitchDevice.DataHolder dataHolder)
-                dataHolder.isClosed = !activate;
+            CutOffSwitchDevice device = DevicesSavedData.load(serverLevel).getDevice(pos, CutOffSwitchDevice.class);
+            if (device != null)
+                device.isClosed = !activate;
         }
 
         if (state.getValue(ACTIVATED) != activate) {

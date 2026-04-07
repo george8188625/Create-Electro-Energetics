@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.content.fuse.fuse_held.FuseHoldable;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.foundation.block.IBE;
 import net.createmod.catnip.data.Pair;
@@ -27,7 +27,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class FuseHolderBlock extends DirectionalRolledDeviceBlock implements IBE<FuseHolderBlockEntity> {
+public class FuseHolderBlock extends DirectionalRolledDeviceBlock<FuseHolderDevice> implements IBE<FuseHolderBlockEntity> {
     public FuseHolderBlock(Properties properties) {
         super(properties);
     }
@@ -120,8 +120,8 @@ public class FuseHolderBlock extends DirectionalRolledDeviceBlock implements IBE
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.FUSE_HOLDER;
+    public SimulatedDeviceType<FuseHolderDevice> getDevice() {
+        return CEESimulatedDevices.FUSE_HOLDER.get();
     }
 
     @Override

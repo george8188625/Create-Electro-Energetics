@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.simulation.electrical_properties;
 
 import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
 
-import java.util.*;
+import java.util.List;
 
 public class DissolvedProperties extends ElectricalProperties implements IDissolvedProperties {
     public final List<WrappedIndexedNode> originalNodes;

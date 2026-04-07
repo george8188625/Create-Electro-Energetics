@@ -1,68 +1,64 @@
 package com.george_vi.electroenergetics.content.creative_battery;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
-public class CreativeBatteryDevice extends SimulatedDevice<CreativeBatteryDevice.DataHolder> {
-    public CreativeBatteryDevice(ResourceLocation id) {
-        super(id);
+public class CreativeBatteryDevice extends SimpleElectricalDevice {
+
+    public double voltage;
+    public double acFrequency;
+    public float phaseOffset;
+
+    public CreativeBatteryDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+    public void preTick(BridgeCollector bridges) {
 
         boolean ideal = !CEEConfigs.server().simulationConfig.creativeBatteryThevenin.get();
-        double voltage = extraData.voltage;
+        double voltage = this.voltage;
 
         if (ideal) {
-            if (extraData.acFrequency == 0)
+            if (this.acFrequency == 0)
                 bridges.builder(pos)
                         .idealVoltageSource(0, 1, voltage);
             else
                 bridges.builder(pos)
-                        .connect(0, 1, new ACSource(voltage, extraData.phaseOffset, 0));
+                        .connect(0, 1, new ACSource(voltage, this.phaseOffset, 0));
         } else {
-            if (extraData.acFrequency == 0)
+            if (this.acFrequency == 0)
                 bridges.builder(pos)
                         .voltageSourceWithResistance(0, 1, 0.001d, voltage);
             else
                 bridges.builder(pos)
-                        .connect(0, 1, new ACSource(voltage, extraData.phaseOffset, 0.001d));
+                        .connect(0, 1, new ACSource(voltage, this.phaseOffset, 0.001d));
         }
         bridges.defaultZeroPotential(new InWorldNode(0, pos), 200);
     }
 
     @Override
-    public DataHolder read(CompoundTag tag) {
-        DataHolder dataHolder = new DataHolder();
-        dataHolder.voltage = tag.contains("Voltage") ? tag.getDouble("Voltage") : 300;
-        dataHolder.acFrequency = tag.getDouble("ACFrequency");
-        dataHolder.phaseOffset = tag.getFloat("PhaseOffset");
-        return dataHolder;
+    public void read(CompoundTag tag) {
+        voltage = tag.contains("Voltage") ? tag.getDouble("Voltage") : 300;
+        acFrequency = tag.getDouble("ACFrequency");
+        phaseOffset = tag.getFloat("PhaseOffset");
     }
 
     @Override
-    public CompoundTag write(DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        tag.putDouble("Voltage", extraData.voltage);
-        tag.putFloat("PhaseOffset", extraData.phaseOffset);
-        if (extraData.acFrequency != 0)
-            tag.putDouble("ACFrequency", extraData.acFrequency);
-        return tag;
-    }
-
-    public static class DataHolder {
-        public double voltage;
-        public double acFrequency;
-        public float phaseOffset;
+    public void write(CompoundTag tag) {
+        tag.putDouble("Voltage", voltage);
+        tag.putFloat("PhaseOffset", phaseOffset);
+        if (acFrequency != 0)
+            tag.putDouble("ACFrequency", acFrequency);
     }
 
     public static class ACSource extends MicroTickingElectricalProperties {

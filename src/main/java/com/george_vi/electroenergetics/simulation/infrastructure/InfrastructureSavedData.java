@@ -1,22 +1,24 @@
 package com.george_vi.electroenergetics.simulation.infrastructure;
 
-import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
-import com.george_vi.electroenergetics.content.wire.WireSync;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
+import com.george_vi.electroenergetics.content.wire.WireSync;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
-import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.simulation.*;
-import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
+import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
-import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
+import com.george_vi.simulateddevices.SDRegistries;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
@@ -32,12 +34,8 @@ import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 
 public class InfrastructureSavedData extends SavedData {
-    Map<BlockPos, SimulatedDeviceInstance<?>> DEVICES = new TreeMap<>();
-    Map<BlockPos, SimulatedDeviceInstance<?>> TICKING_DEVICES = new HashMap<>();
     Map<InWorldNode, List<InWorldNode>> NODES = new HashMap<>();
     Map<InWorldNode, Vec3> NODE_POSITIONS = new HashMap<>();
     Map<BlockPos, List<InWorldNode>> NODES_BY_POS = new HashMap<>();
@@ -73,20 +71,6 @@ public class InfrastructureSavedData extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider provider) {
-
-        // Save Devices
-
-        ListTag deviceList = new ListTag();
-        for (Map.Entry<BlockPos, SimulatedDeviceInstance<?>> e : DEVICES.entrySet()) {
-            CompoundTag deviceTag = new CompoundTag();
-
-            deviceTag.put("Pos", NbtUtils.writeBlockPos(e.getKey()));
-            deviceTag.putString("ID", e.getValue().simulatedDevice().getID().toString());
-            deviceTag.put("ExtraData", e.getValue().write());
-
-            deviceList.add(deviceTag);
-        }
-        compoundTag.put("Devices", deviceList);
 
         // Save Nodes / Node Connections
 
@@ -160,8 +144,6 @@ public class InfrastructureSavedData extends SavedData {
 
     static InfrastructureSavedData load(ServerLevel level, CompoundTag compoundTag, HolderLookup.Provider provider) {
         InfrastructureSavedData sd = new InfrastructureSavedData(level);
-        sd.DEVICES = new HashMap<>();
-        sd.TICKING_DEVICES = new HashMap<>();
         sd.NODES = new HashMap<>();
         sd.NODES_BY_POS = new HashMap<>();
         sd.CONNECTION_DATA = new HashMap<>();
@@ -217,27 +199,13 @@ public class InfrastructureSavedData extends SavedData {
             }));
         });
 
-        // Read Devices
+        // Migrate devices from old versions
 
-        NBTHelper.iterateCompoundList(compoundTag.getList("Devices", Tag.TAG_COMPOUND), tag -> {
-            BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
-            SimulatedDevice<?> device = CEESimulatedDevices.get(ResourceLocation.parse(tag.getString("ID")));
-            if (device == null) {
-                List<InWorldNode> nodes = sd.NODES_BY_POS.get(pos);
-                for (InWorldNode node : nodes) {
-                    for (InWorldNodeConnection connection : sd.getConnections(node))
-                        sd.removeConnection(connection);
-                    sd.NODES.remove(node);
-                }
-                sd.NODES_BY_POS.remove(pos);
-                LOGGER.warn("Could not load device: {} at pos: {} in: {}. No device with such ID, removing...", tag.getString("ID"), pos.toShortString(), level.dimension().location());
-                return;
-            }
-            SimulatedDeviceInstance<?> di = SimulatedDeviceInstance.read(device, pos, tag.getCompound("ExtraData"), sd.NODES_BY_POS.getOrDefault(pos, new ArrayList<>()));
-            sd.DEVICES.put(pos, di);
-            if (device.ticks())
-                sd.TICKING_DEVICES.put(pos, di);
-        });
+        if (compoundTag.contains("Devices", Tag.TAG_LIST)) {
+            DevicesSavedData deviceSD = DevicesSavedData.load(level);
+            migrateFromLegacy(compoundTag.getList("Devices", Tag.TAG_COMPOUND), deviceSD);
+            sd.setDirty();
+        }
 
         // Read Railway Catenary
 
@@ -287,169 +255,110 @@ public class InfrastructureSavedData extends SavedData {
         return sd;
     }
 
+    public static void migrateFromLegacy(ListTag legacyDevices, DevicesSavedData deviceSD) {
+        if (legacyDevices.isEmpty())
+            return;
+
+        for (Tag rawTag : legacyDevices) {
+            CompoundTag tag = (CompoundTag) rawTag;
+            BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
+            ResourceLocation id = ResourceLocation.parse(tag.getString("ID"));
+            CompoundTag extraData = tag.getCompound("ExtraData");
+
+            SimulatedDeviceType<?> type = SDRegistries.SIMULATED_DEVICE_TYPE.get(id); // your new registry
+            if (type == null) {
+                LOGGER.warn("Legacy migration: unknown device type {} at {}, skipping", id, pos.toShortString());
+                continue;
+            }
+
+            if (deviceSD.getDevice(pos) != null) continue;
+
+            deviceSD.addDevice(type, pos, extraData);
+            LOGGER.info("Migrated legacy device {} at {}", id, pos.toShortString());
+        }
+    }
+
     public static InfrastructureSavedData load(ServerLevel level) {
         return level.getDataStorage()
                 .computeIfAbsent(new Factory<>(() -> new InfrastructureSavedData(level), (compoundTag, provider) -> InfrastructureSavedData.load(level, compoundTag, provider)), "electroenergetics_infrastructure");
     }
 
-    public <T> void addDevice(BlockPos pos, SimulatedDevice<T> device, CompoundTag extraData, List<Integer> nodeIDs) {
-        // I'm sorry, this is a mess.
-        List<InWorldNode> nodes = nodeIDs.stream().map(id -> new InWorldNode(id, pos)).toList();
-        SimulatedDeviceInstance<?> di = DEVICES.get(pos);
-        if (di != null) {
-            di.invalidate();
-            if (di.simulatedDevice() == device) { // Set a device of the same type. It's possible nodes might have changed
-                List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
-                if (oldNodes != null && oldNodes.stream().map(InWorldNode::id).sorted().toList().equals(nodeIDs.stream().sorted().toList())) {
-                    // Nodes changed
-                    for (InWorldNode node : oldNodes) {
-                        Vec3 newPos = node.getPosition(level);
-                        if (NODE_POSITIONS.replace(node, newPos) != newPos) {
-                            for (InWorldNodeConnection connection : getConnections(node)) {
-                                wireSimulationState.removeConnection(connection);
-                                wireSimulationState.addConnection(connection, getConnectionData(connection), false);
-                            }
-                        }
-                    }
-                    List<BlockPos> catenaryConnections = CATENARY_ADJACENCY.get(pos);
-                    if (catenaryConnections != null) {
-                        for (BlockPos neighbour : catenaryConnections) {
-                            BlockState startingState = level.getBlockState(pos);
-                            BlockState endingState = level.getBlockState(neighbour);
-                            boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) &&
-                                    startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
-                            boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) &&
-                                    endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
-                            boolean isLow = isStartingLow || isEndingLow;
-                            CatenaryConnectionData connectionData = CATENARY_DATA.get(new CatenaryConnection(pos, neighbour));
-                            if (connectionData != null && connectionData.isLow != isLow) {
-                                connectionData.isLow = isLow;
-                                InWorldNodeConnection nodeConnection = new InWorldNodeConnection(new InWorldNode(0, pos), new InWorldNode(0, neighbour));
-                                wireSimulationState.removeConnection(nodeConnection);
-                                wireSimulationState.addCatenaryConnection(nodeConnection, connectionData, false);
-                            }
-                        }
-                    }
+    public void registerOrUpdateNodes(BlockPos pos, List<Integer> nodeIDs) {
+        List<InWorldNode> nodes = new ArrayList<>(nodeIDs.size());
+        List<InWorldNode> oldNodesList = NODES_BY_POS.put(pos, nodes);
+        Set<InWorldNode> oldNodes = oldNodesList == null ? new HashSet<>() : new HashSet<>(oldNodesList);
 
-                    return;
+        // Update node positions
+        for (int id : nodeIDs) {
+            InWorldNode node = new InWorldNode(id, pos);
+            oldNodes.remove(node);
+            nodes.add(node);
+            NODES.putIfAbsent(node, new ArrayList<>());
+            Vec3 newPos = node.getPosition(level);
+            if (Objects.equals(newPos, NODE_POSITIONS.put(node, newPos))) {
+                for (InWorldNodeConnection connection : getConnections(node)) {
+                    wireSimulationState.removeConnection(connection);
+                    wireSimulationState.addConnection(connection, getConnectionData(connection), false);
                 }
-
-                if (oldNodes != null)
-                    for (InWorldNode node : oldNodes) {
-                        if (nodes.contains(node))
-                            continue;
-                        for (InWorldNodeConnection connection : getConnections(node))
-                            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
-                                    new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
-                        NODES.remove(node);
-                        NODE_POSITIONS.remove(node);
-                    }
-
-                NODES_BY_POS.replace(pos, nodes);
-
-                for (InWorldNode node : nodes) {
-                    NODES.putIfAbsent(node, new ArrayList<>());
-                    NODE_POSITIONS.put(node, node.getPosition(level));
-
-                    for (InWorldNodeConnection connection : getConnections(node)) {
-                        wireSimulationState.removeConnection(connection);
-                        if (NODES.containsKey(connection.node1()) && NODES.containsKey(connection.node2()))
-                            wireSimulationState.addConnection(connection, getConnectionData(connection), false);
-                    }
-                }
-
-                return;
-            } else { // New device
-                SimulatedDeviceInstance<T> ndi = new SimulatedDeviceInstance<>(device, pos, device.read(extraData), nodes);
-                DEVICES.put(pos, ndi);
-                if (device.ticks())
-                    TICKING_DEVICES.put(pos, ndi);
-
-                List<InWorldNode> oldNodes = NODES_BY_POS.get(pos);
-                if (oldNodes != null)
-                    for (InWorldNode node : oldNodes) {
-                        if (nodes.contains(node))
-                            continue;
-                        List<InWorldNodeConnection> connections = getConnections(node);
-                        for (InWorldNodeConnection connection : connections)
-                            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
-
-                        List<BlockPos> catenaryConnections = List.copyOf(CATENARY_ADJACENCY.getOrDefault(pos, new ArrayList<>()));
-                        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.COPPER_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
-                        for (BlockPos connection : catenaryConnections)
-                            removeCatenary(pos, connection);
-                        NODES.remove(node);
-                        NODE_POSITIONS.remove(node);
-                    }
-
-                NODES_BY_POS.put(pos, nodes);
-                setDirty();
-                return;
             }
         }
 
+        // All forgotten nodes are going to be removed
+        for (InWorldNode node : oldNodes) {
+            for (InWorldNodeConnection connection : getConnections(node))
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
+                        new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
+            NODES.remove(node);
+            NODE_POSITIONS.remove(node);
+        }
 
-        SimulatedDeviceInstance<T> ndi = new SimulatedDeviceInstance<>(device, pos, device.read(extraData), nodes);
-        DEVICES.put(pos, ndi);
-        if (device.ticks())
-            TICKING_DEVICES.put(pos, ndi);
+        // Update catenary isLow
+        List<BlockPos> catenaryConnections = CATENARY_ADJACENCY.get(pos);
+        if (catenaryConnections != null) {
+            for (BlockPos neighbour : catenaryConnections) {
+                BlockState startingState = level.getBlockState(pos);
+                BlockState endingState = level.getBlockState(neighbour);
+                boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) &&
+                        startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+                boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) &&
+                        endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+                boolean isLow = isStartingLow || isEndingLow;
+                CatenaryConnectionData connectionData = CATENARY_DATA.get(new CatenaryConnection(pos, neighbour));
+                if (connectionData != null && connectionData.isLow != isLow) {
+                    connectionData.isLow = isLow;
+                    InWorldNodeConnection nodeConnection = new InWorldNodeConnection(new InWorldNode(0, pos), new InWorldNode(0, neighbour));
+                    wireSimulationState.removeConnection(nodeConnection);
+                    wireSimulationState.addCatenaryConnection(nodeConnection, connectionData, false);
+                }
+            }
+        }
+    }
+
+    public void addTemporaryNode(InWorldNode node) {
+        NODES.putIfAbsent(node, new ArrayList<>());
+        NODE_POSITIONS.putIfAbsent(node, Vec3.ZERO);
+        NODES_BY_POS.computeIfAbsent(node.sourcePos(), k -> new ArrayList<>()).add(node);
+
+    }
+
+    public void removeNodes(BlockPos pos) {
+        List<InWorldNode> nodes = NODES_BY_POS.remove(pos);
+        if (nodes == null)
+            return;
 
         for (InWorldNode node : nodes) {
-            Vec3 nodePos = node.getPosition(level);
-            // Shouldn't ever happen, but it's better to be safe.
-            if (nodePos == null)
-                continue;
-            NODES.put(node, new ArrayList<>());
-            NODE_POSITIONS.put(node, nodePos);
+            List<InWorldNodeConnection> connections = getConnections(node);
+            for (InWorldNodeConnection connection : connections)
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
+
+            NODES.remove(node);
+            NODE_POSITIONS.remove(node);
         }
-        NODES_BY_POS.put(pos, nodes);
 
-        setDirty();
-    }
-
-    public void addDevice(BlockPos pos, SimulatedDevice<?> device, List<Integer> nodeIDs) {
-        addDevice(pos, device, new CompoundTag(), nodeIDs);
-    }
-
-    public void removeDevice(BlockPos pos) {
-        SimulatedDeviceInstance<?> di = DEVICES.remove(pos);
-        TICKING_DEVICES.remove(pos);
-        if (di != null)
-            di.invalidate();
-        List<InWorldNode> nodes = NODES_BY_POS.get(pos);
-        if (nodes != null)
-            for (InWorldNode node : nodes) {
-                List<InWorldNodeConnection> connections = getConnections(node);
-                for (InWorldNodeConnection connection : connections)
-                    Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
-
-                List<BlockPos> catenaryConnections = List.copyOf(CATENARY_ADJACENCY.getOrDefault(pos, new ArrayList<>()));
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.COPPER_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
-                for (BlockPos connection : catenaryConnections)
-                    removeCatenary(pos, connection);
-                NODES.remove(node);
-                NODE_POSITIONS.remove(node);
-            }
-        NODES_BY_POS.remove(pos);
-        setDirty();
-    }
-
-    public Collection<SimulatedDeviceInstance<?>> getDevices() {
-        return new ArrayList<>(DEVICES.values());
-    }
-
-    public Collection<SimulatedDeviceInstance<?>> getTickingDevices() {
-        return new ArrayList<>(TICKING_DEVICES.values());
-    }
-
-    public SimulatedDeviceInstance<?> getDevice(BlockPos pos) {
-        return DEVICES.get(pos);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> SimulatedDeviceInstance<T> getDevice(BlockPos pos, Class<T> clazz) {
-        SimulatedDeviceInstance<?> di = DEVICES.get(pos);
-        return di == null || !clazz.isInstance(di.extraData()) ? null : (SimulatedDeviceInstance<T>) di;
+        List<BlockPos> catenaryConnections = List.copyOf(CATENARY_ADJACENCY.getOrDefault(pos, new ArrayList<>()));
+        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.COPPER_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
+        for (BlockPos connection : catenaryConnections)
+            removeCatenary(pos, connection);
     }
 
     public List<InWorldNodeConnection> getConnections(InWorldNode node) {
@@ -609,12 +518,7 @@ public class InfrastructureSavedData extends SavedData {
        return CATENARY_DATA.keySet();
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getDeviceData(BlockPos pos, Class<T> clazz) {
-        SimulatedDeviceInstance<?> di = getDevice(pos);
-        if (di == null)
-            return null;
-        Object data = di.extraData();
-        return clazz.isInstance(data) ? (T) data : null;
+    public boolean hasNode(InWorldNode node) {
+        return NODES.containsKey(node);
     }
 }

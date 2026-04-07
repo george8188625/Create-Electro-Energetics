@@ -1,62 +1,53 @@
 package com.george_vi.electroenergetics.content.electric_pump;
 
-import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-public class ElectricPumpDevice extends SimulatedDevice<ElectricPumpDevice.DataHolder> {
-    public ElectricPumpDevice(ResourceLocation id) {
-        super(id);
+public class ElectricPumpDevice extends SimpleElectricalDevice {
+    public ElectricPumpBlockEntity be;
+
+
+    public ElectricPumpDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
-        if (extraData.be == null && level.isLoaded(pos))
+    public void preTick(BridgeCollector bridges) {
+        if (this.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ElectricPumpBlockEntity be)
-                extraData.be = be;
+                this.be = be;
 
-        if (extraData.be != null) {
-            if (extraData.be.isRemoved())
-                extraData.be = null;
+        if (this.be != null) {
+            if (this.be.isRemoved())
+                this.be = null;
             else {
-                bridges.builder(pos).resistor(0, 1, extraData.be.getResistance());
+                bridges.builder(pos).resistor(0, 1, this.be.getResistance());
             }
         }
     }
 
+
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
+    public void postTick(SimulationResults results) {
         double vd = results.getVoltageAt(pos, 0, 1);
 
-        if (extraData.be == null && level.isLoaded(pos))
+        if (this.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ElectricPumpBlockEntity be)
-                extraData.be = be;
+                this.be = be;
 
-        if (extraData.be != null) {
-            if (extraData.be.isRemoved())
-                extraData.be = null;
+        if (this.be != null) {
+            if (this.be.isRemoved())
+                this.be = null;
             else {
-                extraData.be.setVoltage((float) vd);
+                this.be.setVoltage((float) vd);
             }
         }
     }
 
-    @Override
-    public DataHolder read(CompoundTag tag) {
-        return new DataHolder();
-    }
 
-    @Override
-    public CompoundTag write(DataHolder extraData) {
-        return new CompoundTag();
-    }
-
-    public static class DataHolder {
-        public ElectricPumpBlockEntity be;
-    }
 }

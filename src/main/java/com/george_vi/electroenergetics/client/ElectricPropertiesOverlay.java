@@ -3,8 +3,8 @@ package com.george_vi.electroenergetics.client;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
@@ -64,7 +64,7 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
             if (node == null)
                 return;
             BlockState state = mc.level.getBlockState(node.sourcePos());
-            if (!(state.getBlock() instanceof DeviceBlock db))
+            if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
                 return;
 
             MutableComponent nodeLabel = db.getNodeLabel(mc.level, node.sourcePos(), state, node.id()).withStyle(ChatFormatting.BOLD);

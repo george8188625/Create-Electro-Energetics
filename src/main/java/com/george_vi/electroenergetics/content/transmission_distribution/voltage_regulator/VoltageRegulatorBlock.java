@@ -4,12 +4,12 @@ import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock, IBE<VoltageRegulatorBlockEntity> {
+public class VoltageRegulatorBlock extends SimpleElectricalDeviceBlock<VoltageRegulatorDevice> implements ProperWaterloggedBlock, IBE<VoltageRegulatorBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty SLICED = BooleanProperty.create("sliced");
@@ -63,7 +63,7 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof VoltageRegulatorBlockEntity be)
             tag.putDouble("Voltage", be.voltage.getVoltage());
@@ -120,11 +120,10 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
         boolean top = !CEEBlocks.VOLTAGE_REGULATOR.has(above);
         if (level instanceof ServerLevel sl) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            SimulatedDeviceInstance<?> device = sd.getDevice(pos);
-
-            if (device != null && device.extraData() instanceof VoltageRegulatorDevice.DataHolder dataHolder) {
-                dataHolder.top = top;
-                dataHolder.bottom = bottom;
+            VoltageRegulatorDevice device = DevicesSavedData.load(sl).getDevice(pos, VoltageRegulatorDevice.class);
+            if (device != null) {
+                device.top = top;
+                device.bottom = bottom;
             }
 
             if (change || sliced != state.getValue(SLICED))
@@ -151,7 +150,7 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         BlockState below = level.getBlockState(pos.below());
         BlockState above = level.getBlockState(pos.above());
@@ -159,12 +158,11 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
         boolean bottom = !CEEBlocks.VOLTAGE_REGULATOR.has(below);
         boolean top = !CEEBlocks.VOLTAGE_REGULATOR.has(above);
 
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> device = sd.getDevice(pos);
-        if (device != null && device.extraData() instanceof VoltageRegulatorDevice.DataHolder dataHolder) {
-            dataHolder.top = top;
-            dataHolder.bottom = bottom;
-            dataHolder.sliced = state.getValue(SLICED) ? state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 2 : 1 : 0;
+        VoltageRegulatorDevice device = DevicesSavedData.load(level).getDevice(pos, VoltageRegulatorDevice.class);
+        if (device != null) {
+            device.top = top;
+            device.bottom = bottom;
+            device.sliced = state.getValue(SLICED) ? state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 2 : 1 : 0;
         }
     }
 
@@ -174,8 +172,8 @@ public class VoltageRegulatorBlock extends SimpleDeviceBlock implements ProperWa
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.VOLTAGE_REGULATOR;
+    public SimulatedDeviceType<VoltageRegulatorDevice> getDevice() {
+        return CEESimulatedDevices.VOLTAGE_REGULATOR.get();
     }
 
     @Override

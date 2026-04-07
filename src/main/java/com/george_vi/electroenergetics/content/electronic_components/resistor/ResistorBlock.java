@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +19,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class ResistorBlock extends DirectionalRolledDeviceBlock implements IBE<ResistorBlockEntity> {
+public class ResistorBlock extends DirectionalRolledDeviceBlock<ResistorDevice> implements IBE<ResistorBlockEntity> {
     public final boolean creative;
 
     public ResistorBlock(Properties properties, boolean creative) {
@@ -28,12 +28,12 @@ public class ResistorBlock extends DirectionalRolledDeviceBlock implements IBE<R
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return creative ? CEESimulatedDevices.CREATIVE_RESISTOR : CEESimulatedDevices.RESISTOR;
+    public SimulatedDeviceType<ResistorDevice> getDevice() {
+        return creative ? CEESimulatedDevices.CREATIVE_RESISTOR.get() : CEESimulatedDevices.RESISTOR.get();
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof ResistorBlockEntity be)
             tag.putDouble("Resistance", be.resistance.getResistance());

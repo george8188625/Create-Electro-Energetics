@@ -1,22 +1,45 @@
 package com.george_vi.electroenergetics.content.synchroscope;
 
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
-public class SynchroscopeDevice extends SimulatedDevice<SynchroscopeDevice.DataHolder> {
-    public SynchroscopeDevice(ResourceLocation id) {
-        super(id);
+public class SynchroscopeDevice extends SimpleElectricalDevice {
+
+    public SynchroscopeBlockEntity be;
+
+    public double prevPeriodP = 0;
+    public double prevPeriodS = 0;
+    public double prevCrossP = 0;
+    public double prevCrossS = 0;
+    public double prevP = 0;
+    public double prevS = 0;
+    public double prevP1 = 0;
+    public double prevS1 = 0;
+    public double prevP2 = 0;
+    public double prevS2 = 0;
+    public double prevDiff = 0;
+    public double unwrappedPhase = 0;
+    public int ticks = 0;
+
+    public boolean isFirstPhaseP;
+    public boolean isFirstPhaseS;
+    public byte phaseOrderP;
+    public byte phaseOrderS;
+
+    public SynchroscopeDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+    public void preTick(BridgeCollector bridges) {
         bridges.builder(pos)
                 .resistor(0, 1, 1_000_000)
                 .resistor(1, 2, 1_000_000)
@@ -26,21 +49,19 @@ public class SynchroscopeDevice extends SimulatedDevice<SynchroscopeDevice.DataH
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
-
-        if (extraData.be == null && level.isLoaded(pos))
+    public void postTick(SimulationResults results) {
+        if (be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof SynchroscopeBlockEntity be)
-                extraData.be = be;
+                this.be = be;
 
-        if (extraData.be != null) {
-            SynchroscopeBlockEntity be = extraData.be;
+        if (be != null) {
             if (be.isRemoved())
-                extraData.be = null;
+                be = null;
             else {
-                float v = calculatePhaseOffset(pos, results, extraData) % 360;
-                boolean validConnection = (extraData.phaseOrderP & 0b1100) == (extraData.phaseOrderS & 0b1100);
+                float v = calculatePhaseOffset(pos, results) % 360;
+                boolean validConnection = (phaseOrderP & 0b1100) == (phaseOrderS & 0b1100);
                 if (Math.abs(be.phaseOffset - v) > 10 ||
-                        (Math.abs(be.phaseOffset - v) > 0.1 && extraData.ticks % 20 == 0) ||
+                        (Math.abs(be.phaseOffset - v) > 0.1 && ticks % 20 == 0) ||
                         be.validConnection != validConnection) {
                     be.phaseOffset = v;
                     be.validConnection = validConnection;
@@ -50,7 +71,7 @@ public class SynchroscopeDevice extends SimulatedDevice<SynchroscopeDevice.DataH
         }
     }
 
-    private float calculatePhaseOffset(BlockPos pos, SimulationResults results, DataHolder extraData) {
+    private float calculatePhaseOffset(BlockPos pos, SimulationResults results) {
         double[] p = results.getVoltages(new InWorldNode(1, pos));
         double[] s = results.getVoltages(new InWorldNode(4, pos));
         double[] p1 = results.getVoltages(new InWorldNode(0, pos));
@@ -59,7 +80,7 @@ public class SynchroscopeDevice extends SimulatedDevice<SynchroscopeDevice.DataH
         double[] s2 = results.getVoltages(new InWorldNode(5, pos));
 
         for (int i = 0; i < p.length; i++) {
-            extraData.ticks++;
+            this.ticks++;
             double pi = p[i];
             double si = s[i];
             double pi1 = p1[i];
@@ -67,20 +88,20 @@ public class SynchroscopeDevice extends SimulatedDevice<SynchroscopeDevice.DataH
             double pi2 = p2[i];
             double si2 = s2[i];
 
-            if (pi > 0 && extraData.prevP <= 0) {
-                double interpolated = extraData.ticks + (-extraData.prevP / (pi - extraData.prevP));
-                extraData.prevPeriodP = interpolated - extraData.prevCrossP;
-                extraData.prevCrossP = interpolated;
-                extraData.isFirstPhaseP = true;
-                extraData.phaseOrderP <<= 2;
+            if (pi > 0 && this.prevP <= 0) {
+                double interpolated = this.ticks + (-this.prevP / (pi - this.prevP));
+                this.prevPeriodP = interpolated - this.prevCrossP;
+                this.prevCrossP = interpolated;
+                this.isFirstPhaseP = true;
+                this.phaseOrderP <<= 2;
             }
 
-            if (si > 0 && extraData.prevS <= 0) {
-                double interpolated = extraData.ticks + (-extraData.prevS / (si - extraData.prevS));
-                extraData.prevPeriodS = interpolated - extraData.prevCrossS;
-                extraData.prevCrossS = interpolated;
-                extraData.isFirstPhaseS = true;
-                extraData.phaseOrderS <<= 2;
+            if (si > 0 && this.prevS <= 0) {
+                double interpolated = this.ticks + (-this.prevS / (si - this.prevS));
+                this.prevPeriodS = interpolated - this.prevCrossS;
+                this.prevCrossS = interpolated;
+                this.isFirstPhaseS = true;
+                this.phaseOrderS <<= 2;
             }
 
             // The following mess is responsible for detecting if the synchroscope is wired correctly.
@@ -88,125 +109,97 @@ public class SynchroscopeDevice extends SimulatedDevice<SynchroscopeDevice.DataH
             // For some reason I decided to do this very low level.
             // no idea why
 
-            if (pi1 > 0 && extraData.prevP1 <= 0) {
-                extraData.isFirstPhaseP = false;
+            if (pi1 > 0 && this.prevP1 <= 0) {
+                this.isFirstPhaseP = false;
             }
 
-            if (si1 > 0 && extraData.prevS1 <= 0) {
-                extraData.isFirstPhaseS = false;
+            if (si1 > 0 && this.prevS1 <= 0) {
+                this.isFirstPhaseS = false;
             }
 
-            if (pi2 > 0 && extraData.prevP2 <= 0) {
-                if (extraData.isFirstPhaseP) {
-                    extraData.isFirstPhaseP = false;
-                    extraData.phaseOrderP |= 2;
+            if (pi2 > 0 && this.prevP2 <= 0) {
+                if (this.isFirstPhaseP) {
+                    this.isFirstPhaseP = false;
+                    this.phaseOrderP |= 2;
                 } else {
-                    extraData.phaseOrderP |= 1;
+                    this.phaseOrderP |= 1;
                 }
             }
 
-            if (si2 > 0 && extraData.prevS2 <= 0) {
-                if (extraData.isFirstPhaseS) {
-                    extraData.isFirstPhaseS = false;
-                    extraData.phaseOrderS |= 2;
+            if (si2 > 0 && this.prevS2 <= 0) {
+                if (this.isFirstPhaseS) {
+                    this.isFirstPhaseS = false;
+                    this.phaseOrderS |= 2;
                 } else {
-                    extraData.phaseOrderS |= 1;
+                    this.phaseOrderS |= 1;
                 }
             }
 
-            extraData.prevP = pi;
-            extraData.prevS = si;
-            extraData.prevP1 = pi1;
-            extraData.prevS1 = si1;
-            extraData.prevP2 = pi2;
-            extraData.prevS2 = si2;
+            this.prevP = pi;
+            this.prevS = si;
+            this.prevP1 = pi1;
+            this.prevS1 = si1;
+            this.prevP2 = pi2;
+            this.prevS2 = si2;
         }
 
 
-        double diff = Mth.TWO_PI * (extraData.prevCrossS - extraData.prevCrossP) / extraData.prevPeriodP;
+        double diff = Mth.TWO_PI * (this.prevCrossS - this.prevCrossP) / this.prevPeriodP;
 
-        double delta = Double.isNaN(diff) ? 0 : diff - extraData.prevDiff;
+        double delta = Double.isNaN(diff) ? 0 : diff - this.prevDiff;
         diff = Double.isNaN(diff) ? 0 : diff;
         if (delta > 100 || delta < -100) // If delta would ever become Infinity, this would brick words. This prevents it.
             delta = 0;
         while (delta > Mth.PI) delta -= Mth.TWO_PI;
         while (delta < -Mth.PI) delta += Mth.TWO_PI;
 
-        extraData.unwrappedPhase += delta;
-        extraData.prevDiff = diff;
-        if (Double.isNaN(extraData.unwrappedPhase))
-            extraData.unwrappedPhase = delta;
-//        if (Math.abs(extraData.unwrappedPhase - diff) > 0.1d)
-//        extraData.unwrappedPhase = diff;
-        return (float) Math.toDegrees(extraData.unwrappedPhase);
+        this.unwrappedPhase += delta;
+        this.prevDiff = diff;
+        if (Double.isNaN(this.unwrappedPhase))
+            this.unwrappedPhase = delta;
+
+        return (float) Math.toDegrees(this.unwrappedPhase);
     }
 
     @Override
-    public DataHolder read(CompoundTag tag) {
-        DataHolder dataHolder = new DataHolder();
-        dataHolder.prevPeriodP = tag.getDouble("PrevPeriodP");
-        dataHolder.prevPeriodS = tag.getDouble("PrevPeriodS");
-        dataHolder.prevCrossP = tag.getDouble("PrevCrossP");
-        dataHolder.prevCrossS = tag.getDouble("PrevCrossS");
-        dataHolder.prevP = tag.getDouble("PrevP");
-        dataHolder.prevS = tag.getDouble("PrevS");
-        dataHolder.prevP1 = tag.getDouble("PrevP1");
-        dataHolder.prevS1 = tag.getDouble("PrevS1");
-        dataHolder.prevP2 = tag.getDouble("PrevP2");
-        dataHolder.prevS2 = tag.getDouble("PrevS2");
-        dataHolder.prevDiff = tag.getDouble("PrevDiff");
-        dataHolder.unwrappedPhase = tag.getDouble("UnwrappedPhase");
-        dataHolder.ticks = tag.getInt("Ticks");
-        dataHolder.isFirstPhaseP = tag.getBoolean("IsFirstPhaseP");
-        dataHolder.isFirstPhaseS = tag.getBoolean("IsFirstPhaseS");
-        dataHolder.phaseOrderP = tag.getByte("PhaseOrderP");
-        dataHolder.phaseOrderS = tag.getByte("PhaseOrderS");
-        return dataHolder;
+    public void read(CompoundTag tag) {
+        prevPeriodP = tag.getDouble("PrevPeriodP");
+        prevPeriodS = tag.getDouble("PrevPeriodS");
+        prevCrossP = tag.getDouble("PrevCrossP");
+        prevCrossS = tag.getDouble("PrevCrossS");
+        prevP = tag.getDouble("PrevP");
+        prevS = tag.getDouble("PrevS");
+        prevP1 = tag.getDouble("PrevP1");
+        prevS1 = tag.getDouble("PrevS1");
+        prevP2 = tag.getDouble("PrevP2");
+        prevS2 = tag.getDouble("PrevS2");
+        prevDiff = tag.getDouble("PrevDiff");
+        unwrappedPhase = tag.getDouble("UnwrappedPhase");
+        ticks = tag.getInt("Ticks");
+        isFirstPhaseP = tag.getBoolean("IsFirstPhaseP");
+        isFirstPhaseS = tag.getBoolean("IsFirstPhaseS");
+        phaseOrderP = tag.getByte("PhaseOrderP");
+        phaseOrderS = tag.getByte("PhaseOrderS");
     }
 
     @Override
-    public CompoundTag write(DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        tag.putDouble("PrevPeriodP", extraData.prevPeriodP);
-        tag.putDouble("PrevPeriodS", extraData.prevPeriodS);
-        tag.putDouble("PrevCrossP", extraData.prevCrossP);
-        tag.putDouble("PrevCrossS", extraData.prevCrossS);
-        tag.putDouble("PrevP", extraData.prevP);
-        tag.putDouble("PrevS", extraData.prevS);
-        tag.putDouble("PrevDiff", extraData.prevDiff);
-        tag.putDouble("UnwrappedPhase", extraData.unwrappedPhase);
-        tag.putInt("Ticks", extraData.ticks);
-        tag.putDouble("PrevP1", extraData.prevP1);
-        tag.putDouble("PrevS1", extraData.prevS1);
-        if (extraData.isFirstPhaseP)
+    public void write(CompoundTag tag) {
+        tag.putDouble("PrevPeriodP", prevPeriodP);
+        tag.putDouble("PrevPeriodS", prevPeriodS);
+        tag.putDouble("PrevCrossP", prevCrossP);
+        tag.putDouble("PrevCrossS", prevCrossS);
+        tag.putDouble("PrevP", prevP);
+        tag.putDouble("PrevS", prevS);
+        tag.putDouble("PrevDiff", prevDiff);
+        tag.putDouble("UnwrappedPhase", unwrappedPhase);
+        tag.putInt("Ticks", ticks);
+        tag.putDouble("PrevP1", prevP1);
+        tag.putDouble("PrevS1", prevS1);
+        if (isFirstPhaseP)
             tag.putBoolean("IsFirstPhaseP", true);
-        if (extraData.isFirstPhaseS)
+        if (isFirstPhaseS)
             tag.putBoolean("IsFirstPhaseS", true);
-        tag.putByte("PhaseOrderP", extraData.phaseOrderP);
-        tag.putByte("PhaseOrderS", extraData.phaseOrderS);
-        return tag;
-    }
-
-    public static class DataHolder {
-        public SynchroscopeBlockEntity be;
-
-        public double prevPeriodP = 0;
-        public double prevPeriodS = 0;
-        public double prevCrossP = 0;
-        public double prevCrossS = 0;
-        public double prevP = 0;
-        public double prevS = 0;
-        public double prevP1 = 0;
-        public double prevS1 = 0;
-        public double prevP2 = 0;
-        public double prevS2 = 0;
-        public double prevDiff = 0;
-        public double unwrappedPhase = 0;
-        public int ticks = 0;
-
-        public boolean isFirstPhaseP;
-        public boolean isFirstPhaseS;
-        public byte phaseOrderP;
-        public byte phaseOrderS;
+        tag.putByte("PhaseOrderP", phaseOrderP);
+        tag.putByte("PhaseOrderS", phaseOrderS);
     }
 }

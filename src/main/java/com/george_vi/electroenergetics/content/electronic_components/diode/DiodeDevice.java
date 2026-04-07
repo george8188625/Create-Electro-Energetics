@@ -1,107 +1,47 @@
 package com.george_vi.electroenergetics.content.electronic_components.diode;
 
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
+import com.george_vi.electroenergetics.foundation.electrical_properties.DiodeProperties;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
-public class DiodeDevice extends SimulatedDevice<DiodeDevice.DataHolder> {
-    public DiodeDevice(ResourceLocation id) {
-        super(id);
+public class DiodeDevice extends SimpleElectricalDevice {
+    public double lastVoltage;
+    public float temp;
+    public DiodeProperties properties;
+
+    public DiodeDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
-
-//        double iS = 10e-12d;
-//        double vT = 0.046d;
-//
-//        extraData.voltage = Mth.clamp(extraData.voltage, -0.8, 0.8);
-//
-//        double Cj = 1e-12d;
-//        double gCap = Cj / bridges.getTimeStep();
-//        double iEqCap = gCap * extraData.voltage;
-//
-//        double g = Math.max(1e-12d, (iS / vT) * Math.exp(extraData.voltage / vT)) + gCap;
-//
-//        double resistance = 1 / g;
-//        double currentSource = iS * (Math.exp(extraData.voltage / vT) - 1) - g * extraData.voltage;
-//
+    public void preTick(BridgeCollector bridges) {
+        properties.lastVoltage = lastVoltage;
         bridges.builder(pos)
-                .connect(0, 1, extraData.properties);
-//                .resistor(0, 1, resistance)
-//                .idealCurrentSource(0, 1, -currentSource - iEqCap);
+                .connect(0, 1, properties);
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
-//        extraData.voltage = results.getVoltageAt(pos, 1, 0);
+    public void postTick(SimulationResults results) {
+        lastVoltage = properties.lastVoltage;
     }
 
     @Override
-    public DataHolder read(CompoundTag tag) {
-        DataHolder dataHolder = new DataHolder();
-        dataHolder.voltage = tag.getDouble("Voltage");
-        dataHolder.temp = tag.getFloat("Temp");
-        dataHolder.properties = new DiodeProperties(dataHolder);
-        return dataHolder;
+    public void read(CompoundTag tag) {
+        lastVoltage = tag.getDouble("Voltage");
+        temp = tag.getFloat("Temp");
+        properties = new DiodeProperties();
     }
 
     @Override
-    public CompoundTag write(DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        tag.putDouble("Voltage", extraData.voltage);
-        tag.putFloat("Temp", extraData.temp);
-        return tag;
-    }
-
-    public static class DataHolder {
-        public double voltage;
-        public float temp;
-        public DiodeProperties properties;
-    }
-
-    public static class DiodeProperties extends MicroTickingElectricalProperties {
-        final DataHolder extraData;
-
-        public DiodeProperties(DataHolder dataHolder) {
-            super();
-            this.extraData = dataHolder;
-        }
-
-        @Override
-        public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
-            tickDiode(totalMicroTicks);
-        }
-
-        @Override
-        public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
-            extraData.voltage = allVoltages[(n2 << microTickBits) | (microTick)] - allVoltages[(n1 << microTickBits) | (microTick)];
-        }
-
-        private void tickDiode(int totalMicroTicks) {
-            // Thanks, ChatGPT
-            double iS = 10e-10d;
-            double vT = 0.050;
-
-            extraData.voltage = Mth.clamp(extraData.voltage, -0.8, 0.8);
-
-            double Cj = 1e-11d;
-            double gCap = Cj / (0.05 / totalMicroTicks);
-            double iEqCap = gCap * extraData.voltage;
-
-            double g = Math.max(1e-12d, (iS / vT) * Math.exp(extraData.voltage / vT)) + gCap;
-
-            double resistance = 1 / g;
-            double currentSource = iS * (Math.exp(extraData.voltage / vT) - 1) - g * extraData.voltage;
-            this.resistance = resistance;
-            this.currentSource = -currentSource - iEqCap;
-        }
+    public void write(CompoundTag tag) {
+        tag.putDouble("Voltage", lastVoltage);
+        tag.putFloat("Temp", temp);
     }
 }
 

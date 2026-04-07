@@ -3,11 +3,10 @@ package com.george_vi.electroenergetics.content.converter;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
-import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
@@ -31,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class ConverterBlock extends DirectionalRolledDeviceBlock implements IWrenchable, IBE<ConverterBlockEntity> {
+public class ConverterBlock extends DirectionalRolledDeviceBlock<ConverterDevice> implements IWrenchable, IBE<ConverterBlockEntity> {
     public static final BooleanProperty SOURCE = BooleanProperty.create("source");
 
     public ConverterBlock(Properties properties) {
@@ -46,7 +45,7 @@ public class ConverterBlock extends DirectionalRolledDeviceBlock implements IWre
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Source", state.getValue(SOURCE));
         if (level.getBlockEntity(pos) instanceof ConverterBlockEntity be)
@@ -56,10 +55,9 @@ public class ConverterBlock extends DirectionalRolledDeviceBlock implements IWre
 
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.CONVERTER;
+    public SimulatedDeviceType<ConverterDevice> getDevice() {
+        return CEESimulatedDevices.CONVERTER.get();
     }
-
 
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
@@ -67,9 +65,9 @@ public class ConverterBlock extends DirectionalRolledDeviceBlock implements IWre
             return super.onWrenched(state, context);
 
         if (context.getLevel() instanceof ServerLevel serverLevel) {
-            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
-            if (device != null && device.extraData() instanceof ConverterDevice.DataHolder dataHolder)
-                dataHolder.isSource = !state.getValue(SOURCE);
+            ConverterDevice device = DevicesSavedData.load(serverLevel).getDevice(context.getClickedPos(), ConverterDevice.class);
+            if (device != null)
+                device.isSource = !state.getValue(SOURCE);
             serverLevel.setBlockAndUpdate(context.getClickedPos(), state.cycle(SOURCE));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(context.getLevel(), context.getClickedPos());
         }

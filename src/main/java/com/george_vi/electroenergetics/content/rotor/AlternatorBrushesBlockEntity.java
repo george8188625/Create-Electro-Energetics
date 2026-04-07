@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.rotor;
 
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDevice;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
@@ -48,11 +48,10 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
         if (!(level instanceof ServerLevel sl))
             return;
 
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(worldPosition);
+        SimulatedDevice device = DevicesSavedData.load(sl).getDevice(worldPosition);
 
-        if (deviceInstance == null || !(deviceInstance.extraData() instanceof AlternatorBrushesDevice.DataHolder dataHolder)) {
-            if (deviceInstance.extraData() instanceof ThreePhaseAlternatorBrushesDevice.DataHolder dataHolder) {
+        if (!(device instanceof AlternatorBrushesDevice dataHolder)) {
+            if (device instanceof ThreePhaseAlternatorBrushesDevice dataHolder) {
                 dataHolder.stress = totalStress;
                 dataHolder.voltage = totalStress / 100;
                 dataHolder.otherBrush = otherBrush;
@@ -69,10 +68,8 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         float totalStress = 0;
-        for (int i = 0; i < rotors.size(); i++) {
-            AlternatorRotorBlockEntity rotor = rotors.get(i);
+        for (AlternatorRotorBlockEntity rotor : rotors)
             totalStress += rotor.magnets * 48 * Math.abs(rotor.getSpeed());
-        }
 
         Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.electric_stats")

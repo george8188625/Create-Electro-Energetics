@@ -3,7 +3,6 @@ package com.george_vi.electroenergetics.content.gauge;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
-import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.ScalingScrollValueBehaviour;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;

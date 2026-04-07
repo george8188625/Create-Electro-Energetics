@@ -1,8 +1,10 @@
 package com.george_vi.electroenergetics.simulation.simulator;
 
+import com.george_vi.electroenergetics.CEESimulatedDeviceFeatureTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
+import com.george_vi.electroenergetics.foundation.device.TickingElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
@@ -11,6 +13,8 @@ import com.george_vi.electroenergetics.simulation.electrical_properties.Electric
 import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.util.*;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDevice;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
@@ -77,17 +81,20 @@ public class SimulationTicker {
             profiler.pop();
             return;
         }
+
+        DevicesSavedData deviceSD = DevicesSavedData.load(level);
+
         stats = new SimulationStats();
 
         circuitBuilder = new CircuitBuilder(inWorldNodes);
 
         profiler.popPush("preTick");
 
-        Collection<SimulatedDeviceInstance<?>> devices = sd.getTickingDevices();
+        Collection<SimulatedDevice> devices = deviceSD.getDevices(CEESimulatedDeviceFeatureTypes.TICKING_ELECTRICAL.get());
         // PreTick
         BridgeCollector bridgeCollector = new BridgeCollector(circuitBuilder, sd, microTicks);
-        for (SimulatedDeviceInstance<?> deviceInstance : devices)
-            deviceInstance.runPreTick(level, bridgeCollector);
+        for (SimulatedDevice device : devices)
+            ((TickingElectricalDevice)device).preTick(bridgeCollector);
 
         profiler.popPush("addToGraphEvent");
 
@@ -236,13 +243,14 @@ public class SimulationTicker {
         profiler.push(level.dimension().location().toString());
 
         profiler.push("postTick");
+        DevicesSavedData deviceSD = DevicesSavedData.load(level);
+        Collection<SimulatedDevice> devices = deviceSD.getDevices(CEESimulatedDeviceFeatureTypes.TICKING_ELECTRICAL.get());
 
-        for (SimulatedDeviceInstance<?> device : sd.getTickingDevices())
-            device.runPostTick(level, simulationResults);
+        for (SimulatedDevice device : devices)
+            ((TickingElectricalDevice)device).postTick(simulationResults);
 
         profiler.popPush("finish");
-
-//        sd.getWireConnectionManager().finish(allSimulationResults);
+        
         sd.wireLifetimeModule.finishSimulation(simulationResults);
 
         NeoForge.EVENT_BUS.post(new FinishElectricSimulationEvent(simulationResults, level, sd));

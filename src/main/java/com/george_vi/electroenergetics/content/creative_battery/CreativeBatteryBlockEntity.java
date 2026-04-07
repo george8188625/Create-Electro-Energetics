@@ -2,10 +2,10 @@ package com.george_vi.electroenergetics.content.creative_battery;
 
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.VoltageScrollValueBehaviour;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
-import com.simibubi.create.foundation.blockEntity.behaviour.*;
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,12 +37,10 @@ public class CreativeBatteryBlockEntity extends SmartBlockEntity {
     private void updateVoltage() {
         if (!(level instanceof ServerLevel sl))
             return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
+        CreativeBatteryDevice device = DevicesSavedData.load(sl).getDevice(getBlockPos(), CreativeBatteryDevice.class);
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof CreativeBatteryDevice.DataHolder dataHolder) {
-            dataHolder.voltage = voltage.getVoltage();
-        }
+        if (device != null)
+            device.voltage = voltage.getVoltage();
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {

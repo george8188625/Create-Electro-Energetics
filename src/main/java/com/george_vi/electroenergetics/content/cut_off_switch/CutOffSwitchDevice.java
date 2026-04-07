@@ -1,31 +1,31 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
-import com.george_vi.electroenergetics.CEESoundEvents;
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-public class CutOffSwitchDevice extends SimulatedDevice<CutOffSwitchDevice.DataHolder> {
+public class CutOffSwitchDevice extends SimpleElectricalDevice {
     final int lines;
-    public CutOffSwitchDevice(ResourceLocation id, int lines) {
-        super(id);
+    public SwitchingBehaviour[] behaviours;
+    public boolean isClosed;
+
+    public CutOffSwitchDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type, int lines) {
+        super(level, pos, deviceSD, type);
         this.lines = lines;
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+    public void preTick(BridgeCollector bridges) {
         for (int i = 0; i < lines; i++) {
 
-            SwitchingBehaviour behaviour = extraData.behaviours[i];
+            SwitchingBehaviour behaviour = behaviours[i];
             double r = behaviour.resistance();
             if (r != 0)
                 bridges.builder(pos).resistor(i, (lines) + i, r);
@@ -33,7 +33,8 @@ public class CutOffSwitchDevice extends SimulatedDevice<CutOffSwitchDevice.DataH
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
+    public void postTick(SimulationResults results) {
+        super.postTick(results);
         Vec3 pPos = null;
         if (level.isLoaded(pos)) {
             pPos = Vec3.atCenterOf(pos);
@@ -42,34 +43,25 @@ public class CutOffSwitchDevice extends SimulatedDevice<CutOffSwitchDevice.DataH
         }
 
         for (int i = 0; i < lines; i++) {
-            SwitchingBehaviour behaviour = extraData.behaviours[i];
-            behaviour.isClosed = extraData.isClosed;
+            SwitchingBehaviour behaviour = behaviours[i];
+            behaviour.isClosed = isClosed;
             behaviour.postTick(results.getVoltageAt(pos, i, lines + i), pPos, level);
         }
     }
 
     @Override
-    public DataHolder read(CompoundTag tag) {
-        DataHolder dataHolder = new DataHolder();
-        dataHolder.behaviours = new SwitchingBehaviour[lines];
-        dataHolder.isClosed = tag.getBoolean("Closed");
+    public void read(CompoundTag tag) {
+        behaviours = new SwitchingBehaviour[lines];
+        isClosed = tag.getBoolean("Closed");
         for (int i = 0; i < lines; i++)
-            dataHolder.behaviours[i] = new SwitchingBehaviour(tag.getCompound("Switch_"+i));
-        return dataHolder;
+            behaviours[i] = new SwitchingBehaviour(tag.getCompound("Switch_"+i));
     }
 
     @Override
-    public CompoundTag write(DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        if (extraData.isClosed)
+    public void write(CompoundTag tag) {
+        if (isClosed)
             tag.putBoolean("Closed", true);
         for (int i = 0; i < lines; i++)
-            tag.put("Switch_"+i, extraData.behaviours[i].write());
-        return tag;
-    }
-
-    public static class DataHolder {
-        public SwitchingBehaviour[] behaviours;
-        public boolean isClosed;
+            tag.put("Switch_"+i, behaviours[i].write());
     }
 }

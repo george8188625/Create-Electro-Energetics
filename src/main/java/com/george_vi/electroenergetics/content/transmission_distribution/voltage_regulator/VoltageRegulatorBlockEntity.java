@@ -5,8 +5,7 @@ import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.VoltageScrollValueBehaviour;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -167,11 +166,10 @@ public class VoltageRegulatorBlockEntity extends SmartBlockEntity implements IHa
     private void updateVoltage() {
         if (!(level instanceof ServerLevel sl))
             return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
+        VoltageRegulatorDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, VoltageRegulatorDevice.class);
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof VoltageRegulatorDevice.DataHolder dataHolder) {
-            dataHolder.targetVoltage = voltage.getVoltage();
+        if (device != null) {
+            device.targetVoltage = voltage.getVoltage();
         }
 
         if (!getBlockState().getValue(VoltageRegulatorBlock.BOTTOM))

@@ -8,7 +8,6 @@ import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.mehvahdjukaar.supplementaries.client.renderers.tiles.BuntingBlockTileRenderer;
 import net.mehvahdjukaar.supplementaries.reg.ModRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;

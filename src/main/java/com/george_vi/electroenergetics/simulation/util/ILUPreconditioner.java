@@ -1,7 +1,5 @@
 package com.george_vi.electroenergetics.simulation.util;
 
-import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
-
 public record ILUPreconditioner(SparseMatrix L, SparseMatrix U) {
 
     public void applyPreconditioner(double[] r, double[] z) {

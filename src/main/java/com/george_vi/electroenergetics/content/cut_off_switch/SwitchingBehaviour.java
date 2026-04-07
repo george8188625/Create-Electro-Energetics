@@ -16,10 +16,6 @@ public class SwitchingBehaviour {
     public boolean isClosed;
     public int tick;
 
-    public SwitchingBehaviour() {
-
-    }
-
     public SwitchingBehaviour(CompoundTag tag) {
         state = SwitchState.values()[tag.getInt("State")];
         tick = tag.getInt("Tick");

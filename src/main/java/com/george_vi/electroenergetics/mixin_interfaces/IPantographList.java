@@ -4,7 +4,8 @@ import com.george_vi.electroenergetics.content.railway_electrification.pantograp
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
 import net.minecraft.core.BlockPos;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 public interface IPantographList {
     void electroEnergetics$setPantographList(List<TrainPantographEntry> newPantographList);

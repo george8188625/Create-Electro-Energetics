@@ -3,8 +3,7 @@ package com.george_vi.electroenergetics.content.transmission_distribution.transf
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -130,7 +129,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
                 soundInstance.setVolume((float) Mth.clamp(power / 800000, 0.02, 0.25));
                 soundInstance.keepAlive();
             }
-        } else if (soundInstance != null);
+        }
     }
 
     @Override
@@ -178,11 +177,10 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
     private void updateRatio() {
         if (!(level instanceof ServerLevel sl))
             return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
+        TransformerDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, TransformerDevice.class);
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof TransformerDevice.DataHolder dataHolder)
-            dataHolder.ratio = indexToRatio(ratio.value);
+        if (device != null)
+            device.ratio = indexToRatio(ratio.value);
     }
 
     @Override

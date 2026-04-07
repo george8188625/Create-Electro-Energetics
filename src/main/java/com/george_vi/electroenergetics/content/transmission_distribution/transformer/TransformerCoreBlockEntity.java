@@ -5,8 +5,7 @@ import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -94,9 +93,8 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
             return;
         lastSentPower = power;
 
-        InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) level);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(worldPosition);
-        if (deviceInstance == null || (!(deviceInstance.extraData() instanceof TransformerCoreDevice.DataHolder dataHolder))) {
+        TransformerCoreDevice device = DevicesSavedData.load((ServerLevel) level).getDevice(worldPosition, TransformerCoreDevice.class);
+        if (device == null) {
             sendData();
             return;
         }
@@ -117,7 +115,7 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
             dissipationFactor *= 0.9;
         dissipationFactor = dissipationFactor * 60000;
 
-        dataHolder.heatDissipation = heatDissipationFactor = dissipationFactor;
+        device.heatDissipation = heatDissipationFactor = dissipationFactor;
         sendData();
     }
 
@@ -223,11 +221,9 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
         BlockPos otherPos = worldPosition.relative(facing);
         if (facing.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
             if (level.getBlockEntity(otherPos) instanceof TransformerCoreBlockEntity be) {
-                InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-                SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(worldPosition);
-                if (deviceInstance != null && deviceInstance.extraData() instanceof TransformerCoreDevice.DataHolder dataHolder) {
-                    dataHolder.ratio = (double) turns.value / be.turns.value;
-                }
+                TransformerCoreDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, TransformerCoreDevice.class);
+                if (device != null)
+                    device.ratio = (double) turns.value / be.turns.value;
             }
         } else {
             if (level.getBlockEntity(otherPos) instanceof TransformerCoreBlockEntity be) {

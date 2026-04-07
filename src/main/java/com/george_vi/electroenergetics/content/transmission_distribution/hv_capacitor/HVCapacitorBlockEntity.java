@@ -2,8 +2,7 @@ package com.george_vi.electroenergetics.content.transmission_distribution.hv_cap
 
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.CapacitanceScrollValueBehaviour;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -36,12 +35,10 @@ public class HVCapacitorBlockEntity extends SmartBlockEntity {
     private void updateCapacitance() {
         if (!(level instanceof ServerLevel sl))
             return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
+        HVCapacitorDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, HVCapacitorDevice.class);
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof HVCapacitorDevice.DataHolder dataHolder) {
-            dataHolder.capacitance = capacitance.getCapacitance();
-        }
+        if (device != null)
+            device.capacitance = capacitance.getCapacitance();
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {

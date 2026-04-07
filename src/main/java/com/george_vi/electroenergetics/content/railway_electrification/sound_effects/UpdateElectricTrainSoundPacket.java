@@ -3,14 +3,11 @@ package com.george_vi.electroenergetics.content.railway_electrification.sound_ef
 import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.CEERegistries;
 import io.netty.buffer.ByteBuf;
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
 

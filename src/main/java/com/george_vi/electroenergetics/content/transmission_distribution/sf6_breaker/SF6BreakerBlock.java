@@ -2,10 +2,9 @@ package com.george_vi.electroenergetics.content.transmission_distribution.sf6_br
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.createmod.catnip.data.Iterate;
@@ -33,11 +32,12 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class SF6BreakerBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock {
+public class SF6BreakerBlock extends SimpleElectricalDeviceBlock<SF6BreakerDevice> implements ProperWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
     public static final BooleanProperty BASE = BooleanProperty.create("base");
@@ -58,8 +58,9 @@ public class SF6BreakerBlock extends SimpleDeviceBlock implements ProperWaterlog
             return null;
     }
 
+
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Base", state.getValue(BASE));
         return tag;
@@ -72,7 +73,7 @@ public class SF6BreakerBlock extends SimpleDeviceBlock implements ProperWaterlog
     }
 
     @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public @NotNull BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         boolean isBase = state.getValue(BASE);
         if (!level.isClientSide && (player.isCreative() || !player.hasCorrectToolForDrops(state, level, pos)) && !isBase) {
             BlockPos otherPos = pos.below();
@@ -91,19 +92,16 @@ public class SF6BreakerBlock extends SimpleDeviceBlock implements ProperWaterlog
     @Override
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
         if (level instanceof ServerLevel sl) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            SimulatedDeviceInstance<SF6BreakerDevice.DataHolder> di = sd.getDevice(pos, SF6BreakerDevice.DataHolder.class);
+            SF6BreakerDevice device = DevicesSavedData.load(sl).getDevice(pos, SF6BreakerDevice.class);
 
-            if (di != null && di.simulatedDevice() instanceof SF6BreakerDevice device) {
+            if (device != null) {
                 for (Direction direction : Iterate.directions) {
                     BlockPos otherPos = pos.relative(direction);
                     int power = level.getSignal(otherPos, direction.getOpposite());
 
-                    device.updateRedstoneInput(level, pos, direction, di.extraData(), power);
+                    device.updateRedstoneInput(power, direction);
                 }
             }
-
-
         }
         super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
     }
@@ -135,8 +133,8 @@ public class SF6BreakerBlock extends SimpleDeviceBlock implements ProperWaterlog
     }
 
     @Override
-    protected SimulatedDevice<?> getDevice() {
-        return CEESimulatedDevices.SF6_BREAKER;
+    public SimulatedDeviceType<SF6BreakerDevice> getDevice() {
+        return CEESimulatedDevices.SF6_BREAKER.get();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.foundation.base;
 
+import com.george_vi.simulateddevices.device.SimulatedDevice;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.tterrag.registrate.providers.DataGenContext;
@@ -23,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-public abstract class DirectionalRolledDeviceBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock {
+public abstract class DirectionalRolledDeviceBlock<T extends SimulatedDevice> extends SimpleElectricalDeviceBlock<T> implements ProperWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ROLL = BooleanProperty.create("roll");
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;

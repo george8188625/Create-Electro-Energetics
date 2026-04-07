@@ -1,10 +1,10 @@
 package com.george_vi.electroenergetics.content.connector;
 
-import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
-import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
+import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
@@ -18,15 +18,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class TripleConnectorBlock extends DirectionalRolledDeviceBlock implements IWrenchable {
+public class TripleConnectorBlock extends DirectionalRolledDeviceBlock<ConnectorDevice> implements IWrenchable {
 
     public TripleConnectorBlock(Properties properties) {
         super(properties);
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.CONNECTOR;
+    public SimulatedDeviceType<ConnectorDevice> getDevice() {
+        return CEESimulatedDevices.CONNECTOR.get();
     }
 
     @Override

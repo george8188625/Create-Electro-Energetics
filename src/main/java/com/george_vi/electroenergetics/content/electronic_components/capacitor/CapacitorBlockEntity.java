@@ -3,8 +3,7 @@ package com.george_vi.electroenergetics.content.electronic_components.capacitor;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.CapacitanceScrollValueBehaviour;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
@@ -36,12 +35,10 @@ public class CapacitorBlockEntity extends SmartBlockEntity {
     private void updateCapacitance() {
         if (!(level instanceof ServerLevel sl))
             return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
+        CapacitorDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, CapacitorDevice.class);
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof CapacitorDevice.DataHolder dataHolder) {
-            dataHolder.capacitance = capacitance.getCapacitance();
-        }
+        if (device != null)
+            device.capacitance = capacitance.getCapacitance();
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {

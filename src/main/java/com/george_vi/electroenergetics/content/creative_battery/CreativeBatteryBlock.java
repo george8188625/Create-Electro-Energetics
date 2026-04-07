@@ -3,10 +3,9 @@ package com.george_vi.electroenergetics.content.creative_battery;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<CreativeBatteryBlockEntity> {
+public class CreativeBatteryBlock extends SimpleElectricalDeviceBlock<CreativeBatteryDevice> implements IBE<CreativeBatteryBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty AC = BooleanProperty.create("ac");
 
@@ -41,8 +40,8 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.CREATIVE_BATTERY;
+    public SimulatedDeviceType<CreativeBatteryDevice> getDevice() {
+        return CEESimulatedDevices.CREATIVE_BATTERY.get();
     }
 
     @Override
@@ -51,12 +50,10 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
-        if (level.getBlockEntity(pos) instanceof CreativeBatteryBlockEntity be) {
+        if (level.getBlockEntity(pos) instanceof CreativeBatteryBlockEntity be)
             tag.putDouble("Voltage", be.voltage.getVoltage());
-//            tag.putFloat("PhaseOffset", be.phaseOffset.value);
-        }
         if (state.getValue(AC))
             tag.putDouble("ACFrequency", 20);
         return tag;
@@ -69,12 +66,11 @@ public class CreativeBatteryBlock extends SimpleDeviceBlock implements IBE<Creat
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(pos);
-        if (deviceInstance != null && deviceInstance.extraData() instanceof CreativeBatteryDevice.DataHolder dataHolder)
-            dataHolder.acFrequency = state.getValue(AC) ? 20 : 0;
+        CreativeBatteryDevice device = DevicesSavedData.load(level).getDevice(pos, CreativeBatteryDevice.class);
+        if (device != null)
+            device.acFrequency = state.getValue(AC) ? 20 : 0;
     }
 
     @Override

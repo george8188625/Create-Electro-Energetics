@@ -7,6 +7,7 @@ public class CapacitorProperties extends MicroTickingElectricalProperties {
     /**
      * <p>This is a saved state for the capacitor that defines its charge level.</p>
      * <p>Read only during the postTick phase.</p>
+     * <p>Write only during the preTick phase.</p>
      */
     public double lastVoltage;
 

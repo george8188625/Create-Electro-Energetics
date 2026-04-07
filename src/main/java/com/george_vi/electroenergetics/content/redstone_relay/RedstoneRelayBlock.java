@@ -4,9 +4,8 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
@@ -33,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements IWrenchable {
+public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock<RedstoneRelayDevice> implements IWrenchable {
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
     public static final BooleanProperty INVERTED = BlockStateProperties.INVERTED;
 
@@ -43,7 +42,7 @@ public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements 
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Inverted", state.getValue(INVERTED));
         tag.putBoolean("Powered", state.getValue(POWERED));
@@ -64,21 +63,22 @@ public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements 
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> instance = sd.getDevice(pos);
+        RedstoneRelayDevice device = DevicesSavedData.load(level).getDevice(pos, RedstoneRelayDevice.class);
+        if (device != null)
+            device.inverted = state.getValue(INVERTED);
 
-        if (instance == null || !(instance.extraData() instanceof RedstoneRelayDevice.DataHolder dataHolder))
+        if (device == null)
             return;
 
         level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
-        dataHolder.powered = state.getValue(POWERED);
+        device.powered = state.getValue(POWERED);
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.REDSTONE_RELAY;
+    public SimulatedDeviceType<RedstoneRelayDevice> getDevice() {
+        return CEESimulatedDevices.REDSTONE_RELAY.get();
     }
 
     @Override
@@ -115,9 +115,9 @@ public class RedstoneRelayBlock extends DirectionalRolledDeviceBlock implements 
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         if (context.getLevel() instanceof ServerLevel serverLevel) {
-            SimulatedDeviceInstance<?> deviceInstance = InfrastructureSavedData.load(serverLevel).getDevice(context.getClickedPos());
-            if (deviceInstance != null && deviceInstance.extraData() instanceof RedstoneRelayDevice.DataHolder dataHolder)
-                dataHolder.inverted = !state.getValue(INVERTED);
+            RedstoneRelayDevice device = DevicesSavedData.load(serverLevel).getDevice(context.getClickedPos(), RedstoneRelayDevice.class);
+            if (device != null)
+                device.inverted = state.getValue(INVERTED);
             serverLevel.setBlockAndUpdate(context.getClickedPos(), state.cycle(INVERTED));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(context.getLevel(), context.getClickedPos());
         }

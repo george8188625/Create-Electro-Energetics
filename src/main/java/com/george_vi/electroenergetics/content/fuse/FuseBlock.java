@@ -2,14 +2,12 @@ package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
-import com.george_vi.electroenergetics.CEETags;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.electroenergetics.CEETags;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
+public class FuseBlock extends SimpleElectricalDeviceBlock<FuseDevice> implements IWrenchable {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public final boolean broken;
 
@@ -52,7 +50,7 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (broken)
             tag.putBoolean("Broken", true);
@@ -60,8 +58,8 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.FUSE;
+    public SimulatedDeviceType<FuseDevice> getDevice() {
+        return CEESimulatedDevices.FUSE.get();
     }
 
     @Override
@@ -81,9 +79,9 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
-            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null && device.extraData() instanceof FuseDevice.DataHolder dataHolder)
-                dataHolder.isBroken = false;
+            FuseDevice device = DevicesSavedData.load(serverLevel).getDevice(pos, FuseDevice.class);
+            if (device != null)
+                device.isBroken = false;
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
         }
 
@@ -101,11 +99,6 @@ public class FuseBlock extends SimpleDeviceBlock implements IWrenchable {
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return CEENodeConfigurations.BI_POLAR_DIRECTIONAL.getNodePos(state.getValue(FACING), id);
-    }
-
-    @Override
-    protected boolean shouldReplaceDeviceFor(BlockState thisState, BlockState newState) {
-        return thisState.getBlock().getClass() != newState.getBlock().getClass();
     }
 
     @Override

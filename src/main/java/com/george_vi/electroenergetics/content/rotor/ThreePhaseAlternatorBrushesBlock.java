@@ -5,16 +5,14 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
+import com.george_vi.electroenergetics.foundation.base.DirectionalKineticElectricBlock;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -24,12 +22,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.ticks.LevelTickAccess;
 
-import java.util.List;
 import java.util.Map;
 
-public class ThreePhaseAlternatorBrushesBlock extends DirectionalKineticBlock implements DeviceBlock, IBE<AlternatorBrushesBlockEntity> {
+public class ThreePhaseAlternatorBrushesBlock extends DirectionalKineticElectricBlock<ThreePhaseAlternatorBrushesDevice> implements IBE<AlternatorBrushesBlockEntity> {
 
     public ThreePhaseAlternatorBrushesBlock(Properties properties) {
         super(properties);
@@ -64,32 +60,13 @@ public class ThreePhaseAlternatorBrushesBlock extends DirectionalKineticBlock im
     }
 
     @Override
+    public SimulatedDeviceType<ThreePhaseAlternatorBrushesDevice> getDevice() {
+        return CEESimulatedDevices.THREE_PHASE_ALTERNATOR_BRUSHES.get();
+    }
+
+    @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
         return face.getAxis() == getRotationAxis(state);
-    }
-
-    @Override
-    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        super.onPlace(state, level, pos, oldState, movedByPiston);
-
-        LevelTickAccess<Block> blockTicks = level.getBlockTicks();
-        if (!blockTicks.hasScheduledTick(pos, this))
-            level.scheduleTick(pos, this, 1);
-    }
-
-    @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        InfrastructureSavedData.load(level).addDevice(pos, CEESimulatedDevices.THREE_PHASE_ALTERNATOR_BRUSHES, List.of(0, 1, 2, 3));
-        super.tick(state, level, pos, random);
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (level instanceof ServerLevel sl && state.getBlock() != level.getBlockState(pos).getBlock()) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            sd.removeDevice(pos);
-        }
-        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
     @Override
@@ -98,9 +75,7 @@ public class ThreePhaseAlternatorBrushesBlock extends DirectionalKineticBlock im
         if (!(level instanceof ServerLevel sl))
             return;
 
-
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        ThreePhaseAlternatorBrushesDevice.DataHolder data = sd.getDeviceData(pos, ThreePhaseAlternatorBrushesDevice.DataHolder.class);
+        ThreePhaseAlternatorBrushesDevice data = DevicesSavedData.load(sl).getDevice(pos, ThreePhaseAlternatorBrushesDevice.class);
         if (data == null)
             return;
         Direction fastDirection = state.getValue(FACING).getAxis().isVertical() ? Direction.EAST : state.getValue(FACING).getClockWise();

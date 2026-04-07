@@ -1,9 +1,9 @@
 package com.george_vi.electroenergetics;
 
-import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
-import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ModernElectricTrainSoundBehaviour;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.DCElectricTrainSoundBehaviour;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.IGBTElectricTrainSoundBehaviour;
+import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ModernElectricTrainSoundBehaviour;
 import com.google.common.base.Suppliers;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import net.neoforged.bus.api.IEventBus;

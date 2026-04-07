@@ -1,10 +1,9 @@
 package com.george_vi.electroenergetics.content.connector;
 
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
@@ -34,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.Map;
 
-public class InsulatorBlock extends SimpleDeviceBlock implements IWrenchable, ProperWaterloggedBlock {
+public class InsulatorBlock extends SimpleElectricalDeviceBlock<InsulatorDevice> implements IWrenchable, ProperWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -44,8 +43,8 @@ public class InsulatorBlock extends SimpleDeviceBlock implements IWrenchable, Pr
     }
 
     @Override
-    protected SimulatedDevice<?> getDevice() {
-        return CEESimulatedDevices.INSULATOR;
+    public SimulatedDeviceType<InsulatorDevice> getDevice() {
+        return CEESimulatedDevices.INSULATOR.get();
     }
 
     @Override
@@ -75,19 +74,16 @@ public class InsulatorBlock extends SimpleDeviceBlock implements IWrenchable, Pr
     @Override
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
         if (level instanceof ServerLevel sl) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            SimulatedDeviceInstance<InsulatorDevice.DataHolder> di = sd.getDevice(pos, InsulatorDevice.DataHolder.class);
+            InsulatorDevice device = DevicesSavedData.load(sl).getDevice(pos, InsulatorDevice.class);
 
-            if (di != null && di.simulatedDevice() instanceof InsulatorDevice device) {
+            if (device != null) {
                 for (Direction direction : Iterate.directions) {
                     BlockPos otherPos = pos.relative(direction);
                     int power = level.getSignal(otherPos, direction.getOpposite());
 
-                    device.updateRedstoneInput(level, pos, direction, di.extraData(), power);
+                    device.updateRedstoneInput(power, direction);
                 }
             }
-
-
         }
         super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
     }

@@ -1,7 +1,5 @@
 package com.george_vi.electroenergetics.simulation.util;
 
-import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
-
 public class CGSolver {
     // Actually works??
 

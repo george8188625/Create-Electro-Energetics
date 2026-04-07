@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.energy_meter;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDevice;
 import com.simibubi.create.AllSoundEvents;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
@@ -28,15 +28,19 @@ public record ChangeEnergyMeterStatePacket(boolean reset, boolean disconnect, Bl
         if (be.owner != null && !player.getUUID().equals(be.owner))
             return;
 
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> device = sd.getDevice(pos);
+        SimulatedDevice d = DevicesSavedData.load(level).getDevice(pos);
 
-        if (device == null || !(device.simulatedDevice() instanceof EnergyMeterDevice || device.simulatedDevice() instanceof TriPolarEnergyMeterDevice) || !(device.extraData() instanceof EnergyMeterDevice.DataHolder dataHolder))
+        if (d instanceof EnergyMeterDevice device) {
+            if (reset)
+                device.totalEnergy = 0;
+            device.isClosed = !disconnect;
+        } else if (d instanceof TriPolarEnergyMeterDevice device) {
+            if (reset)
+                device.totalEnergy = 0;
+            device.isClosed = !disconnect;
+        } else
             return;
 
-        if (reset)
-            dataHolder.totalEnergy = 0;
-        dataHolder.isClosed = !disconnect;
         be.disconnected = disconnect;
         be.sendData();
 

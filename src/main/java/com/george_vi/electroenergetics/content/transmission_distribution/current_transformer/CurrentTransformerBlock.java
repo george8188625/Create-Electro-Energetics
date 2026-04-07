@@ -2,13 +2,12 @@ package com.george_vi.electroenergetics.content.transmission_distribution.curren
 
 import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.electroenergetics.foundation.base.SimpleDeviceBlock;
+import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
@@ -45,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class CurrentTransformerBlock extends SimpleDeviceBlock implements ProperWaterloggedBlock, IBE<CurrentTransformerBlockEntity> {
+public class CurrentTransformerBlock extends SimpleElectricalDeviceBlock<CurrentTransformerDevice> implements ProperWaterloggedBlock, IBE<CurrentTransformerBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty TOP = BooleanProperty.create("top");
@@ -61,8 +60,9 @@ public class CurrentTransformerBlock extends SimpleDeviceBlock implements Proper
         builder.add(FACING, WATERLOGGED, TOP, BOTTOM);
     }
 
+
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof CurrentTransformerBlockEntity be)
             tag.putDouble("Ratio", be.scaling.getScale());
@@ -108,11 +108,10 @@ public class CurrentTransformerBlock extends SimpleDeviceBlock implements Proper
         boolean top = !CEEBlocks.CURRENT_TRANSFORMER.has(above);
         if (level instanceof ServerLevel sl) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            SimulatedDeviceInstance<?> device = sd.getDevice(pos);
-
-            if (device != null && device.extraData() instanceof CurrentTransformerDevice.DataHolder dataHolder) {
-                dataHolder.top = top;
-                dataHolder.bottom = bottom;
+            CurrentTransformerDevice device = DevicesSavedData.load(sl).getDevice(pos, CurrentTransformerDevice.class);
+            if (device != null) {
+                device.top = top;
+                device.bottom = bottom;
             }
 
             if (change)
@@ -130,7 +129,7 @@ public class CurrentTransformerBlock extends SimpleDeviceBlock implements Proper
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         BlockState below = level.getBlockState(pos.below());
         BlockState above = level.getBlockState(pos.above());
@@ -138,11 +137,10 @@ public class CurrentTransformerBlock extends SimpleDeviceBlock implements Proper
         boolean bottom = !CEEBlocks.CURRENT_TRANSFORMER.has(below);
         boolean top = !CEEBlocks.CURRENT_TRANSFORMER.has(above);
 
-        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        SimulatedDeviceInstance<?> device = sd.getDevice(pos);
-        if (device != null && device.extraData() instanceof CurrentTransformerDevice.DataHolder dataHolder) {
-            dataHolder.top = top;
-            dataHolder.bottom = bottom;
+        CurrentTransformerDevice device = DevicesSavedData.load(level).getDevice(pos, CurrentTransformerDevice.class);
+        if (device != null) {
+            device.top = top;
+            device.bottom = bottom;
         }
     }
 
@@ -152,8 +150,8 @@ public class CurrentTransformerBlock extends SimpleDeviceBlock implements Proper
     }
 
     @Override
-    protected SimulatedDevice<?> getDevice() {
-        return CEESimulatedDevices.CURRENT_TRANSFORMER;
+    public SimulatedDeviceType<CurrentTransformerDevice> getDevice() {
+        return CEESimulatedDevices.CURRENT_TRANSFORMER.get();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.george_vi.electroenergetics.config;
 
-import com.george_vi.electroenergetics.CEESimulatedDevices;
 import net.createmod.catnip.config.ConfigBase;
 import net.neoforged.neoforge.common.ModConfigSpec;
 

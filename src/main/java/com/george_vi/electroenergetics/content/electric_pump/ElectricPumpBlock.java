@@ -3,8 +3,9 @@ package com.george_vi.electroenergetics.content.electric_pump;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.fluids.pump.PumpBlock;
 import com.simibubi.create.content.fluids.pump.PumpBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -21,10 +22,11 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.LevelTickAccess;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ElectricPumpBlock extends PumpBlock implements DeviceBlock {
+public class ElectricPumpBlock extends PumpBlock implements ElectricalDeviceBlock<ElectricPumpDevice> {
     public static final BooleanProperty ROLL = BooleanProperty.create("roll");
 
     public ElectricPumpBlock(Properties properties) {
@@ -60,17 +62,11 @@ public class ElectricPumpBlock extends PumpBlock implements DeviceBlock {
 
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        InfrastructureSavedData.load(level).addDevice(pos, CEESimulatedDevices.ELECTRIC_PUMP, List.of(0, 1));
-        super.tick(state, level, pos, random);
-    }
+        List<Integer> nodes = new ArrayList<>(getNodePositions(level, pos, state).keySet());
 
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (level instanceof ServerLevel sl && state.getBlock() != level.getBlockState(pos).getBlock()) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            sd.removeDevice(pos);
-        }
-        super.onRemove(state, level, pos, newState, movedByPiston);
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        sd.registerOrUpdateNodes(pos, nodes);
+        super.tick(state, level, pos, random);
     }
 
     @Override
@@ -100,5 +96,10 @@ public class ElectricPumpBlock extends PumpBlock implements DeviceBlock {
         if (state.getValue(ROLL))
             return CEENodeConfigurations.PUMP.rotate(new Vec3(0, 90, 0)).getNodePos(state.getValue(FACING), id);
         return CEENodeConfigurations.PUMP.getNodePos(state.getValue(FACING), id);
+    }
+
+    @Override
+    public SimulatedDeviceType<ElectricPumpDevice> getDevice() {
+        return CEESimulatedDevices.ELECTRIC_PUMP.get();
     }
 }

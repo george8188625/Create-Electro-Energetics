@@ -1,55 +1,63 @@
 package com.george_vi.electroenergetics.content.converter;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
-public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder> {
-    public ConverterDevice(ResourceLocation id) {
-        super(id);
-    }
+public class ConverterDevice extends SimpleElectricalDevice {
+    public boolean isSource;
+    public double voltage;
+    public double resistance;
+    public double storedEnergy;
+    public ConverterBlockEntity be;
 
     static final int MAX_ENERGY = 100_000;
 
-    @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
-        if (extraData.isSource && extraData.storedEnergy > 1) {
-            bridges.builder(pos)
-                    .energyLimitedSource(0, 1, extraData.storedEnergy, extraData.voltage);
-        } else
-            bridges.builder(pos)
-                    .resistor(0, 1, extraData.resistance == 0 ? 999999 : extraData.resistance);
+    public ConverterDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
+    public void preTick(BridgeCollector bridges) {
+        super.preTick(bridges);
+        if (this.isSource && this.storedEnergy > 1) {
+            bridges.builder(pos)
+                    .energyLimitedSource(0, 1, this.storedEnergy, this.voltage);
+        } else
+            bridges.builder(pos)
+                    .resistor(0, 1, this.resistance == 0 ? 999999 : this.resistance);
+    }
+
+    @Override
+    public void postTick(SimulationResults results) {
 
         double displayedPower;
         double vd = Math.abs(results.getVoltageAt(pos, 0, 1));
-        if (extraData.isSource) {
+        if (this.isSource) {
 
             double current = results.getCurrentThrough(pos, 0, 1);
             double power = Math.abs(current) * vd;
 
-            extraData.storedEnergy -= power;
+            this.storedEnergy -= power;
 
-            if (extraData.storedEnergy < MAX_ENERGY && level.isLoaded(pos)) {
+            if (this.storedEnergy < MAX_ENERGY && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
                 IEnergyStorage energyStorage = level.getCapability(
                         Capabilities.EnergyStorage.BLOCK,
                         pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()),
                         state.getValue(ConverterBlock.FACING));
                 if (energyStorage != null)
-                    extraData.storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - extraData.storedEnergy) / CEEConfigs.server().wattFeTConversionRate.get()), false) * CEEConfigs.server().wattFeTConversionRate.get();
+                    this.storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - this.storedEnergy) / CEEConfigs.server().wattFeTConversionRate.get()), false) * CEEConfigs.server().wattFeTConversionRate.get();
             }
 
             displayedPower = power;
@@ -57,69 +65,57 @@ public class ConverterDevice extends SimulatedDevice<ConverterDevice.DataHolder>
 
             double power = Math.abs(vd * results.getCurrentThrough(pos, 0, 1));
 
-            extraData.storedEnergy += power;
+            this.storedEnergy += power;
 
-            if (extraData.storedEnergy > 0 && level.isLoaded(pos)) {
+            if (this.storedEnergy > 0 && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
                 IEnergyStorage energyStorage = level.getCapability(
                         Capabilities.EnergyStorage.BLOCK,
                         pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()),
                         state.getValue(ConverterBlock.FACING));
                 if (energyStorage != null)
-                    extraData.storedEnergy -= energyStorage.receiveEnergy((int) (extraData.storedEnergy / CEEConfigs.server().wattFeTConversionRate.get()), false) * CEEConfigs.server().wattFeTConversionRate.get();
+                    this.storedEnergy -= energyStorage.receiveEnergy((int) (this.storedEnergy / CEEConfigs.server().wattFeTConversionRate.get()), false) * CEEConfigs.server().wattFeTConversionRate.get();
             }
 
             displayedPower = -power;
             if (vd > 1)
-                extraData.resistance = Math.max(20, vd / (Math.max((MAX_ENERGY - extraData.storedEnergy), 0.01) / vd));
+                this.resistance = Math.max(20, vd / (Math.max((MAX_ENERGY - this.storedEnergy), 0.01) / vd));
 
         }
 
-        extraData.storedEnergy = Mth.clamp(extraData.storedEnergy, 0, MAX_ENERGY);
+        this.storedEnergy = Mth.clamp(this.storedEnergy, 0, MAX_ENERGY);
 
-        if (extraData.be == null && level.isLoaded(pos))
+        if (this.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ConverterBlockEntity be)
-                extraData.be = be;
+                this.be = be;
 
-        if (extraData.be != null) {
-            if (extraData.be.isRemoved())
-                extraData.be = null;
+        if (this.be != null) {
+            if (this.be.isRemoved())
+                this.be = null;
             else {
-                if (Math.abs(extraData.be.power - displayedPower) > 1 ||
-                        Math.abs(extraData.be.storedEnergy - extraData.storedEnergy) > 10) {
-                    extraData.be.power = displayedPower;
-                    extraData.be.storedEnergy = extraData.storedEnergy;
-                    extraData.be.sendData();
+                if (Math.abs(this.be.power - displayedPower) > 1 ||
+                        Math.abs(this.be.storedEnergy - this.storedEnergy) > 10) {
+                    this.be.power = displayedPower;
+                    this.be.storedEnergy = this.storedEnergy;
+                    this.be.sendData();
                 }
             }
         }
     }
 
     @Override
-    public DataHolder read(CompoundTag tag) {
-        DataHolder dataHolder = new DataHolder();
-        dataHolder.voltage = tag.getDouble("Voltage");
-        dataHolder.resistance = tag.getDouble("Resistance");
-        dataHolder.storedEnergy = tag.getDouble("StoredEnergy");
-        dataHolder.isSource = tag.getBoolean("Source");
-        return dataHolder;
+    public void read(CompoundTag tag) {
+        this.voltage = tag.getDouble("Voltage");
+        this.resistance = tag.getDouble("Resistance");
+        this.storedEnergy = tag.getDouble("StoredEnergy");
+        this.isSource = tag.getBoolean("Source");
     }
 
     @Override
-    public CompoundTag write(DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        tag.putBoolean("Source", extraData.isSource);
-        tag.putDouble("Voltage", extraData.voltage);
-        tag.putDouble("Resistance", extraData.resistance);
-        tag.putDouble("StoredEnergy", extraData.storedEnergy);
-        return tag;
-    }
-
-    public static class DataHolder {
-        public boolean isSource;
-        public double voltage;
-        public double resistance;
-        public double storedEnergy;
-        public ConverterBlockEntity be;
+    public void write(CompoundTag tag) {
+        tag.putBoolean("Source", this.isSource);
+        tag.putDouble("Voltage", this.voltage);
+        tag.putDouble("Resistance", this.resistance);
+        tag.putDouble("StoredEnergy", this.storedEnergy);
     }
 }

@@ -2,14 +2,15 @@ package com.george_vi.electroenergetics.foundation.base;
 
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
-import com.george_vi.electroenergetics.simulation.*;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.george_vi.simulateddevices.device.SimulatedDevice;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import com.simibubi.create.content.kinetics.base.DirectionalAxisKineticBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
@@ -24,17 +25,14 @@ import net.minecraft.world.ticks.LevelTickAccess;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SimpleDeviceBlock extends Block implements DeviceBlock, IWrenchable {
-    public SimpleDeviceBlock(Properties properties) {
+public abstract class DirectionalKineticElectricBlock<T extends SimulatedDevice> extends DirectionalAxisKineticBlock implements ElectricalDeviceBlock<T>, IWrenchable {
+
+    public DirectionalKineticElectricBlock(Properties properties) {
         super(properties);
     }
 
-    protected abstract SimulatedDevice getDevice();
-
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {return new CompoundTag();}
-
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         super.onPlace(state, level, pos, oldState, movedByPiston);
 
         LevelTickAccess<Block> blockTicks = level.getBlockTicks();
@@ -47,13 +45,13 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock, IW
         List<Integer> nodes = new ArrayList<>(getNodePositions(level, pos, state).keySet());
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
-        sd.addDevice(pos, getDevice(), getExtraDeviceData(level, state, pos), nodes);
+        sd.registerOrUpdateNodes(pos, nodes);
         super.tick(state, level, pos, random);
     }
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        // Remove all connections, so they don't drop.
+        // If destroyed by creative player, remove all connections, so they don't drop.
         if (level instanceof ServerLevel sl && player.isCreative()) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
             for (InWorldNode node : sd.getNodesAt(pos))
@@ -86,19 +84,6 @@ public abstract class SimpleDeviceBlock extends Block implements DeviceBlock, IW
                         player.getInventory().placeItemBackInInventory(new ItemStack(wireData.wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
                 }
         }
-        return IWrenchable.super.onSneakWrenched(state, context);
-    }
-
-    @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (level instanceof ServerLevel sl && state.getBlock() != level.getBlockState(pos).getBlock() && shouldReplaceDeviceFor(state, newState)) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            sd.removeDevice(pos);
-        }
-        super.onRemove(state, level, pos, newState, movedByPiston);
-    }
-
-    protected boolean shouldReplaceDeviceFor(BlockState thisState, BlockState newState) {
-        return true;
+        return super.onSneakWrenched(state, context);
     }
 }

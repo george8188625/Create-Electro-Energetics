@@ -5,17 +5,9 @@ import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
-import it.unimi.dsi.fastutil.doubles.DoubleList;
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
-import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.DoubleStream;
 
 public final class SendVoltageDataPacket implements ClientboundPacketPayload {
 

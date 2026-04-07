@@ -1,9 +1,7 @@
 package com.george_vi.electroenergetics.content.sign;
 
-import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleBlock;
-import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.decoration.girder.GirderBlock;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;

@@ -3,8 +3,7 @@ package com.george_vi.electroenergetics.content.electronic_components.resistor;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.ResistanceScrollValueBehaviour;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
@@ -41,14 +40,11 @@ public class ResistorBlockEntity extends SmartBlockEntity {
     private void updateResistance() {
         if (!(level instanceof ServerLevel sl))
             return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        SimulatedDeviceInstance<?> deviceInstance = sd.getDevice(getBlockPos());
 
-        if (deviceInstance != null && deviceInstance.extraData() instanceof ResistorDevice.DataHolder dataHolder) {
-            dataHolder.properties.resistance = resistance.getResistance();
-        } else if (deviceInstance != null && deviceInstance.extraData() instanceof CreativeResistorDevice.DataHolder dataHolder) {
-            dataHolder.properties.resistance = resistance.getResistance();
-        }
+        ResistorDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, ResistorDevice.class);
+        if (device != null)
+            device.properties.resistance = resistance.getResistance();
+
     }
 
     static class ValueBox extends ValueBoxTransform.Sided {

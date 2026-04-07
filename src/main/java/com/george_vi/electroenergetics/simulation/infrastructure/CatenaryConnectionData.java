@@ -1,7 +1,6 @@
 package com.george_vi.electroenergetics.simulation.infrastructure;
 
 import com.george_vi.electroenergetics.CEEWireTypes;
-import com.george_vi.electroenergetics.simulation.WireType;
 
 import java.util.Collections;
 

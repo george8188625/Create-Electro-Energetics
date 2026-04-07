@@ -6,9 +6,8 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -32,7 +31,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
-public class MomentarySwitchBlock extends DirectionalRolledDeviceBlock {
+public class MomentarySwitchBlock extends DirectionalRolledDeviceBlock<MomentarySwitchDevice> {
     public static final BooleanProperty CLOSED = BooleanProperty.create("closed");
 
     public MomentarySwitchBlock(Properties properties) {
@@ -41,12 +40,12 @@ public class MomentarySwitchBlock extends DirectionalRolledDeviceBlock {
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
-        return CEESimulatedDevices.MOMENTARY_SWITCH;
+    public SimulatedDeviceType<MomentarySwitchDevice> getDevice() {
+        return CEESimulatedDevices.MOMENTARY_SWITCH.get();
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Closed", state.getValue(CLOSED));
         return tag;
@@ -69,11 +68,11 @@ public class MomentarySwitchBlock extends DirectionalRolledDeviceBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
-            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null && device.extraData() instanceof MomentarySwitchDevice.DataHolder dataHolder) {
-                if (dataHolder.closedTicks == -1)
+            MomentarySwitchDevice device = DevicesSavedData.load(serverLevel).getDevice(pos, MomentarySwitchDevice.class);
+            if (device != null) {
+                if (device.closedTicks == -1)
                     level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
-                dataHolder.closedTicks = 5;
+                device.closedTicks = 5;
             } else
                 level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
         }

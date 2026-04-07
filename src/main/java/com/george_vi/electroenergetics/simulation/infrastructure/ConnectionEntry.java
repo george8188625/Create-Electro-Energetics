@@ -3,7 +3,6 @@ package com.george_vi.electroenergetics.simulation.infrastructure;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 

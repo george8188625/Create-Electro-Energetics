@@ -36,8 +36,10 @@ public class BuzzerBlockEntity extends SmartBlockEntity {
     @OnlyIn(Dist.CLIENT)
     void tickAudio() {
         if (Math.abs(voltage) < 0.1) {
-            if (soundInstance != null)
+            if (soundInstance != null) {
                 soundInstance.setVolumeImmediately(0);
+                soundInstance = null;
+            }
             return;
         }
         if (soundInstance == null || soundInstance.isStopped()) {

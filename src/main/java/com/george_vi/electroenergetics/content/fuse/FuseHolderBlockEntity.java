@@ -1,8 +1,7 @@
 package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.content.fuse.fuse_held.FuseHoldable;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.createmod.catnip.data.Pair;
@@ -70,25 +69,24 @@ public class FuseHolderBlockEntity extends SmartBlockEntity {
     public void updateFuses() {
         sendData();
         if (level instanceof ServerLevel sl) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            SimulatedDeviceInstance<?> instance = sd.getDevice(getBlockPos());
-            if (instance == null || !(instance.extraData() instanceof FuseHolderDevice.DataHolder dataHolder))
+            FuseHolderDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, FuseHolderDevice.class);
+            if (device == null)
                 return;
 
             if (firstFuse != null) {
-                dataHolder.firstFuse = firstFuse.getFirst();
-                dataHolder.firstData = firstFuse.getSecond();
+                device.firstFuse = firstFuse.getFirst();
+                device.firstData = firstFuse.getSecond();
             } else {
-                dataHolder.firstFuse = null;
-                dataHolder.firstData = null;
+                device.firstFuse = null;
+                device.firstData = null;
             }
 
             if (secondFuse != null) {
-                dataHolder.secondFuse = secondFuse.getFirst();
-                dataHolder.secondData = secondFuse.getSecond();
+                device.secondFuse = secondFuse.getFirst();
+                device.secondData = secondFuse.getSecond();
             } else {
-                dataHolder.secondFuse = null;
-                dataHolder.secondData = null;
+                device.secondFuse = null;
+                device.secondData = null;
             }
         }
     }

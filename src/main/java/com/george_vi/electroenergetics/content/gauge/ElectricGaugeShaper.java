@@ -1,8 +1,6 @@
 package com.george_vi.electroenergetics.content.gauge;
 
 import com.george_vi.electroenergetics.CEEShapes;
-import com.simibubi.create.AllShapes;
-import com.simibubi.create.content.kinetics.gauge.GaugeShaper;
 import net.createmod.catnip.math.VoxelShaper;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;

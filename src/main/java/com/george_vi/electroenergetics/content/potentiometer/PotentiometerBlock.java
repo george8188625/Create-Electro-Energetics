@@ -5,8 +5,10 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
@@ -37,7 +39,7 @@ import net.minecraft.world.ticks.LevelTickAccess;
 import java.util.List;
 import java.util.Map;
 
-public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<PotentiometerBlockEntity>, DeviceBlock, ProperWaterloggedBlock {
+public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<PotentiometerBlockEntity>, ElectricalDeviceBlock<PotentiometerDevice>, ProperWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public PotentiometerBlock(Properties properties) {
@@ -72,22 +74,23 @@ public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<Po
 
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        InfrastructureSavedData.load(level).registerOrUpdateNodes(pos, List.of(0, 1, 2));
+        super.tick(state, level, pos, random);
+    }
+
+    @Override
+    public SimulatedDeviceType<PotentiometerDevice> getDevice() {
+        return CEESimulatedDevices.POTENTIOMETER.get();
+    }
+
+    @Override
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof PotentiometerBlockEntity be) {
             tag.putDouble("Resistance", Math.max(0.01, be.resistance.value / 1000d));
             tag.putDouble("Progress", be.progress);
         }
-        InfrastructureSavedData.load(level).addDevice(pos, CEESimulatedDevices.POTENTIOMETER, tag, List.of(0, 1, 2));
-        super.tick(state, level, pos, random);
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (level instanceof ServerLevel sl && state.getBlock() != level.getBlockState(pos).getBlock()) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            sd.removeDevice(pos);
-        }
-        super.onRemove(state, level, pos, newState, movedByPiston);
+        return tag;
     }
 
     @Override
@@ -118,7 +121,7 @@ public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<Po
     @Override
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
         return id == 1 ? CEELang.nodeLabel("wiper") :
-                DeviceBlock.super.getNodeLabel(level, pos, state, id);
+            ElectricalDeviceBlock.super.getNodeLabel(level, pos, state, id);
     }
 
     @Override

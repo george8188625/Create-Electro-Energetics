@@ -7,7 +7,8 @@ import com.george_vi.electroenergetics.simulation.electrical_properties.Electric
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.minecraft.server.level.ServerLevel;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class WireAssemblerModule {
 

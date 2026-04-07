@@ -1,25 +1,24 @@
 package com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator;
 
-import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerElectricalProperties;
+import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevice.DataHolder> {
+public class VoltageRegulatorDevice extends SimpleElectricalDevice {
     private static final double INPUT_RESISTANCE = 0.01;
     private static final double OUTPUT_RESISTANCE = 0.01;
     private static final double RATIO_PER_STEP = 0.01;
@@ -50,36 +49,47 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
                               GROUND
     */
 
-    public VoltageRegulatorDevice(ResourceLocation id) {
-        super(id);
+    public float temp;
+    public VoltageRegulatorBlockEntity be;
+    public int steps;
+    public double targetVoltage;
+    public double lastVoltage;
+    public boolean bottom;
+    public boolean top;
+    public int poleLength;
+    public int stepTimeout = 0;
+    public int sliced;
+
+    public VoltageRegulatorDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+        super(level, pos, deviceSD, type);
     }
 
     @Override
-    public void preTick(BlockPos pos, Level level, BridgeCollector bridges, DataHolder extraData) {
+    public void preTick(BridgeCollector bridges) {
         BridgeCollector.Builder builder = bridges.builder(pos);
 
-        if (extraData.top && extraData.bottom)
-            builder.resistor(extraData.sliced == 0 ? 2 : 0, extraData.sliced == 0 ? 3 : 1, CEEConfigs.server().resistanceValues.wireResistance.get());
-        else if (extraData.bottom)
+        if (this.top && this.bottom)
+            builder.resistor(this.sliced == 0 ? 2 : 0, this.sliced == 0 ? 3 : 1, CEEConfigs.server().resistanceValues.wireResistance.get());
+        else if (this.bottom)
             builder.resistor(0, 1, CEEConfigs.server().resistanceValues.wireResistance.get());
 
-        if (!extraData.bottom)
+        if (!this.bottom)
             return;
 
-        extraData.poleLength = findPoleLength(pos, level, bridges.getSD());
-        if (extraData.poleLength < 0)
+        this.poleLength = findPoleLength(pos, level, bridges.getSD());
+        if (this.poleLength < 0)
             return;
 
-        DataHolder dh = getVoltageRegulatorData(bridges.getSD(), pos.above(extraData.poleLength));
-        if (dh == null)
+        VoltageRegulatorDevice topDevice = this.top ? this : deviceSD.getDevice(pos.above(this.poleLength), VoltageRegulatorDevice.class);
+        if (topDevice == null)
             return;
 
-        NodeLayout nodes = resolveNodes(pos, extraData.poleLength, dh.sliced);
+        NodeLayout nodes = resolveNodes(pos, this.poleLength, topDevice.sliced);
 
-        int prevSteps = extraData.steps;
-        double ratio = updateStepsAndGetRatio(extraData);
-        if (prevSteps != extraData.steps) { // play sounds
-            if (extraData.be != null) {
+        int prevSteps = this.steps;
+        double ratio = updateStepsAndGetRatio();
+        if (prevSteps != this.steps) { // play sounds
+            if (this.be != null) {
                 Vec3 pPos = Vec3.atCenterOf(pos);
                 level.playSound(null, pPos.x, pPos.y, pPos.z, CEESoundEvents.VOLTAGE_REGULATOR.get(), SoundSource.BLOCKS, 0.5f, 1f);
             }
@@ -100,63 +110,57 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
     }
 
     @Override
-    public void postTick(BlockPos pos, Level level, SimulationResults results, DataHolder extraData) {
-        if (!extraData.bottom) {
-            extraData.be = null;
+    public void postTick(SimulationResults results) {
+        if (!this.bottom) {
+            this.be = null;
             return;
         }
 
-        DataHolder topData = extraData.top ? extraData : getVoltageRegulatorData(results.getSD(), pos.above(extraData.poleLength));
-        if (topData == null)
+        VoltageRegulatorDevice topDevice = this.top ? this : deviceSD.getDevice(pos.above(this.poleLength), VoltageRegulatorDevice.class);
+        if (topDevice == null)
             return;
 
-        NodeLayout nodes = resolveNodes(pos, extraData.poleLength, topData.sliced);
+        NodeLayout nodes = resolveNodes(pos, this.poleLength, topDevice.sliced);
 
         double current;
         double inputVoltage;
 
-        extraData.lastVoltage = results.getVoltageAt(nodes.output, nodes.ground);
+        this.lastVoltage = results.getVoltageAt(nodes.output, nodes.ground);
         inputVoltage = results.getVoltageAt(nodes.input, nodes.ground);
         current = results.getCurrentThrough(nodes.outputDiv, nodes.output);
 
-        if (extraData.be == null && level.isLoaded(pos))
+        if (this.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof VoltageRegulatorBlockEntity be)
-                extraData.be = be;
+                this.be = be;
 
-        if (extraData.be != null) {
-            if (extraData.be.isRemoved())
-                extraData.be = null;
+        if (this.be != null) {
+            if (this.be.isRemoved())
+                this.be = null;
             else {
-                extraData.be.power = current * extraData.lastVoltage;
-                extraData.be.inputVoltage = inputVoltage;
-                extraData.be.outputVoltage = extraData.lastVoltage;
+                this.be.power = current * this.lastVoltage;
+                this.be.inputVoltage = inputVoltage;
+                this.be.outputVoltage = this.lastVoltage;
             }
         }
     }
 
-    private double updateStepsAndGetRatio(DataHolder data) {
-        if (data.stepTimeout > 0) {
-            data.stepTimeout--;
-            return data.steps * RATIO_PER_STEP;
+    private double updateStepsAndGetRatio() {
+        if (this.stepTimeout > 0) {
+            this.stepTimeout--;
+            return this.steps * RATIO_PER_STEP;
         }
-        if (Math.abs(data.lastVoltage) < 1)
-            return data.steps * RATIO_PER_STEP;
-        double diff = data.targetVoltage - Math.abs(data.lastVoltage);
-        double tol = RATIO_PER_STEP * data.targetVoltage * 0.7;
-        int prevSteps = data.steps;
+        if (Math.abs(this.lastVoltage) < 1)
+            return this.steps * RATIO_PER_STEP;
+        double diff = this.targetVoltage - Math.abs(this.lastVoltage);
+        double tol = RATIO_PER_STEP * this.targetVoltage * 0.7;
+        int prevSteps = this.steps;
         if (diff > tol)
-            data.steps = Mth.clamp(data.steps + 1, -MAX_STEPS, MAX_STEPS);
+            this.steps = Mth.clamp(this.steps + 1, -MAX_STEPS, MAX_STEPS);
         else if (diff < -tol)
-            data.steps = Mth.clamp(data.steps - 1, -MAX_STEPS, MAX_STEPS);
-        if (prevSteps != data.steps)
-            data.stepTimeout = 2;
-        return data.steps * RATIO_PER_STEP;
-    }
-
-    private DataHolder getVoltageRegulatorData(InfrastructureSavedData sd, BlockPos pos) {
-        SimulatedDeviceInstance<?> di = sd.getDevice(pos);
-        if (di == null || di.simulatedDevice() != CEESimulatedDevices.VOLTAGE_REGULATOR) return null;
-        return di.extraData() instanceof DataHolder dh ? dh : null;
+            this.steps = Mth.clamp(this.steps - 1, -MAX_STEPS, MAX_STEPS);
+        if (prevSteps != this.steps)
+            this.stepTimeout = 2;
+        return this.steps * RATIO_PER_STEP;
     }
 
     private NodeLayout resolveNodes(BlockPos bottomPos, int poleLength, int sliced) {
@@ -186,64 +190,48 @@ public class VoltageRegulatorDevice extends SimulatedDevice<VoltageRegulatorDevi
 
     private int findPoleLength(BlockPos pos, Level level, InfrastructureSavedData sd) {
         for (int i = 1; i + pos.getY() < level.getMaxBuildHeight(); i += 2) {
-            DataHolder dh = getVoltageRegulatorData(sd, pos.above(i));
+            VoltageRegulatorDevice otherRegulator = deviceSD.getDevice(pos.above(i), VoltageRegulatorDevice.class);
 
-            if (dh == null) {
-                // Overshot - step back and check if previous block was a valid top
-                int candidate = i - 1;
-                DataHolder top = getVoltageRegulatorData(sd, pos.above(candidate));
-                return (top != null && top.top) ? candidate : -1;
+            if (otherRegulator == null) {
+                VoltageRegulatorDevice top = deviceSD.getDevice(pos.above(i - 1), VoltageRegulatorDevice.class);
+                return (top != null && top.top) ? i - 1 : -1;
             }
 
-            if (dh.top) return i;
+            if (otherRegulator.top)
+                return i;
         }
         return -1;
     }
 
     @Override
-    public DataHolder read(CompoundTag tag) {
-        DataHolder dataHolder = new DataHolder();
-        dataHolder.steps = tag.getInt("Steps");
-        dataHolder.temp = tag.getFloat("Temp");
-        dataHolder.targetVoltage = tag.getDouble("Voltage");
-        dataHolder.lastVoltage = tag.getDouble("LastVoltage");
-        dataHolder.top = tag.getBoolean("Top");
-        dataHolder.bottom = tag.getBoolean("Bottom");
-        dataHolder.poleLength = tag.getInt("PoleLength");
-        dataHolder.sliced = tag.getInt("Sliced");
-        return dataHolder;
+    public void read(CompoundTag tag) {
+        this.steps = tag.getInt("Steps");
+        this.temp = tag.getFloat("Temp");
+        this.targetVoltage = tag.getDouble("Voltage");
+        this.lastVoltage = tag.getDouble("LastVoltage");
+        this.top = tag.getBoolean("Top");
+        this.bottom = tag.getBoolean("Bottom");
+        this.poleLength = tag.getInt("PoleLength");
+        this.sliced = tag.getInt("Sliced");
     }
 
     @Override
-    public CompoundTag write(DataHolder extraData) {
-        CompoundTag tag = new CompoundTag();
-        tag.putInt("Steps", extraData.steps);
-        tag.putInt("PoleLength", extraData.poleLength);
-        tag.putFloat("Temp", extraData.temp);
-        tag.putDouble("Voltage", extraData.targetVoltage);
-        tag.putDouble("LastVoltage", extraData.lastVoltage);
-        if (extraData.bottom)
+    public void write(CompoundTag tag) {
+        tag.putInt("Steps", this.steps);
+        tag.putInt("PoleLength", this.poleLength);
+        tag.putFloat("Temp", this.temp);
+        tag.putDouble("Voltage", this.targetVoltage);
+        tag.putDouble("LastVoltage", this.lastVoltage);
+        if (this.bottom)
             tag.putBoolean("Bottom", true);
-        if (extraData.top)
+        if (this.top)
             tag.putBoolean("Top", true);
-        if (extraData.sliced != 0)
-            tag.putInt("Sliced", extraData.sliced);
-        return tag;
+        if (this.sliced != 0)
+            tag.putInt("Sliced", this.sliced);
     }
 
-    public static class DataHolder {
-        public float temp;
-        public VoltageRegulatorBlockEntity be;
-        public int steps;
-        public double targetVoltage;
-        public double lastVoltage;
-        public boolean bottom;
-        public boolean top;
-        public int poleLength;
-        public int stepTimeout = 0;
-        public int sliced;
-    }
 
     private record NodeLayout(InWorldNode input, InWorldNode output, InWorldNode ground,
                               InWorldNode inputDiv, InWorldNode outputDiv) {}
 }
+

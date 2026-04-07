@@ -6,9 +6,8 @@ import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.SimulatedDevice;
-import com.george_vi.electroenergetics.simulation.SimulatedDeviceInstance;
+import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.simulateddevices.device.SimulatedDeviceType;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
@@ -33,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
+public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock<CutOffSwitchDevice> {
     public static final BooleanProperty CLOSED = BooleanProperty.create("closed");
     public final boolean isDouble;
 
@@ -43,14 +42,14 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
     }
 
     @Override
-    protected SimulatedDevice getDevice() {
+    public SimulatedDeviceType<CutOffSwitchDevice> getDevice() {
         if (isDouble)
-            return CEESimulatedDevices.DOUBLE_SWITCH;
-        return CEESimulatedDevices.CUT_OFF_SWITCH;
+            return CEESimulatedDevices.DOUBLE_SWITCH.get();
+        return CEESimulatedDevices.CUT_OFF_SWITCH.get();
     }
 
     @Override
-    protected CompoundTag getExtraDeviceData(Level level, BlockState state, BlockPos pos) {
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Closed", state.getValue(CLOSED));
         return tag;
@@ -68,9 +67,9 @@ public class CutOffSwitchBlock extends DirectionalRolledDeviceBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (level instanceof ServerLevel serverLevel) {
-            SimulatedDeviceInstance<?> device = InfrastructureSavedData.load(serverLevel).getDevice(pos);
-            if (device != null && device.extraData() instanceof CutOffSwitchDevice.DataHolder dataHolder)
-                dataHolder.isClosed = !state.getValue(CLOSED);
+            CutOffSwitchDevice device = DevicesSavedData.load(serverLevel).getDevice(pos, CutOffSwitchDevice.class);
+            if (device != null)
+                device.isClosed = !state.getValue(CLOSED);
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
         }
         level.setBlockAndUpdate(pos, state.cycle(CLOSED));
