@@ -125,7 +125,10 @@ public class CircuitBuilder {
     }
 
     public void ground(Node node, double conductance) {
-        ground(nodeIndexes.getInt(node), conductance);
+        int i = nodeIndexes.getInt(node);
+        if (i == -1)
+            i = addNode(node).ordinal;
+        ground(i, conductance);
     }
 
     public void defaultZeroPotential(int node, int priority) {
@@ -138,7 +141,10 @@ public class CircuitBuilder {
     }
 
     public void defaultZeroPotential(Node node, int priority) {
-        defaultZeroPotential(nodeIndexes.getInt(node), priority);
+        int i = nodeIndexes.getInt(node);
+        if (i == -1)
+            i = addNode(node).ordinal;
+        defaultZeroPotential(i, priority);
     }
 
     public WrappedIndexedNode addNode(Node node) {
