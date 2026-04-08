@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.content.fuse.fuse_held.FuseHoldable;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.foundation.block.IBE;
 import net.createmod.catnip.data.Pair;

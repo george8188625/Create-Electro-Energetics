@@ -5,16 +5,11 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "condition": "minecraft:any_of",
-          "terms": [
-            {
-              "block": "electroenergetics:sulfur_hexafluoride_breaker",
-              "condition": "minecraft:block_state_property",
-              "properties": {
-                "base": "true"
-              }
-            }
-          ]
+          "block": "electroenergetics:sulfur_hexafluoride_breaker",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "base": "true"
+          }
         }
       ],
       "entries": [

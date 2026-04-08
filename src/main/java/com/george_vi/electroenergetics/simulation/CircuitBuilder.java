@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.simulation;
 
+import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.electrical_properties.CoupledProperties;
@@ -13,6 +14,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.neoforged.fml.loading.FMLEnvironment;
 
 import java.util.*;
@@ -35,6 +37,15 @@ public class CircuitBuilder {
             nodeIndexes.put(node, id);
             id++;
         }
+    }
+
+    public CircuitBuilder(int id, List<WrappedIndexedNode> allLazyIndexedNodes, Object2IntOpenHashMap<Node> lazyIndexedNodeIndexes) {
+        allIndexedNodes = new ArrayList<>(allLazyIndexedNodes);
+        nodeIndexes = lazyIndexedNodeIndexes.clone();
+        nodeIndexes.defaultReturnValue(-1);
+        defaultZeroPotentials = new Int2IntOpenHashMap();
+
+        this.id = id;
     }
 
     public ElectricalProperties getConnectionProperties(int n1, int n2) {
@@ -253,5 +264,17 @@ public class CircuitBuilder {
         if (i == -1)
             return null;
         return allIndexedNodes.get(i);
+    }
+
+    /**
+     * This is used primarily for connecting wires on the electrical thread instead of wasting time on that on the main thread.
+     * The wire assembler just creates a list of connections to create, and this connects them, but on the electrical thread.
+     * @param connections list of connections to connect
+     */
+    public void connectAll(List<ObjectDoublePair<DirectionalNodeConnection>> connections) {
+        for (ObjectDoublePair<DirectionalNodeConnection> pair : connections) {
+            DirectionalNodeConnection connection = pair.left();
+            connect(connection.node1(), connection.node2(), ElectricalProperties.resistor(pair.rightDouble()));
+        }
     }
 }

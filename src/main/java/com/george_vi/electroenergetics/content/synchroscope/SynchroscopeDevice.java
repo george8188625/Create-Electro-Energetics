@@ -4,8 +4,8 @@ import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -60,8 +60,7 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
             else {
                 float v = calculatePhaseOffset(pos, results) % 360;
                 boolean validConnection = (phaseOrderP & 0b1100) == (phaseOrderS & 0b1100);
-                if (Math.abs(be.phaseOffset - v) > 10 ||
-                        (Math.abs(be.phaseOffset - v) > 0.1 && ticks % 20 == 0) ||
+                if (Math.abs(be.phaseOffset - v) > 3 ||
                         be.validConnection != validConnection) {
                     be.phaseOffset = v;
                     be.validConnection = validConnection;

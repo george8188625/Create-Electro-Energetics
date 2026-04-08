@@ -2,8 +2,8 @@ package com.george_vi.electroenergetics.content.connector;
 
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;

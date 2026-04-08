@@ -1,12 +1,13 @@
 package com.george_vi.electroenergetics.content.relay;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 public class RelayDevice extends SimpleElectricalDevice {
+    public SwitchingBehaviour behaviour;
     public boolean inverted;
     public boolean closed;
     public float temp;
@@ -32,15 +34,16 @@ public class RelayDevice extends SimpleElectricalDevice {
     public void preTick(BridgeCollector bridges) {
         bridges.builder(pos)
                 .resistor(0, 1, 1000);
-        if (closed ^ inverted)
-            bridges.builder(pos)
-                    .resistor(2, 3, 0.1);
+        double r = behaviour.resistance();
+        if (r < 1e+10d)
+            bridges.builder(pos).resistor(2, 3, r);
     }
 
     @Override
     public void postTick(SimulationResults results) {
 
         double voltage = Math.abs(results.getVoltageAt(pos, 0, 1));
+        double switchedVoltage = Math.abs(results.getVoltageAt(pos, 2, 3));
         boolean oldClosed = closed;
         if (oldClosed != (voltage > 4)) {
             if (level.isLoaded(pos))
@@ -48,8 +51,14 @@ public class RelayDevice extends SimpleElectricalDevice {
             closed = voltage > 4;
         }
 
-        float loss = (float) results.getHeatLoss(pos, 0, 1);
-        temp = updateTemp(temp, Math.min(loss, 10000));
+        double lossAtArc = switchedVoltage * switchedVoltage / behaviour.resistance();
+
+        behaviour.isClosed = closed ^ inverted;
+        behaviour.postTickNoParticles(switchedVoltage / 2, pos.getCenter(), level);
+
+        float loss = (float) ((voltage * voltage) / 1000);
+
+        temp = updateTemp(temp, (float) Math.min(Math.max(loss, lossAtArc * 1e-4d), 10000));
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
@@ -70,6 +79,7 @@ public class RelayDevice extends SimpleElectricalDevice {
         inverted = tag.getBoolean("Inverted");
         closed = tag.getBoolean("Closed");
         temp = tag.getFloat("Temp");
+        behaviour = new SwitchingBehaviour(tag.getCompound("Behaviour"));
     }
 
     @Override
@@ -79,6 +89,7 @@ public class RelayDevice extends SimpleElectricalDevice {
         if (inverted)
             tag.putBoolean("Inverted", true);
         tag.putFloat("Temp", temp);
+        tag.put("Behaviour", behaviour.write());
     }
 
 

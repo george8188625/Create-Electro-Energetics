@@ -12,7 +12,7 @@ import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructure
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.createmod.catnip.nbt.NBTHelper;

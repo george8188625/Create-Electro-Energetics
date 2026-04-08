@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.energy_meter;
 
 import com.george_vi.electroenergetics.CEEPackets;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
-import com.george_vi.simulateddevices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.simibubi.create.AllSoundEvents;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;

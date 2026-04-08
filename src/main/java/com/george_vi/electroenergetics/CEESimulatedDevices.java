@@ -40,8 +40,7 @@ import com.george_vi.electroenergetics.content.transmission_distribution.transfo
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorDevice;
 import com.george_vi.electroenergetics.foundation.base.TemporaryDevice;
-import com.george_vi.simulateddevices.SDRegistries;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -49,7 +48,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class CEESimulatedDevices {
 
     private static final DeferredRegister<SimulatedDeviceType<?>> DEVICES =
-            DeferredRegister.create(SDRegistries.SIMULATED_DEVICE_TYPE, CreateElectroEnergetics.ID);
+            DeferredRegister.create(CEERegistries.SIMULATED_DEVICE_TYPE, CreateElectroEnergetics.ID);
 
 
     public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<ConnectorDevice>> CONNECTOR = DEVICES.register("connector",

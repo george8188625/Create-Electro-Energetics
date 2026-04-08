@@ -1,6 +1,8 @@
 package com.george_vi.electroenergetics.commands;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.infrastructure.ConnectionEntry;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireCrossContactModule;
@@ -8,13 +10,23 @@ import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIntImmutablePair;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerLevel;
@@ -23,6 +35,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +49,8 @@ public class CEECommands {
     private static final UnaryOperator<Style> darkestBlue = st -> st.withColor(0x536b75);
     private static final UnaryOperator<Style> bright = st -> st.withColor(0xFFEFEF);
     private static final UnaryOperator<Style> orange = st -> st.withColor(0xFFAD60);
+
+    public static final SimpleCommandExceptionType NO_DEVICE_ERROR = new SimpleCommandExceptionType(Component.literal("No devices found at this position."));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("cee")
@@ -53,6 +68,16 @@ public class CEECommands {
                             .requires(cs -> cs.hasPermission(2))
                             .then(Commands.literal("cross_contact").executes(CEECommands::showCrossContact))
                             .then(Commands.literal("points").executes(CEECommands::points))
+            ).then(
+                    Commands.literal("device_data")
+                            .requires(cs -> cs.hasPermission(2))
+                            .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(CEECommands::deviceData))
+            ).then(
+                    Commands.literal("devices")
+                            .requires(cs -> cs.hasPermission(2))
+                            .then(Commands.argument("distance", IntegerArgumentType.integer(1))
+                            .executes(CEECommands::devices))
             );
 
         dispatcher.register(root);
@@ -79,7 +104,7 @@ public class CEECommands {
             float percentage = (float) entry.timeTookNanos / totalTime;
             float parentPercentage = (float) entry.timeTookNanos / parentTime;
             source.sendSuccess(() -> Component.literal("|  ".repeat(Math.max(0, depth - 1)) + "⊢ ").withStyle(blue)
-                            .append(Component.literal(entry.id.toString() + " ").withStyle(bright))
+                            .append(Component.literal(entry.id + " ").withStyle(bright))
                             .append(Component.literal(String.valueOf((entry.timeTookNanos / 1000))).append(" μs ").append(Component.literal(String.format("%.2f", percentage * 100) + " % ").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - percentage, 3) * 0.32f), 0.6f, 1f).getRGB()))))
                             .append(Component.literal(String.format("%.2f", parentPercentage * 100) + " %").withStyle(st -> st.withColor(Color.getHSBColor((float) (Math.pow(1 - parentPercentage, 3) * 0.32f), 0.6f, 1f).getRGB())))
                     , false);
@@ -91,16 +116,25 @@ public class CEECommands {
         CommandSourceStack source = ctx.getSource();
         source.sendSuccess(() -> Component.literal("-+------<< Simulation Stats >>-------------+-"), false);
         for (Map.Entry<Level, SimulationStats> entry : SimulationTicker.allStats.entrySet()) {
-            Level level = entry.getKey();
             SimulationStats stats = entry.getValue();
             source.sendSuccess(() -> Component.literal("totalNodes: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalNodes)).withStyle(orange)), false);
-            Arrays.sort(stats.totalOptimizedNodes);
-            Arrays.sort(stats.totalSeparatedNodes);
-            source.sendSuccess(() -> Component.literal("perNetwork: ").withStyle(blue)
-                    .append(Component.literal(Arrays.toString(stats.totalSeparatedNodes)).withStyle(orange)), false);
 
-            source.sendSuccess(() -> Component.literal("optimized: ").withStyle(blue)
-                    .append(Component.literal(Arrays.toString(stats.totalOptimizedNodes)).withStyle(orange)), false);
+            int[] totalOptimizedNodes = stats.totalOptimizedNodes;
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int j = 0; j < totalOptimizedNodes.length; j++) {
+                int totalSeparatedNode = stats.totalSeparatedNodes[j];
+                int totalOptimizedNode = totalOptimizedNodes[j];
+                if (totalSeparatedNode != 0)
+                    stringBuilder
+                            .append(" (")
+                            .append(totalSeparatedNode)
+                            .append(" > ")
+                            .append(totalOptimizedNode)
+                            .append(") ");
+            }
+
+            source.sendSuccess(() -> Component.literal("perNetwork: ").withStyle(blue)
+                    .append(Component.literal(stringBuilder.toString()).withStyle(orange)), false);
 
             source.sendSuccess(() -> Component.literal("totalDevices: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalDevices)).withStyle(orange)), false);
             source.sendSuccess(() -> Component.literal("totalMicroTickers: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalMicroTickers)).withStyle(orange)), false);
@@ -141,6 +175,31 @@ public class CEECommands {
                     level.sendParticles(player, ParticleTypes.SCRAPE, true, point.x, point.y, point.z, 3, 0, 0, 0, 0);
             }
         }
+        return 1;
+    }
+
+
+    public static int deviceData(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        CommandSourceStack source = ctx.getSource();
+        BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
+        SimulatedDevice deviceInstance = DevicesSavedData.load(source.getLevel()).getDevice(pos);
+        if (deviceInstance == null)
+            throw NO_DEVICE_ERROR.create();
+        CompoundTag tag = new CompoundTag();
+        deviceInstance.write(tag);
+        source.sendSuccess(() -> Component.literal("The device's stored data is: ").append(NbtUtils.toPrettyComponent(tag)), false);
+        return 1;
+    }
+
+    public static int devices(CommandContext<CommandSourceStack> ctx) {
+        CommandSourceStack source = ctx.getSource();
+        BlockPos pos = BlockPos.containing(source.getPosition());
+        int distance = IntegerArgumentType.getInteger(ctx, "distance");
+
+        for (SimulatedDevice device : DevicesSavedData.load(source.getLevel()).getDevices())
+            if (device.pos.distSqr(pos) <= distance * distance)
+                source.sendSuccess(() -> Component.literal(device.type.id().toString() + " : " + device.pos.toShortString()).withStyle(blue), false);
+
         return 1;
     }
 }

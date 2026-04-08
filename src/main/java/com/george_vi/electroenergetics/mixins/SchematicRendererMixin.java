@@ -8,7 +8,6 @@ import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
-import com.george_vi.electroenergetics.simulation.DeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.schematics.client.SchematicRenderer;

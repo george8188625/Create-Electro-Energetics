@@ -111,7 +111,6 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
     implementation "curse.maven:create-blueprinted-1487864:7767092"
 
-    implementation files("libs/simulateddevices-1.21.1-1.0.0.jar")
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

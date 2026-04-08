@@ -30,7 +30,7 @@ public class IndicatorBulbRenderer extends SmartBlockEntityRenderer<IndicatorBul
         for (boolean opposite : Iterate.falseAndTrue) {
             if (((side + 1) & (opposite ? 2 : 1)) == 0)
                 continue;
-            float lightStrength = opposite ? blockEntity.secondLight : blockEntity.firstLight;
+            float lightStrength = opposite ? blockEntity.secondSmoothLight.getValue(partialTicks) : blockEntity.firstSmoothLight.getValue(partialTicks);
             DyeColor color = opposite ? blockEntity.secondColor : blockEntity.firstColor;
             ms.pushPose();
             msr.center()

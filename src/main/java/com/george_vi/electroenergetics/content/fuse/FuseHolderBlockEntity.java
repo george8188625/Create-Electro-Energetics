@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.content.fuse.fuse_held.FuseHoldable;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.createmod.catnip.data.Pair;

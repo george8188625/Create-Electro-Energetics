@@ -4,9 +4,12 @@ import com.george_vi.electroenergetics.content.railway_electrification.pantograp
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.content.wire.WireAttachmentType;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
+import com.george_vi.electroenergetics.devices.device.DeviceFeatureType;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.simulation.WireType;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
 public class CEERegistries {
@@ -35,5 +38,21 @@ public class CEERegistries {
             .sync(true)
             .defaultKey(CreateElectroEnergetics.rl("standard"))
             .create();
+
+    public static final Registry<SimulatedDeviceType<?>> SIMULATED_DEVICE_TYPE =
+            new RegistryBuilder<SimulatedDeviceType<?>>(ResourceKey.createRegistryKey(CreateElectroEnergetics.rl("simulated_device_type")))
+                    .sync(false)
+                    .onAdd(((registry, id,
+                             key, value) -> {
+                        for (Block block : value.validBlocks())
+                            SimulatedDeviceType.BY_BLOCK.put(block, value);
+                    }))
+                    .create();
+
+    public static final Registry<DeviceFeatureType> SIMULATED_DEVICE_FEATURE_TYPE =
+            new RegistryBuilder<DeviceFeatureType>(ResourceKey.createRegistryKey(CreateElectroEnergetics.rl("simulated_device_feature_type")))
+                    .sync(false)
+                    .onBake((registry) -> DeviceFeatureType.freeze())
+                    .create();
 
 }

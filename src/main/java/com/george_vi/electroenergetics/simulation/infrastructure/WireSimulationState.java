@@ -1,13 +1,14 @@
 package com.george_vi.electroenergetics.simulation.infrastructure;
 
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
-import com.george_vi.electroenergetics.foundation.nodes.AttachedNodeGenerator;
-import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.*;
+import com.george_vi.electroenergetics.simulation.CircuitBuilder;
+import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -29,11 +30,38 @@ public class WireSimulationState {
     private final Map<InWorldNodeConnection, List<CutWireEntry>> cutsByWire = new HashMap<>();
     private final AttachedNodeGenerator cutNodeGenerator = new AttachedNodeGenerator("CEECutNode");
 
+    private List<WrappedIndexedNode> allLazyIndexedNodes = new ArrayList<>();
+    private Object2IntOpenHashMap<Node> lazyIndexedNodeIndexes = new Object2IntOpenHashMap<>();
+    private int id = 0;
+
     public boolean rebuild = true;
 
     public WireSimulationState(InfrastructureSavedData sd, Level level) {
         this.sd = sd;
         this.level = level;
+    }
+
+    /**
+     * This is used to partially index IW Nodes to not do that every tick
+     */
+    public void onNodeChange(Collection<InWorldNode> nodes) {
+        id = 0;
+        allLazyIndexedNodes = new ArrayList<>(nodes.size() * 2);
+        lazyIndexedNodeIndexes = new Object2IntOpenHashMap<>(nodes.size() * 2);
+        lazyIndexedNodeIndexes.defaultReturnValue(-1);
+        for (Node node : nodes) {
+            WrappedIndexedNode indexedNode = new WrappedIndexedNode(node, id);
+            allLazyIndexedNodes.add(indexedNode);
+            lazyIndexedNodeIndexes.put(node, id);
+            id++;
+        }
+    }
+
+    public CircuitBuilder createCircuitBuilder() {
+        for (WrappedIndexedNode node : allLazyIndexedNodes)
+            node.clear();
+
+        return new CircuitBuilder(id, allLazyIndexedNodes, lazyIndexedNodeIndexes);
     }
 
     void addConnection(InWorldNodeConnection connection, WireData wireData, boolean load) {

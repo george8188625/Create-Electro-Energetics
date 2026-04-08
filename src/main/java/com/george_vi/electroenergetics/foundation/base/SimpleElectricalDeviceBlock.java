@@ -7,7 +7,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
-import com.george_vi.simulateddevices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.accumulator;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;

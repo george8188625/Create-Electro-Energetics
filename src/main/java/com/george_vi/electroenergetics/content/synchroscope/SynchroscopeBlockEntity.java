@@ -40,6 +40,8 @@ public class SynchroscopeBlockEntity extends SmartBlockEntity implements IHaveHo
     public void tick() {
         super.tick();
         counter = Mth.clamp(counter + 1, 0, 20);
+        if (counter > 20)
+            prevPhaseOffset = phaseOffset;
         smoothPhase.tickChaser();
     }
 

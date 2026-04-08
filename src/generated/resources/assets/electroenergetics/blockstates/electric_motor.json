@@ -1,53 +1,105 @@
 {
   "variants": {
-    "facing=down,waterlogged=false": {
+    "axis_along_first=false,facing=down,waterlogged=false": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 180
     },
-    "facing=down,waterlogged=true": {
+    "axis_along_first=false,facing=down,waterlogged=true": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 180
     },
-    "facing=east,waterlogged=false": {
+    "axis_along_first=false,facing=east,waterlogged=false": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 90,
       "y": 90
     },
-    "facing=east,waterlogged=true": {
+    "axis_along_first=false,facing=east,waterlogged=true": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 90,
       "y": 90
     },
-    "facing=north,waterlogged=false": {
+    "axis_along_first=false,facing=north,waterlogged=false": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 90
     },
-    "facing=north,waterlogged=true": {
+    "axis_along_first=false,facing=north,waterlogged=true": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 90
     },
-    "facing=south,waterlogged=false": {
+    "axis_along_first=false,facing=south,waterlogged=false": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 90,
       "y": 180
     },
-    "facing=south,waterlogged=true": {
+    "axis_along_first=false,facing=south,waterlogged=true": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 90,
       "y": 180
     },
-    "facing=up,waterlogged=false": {
+    "axis_along_first=false,facing=up,waterlogged=false": {
       "model": "electroenergetics:block/electric_motor/block"
     },
-    "facing=up,waterlogged=true": {
+    "axis_along_first=false,facing=up,waterlogged=true": {
       "model": "electroenergetics:block/electric_motor/block"
     },
-    "facing=west,waterlogged=false": {
+    "axis_along_first=false,facing=west,waterlogged=false": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 90,
       "y": 270
     },
-    "facing=west,waterlogged=true": {
+    "axis_along_first=false,facing=west,waterlogged=true": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 90,
+      "y": 270
+    },
+    "axis_along_first=true,facing=down,waterlogged=false": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 180
+    },
+    "axis_along_first=true,facing=down,waterlogged=true": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 180
+    },
+    "axis_along_first=true,facing=east,waterlogged=false": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 90,
+      "y": 90
+    },
+    "axis_along_first=true,facing=east,waterlogged=true": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 90,
+      "y": 90
+    },
+    "axis_along_first=true,facing=north,waterlogged=false": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 90
+    },
+    "axis_along_first=true,facing=north,waterlogged=true": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 90
+    },
+    "axis_along_first=true,facing=south,waterlogged=false": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 90,
+      "y": 180
+    },
+    "axis_along_first=true,facing=south,waterlogged=true": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 90,
+      "y": 180
+    },
+    "axis_along_first=true,facing=up,waterlogged=false": {
+      "model": "electroenergetics:block/electric_motor/block"
+    },
+    "axis_along_first=true,facing=up,waterlogged=true": {
+      "model": "electroenergetics:block/electric_motor/block"
+    },
+    "axis_along_first=true,facing=west,waterlogged=false": {
+      "model": "electroenergetics:block/electric_motor/block",
+      "x": 90,
+      "y": 270
+    },
+    "axis_along_first=true,facing=west,waterlogged=true": {
       "model": "electroenergetics:block/electric_motor/block",
       "x": 90,
       "y": 270

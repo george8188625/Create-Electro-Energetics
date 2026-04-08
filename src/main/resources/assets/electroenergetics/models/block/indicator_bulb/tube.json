@@ -1,5 +1,5 @@
 {
-	"format_version": "1.21.6",
+	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "electroenergetics:block/indicator_bulb",
@@ -16,6 +16,15 @@
 				"south": {"uv": [10, 9, 16, 16], "texture": "#0"},
 				"west": {"uv": [10, 9, 16, 16], "texture": "#0"},
 				"up": {"uv": [4, 10, 10, 16], "texture": "#0"}
+			}
+		},
+		{
+			"from": [2.75, 4, 8],
+			"to": [5.25, 8, 8],
+			"rotation": {"angle": 45, "axis": "y", "origin": [4, 6, 8]},
+			"faces": {
+				"north": {"uv": [14, 6, 9, 9], "rotation": 90, "texture": "#0"},
+				"south": {"uv": [14, 6, 9, 9], "rotation": 90, "texture": "#0"}
 			}
 		}
 	],

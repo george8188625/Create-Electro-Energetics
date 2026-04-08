@@ -9,7 +9,7 @@ public class SparseRow {
 
     public SparseRow(int size) {
         values = new double[size];
-        nzCols = new IntArrayList(size);
+        nzCols = new IntArrayList(8);
     }
 
     public void put(int col, double val) {

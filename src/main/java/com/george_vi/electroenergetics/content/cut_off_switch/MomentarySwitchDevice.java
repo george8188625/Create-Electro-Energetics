@@ -3,8 +3,8 @@ package com.george_vi.electroenergetics.content.cut_off_switch;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -25,7 +25,7 @@ public class MomentarySwitchDevice extends SimpleElectricalDevice {
     @Override
     public void preTick(BridgeCollector bridges) {
         double r = behaviour.resistance();
-        if (r != 0)
+        if (r < 1e+10d)
             bridges.builder(pos).resistor(0, 1, r);
     }
 

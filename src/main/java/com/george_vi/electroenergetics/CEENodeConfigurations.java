@@ -50,6 +50,12 @@ public class CEENodeConfigurations {
             .add(new Vec3(13/16f, 5/16f, 0.5f))
             .simple();
 
+    public static final NodeConfigurator TRIPLE_CONNECTOR_DIAGONAL = new NodeConfigurator.Builder()
+            .add(new Vec3(3/16f, 5/16f, 3/16f))
+            .add(new Vec3(0.5f, 5/16f, 0.5f))
+            .add(new Vec3(13/16f, 5/16f, 13/16f))
+            .simple();
+
     public static final NodeConfigurator QUAD_CONNECTOR = new NodeConfigurator.Builder()
             .add(new Vec3(3/16f, 5/16f, 0.5f))
             .add(new Vec3(13/16f, 5/16f, 0.5f))
@@ -156,10 +162,10 @@ public class CEENodeConfigurations {
             .add(new Vec3(8/16f, 14/16f, 11/16f))
             .simple(Direction.NORTH);
 
-    public static final NodeConfigurator ELECTRONIC_8_HORIZONTAL = new NodeConfigurator.Builder()
+    public static final NodeConfigurator ELECTRONIC_8 = new NodeConfigurator.Builder()
             .add(new Vec3(8/16f, 2/16f, 3/16f))
             .add(new Vec3(8/16f, 2/16f, 13/16f))
-            .simple(Direction.NORTH);
+            .simple();
 
     public static final NodeConfigurator ELECTRONIC_10 = new NodeConfigurator.Builder()
             .add(new Vec3(2/16f, 2/16f, 8/16f))

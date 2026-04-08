@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.foundation.device;
 
-import com.george_vi.simulateddevices.device.DeviceBlock;
-import com.george_vi.simulateddevices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.devices.device.DeviceBlock;
+import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

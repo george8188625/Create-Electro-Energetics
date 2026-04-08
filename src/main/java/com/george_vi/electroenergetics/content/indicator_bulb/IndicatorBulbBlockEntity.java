@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.indicator_bulb;
 
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import net.createmod.catnip.animation.LerpedFloat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -17,8 +18,18 @@ public class IndicatorBulbBlockEntity extends SmartBlockEntity {
     float firstLight = 0f;
     float secondLight = 0f;
 
+    LerpedFloat firstSmoothLight = LerpedFloat.linear();
+    LerpedFloat secondSmoothLight = LerpedFloat.linear();
+
     public IndicatorBulbBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        firstSmoothLight.tickChaser();
+        secondSmoothLight.tickChaser();
     }
 
     @Override
@@ -33,6 +44,10 @@ public class IndicatorBulbBlockEntity extends SmartBlockEntity {
         secondColor = DyeColor.byName(tag.getString("SecondColor"), DyeColor.WHITE);
         firstLight = tag.getFloat("FirstLight");
         secondLight = tag.getFloat("SecondLight");
+        if (clientPacket) {
+            firstSmoothLight.chase(firstLight, 0.007, LerpedFloat.Chaser.LINEAR);
+            secondSmoothLight.chase(secondLight, 0.007, LerpedFloat.Chaser.LINEAR);
+        }
     }
 
     @Override

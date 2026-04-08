@@ -29,9 +29,9 @@ public class FuseHeldSwitch extends FuseHoldable {
     @Override
     public void preTick(CompoundTag data, int id1, int id2, BridgeCollector.Builder bridges, Level level, BlockPos pos) {
         SwitchingBehaviour behaviour = new SwitchingBehaviour(data.getCompound("Behaviour"));
-        double resistance = behaviour.resistance();
-        if (resistance != 0)
-            bridges.resistor(id1, id2, resistance);
+        double r = behaviour.resistance();
+        if (r < 1e+10d)
+            bridges.resistor(id1, id2, r);
     }
 
     @Override

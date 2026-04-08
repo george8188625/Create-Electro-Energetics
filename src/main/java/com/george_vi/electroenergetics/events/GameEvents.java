@@ -15,7 +15,7 @@ import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionH
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.WireSparkEffectTicker;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
@@ -137,7 +137,6 @@ public class GameEvents {
         sd.catenaryModule.buildCircuit(event.builder);
         sd.wireElectrocutionModule.buildCircuit(event.builder);
         sd.wireCrossContactModule.buildCircuit(event.builder);
-        sd.wireAssemblerModule.buildCircuit(event.builder);
         WireSparkEffectTicker.preTick(event.level);
     }
 

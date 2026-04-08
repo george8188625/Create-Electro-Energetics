@@ -8,16 +8,18 @@
   "plugin": "com.george_vi.electroenergetics.CEEMixinPlugin",
   "client": [
     "CarriageSoundsMixin",
-    "SchematicRendererMixin",
-    "LevelRendererAccessor"
+    "LevelRendererAccessor",
+    "SchematicRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "mixins": [
+    "BlockStateBaseMixin",
     "CarriageContraptionMixin",
     "CarriageMixin",
     "FluidPropagatorMixin",
+    "LevelChunkMixin",
     "MinecraftServerMixin",
     "SchematicLevelMixin",
     "SchematicPrinterMixin",

@@ -8,7 +8,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.simibubi.create.content.schematics.SchematicPrinter;
 import com.simibubi.create.content.schematics.cannon.MaterialChecklist;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;

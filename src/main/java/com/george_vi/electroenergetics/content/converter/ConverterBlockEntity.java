@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.CEELang;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;

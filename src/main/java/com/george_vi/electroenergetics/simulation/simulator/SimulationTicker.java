@@ -13,12 +13,13 @@ import com.george_vi.electroenergetics.simulation.electrical_properties.Electric
 import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.util.*;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
-import com.george_vi.simulateddevices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -86,7 +87,7 @@ public class SimulationTicker {
 
         stats = new SimulationStats();
 
-        circuitBuilder = new CircuitBuilder(inWorldNodes);
+        circuitBuilder = sd.wireSimulationState.createCircuitBuilder();
 
         profiler.popPush("preTick");
 
@@ -107,7 +108,15 @@ public class SimulationTicker {
 
         long thrStart = System.nanoTime();
 
+        // This is done to reduce performance overhead from creating connections on the main thread.
+        // Some systems can define which connections to add, which will later be connected.
+        // This moves wire creation away from the main thread and into the electrical thread.
+        List<ObjectDoublePair<DirectionalNodeConnection>> wiresToJoin = new ArrayList<>();
+        sd.wireAssemblerModule.buildCircuit(wiresToJoin);
+
+
         future = electricalWorkerThread.submit(() -> {
+            circuitBuilder.connectAll(wiresToJoin);
             List<List<WrappedIndexedNode>> networks = circuitBuilder.dfs();
             stats.totalNodes = circuitBuilder.allNodes().size();
             stats.totalSeparatedNodes = new int[networks.size()];
@@ -167,18 +176,13 @@ public class SimulationTicker {
                 }
                 for (Network network : allNetworks) {
                     network.formMatrix();
-//                double[] mnaResults = BiCGStabSolver.solve(network.conductanceMatrix, network.rhsVector,
-//                        (network.lastMNAResult == null || network.lastMNAResult.length != network.rhsVector.length) ? new double[network.rhsVector.length] : network.lastMNAResult, 1e-12d, 300);
-//                double[] mnaResults = BiCGStabSolver.solve(network.conductanceMatrix, network.rhsVector,
-//                        new double[network.rhsVector.length], 1e-12d, 300);
                     double[] mnaResults;
+
                     if (network.voltageSourcesInMatrix)
                         mnaResults = LUSolver.solve(network.conductanceMatrix, network.rhsVector);
                     else
                         mnaResults = CholeskySolver.solve(network.conductanceMatrix, network.rhsVector);
-//                double[] mnaResults = CGSolver.solve(network.conductanceMatrix, network.rhsVector, new double[network.rhsVector.length], 1e-10d, 300);
-//                double[] mnaResults = CGSolver.solve(network.conductanceMatrix, network.rhsVector,
-//                        (network.lastMNAResult == null || network.lastMNAResult.length != network.rhsVector.length) ? new double[network.rhsVector.length] : network.lastMNAResult, 1e-10d, 300);
+
                     solveNanos += (System.nanoTime() - solveNanos);
                     network.getResults(mnaResults, allVoltages, microTickBits, i);
                     int j = 0;
@@ -269,6 +273,7 @@ public class SimulationTicker {
         profiler.pop();
 
         SimulationTicker.allStats.put(level, stats);
+        deviceSD.setDirty();
     }
 
     public double getVoltageAt(InWorldNode node) {

@@ -44,6 +44,7 @@ public class CEEShapes {
     public static final VoxelShaper HV_CAPACITOR_ROLL = shape(3,0, 0,13,16,16).forDirectional();
 
     public static final VoxelShaper DOUBLE_CONNECTOR = shape(1,0, 6,15,7,10).forDirectional();
+    public static final VoxelShaper DOUBLE_CONNECTOR_DIAGONAL = shape(1,0, 1,15,7,15).forDirectional();
     public static final VoxelShaper DOUBLE_CONNECTOR_ROLL = shape(6,0, 1,10,7,15).forDirectional();
     public static final VoxelShaper DOUBLE_CONNECTOR_MEDIUM = shape(1,0, 6,15,10,10).forDirectional();
     public static final VoxelShaper DOUBLE_CONNECTOR_MEDIUM_ROLL = shape(6,0, 1,10,10,15).forDirectional();
@@ -80,7 +81,8 @@ public class CEEShapes {
     public static final VoxelShaper PANTOGRAPH = shape(0, 1, -3, 16, 4, 19)
             .add(1, 0, -2, 15, 5, 18).forHorizontal(Direction.EAST);
 
-    public static final VoxelShaper ELECTRONIC_8_HORIZONTAL = shape(6, 0, 4, 10, 4, 12).forHorizontal(Direction.NORTH);
+    public static final VoxelShaper ELECTRONIC_8 = shape(6, 0, 4, 10, 4, 12).forDirectional();
+    public static final VoxelShaper ELECTRONIC_8_ROLL = shape(4, 0, 6, 12, 4, 10).forDirectional();
 
     public static final VoxelShaper ELECTRONIC_10 = shape(3, 0, 6, 13, 4, 10).forDirectional();
 

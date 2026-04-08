@@ -2,7 +2,7 @@ package com.george_vi.electroenergetics.content.creative_battery;
 
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.VoltageScrollValueBehaviour;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;

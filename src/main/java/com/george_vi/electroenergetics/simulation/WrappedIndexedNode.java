@@ -32,4 +32,12 @@ public class WrappedIndexedNode {
     public int hashCode() {
         return ordinal * 31 + ordinal;
     }
+
+    public void clear() {
+        adjacency.clear();
+        invisibleAdjacency.clear();
+        groundConductance = 0;
+        localNetworkID = 0;
+        localAdjacencyOverride = null;
+    }
 }

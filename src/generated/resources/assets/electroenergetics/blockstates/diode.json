@@ -1,34 +1,212 @@
 {
   "variants": {
-    "facing=east,waterlogged=false": {
+    "facing=down,flip=false,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/electronics/diode",
-      "y": 90
+      "x": 180
     },
-    "facing=east,waterlogged=true": {
+    "facing=down,flip=false,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/electronics/diode",
-      "y": 90
+      "x": 180
     },
-    "facing=north,waterlogged=false": {
-      "model": "electroenergetics:block/electronics/diode"
+    "facing=down,flip=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 180
     },
-    "facing=north,waterlogged=true": {
-      "model": "electroenergetics:block/electronics/diode"
+    "facing=down,flip=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 180
     },
-    "facing=south,waterlogged=false": {
+    "facing=down,flip=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 180
+    },
+    "facing=down,flip=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 180
+    },
+    "facing=down,flip=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 180
+    },
+    "facing=down,flip=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 180
+    },
+    "facing=east,flip=false,roll=false,waterlogged=false": {
       "model": "electroenergetics:block/electronics/diode",
-      "y": 180
-    },
-    "facing=south,waterlogged=true": {
-      "model": "electroenergetics:block/electronics/diode",
-      "y": 180
-    },
-    "facing=west,waterlogged=false": {
-      "model": "electroenergetics:block/electronics/diode",
+      "x": 270,
       "y": 270
     },
-    "facing=west,waterlogged=true": {
+    "facing=east,flip=false,roll=false,waterlogged=true": {
       "model": "electroenergetics:block/electronics/diode",
+      "x": 270,
       "y": 270
+    },
+    "facing=east,flip=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=north,flip=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=south,flip=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode",
+      "x": 270
+    },
+    "facing=south,flip=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode",
+      "x": 270
+    },
+    "facing=south,flip=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 270
+    },
+    "facing=south,flip=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 270
+    },
+    "facing=south,flip=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 270
+    },
+    "facing=south,flip=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 270
+    },
+    "facing=south,flip=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 270
+    },
+    "facing=south,flip=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 270
+    },
+    "facing=up,flip=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode"
+    },
+    "facing=up,flip=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode"
+    },
+    "facing=up,flip=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_roll"
+    },
+    "facing=up,flip=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_roll"
+    },
+    "facing=up,flip=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip"
+    },
+    "facing=up,flip=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip"
+    },
+    "facing=up,flip=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll"
+    },
+    "facing=up,flip=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll"
+    },
+    "facing=west,flip=false,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=false,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=false,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=false,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,roll=false,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,roll=false,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,roll=true,waterlogged=false": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,roll=true,waterlogged=true": {
+      "model": "electroenergetics:block/electronics/diode_flip_roll",
+      "x": 270,
+      "y": 90
     }
   }
 }

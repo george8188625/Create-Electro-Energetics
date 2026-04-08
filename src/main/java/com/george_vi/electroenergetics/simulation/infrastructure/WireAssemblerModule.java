@@ -1,12 +1,18 @@
 package com.george_vi.electroenergetics.simulation.infrastructure;
 
+import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
+import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.ObjectDoubleImmutablePair;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.minecraft.server.level.ServerLevel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,15 +28,22 @@ public class WireAssemblerModule {
         this.wireSimulationState = wireSimulationState;
     }
 
-    public void buildCircuit(CircuitBuilder builder) {
+    /**
+     * This is done this way to connect wires off thread for performance reasons.
+     * It just writes what to connect here (main thread) and connects it off thread.
+     * This is done to not tank TPS on large worlds
+     */
+    public void buildCircuit(List<ObjectDoublePair<DirectionalNodeConnection>> out) {
+
         for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             InWorldNodeConnection connection = e.getKey();
             ConnectionEntry connectionData = e.getValue();
-            double resistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), connectionData.resistance.getAsDouble());
+            double resistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(),
+                    connectionData.resistance.getAsDouble());
             List<WireSimulationState.CutWireEntry> cuts = connectionData.cuts;
 
             if (cuts.isEmpty())
-                builder.connect(connection.node1(), connection.node2(), ElectricalProperties.resistor(resistance));
+                out.add(new ObjectDoubleImmutablePair<>(new DirectionalNodeConnection(connection.node1(), connection.node2()), resistance));
             else {
                 float totalProgress = 0;
                 Node lastNode = connection.node1();
@@ -39,10 +52,10 @@ public class WireAssemblerModule {
                     if (node.equals(lastNode))
                         continue;
                     float progress = cut.point() - totalProgress;
-                    builder.connect(lastNode, node, ElectricalProperties.resistor(Math.max(0.001, resistance * progress)));
+                    out.add(new ObjectDoubleImmutablePair<>(new DirectionalNodeConnection(lastNode, node), Math.max(0.001, resistance * progress)));
                     lastNode = node;
                 }
-                builder.connect(lastNode, connection.node2(), ElectricalProperties.resistor(Math.max(0.001, resistance * (1.01f - totalProgress))));
+                out.add(new ObjectDoubleImmutablePair<>(new DirectionalNodeConnection(lastNode, connection.node2()), Math.max(0.001, resistance * (1.01f - totalProgress))));
             }
         }
     }

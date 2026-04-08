@@ -5,7 +5,7 @@ import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.VoltageScrollValueBehaviour;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;

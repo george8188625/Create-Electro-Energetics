@@ -5,7 +5,7 @@ These are potential and planned features. Feel free to contribute by implementin
 ### Train & railway electrification
 - [ ] Electric train lights
 - [ ] Energy meters work on trains
-- [ ] Electrical train detector
+- [ ] Electric train detector
 - [ ] Bottom contact third rail
 ### Lighting
 - [ ] Floodlights
@@ -15,19 +15,18 @@ These are potential and planned features. Feel free to contribute by implementin
 ### Electrical Engineering
 - [ ] Small alternators
 - [ ] Alternating Current (using Micro-Ticking)
-- - [x] Micro-ticked transformers
-- - [ ] Micro-ticked alternators
 - - [ ] Micro-ticked accumulators
+- - [ ] AC content
 - [ ] Realistic grounding
 - [ ] Variac
 - [ ] Realistic surge protection
 - [ ] Electromagnets - can be used in alternators as exciters or to attract items
 - [ ] Fuses have changeable max amperage
 - [ ] Interdimensional transformer - a transformer placed in a nether portal that allows for getting power to the nether.
-- [ ] SF6 Breakers
+- [x] SF6 Breakers
 - [ ] Normal automatic breakers (MCBs)
 - [ ] Solar panels
-- [ ] Current & Potential transformers
+- [x] Current & Potential transformers
 ### Electronics
 - [ ] Transistors
 - [ ] Variacs
@@ -59,6 +58,7 @@ These are potential and planned features. Feel free to contribute by implementin
 - - [ ] Recipe system
 - - [ ] EAF multiblock behaviour
 - [ ] Multiblock electric motors + electric motor nerf
+- [ ] The great alternator rework
 ### Integration
 - [ ] Alternator brushes peripheral
 - [ ] Energy meter peripheral

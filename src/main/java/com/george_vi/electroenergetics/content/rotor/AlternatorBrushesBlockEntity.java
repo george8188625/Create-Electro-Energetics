@@ -1,8 +1,8 @@
 package com.george_vi.electroenergetics.content.rotor;
 
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
-import com.george_vi.simulateddevices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;

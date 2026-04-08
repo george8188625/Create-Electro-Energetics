@@ -1,10 +1,11 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -27,7 +28,7 @@ public class CutOffSwitchDevice extends SimpleElectricalDevice {
 
             SwitchingBehaviour behaviour = behaviours[i];
             double r = behaviour.resistance();
-            if (r != 0)
+            if (r < 1e+10d)
                 bridges.builder(pos).resistor(i, (lines) + i, r);
         }
     }
@@ -39,7 +40,8 @@ public class CutOffSwitchDevice extends SimpleElectricalDevice {
         if (level.isLoaded(pos)) {
             pPos = Vec3.atCenterOf(pos);
             BlockState blockState = level.getBlockState(pos);
-            pPos = pPos.subtract(Vec3.atLowerCornerOf(blockState.getValue(CutOffSwitchBlock.FACING).getNormal()).multiply(0.125, 0.125, 0.125));
+            if (CEEBlocks.FUSE.has(blockState))
+                pPos = pPos.subtract(Vec3.atLowerCornerOf(blockState.getValue(CutOffSwitchBlock.FACING).getNormal()).multiply(0.125, 0.125, 0.125));
         }
 
         for (int i = 0; i < lines; i++) {

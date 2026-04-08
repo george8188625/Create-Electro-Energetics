@@ -4,7 +4,7 @@ import com.george_vi.electroenergetics.content.fuse.FuseHolderDevice;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.scroll_value.ResistanceScrollValueBehaviour;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;

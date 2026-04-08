@@ -1,6 +1,6 @@
 package com.george_vi.electroenergetics.foundation.base;
 
-import com.george_vi.simulateddevices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.tterrag.registrate.providers.DataGenContext;

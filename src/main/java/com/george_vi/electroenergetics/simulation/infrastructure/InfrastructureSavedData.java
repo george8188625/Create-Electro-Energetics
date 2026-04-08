@@ -14,9 +14,8 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
-import com.george_vi.simulateddevices.SDRegistries;
-import com.george_vi.simulateddevices.device.DevicesSavedData;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.createmod.catnip.data.Pair;
@@ -191,7 +190,7 @@ public class InfrastructureSavedData extends SavedData {
 
                 sd.CONNECTION_DATA.computeIfAbsent(connection, c -> wireData);
             });
-            sd.NODE_POSITIONS.put(node, lastKnownPos == null ? node.sourcePos().getBottomCenter() : lastKnownPos);
+            sd.NODE_POSITIONS.put(node, lastKnownPos == null ? node.sourcePos().getCenter() : lastKnownPos);
             sd.NODES.put(node, connectedNodes);
             sd.NODES_BY_POS.computeIfAbsent(pos, ((p) -> new ArrayList<>()));
             sd.NODES_BY_POS.computeIfPresent(pos, ((p, nodes) -> {
@@ -261,6 +260,8 @@ public class InfrastructureSavedData extends SavedData {
         for (Map.Entry<CatenaryConnection, CatenaryConnectionData> e : CATENARY_DATA.entrySet()) {
             wireSimulationState.addCatenaryConnection(new InWorldNodeConnection(new InWorldNode(0, e.getKey().pos1()), new InWorldNode(0, e.getKey().pos2())), e.getValue(), true);
         }
+
+        wireSimulationState.onNodeChange(NODES.keySet());
     }
 
     public static void migrateFromLegacy(ListTag legacyDevices, DevicesSavedData deviceSD) {
@@ -273,7 +274,7 @@ public class InfrastructureSavedData extends SavedData {
             ResourceLocation id = ResourceLocation.parse(tag.getString("ID"));
             CompoundTag extraData = tag.getCompound("ExtraData");
 
-            SimulatedDeviceType<?> type = SDRegistries.SIMULATED_DEVICE_TYPE.get(id); // your new registry
+            SimulatedDeviceType<?> type = CEERegistries.SIMULATED_DEVICE_TYPE.get(id); // your new registry
             if (type == null) {
                 LOGGER.warn("Legacy migration: unknown device type {} at {}, skipping", id, pos.toShortString());
                 continue;
@@ -306,7 +307,7 @@ public class InfrastructureSavedData extends SavedData {
             NODES.putIfAbsent(node, new ArrayList<>());
             Vec3 newPos = node.getPosition(level);
             if (newPos == null)
-                newPos = node.sourcePos().getBottomCenter();
+                newPos = node.sourcePos().getCenter();
             if (!Objects.equals(newPos, NODE_POSITIONS.put(node, newPos))) {
                 for (InWorldNodeConnection connection : getConnections(node)) {
                     wireSimulationState.removeConnection(connection);
@@ -344,13 +345,14 @@ public class InfrastructureSavedData extends SavedData {
                 }
             }
         }
+        wireSimulationState.onNodeChange(NODES.keySet());
     }
 
     public void addTemporaryNode(InWorldNode node) {
         NODES.putIfAbsent(node, new ArrayList<>());
-        NODE_POSITIONS.putIfAbsent(node, node.sourcePos().getBottomCenter());
+        NODE_POSITIONS.putIfAbsent(node, node.sourcePos().getCenter());
         NODES_BY_POS.computeIfAbsent(node.sourcePos(), k -> new ArrayList<>()).add(node);
-
+        wireSimulationState.onNodeChange(NODES.keySet());
     }
 
     public void removeNodes(BlockPos pos) {
@@ -371,6 +373,7 @@ public class InfrastructureSavedData extends SavedData {
         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.COPPER_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
         for (BlockPos connection : catenaryConnections)
             removeCatenary(pos, connection);
+        wireSimulationState.onNodeChange(NODES.keySet());
     }
 
     public List<InWorldNodeConnection> getConnections(InWorldNode node) {
@@ -491,9 +494,9 @@ public class InfrastructureSavedData extends SavedData {
         Vec3 pos = NODE_POSITIONS.get(node);
         if (pos == null || level.isLoaded(node.sourcePos())) {
             Vec3 newPos = node.getPosition(level);
-            // how would that happen??
+
             if (newPos == null)
-                newPos = node.sourcePos().getBottomCenter();
+                newPos = node.sourcePos().getCenter();
             NODE_POSITIONS.put(node, pos = newPos);
         }
         return pos;

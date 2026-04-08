@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 
 public class SwitchingBehaviour {
-    public SwitchState state = SwitchState.OPEN;
+    public SwitchState state;
     public boolean isArcing;
     public boolean isClosed;
     public int tick;
@@ -45,7 +45,7 @@ public class SwitchingBehaviour {
             case ARCING -> 400;
             case CLOSED -> 0.001;
             case OPENING -> 10000;
-            default -> 0;
+            default -> 1e+11d;
         };
     }
 
@@ -73,6 +73,35 @@ public class SwitchingBehaviour {
             if (level.random.nextFloat() > 0.5)
                 ((ServerLevel) level).sendParticles(ParticleTypes.BUBBLE_POP, posToArc.x, posToArc.y, posToArc.z, 10, 0.05, 0.05, 0.05, 0);
 
+            if (tick >= 10) {
+                level.playSound(null, posToArc.x, posToArc.y, posToArc.z, CEESoundEvents.SHORT_ARC.get(), SoundSource.BLOCKS, 0.7f, 1f);
+                tick = 0;
+            }
+            tick++;
+        }
+    }
+
+    public void postTickNoParticles(double voltage, @Nullable Vec3 posToArc, Level level) {
+        isArcing = false;
+
+        if (isClosed)
+            state = SwitchState.CLOSED;
+        if ((!isClosed && state == SwitchState.OPENING) || state == SwitchState.ARCING) {
+            if (Math.abs(voltage) > (state == SwitchState.ARCING ? 60 : 1000)) {
+                if (state != SwitchState.ARCING)
+                    tick = 10;
+                state = SwitchState.ARCING;
+            } else
+                state = SwitchState.OPEN;
+        }
+        if (!isClosed && state == SwitchState.CLOSED)
+            state = SwitchState.OPENING;
+
+        if (state == SwitchState.ARCING)
+            isArcing = true;
+
+
+        if (isArcing && posToArc != null) {
             if (tick >= 10) {
                 level.playSound(null, posToArc.x, posToArc.y, posToArc.z, CEESoundEvents.SHORT_ARC.get(), SoundSource.BLOCKS, 0.7f, 1f);
                 tick = 0;

@@ -166,7 +166,9 @@ public class CEEBlocks {
     public static final BlockEntry<TripleConnectorBlock> TRIPLE_CONNECTOR = REGISTRATE.block("triple_connector", TripleConnectorBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
-            .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
+            .blockstate((c, p) ->
+                    DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(TripleConnectorBlock.DIAGONAL) ?
+                            p.modLoc("block/triple_connector/block_diagonal") : p.modLoc("block/triple_connector/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))
@@ -573,7 +575,10 @@ public class CEEBlocks {
     public static final BlockEntry<DiodeBlock> DIODE = REGISTRATE.block("diode", DiodeBlock::new)
             .initialProperties(SharedProperties::netheriteMetal)
             .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
-            .blockstate((c, p) -> p.horizontalBlock(c.get(), p.models().getExistingFile(p.modLoc("block/electronics/diode"))))
+            .blockstate((c, p) ->
+                    DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                            bs -> bs.getValue(DiodeBlock.FLIP) ? p.modLoc("block/electronics/diode_flip") :
+                                    p.modLoc("block/electronics/diode")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/electronics/diode")))

@@ -8,7 +8,7 @@ import com.george_vi.electroenergetics.content.transmission_distribution.voltage
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConfigurator;
-import com.george_vi.simulateddevices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.math.VoxelShaper;

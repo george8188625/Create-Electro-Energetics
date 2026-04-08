@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.fuse.fuse_held;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
@@ -28,26 +29,35 @@ public class FuseHeldFuse extends FuseHoldable {
 
     @Override
     public void preTick(CompoundTag data, int id1, int id2, BridgeCollector.Builder bridges, Level level, BlockPos pos) {
-        if (!data.getBoolean("Broken"))
-            bridges.resistor(id1, id2, 0.1);
+        SwitchingBehaviour behaviour = new SwitchingBehaviour(data.getCompound("Behaviour"));
+        double r = behaviour.resistance();
+        if (r < 1e+10d)
+            bridges.resistor(id1, id2, r);
     }
 
     @Override
     public void postTick(CompoundTag data, int id1, int id2, SimulationResults results, Level level, BlockPos pos) {
-        double current = Math.abs(results.getCurrentThrough(pos, id1, id2));
-        float temp = data.getFloat("Temp");
+        SwitchingBehaviour behaviour = new SwitchingBehaviour(data.getCompound("Behaviour"));
+        boolean isBroken = data.getBoolean("Broken");
 
+        double voltage = Math.abs(results.getVoltageAt(pos, 0, 1));
+        double current = voltage / behaviour.resistance();
+
+        float temp = data.getFloat("Temp");
         float newTemp = (float) (Math.min(current, 500));
         newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
         newTemp = Math.max(temp - 33.3f + newTemp, 0);
         temp = newTemp;
 
-        if (current < 1 || data.getBoolean("Broken"))
+        behaviour.isClosed = !isBroken;
+        behaviour.postTick(voltage / 2, pos.getCenter(), level);
+
+        if (current < 1 || isBroken)
             temp = 0;
         data.putFloat("Temp", temp);
 
         if (temp > CEEWireTypes.STANDARD.get().getMaxTemperature() * 2 / 3) {
-            if (!data.getBoolean("Broken")) {
+            if (!isBroken) {
                 if (level.isLoaded(pos)) {
                     BlockState state = level.getBlockState(pos);
                     if (state.getBlock() instanceof FuseHolderBlock block) {
@@ -63,6 +73,7 @@ public class FuseHeldFuse extends FuseHoldable {
             data.putBoolean("Broken", true);
 
         }
+        data.put("Behaviour", behaviour.write());
     }
 
     @Override
