@@ -18,6 +18,7 @@ public class MinecraftServerMixin {
     public void electroEnergetics$tickServerPre(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
         SimulationTicker.profiler.clear();
         SimulationTicker.allStats.clear();
+
         for (ServerLevel level : ((MinecraftServer)(Object)this).getAllLevels())
             InfrastructureSavedData.load(level).ticker.tick();
     }

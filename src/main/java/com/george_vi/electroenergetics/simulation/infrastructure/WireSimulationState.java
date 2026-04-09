@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -29,6 +30,8 @@ public class WireSimulationState {
     private int nextHandleID = 0;
     private final Map<InWorldNodeConnection, List<CutWireEntry>> cutsByWire = new HashMap<>();
     private final AttachedNodeGenerator cutNodeGenerator = new AttachedNodeGenerator("CEECutNode");
+    private List<ObjectDoublePair<DirectionalNodeConnection>> lazyConnections = new ArrayList<>();
+    private boolean reloadLazy = true;
 
     private List<WrappedIndexedNode> allLazyIndexedNodes = new ArrayList<>();
     private Object2IntOpenHashMap<Node> lazyIndexedNodeIndexes = new Object2IntOpenHashMap<>();
@@ -39,6 +42,25 @@ public class WireSimulationState {
     public WireSimulationState(InfrastructureSavedData sd, Level level) {
         this.sd = sd;
         this.level = level;
+    }
+
+    public void onReloadConfigs() {
+        sd.wireCrossContactModule.onReloadConfigs();
+        reloadLazyConnections();
+    }
+
+    public List<ObjectDoublePair<DirectionalNodeConnection>> getLazyConnections() {
+        if (reloadLazy) {
+            lazyConnections.clear();
+            sd.wireAssemblerModule.loadLazyConnections(lazyConnections);
+            sd.wireCrossContactModule.loadLazyConnections(lazyConnections);
+            reloadLazy = false;
+        }
+        return lazyConnections;
+    }
+
+    public void reloadLazyConnections() {
+        reloadLazy = true;
     }
 
     /**
@@ -93,6 +115,7 @@ public class WireSimulationState {
         if (load)
             return;
         sd.wireCrossContactModule.onWireAdded(connection, connectionEntry);
+        reloadLazyConnections();
     }
 
     ConnectionEntry removeConnection(InWorldNodeConnection connection) {
@@ -122,6 +145,7 @@ public class WireSimulationState {
                 c.remove(entry.node);
             }
         }
+        reloadLazyConnections();
         return v;
     }
 
@@ -160,6 +184,7 @@ public class WireSimulationState {
         if (load)
             return;
         sd.wireCrossContactModule.onWireAdded(connection, connectionEntry);
+        reloadLazyConnections();
     }
 
     public AttachedNode createCut(WireCutHandle handle, InWorldNodeConnection connection, float point) {
@@ -185,6 +210,7 @@ public class WireSimulationState {
                 break;
             }
         }
+        reloadLazyConnections();
         return node;
     }
 
@@ -208,6 +234,7 @@ public class WireSimulationState {
                 break;
             }
         }
+        reloadLazyConnections();
         return node;
     }
 
@@ -220,6 +247,7 @@ public class WireSimulationState {
             cutWireEntry.originalList.remove(cutWireEntry);
         }));
         entries.clear();
+        reloadLazyConnections();
     }
 
     public void removeCut(WireCutHandle handle, AttachedNode node) {
@@ -229,6 +257,7 @@ public class WireSimulationState {
         CutWireEntry entry = entries.remove(node);
         if (entry != null)
             entry.originalList.remove(entry);
+        reloadLazyConnections();
     }
 
     public void relocateCut(WireCutHandle handle, AttachedNode node, float point) {
@@ -243,6 +272,7 @@ public class WireSimulationState {
             originalList.sort(Comparator.comparing(CutWireEntry::point));
             entries.replace(node, newEntry);
         }
+        reloadLazyConnections();
     }
 
     /**
@@ -290,6 +320,7 @@ public class WireSimulationState {
     public void rebuild() {
         sd.wireCrossContactModule.onRebuild();
         rebuild = false;
+        reloadLazyConnections();
     }
 
     public Collection<ConnectionEntry> getAllConnectionEntries() {

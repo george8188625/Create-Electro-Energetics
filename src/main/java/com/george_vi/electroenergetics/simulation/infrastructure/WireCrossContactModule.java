@@ -2,13 +2,17 @@ package com.george_vi.electroenergetics.simulation.infrastructure;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
+import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
+import it.unimi.dsi.fastutil.objects.ObjectDoubleImmutablePair;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +23,7 @@ public class WireCrossContactModule {
     final ServerLevel level;
     final WireSimulationState wireSimulationState;
     public Map<WireSimulationState.WireCutHandle, CrossContactEntry> crossContacts = new HashMap<>();
-    public Map<InWorldNodeConnection, CrossContactEntry> crossContactsByWire = new HashMap<>();
+    public Map<InWorldNodeConnection, List<CrossContactEntry>> crossContactsByWire = new HashMap<>();
 
     public WireCrossContactModule(InfrastructureSavedData sd, ServerLevel level, WireSimulationState wireSimulationState) {
         this.sd = sd;
@@ -38,13 +42,14 @@ public class WireCrossContactModule {
     public void onWireRemoved(InWorldNodeConnection connection, ConnectionEntry connectionData) {
         if (!CEEConfigs.server().enableCrossContact.get())
             return;
-        CrossContactEntry entry = crossContactsByWire.remove(connection);
-        if (entry != null) {
-            if (!entry.handle.valid())
-                return;
-            crossContacts.remove(entry.handle);
-            wireSimulationState.invalidateHandle(entry.handle);
-        }
+        List<CrossContactEntry> entries = crossContactsByWire.remove(connection);
+        if (entries != null)
+            for (CrossContactEntry entry : entries) {
+                if (!entry.handle.valid())
+                    return;
+                crossContacts.remove(entry.handle);
+                wireSimulationState.invalidateHandle(entry.handle);
+            }
     }
 
     public void onWireAdded(InWorldNodeConnection connection, ConnectionEntry connectionData) {
@@ -57,6 +62,9 @@ public class WireCrossContactModule {
         AABB bb = connectionData.bb;
         List<Vec3> points = connectionData.points;
         WireData wireData = connectionData.wireData;
+        List<CrossContactEntry> entries = crossContactsByWire.get(connection);
+        if (entries != null)
+            entries.clear();
         for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             InWorldNodeConnection connection2 = e.getKey();
             ConnectionEntry connectionData2 = e.getValue();
@@ -119,14 +127,24 @@ public class WireCrossContactModule {
 
                 CrossContactEntry entry = new CrossContactEntry(handle, 0.1, attachedNode1, attachedNode2, bestPos1, bestPos2, bestDist);
                 crossContacts.put(handle, entry);
-                crossContactsByWire.put(connection, entry);
-                crossContactsByWire.put(connection2, entry);
+                crossContactsByWire.computeIfAbsent(connection, c -> new ArrayList<>()).add(entry);
+                crossContactsByWire.computeIfAbsent(connection2, c -> new ArrayList<>()).add(entry);
             }
         }
     }
 
-    public void buildCircuit(CircuitBuilder builder) {
-        crossContacts.forEach((h, e) -> builder.connect(e.node1, e.node2, ElectricalProperties.resistor(e.resistance)));
+    public void loadLazyConnections(List<ObjectDoublePair<DirectionalNodeConnection>> preLoadedConnections) {
+        if (CEEConfigs.server().enableCrossContact.get())
+            crossContacts.forEach((h, e) -> preLoadedConnections.add(new ObjectDoubleImmutablePair<>(new DirectionalNodeConnection(e.node1, e.node2), e.resistance)));
+    }
+
+    public void onReloadConfigs() {
+        if (!CEEConfigs.server().enableCrossContact.get() && !crossContacts.isEmpty()) {
+            for (CrossContactEntry entry : crossContacts.values()) {
+                if (entry.handle.valid())
+                    wireSimulationState.invalidateHandle(entry.handle);
+            }
+        }
     }
 
     public record CrossContactEntry(WireSimulationState.WireCutHandle handle, double resistance, AttachedNode node1, AttachedNode node2, Vec3 pos1, Vec3 pos2, double distance) {

@@ -19,6 +19,7 @@ import com.george_vi.electroenergetics.content.electronic_components.inductor.In
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlock;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlock;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterItem;
+import com.george_vi.electroenergetics.content.energy_meter.TriPolarEnergyMeterBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlock;
@@ -328,15 +329,15 @@ public class CEEBlocks {
             .build()
             .register();
 
-    public static final BlockEntry<EnergyMeterBlock> TRI_POLAR_ENERGY_METER = REGISTRATE.block("tri_polar_energy_meter", properties -> new EnergyMeterBlock(properties))
+    public static final BlockEntry<TriPolarEnergyMeterBlock> TRI_POLAR_ENERGY_METER = REGISTRATE.block("tri_polar_energy_meter", properties -> new TriPolarEnergyMeterBlock(properties))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
                     ConfiguredModel.builder()
-                            .modelFile(state.getValue(EnergyMeterBlock.INVERTED) ?
+                            .modelFile(state.getValue(TriPolarEnergyMeterBlock.INVERTED) ?
                                     AssetLookup.partialBaseModel(c, p, "inverted") :
                                     AssetLookup.partialBaseModel(c, p))
-                            .rotationY((int) state.getValue(EnergyMeterBlock.FACING).getOpposite().toYRot())
+                            .rotationY((int) state.getValue(TriPolarEnergyMeterBlock.FACING).getOpposite().toYRot())
                             .build()
             )))
             .transform(pickaxeOnly())

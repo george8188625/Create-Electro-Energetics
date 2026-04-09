@@ -1,9 +1,9 @@
 {
-	"format_version": "1.21.6",
+	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
-	"texture_size": [32, 32],
 	"textures": {
 		"0": "electroenergetics:block/hv_switch",
+		"1": "electroenergetics:block/connector",
 		"particle": "electroenergetics:block/hv_switch"
 	},
 	"elements": [
@@ -11,12 +11,12 @@
 			"from": [-2.05, -2.05, -2.05],
 			"to": [2.05, 2.05, 2.05],
 			"faces": {
-				"north": {"uv": [13, 3.5, 11, 5.5], "texture": "#0"},
-				"east": {"uv": [11, 3.5, 13, 5.5], "texture": "#0"},
-				"south": {"uv": [13, 3.5, 11, 5.5], "texture": "#0"},
-				"west": {"uv": [11, 3.5, 13, 5.5], "texture": "#0"},
-				"up": {"uv": [11, 3.5, 13, 5.5], "texture": "#0"},
-				"down": {"uv": [11, 3.5, 13, 5.5], "texture": "#0"}
+				"north": {"uv": [10, 7, 6, 11], "texture": "#1"},
+				"east": {"uv": [6, 7, 10, 11], "texture": "#1"},
+				"south": {"uv": [10, 7, 6, 11], "texture": "#1"},
+				"west": {"uv": [6, 7, 10, 11], "texture": "#1"},
+				"up": {"uv": [6, 7, 10, 11], "texture": "#1"},
+				"down": {"uv": [6, 7, 10, 11], "texture": "#1"}
 			}
 		},
 		{
@@ -24,8 +24,8 @@
 			"to": [4, 4, 4],
 			"rotation": {"angle": 0, "axis": "y", "origin": [0, 1, 0]},
 			"faces": {
-				"east": {"uv": [3, 1.5, 7, 4.5], "texture": "#0"},
-				"west": {"uv": [3, 1.5, 7, 4.5], "texture": "#0"}
+				"east": {"uv": [6, 3, 14, 9], "texture": "#0"},
+				"west": {"uv": [6, 3, 14, 9], "texture": "#0"}
 			}
 		},
 		{
@@ -33,8 +33,8 @@
 			"to": [4, 1, 1],
 			"rotation": {"angle": 0, "axis": "y", "origin": [0, 1, 0]},
 			"faces": {
-				"up": {"uv": [15, 2, 16, 6], "rotation": 270, "texture": "#0"},
-				"down": {"uv": [15, 2, 16, 6], "rotation": 90, "texture": "#0"}
+				"up": {"uv": [14, 4, 16, 12], "rotation": 270, "texture": "#1"},
+				"down": {"uv": [14, 4, 16, 12], "rotation": 90, "texture": "#1"}
 			}
 		},
 		{
@@ -42,8 +42,8 @@
 			"to": [-4, 4, 4],
 			"rotation": {"angle": 0, "axis": "y", "origin": [0, 1, 0]},
 			"faces": {
-				"east": {"uv": [3, 1.5, 7, 4.5], "texture": "#0"},
-				"west": {"uv": [3, 1.5, 7, 4.5], "texture": "#0"}
+				"east": {"uv": [6, 3, 14, 9], "texture": "#0"},
+				"west": {"uv": [6, 3, 14, 9], "texture": "#0"}
 			}
 		}
 	]

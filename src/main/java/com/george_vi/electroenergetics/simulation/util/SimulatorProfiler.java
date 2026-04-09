@@ -7,8 +7,8 @@ import java.util.*;
 
 public class SimulatorProfiler {
     private final ResultEntry root = new ResultEntry("r");
-    private final Deque<ResultEntry> entryStack = new ArrayDeque<>();
-    private final Deque<Long> startTimes = new ArrayDeque<>();
+    private final Deque<ResultEntry> entryStack = new ArrayDeque<>(4);
+    private final Deque<Long> startTimes = new ArrayDeque<>(4);
     private long profilerOverheadNanos = 0L;
     private long threadedNanos = 0L;
     private long solverNanos = 0L;
@@ -34,14 +34,11 @@ public class SimulatorProfiler {
             else
                 throw new IllegalStateException("Mismatched push/pop");
 
-        long before = System.nanoTime();
         long start = startTimes.pop();
         long now = System.nanoTime();
         long diff = now - start;
         ResultEntry node = entryStack.pop();
         node.timeTookNanos += diff;
-
-        profilerOverheadNanos += System.nanoTime() - before;
     }
 
     public void popPush(String id) {
@@ -103,6 +100,7 @@ public class SimulatorProfiler {
         }
 
         List<ResultEntry> childrenList() { return children; }
+
         void childrenClear() {
             children.clear();
             childrenMap.clear();

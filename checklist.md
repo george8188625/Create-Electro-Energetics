@@ -66,6 +66,11 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Direct TFMG compatibility
 ### UX
 - [ ] Remaining cable counter - displays the length of the wire while placing
+### Finishing touches (Actually required for release)
+- [ ] Voltage regulator power limit
+- [ ] Indicator bulb voltage limit
+- [ ] Energy meter voltage limit
+- [ ] Gauge voltage & current limits
 ### Ponders
 - [x] Resistance
 - [ ] Voltage divider
@@ -78,4 +83,3 @@ These are potential and planned features. Feel free to contribute by implementin
 - [x] Energy meters
 - [x] Grounding
 - [x] Transformer core
-

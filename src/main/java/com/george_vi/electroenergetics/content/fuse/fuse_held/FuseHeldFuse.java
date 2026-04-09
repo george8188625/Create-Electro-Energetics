@@ -40,7 +40,7 @@ public class FuseHeldFuse extends FuseHoldable {
         SwitchingBehaviour behaviour = new SwitchingBehaviour(data.getCompound("Behaviour"));
         boolean isBroken = data.getBoolean("Broken");
 
-        double voltage = Math.abs(results.getVoltageAt(pos, 0, 1));
+        double voltage = Math.abs(results.getVoltageAt(pos, id1, id2));
         double current = voltage / behaviour.resistance();
 
         float temp = data.getFloat("Temp");

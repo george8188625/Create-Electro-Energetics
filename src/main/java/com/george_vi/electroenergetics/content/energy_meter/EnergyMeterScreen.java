@@ -65,8 +65,8 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
         int stringWidth = font.width(title);
         graphics.drawString(font, title, x - stringWidth / 2 + windowWidth / 2, y + 4, 0xFFFFEE);
 
-        double smoothTotalEnergy = Mth.lerp(((AnimationTickHolder.getTicks() + AnimationTickHolder.getPartialTicks()) - be.thisPacketTick) /(be.thisPacketTick-be.lastPacketTick), be.oldTotalEnergy, be.totalEnergy);
-        double totalEnergy = Mth.lerp(((AnimationTickHolder.getTicks() + AnimationTickHolder.getPartialTicks()) - be.thisPacketTick) / (be.thisPacketTick-be.lastPacketTick), be.oldTotalEnergy, be.totalEnergy);
+        double smoothTotalEnergy = be.smoothTotalEnergy.getValue(partialTicks);
+        double totalEnergy = be.smoothTotalEnergy.getValue(partialTicks);
 
         totalEnergy = 10000000 + totalEnergy;
 

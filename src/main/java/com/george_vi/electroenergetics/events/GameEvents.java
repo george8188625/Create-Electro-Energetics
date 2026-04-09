@@ -18,6 +18,8 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureS
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -35,6 +37,7 @@ import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @EventBusSubscriber(modid = CreateElectroEnergetics.ID)
 public class GameEvents {
@@ -55,6 +58,16 @@ public class GameEvents {
     public static void renderLevel(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES)
             WireRenderer.render(event.getLevelRenderer(), event.getPoseStack(), event.getCamera());
+    }
+
+    @SubscribeEvent
+    public static void serverTickEvent(ServerTickEvent.Post event) {
+        if (ModEvents.changedConfigs.getAndSet(false))
+            for (ServerLevel level : event.getServer().getAllLevels()) {
+                InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+                sd.wireSimulationState.onReloadConfigs();
+                sd.wireSimulationState.reloadLazyConnections();
+            }
     }
 
     @SubscribeEvent
@@ -136,7 +149,6 @@ public class GameEvents {
 
         sd.catenaryModule.buildCircuit(event.builder);
         sd.wireElectrocutionModule.buildCircuit(event.builder);
-        sd.wireCrossContactModule.buildCircuit(event.builder);
         WireSparkEffectTicker.preTick(event.level);
     }
 

@@ -111,8 +111,7 @@ public class SimulationTicker {
         // This is done to reduce performance overhead from creating connections on the main thread.
         // Some systems can define which connections to add, which will later be connected.
         // This moves wire creation away from the main thread and into the electrical thread.
-        List<ObjectDoublePair<DirectionalNodeConnection>> wiresToJoin = new ArrayList<>();
-        sd.wireAssemblerModule.buildCircuit(wiresToJoin);
+        List<ObjectDoublePair<DirectionalNodeConnection>> wiresToJoin = new ArrayList<>(sd.wireSimulationState.getLazyConnections());
 
 
         future = electricalWorkerThread.submit(() -> {

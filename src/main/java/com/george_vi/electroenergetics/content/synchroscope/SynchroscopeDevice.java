@@ -33,7 +33,7 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
     public boolean isFirstPhaseS;
     public byte phaseOrderP;
     public byte phaseOrderS;
-
+    double delta;
     public SynchroscopeDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
         super(level, pos, deviceSD, type);
     }
@@ -60,7 +60,7 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
             else {
                 float v = calculatePhaseOffset(pos, results) % 360;
                 boolean validConnection = (phaseOrderP & 0b1100) == (phaseOrderS & 0b1100);
-                if (Math.abs(be.phaseOffset - v) > 3 ||
+                if ((ticks % 10 == 0 && Math.abs(be.phaseOffset - v) > 1) ||
                         be.validConnection != validConnection) {
                     be.phaseOffset = v;
                     be.validConnection = validConnection;
@@ -70,13 +70,19 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
         }
     }
 
+    double[] p;
+    double[] s;
+    double[] p1;
+    double[] s1;
+    double[] p2;
+    double[] s2;
     private float calculatePhaseOffset(BlockPos pos, SimulationResults results) {
-        double[] p = results.getVoltages(new InWorldNode(1, pos));
-        double[] s = results.getVoltages(new InWorldNode(4, pos));
-        double[] p1 = results.getVoltages(new InWorldNode(0, pos));
-        double[] s1 = results.getVoltages(new InWorldNode(3, pos));
-        double[] p2 = results.getVoltages(new InWorldNode(2, pos));
-        double[] s2 = results.getVoltages(new InWorldNode(5, pos));
+        p = results.getVoltages(new InWorldNode(1, pos), p);
+        s = results.getVoltages(new InWorldNode(4, pos), s);
+        p1 = results.getVoltages(new InWorldNode(0, pos), p1);
+        s1 = results.getVoltages(new InWorldNode(3, pos), s1);
+        p2 = results.getVoltages(new InWorldNode(2, pos), p2);
+        s2 = results.getVoltages(new InWorldNode(5, pos), s2);
 
         for (int i = 0; i < p.length; i++) {
             this.ticks++;
@@ -145,7 +151,7 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
 
         double diff = Mth.TWO_PI * (this.prevCrossS - this.prevCrossP) / this.prevPeriodP;
 
-        double delta = Double.isNaN(diff) ? 0 : diff - this.prevDiff;
+        delta = Double.isNaN(diff) ? 0 : diff - this.prevDiff;
         diff = Double.isNaN(diff) ? 0 : diff;
         if (delta > 100 || delta < -100) // If delta would ever become Infinity, this would brick words. This prevents it.
             delta = 0;

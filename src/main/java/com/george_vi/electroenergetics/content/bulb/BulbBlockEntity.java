@@ -47,6 +47,6 @@ public class BulbBlockEntity extends SmartBlockEntity {
         super.read(tag, registries, clientPacket);
         light = tag.getFloat("Light");
         if (clientPacket)
-            smoothLight.chase(light, 0.5f, LerpedFloat.Chaser.LINEAR);
+            smoothLight.chase(light, 0.5f, LerpedFloat.Chaser.EXP);
     }
 }

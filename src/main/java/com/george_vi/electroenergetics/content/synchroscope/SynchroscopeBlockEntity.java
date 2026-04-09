@@ -8,6 +8,7 @@ import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.lang.FontHelper;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -48,14 +49,17 @@ public class SynchroscopeBlockEntity extends SmartBlockEntity implements IHaveHo
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
+
         if (clientPacket) {
             prevPhaseOffset = phaseOffset;
             tickLength = Math.max(1, counter);
             counter = 0;
         }
-        smoothPhase.chase(phaseOffset, 1, LerpedFloat.Chaser.LINEAR);
         phaseOffset = tag.getFloat("PhaseOffset");
         validConnection = tag.getBoolean("ValidConnection");
+
+        float diff = (AngleHelper.getShortestAngleDiff(phaseOffset, prevPhaseOffset) % 180) / 180f;
+        smoothPhase.chase(phaseOffset, diff, LerpedFloat.Chaser.EXP);
     }
 
     @Override

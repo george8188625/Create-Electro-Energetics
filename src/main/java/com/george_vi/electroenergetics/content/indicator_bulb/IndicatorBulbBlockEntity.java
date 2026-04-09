@@ -45,8 +45,8 @@ public class IndicatorBulbBlockEntity extends SmartBlockEntity {
         firstLight = tag.getFloat("FirstLight");
         secondLight = tag.getFloat("SecondLight");
         if (clientPacket) {
-            firstSmoothLight.chase(firstLight, 0.007, LerpedFloat.Chaser.LINEAR);
-            secondSmoothLight.chase(secondLight, 0.007, LerpedFloat.Chaser.LINEAR);
+            firstSmoothLight.chase(firstLight, 0.75, LerpedFloat.Chaser.EXP);
+            secondSmoothLight.chase(secondLight, 0.75, LerpedFloat.Chaser.EXP);
         }
     }
 

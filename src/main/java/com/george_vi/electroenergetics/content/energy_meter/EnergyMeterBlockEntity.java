@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.energy_meter;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.animation.LerpedFloat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -20,12 +21,10 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
 
 
     public double activePower = 0;
-    public double totalEnergy = 0;
-    public double oldTotalEnergy = 0;
+    public double totalEnergy = -1;
+    public LerpedFloat smoothTotalEnergy = LerpedFloat.linear();
     public int ticks = 0;
     public boolean disconnected;
-    public int lastPacketTick;
-    public int thisPacketTick;
     public UUID owner;
 
     public void setTotalEnergy(double newTotalEnergy) {
@@ -43,26 +42,22 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
     @Override
     public void tick() {
         super.tick();
-        if (level.isClientSide && AnimationTickHolder.getTicks() % 8 == 0) {
-            oldTotalEnergy = totalEnergy;
-        }
+        if (level.isClientSide)
+            smoothTotalEnergy.tickChaser();
     }
 
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-
-        oldTotalEnergy = totalEnergy;
+        boolean first = totalEnergy == -1;
         totalEnergy = tag.getDouble("TotalEnergy");
         activePower = tag.getDouble("ActivePower");
         disconnected = tag.getBoolean("Disconnected");
         if (tag.contains("Owner"))
             owner = tag.getUUID("Owner");
 
-        if (clientPacket) {
-            lastPacketTick = thisPacketTick;
-            thisPacketTick = AnimationTickHolder.getTicks();
-        }
+        if (clientPacket)
+            smoothTotalEnergy.chase(totalEnergy, first ? 1 : 0.5, LerpedFloat.Chaser.EXP);
     }
 
     @Override

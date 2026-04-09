@@ -23,6 +23,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -32,6 +33,7 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @EventBusSubscriber(modid = CreateElectroEnergetics.ID)
 public class ModEvents {
@@ -53,6 +55,13 @@ public class ModEvents {
             PonderIndex.addPlugin(new CEEPonderPlugin());
             PonderIndex.getLangAccess().provideLang(CreateElectroEnergetics.ID, provider::add);
         });
+    }
+
+    public static final AtomicBoolean changedConfigs = new AtomicBoolean(false);
+
+    @SubscribeEvent
+    public static void reloadModConfig(ModConfigEvent.Reloading event) {
+        changedConfigs.set(true);
     }
 
     @SubscribeEvent

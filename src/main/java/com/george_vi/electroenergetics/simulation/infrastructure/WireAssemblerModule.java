@@ -3,16 +3,11 @@ package com.george_vi.electroenergetics.simulation.infrastructure;
 import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
-import com.george_vi.electroenergetics.simulation.CircuitBuilder;
-import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
-import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.ObjectDoubleImmutablePair;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.minecraft.server.level.ServerLevel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +28,7 @@ public class WireAssemblerModule {
      * It just writes what to connect here (main thread) and connects it off thread.
      * This is done to not tank TPS on large worlds
      */
-    public void buildCircuit(List<ObjectDoublePair<DirectionalNodeConnection>> out) {
+    public void loadLazyConnections(List<ObjectDoublePair<DirectionalNodeConnection>> out) {
 
         for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             InWorldNodeConnection connection = e.getKey();

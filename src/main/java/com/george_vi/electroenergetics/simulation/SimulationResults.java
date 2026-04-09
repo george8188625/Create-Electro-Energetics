@@ -183,4 +183,18 @@ public class SimulationResults {
         System.arraycopy(voltages, id, r, 0, microTicks);
         return r;
     }
+
+    /**
+     * Copies all the voltages at this game-tick for this node into the specified array. If it's invalid, creates a new one.
+     */
+    public double[] getVoltages(Node n1, double[] toFill) {
+        if (toFill == null || toFill.length != microTicks)
+            toFill = new double[microTicks];
+        int nodeID = circuitBuilder.nodeIndexes.getInt(n1);
+        if (nodeID == -1)
+            return new double[0];
+        int id = nodeID << microTickBits;
+        System.arraycopy(voltages, id, toFill, 0, microTicks);
+        return toFill;
+    }
 }
