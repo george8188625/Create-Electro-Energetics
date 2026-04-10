@@ -2,31 +2,39 @@
 
 These are potential and planned features. Feel free to contribute by implementing some of them.
 
+### Legend:
+`R` - Needs to be done before the release.
+
 ### Train & railway electrification
 - [ ] Electric train lights
 - [ ] Energy meters work on trains
 - [ ] Electric train detector
 - [ ] Bottom contact third rail
+- [ ] Pantograph extend/retract schedule instruction
 ### Lighting
 - [ ] Floodlights
 - [ ] Pole mount lights
 - [ ] Electric train lights
 - [ ] Growing bulb - increases crop growth
 ### Electrical Engineering
-- [ ] Small alternators
+- [ ] Small alternators `R`
 - [ ] Alternating Current (using Micro-Ticking)
 - - [ ] Micro-ticked accumulators
 - - [ ] AC content
+- - - [ ] Frequency gauge
+- - - [ ] Inverters
+- - - [ ] ...
 - [ ] Realistic grounding
 - [ ] Variac
 - [ ] Realistic surge protection
 - [ ] Electromagnets - can be used in alternators as exciters or to attract items
-- [ ] Fuses have changeable max amperage
+- [ ] `R` Fuses have changeable max amperage
 - [ ] Interdimensional transformer - a transformer placed in a nether portal that allows for getting power to the nether.
-- [x] SF6 Breakers
+- [x] `R` SF6 Breakers
 - [ ] Normal automatic breakers (MCBs)
 - [ ] Solar panels
-- [x] Current & Potential transformers
+- [x] `R` Current & Potential transformers
+- [ ] MV switch
 ### Electronics
 - [ ] Transistors
 - [ ] Variacs
@@ -37,28 +45,34 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Some way of reading voltage/current into an analog signal
 - [ ] 5 pin relay
 - [ ] Redstone triode - A triode, but instead of outputting an electrical signal, it outputs a redstone signal adjustable from 0 to 15. It will be a kind of bridge between electricity and redstone, simpler and more configurable than a comparator, and considerably more space-efficient.
+- [ ] `R` Redstone threshold activator - uses current or redstone to activate or deactivate a redstone signal. (Used for SF6 breakers)
 ### Content
 - [ ] Changeable buzzer pitch
 - [ ] Galvanic basin recipes 
 - [ ] Zipline hook - Like IE skyhook
 - [ ] Electric doors - Buzz in door
-- [ ] Resistive heater - Electric blaze burner
+- [x] `R` Resistive heater - Electric blaze burner
 - [ ] A coil-gun-like weapon
 - [ ] Solenoid valves - opens or closes create's pipes
 - [ ] Diagonal concrete beams
 - [ ] Colored heavily insulated wire
-- [ ] Modded metal wire types
 - [ ] Multiblock accumulators
 - [ ] Basin electrodes - allows for new recipe types using electricity
-- [ ] Bundled cables
+- [ ] `R` Bundled cables
 - [ ] Bell (like buzzer)
+- [ ] L1, L2, L3, N ... signs
+- [ ] `R` Fuse Holder held:
+- - [ ] Ammeter / Voltmeter
+- - [ ] Voltmeter
+- - [ ] Accumulators
+- [ ] `R` Electrical panel casing - used to make electrical panels
 ### Big, cool, heavy and complex machinery
 - [ ] Electric Arc Furnace - an actually large and realistic(-ish) one
 - - [ ] Electrodes
 - - [ ] Recipe system
 - - [ ] EAF multiblock behaviour
-- [ ] Multiblock electric motors + electric motor nerf
-- [ ] The great alternator rework
+- [ ] `R` Multiblock electric motors + electric motor nerf
+- [ ] `R` The great alternator rework
 ### Integration
 - [ ] Alternator brushes peripheral
 - [ ] Energy meter peripheral
@@ -66,20 +80,25 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Direct TFMG compatibility
 ### UX
 - [ ] Remaining cable counter - displays the length of the wire while placing
-### Finishing touches (Actually required for release)
-- [ ] Voltage regulator power limit
-- [ ] Indicator bulb voltage limit
-- [ ] Energy meter voltage limit
-- [ ] Gauge voltage & current limits
+### Finishing touches
+- [ ] `R` Voltage regulator power limit
+- [ ] `R` Indicator bulb voltage limit
+- [ ] `R` Energy meter voltage limit
+- [ ] `R` Gauge voltage & current limits
+- [ ] `R` SF6 breakers or HV switches can be linked together, which makes them activate as one
+- [ ] `R` SF6 crafting recipe
+- [ ] `R` More involving recipes
+- [ ] Indicator bulbs can control train signals
+- [ ] Normally closed mode for momentary switch
 ### Ponders
-- [x] Resistance
-- [ ] Voltage divider
-- [ ] Capacitor
-- [ ] Potentiometer
-- [ ] Faults
-- [ ] Protection (fuses)
-- [x] Switch
-- [x] Relays
-- [x] Energy meters
-- [x] Grounding
-- [x] Transformer core
+- [x] `R` Resistance
+- [ ] `R` Voltage divider
+- [ ] `R` Capacitor
+- [ ] `R` Potentiometer
+- [ ] `R` Faults
+- [ ] `R` Protection (fuses)
+- [x] `R` Switch
+- [x] `R` Relays
+- [x] `R` Energy meters
+- [x] `R` Grounding
+- [x] `R` Transformer core
