@@ -33,7 +33,6 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
     public boolean isFirstPhaseS;
     public byte phaseOrderP;
     public byte phaseOrderS;
-    double delta;
     public SynchroscopeDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
         super(level, pos, deviceSD, type);
     }
@@ -151,7 +150,7 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
 
         double diff = Mth.TWO_PI * (this.prevCrossS - this.prevCrossP) / this.prevPeriodP;
 
-        delta = Double.isNaN(diff) ? 0 : diff - this.prevDiff;
+        double delta = Double.isNaN(diff) ? 0 : diff - this.prevDiff;
         diff = Double.isNaN(diff) ? 0 : diff;
         if (delta > 100 || delta < -100) // If delta would ever become Infinity, this would brick words. This prevents it.
             delta = 0;

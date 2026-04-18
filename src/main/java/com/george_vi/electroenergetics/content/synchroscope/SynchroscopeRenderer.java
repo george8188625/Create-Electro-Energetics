@@ -26,7 +26,6 @@ public class SynchroscopeRenderer extends SmartBlockEntityRenderer<SynchroscopeB
                 .rotateYCenteredDegrees(-blockEntity.getBlockState().getValue(SynchroscopeBlock.FACING).toYRot())
                 .translate(0.5f, 0.5f, 7.5f/16f)
                 .rotateZDegrees(r)
-
                 .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
     }

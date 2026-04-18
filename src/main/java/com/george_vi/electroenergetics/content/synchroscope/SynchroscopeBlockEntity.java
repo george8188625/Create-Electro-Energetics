@@ -43,6 +43,8 @@ public class SynchroscopeBlockEntity extends SmartBlockEntity implements IHaveHo
         counter = Mth.clamp(counter + 1, 0, 20);
         if (counter > 20)
             prevPhaseOffset = phaseOffset;
+        if (AngleHelper.getShortestAngleDiff(smoothPhase.getValue(), phaseOffset) > 1)
+            smoothPhase.chase(phaseOffset, 1, LerpedFloat.Chaser.EXP);
         smoothPhase.tickChaser();
     }
 
@@ -59,7 +61,9 @@ public class SynchroscopeBlockEntity extends SmartBlockEntity implements IHaveHo
         validConnection = tag.getBoolean("ValidConnection");
 
         float diff = (AngleHelper.getShortestAngleDiff(phaseOffset, prevPhaseOffset) % 180) / 180f;
-        smoothPhase.chase(phaseOffset, diff, LerpedFloat.Chaser.EXP);
+        if (Float.isNaN(smoothPhase.getValue()))
+            smoothPhase.setValue(0);
+        smoothPhase.chase(phaseOffset, Mth.lerp(diff, 0.1, 1), LerpedFloat.Chaser.EXP);
     }
 
     @Override

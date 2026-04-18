@@ -44,7 +44,7 @@ public class PotentiometerBlockEntity extends KineticBlockEntity {
     public void tick() {
         if (level instanceof ServerLevel sl) {
             float prevProgress = progress;
-            progress = Mth.clamp(progress + getSpeed() / 1000, 0, 1);
+            progress = Mth.clamp(progress + getSpeed() / 5000, 0, 1);
             if (prevProgress != progress) {
                 PotentiometerDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, PotentiometerDevice.class);
 

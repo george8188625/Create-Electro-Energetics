@@ -46,8 +46,9 @@ public class AccumulatorDevice extends SimpleElectricalDevice {
     @Override
     public void postTick(SimulationResults results) {
         this.lastVoltage = results.getVoltageAt(pos, 0, 2);
-        this.lastTotalVoltage = results.getVoltageAt(pos, 0, 1);
-        double v = Math.abs(this.lastVoltage);
+        double totalVoltage = results.getVoltageAt(pos, 0, 1);
+        this.lastTotalVoltage = totalVoltage;
+        double v = Math.abs(lastVoltage);
 
         if (this.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof AccumulatorBlockEntity be)
@@ -61,7 +62,7 @@ public class AccumulatorDevice extends SimpleElectricalDevice {
             }
         }
 
-        float loss = (float) Math.abs(results.getCurrentThrough(pos, 1, 2) * results.getVoltageAt(pos, 0, 1) * results.getVoltageAt(pos, 0, 1)) / 10000;
+        float loss = (float) Math.abs(results.getCurrentThrough(pos, 1, 2) * totalVoltage * totalVoltage) / 10000;
 
         this.temp = updateTemp(this.temp, loss);
 

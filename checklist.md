@@ -84,11 +84,12 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] `R` Voltage regulator power limit
 - [ ] `R` Indicator bulb voltage limit
 - [ ] `R` Energy meter voltage limit
-- [ ] `R` Gauge voltage & current limits
+- [x] `R` Gauge voltage & current limits
 - [ ] `R` SF6 breakers or HV switches can be linked together, which makes them activate as one
 - [ ] `R` SF6 crafting recipe
 - [ ] `R` More involving recipes
-- [ ] Indicator bulbs can control train signals
+- [ ] `R` Pump voltage limit
+- [ ] Indicator bulbs can be controlled by train signals
 - [ ] Normally closed mode for momentary switch
 ### Ponders
 - [x] `R` Resistance

@@ -85,10 +85,12 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
 
         phasing = newPhasing;
         ElectricTrainSoundInstance newInstance = new ElectricTrainSoundInstance(pos, phasing.soundEvent);
-        newInstance.setPitchImmediately(mainSoundInstance.getPitch());
+        // if mainSoundInstance is for some reason null, this prevents an NPE
+        newInstance.setPitchImmediately(mainSoundInstance == null ? 1 : mainSoundInstance.getPitch());
         newInstance.setVolumeImmediately(3);
 
-        Minecraft.getInstance().getSoundManager().stop(mainSoundInstance);
+        if (mainSoundInstance != null)
+            Minecraft.getInstance().getSoundManager().stop(mainSoundInstance);
         Minecraft.getInstance().getSoundManager().play(mainSoundInstance = newInstance);
 
 

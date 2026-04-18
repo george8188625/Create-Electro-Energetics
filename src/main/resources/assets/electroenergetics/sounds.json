@@ -88,6 +88,15 @@
     ],
     "subtitle": "electroenergetics.subtitle.buzzer"
   },
+  "sulfur_hexafluoride_breaker_trip": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:sulfur_hexafluoride_breaker_trip"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.sulfur_hexafluoride_breaker_trip"
+  },
 
   "train/background/wind_rise": {
     "sounds": [

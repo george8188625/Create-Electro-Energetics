@@ -46,7 +46,8 @@ public class LUSolver {
                 double m = aik / rowK.values[k];
                 rowI.put(k, m);
 
-                for (int j : rowK.getNz()) {
+                for (int jIndex = 0; jIndex < rowK.getFlatNzSize(); jIndex++) {
+                    int j = rowK.getFlatNz()[jIndex];
                     if (j <= k) continue;
                     double newValue = rowI.values[j] - m * rowK.values[j];
                     rowI.put(j, newValue);

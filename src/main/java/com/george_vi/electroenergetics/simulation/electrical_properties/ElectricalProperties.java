@@ -43,6 +43,8 @@ public class ElectricalProperties {
     }
 
     public ElectricalProperties invert() {
+        if (isSimpleResistor())
+            return this;
         return new ElectricalProperties(resistance, voltageSource == 0 ? 0 : -voltageSource, currentSource == 0 ? 0 : -currentSource, isForcedVoltageSource);
     }
 

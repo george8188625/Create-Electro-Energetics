@@ -24,6 +24,8 @@ public class SF6BreakerDevice extends SimpleElectricalDevice implements VirtualR
     public InsulatorDevice insulatorDevice;
     public InsulatorDevice insulatorDevice2;
     public byte[] power = new byte[Direction.values().length];
+    public int cooldown = 0;
+    public boolean closed = true;
 
     public static final ElectricalProperties CONNECTION = ElectricalProperties.resistor(0.01);
 
@@ -41,26 +43,37 @@ public class SF6BreakerDevice extends SimpleElectricalDevice implements VirtualR
         if (!this.base)
             return;
 
-        BlockPos insulatorPos = pos.below();
-        if (this.insulatorDevice == null || !this.insulatorDevice.isValid()) {
-            this.insulatorDevice = deviceSD.getDevice(insulatorPos, InsulatorDevice.class);
-        }
-
-        if (this.insulatorDevice != null) {
-            if (this.insulatorDevice2 == null || !this.insulatorDevice2.isValid()) {
-                this.insulatorDevice2 = deviceSD.getDevice(insulatorPos.below(), InsulatorDevice.class);
+        if (cooldown > 0)
+            cooldown--;
+        else {
+            BlockPos insulatorPos = pos.below();
+            if (this.insulatorDevice == null || !this.insulatorDevice.isValid()) {
+                this.insulatorDevice = deviceSD.getDevice(insulatorPos, InsulatorDevice.class);
             }
-        } else {
-            this.insulatorDevice2 = null;
+
+            if (this.insulatorDevice != null) {
+                if (this.insulatorDevice2 == null || !this.insulatorDevice2.isValid()) {
+                    this.insulatorDevice2 = deviceSD.getDevice(insulatorPos.below(), InsulatorDevice.class);
+                }
+            } else {
+                this.insulatorDevice2 = null;
+            }
+
+            boolean prevClosed = closed;
+            if (this.otherDevice != null && !this.powered && !this.otherDevice.powered)
+                closed = (this.insulatorDevice == null || !this.insulatorDevice.powered) &&
+                        (this.insulatorDevice2 == null || !this.insulatorDevice2.powered);
+            else
+                closed = false;
+            if (prevClosed != closed) {
+                cooldown = 80;
+                Vec3 pPos = Vec3.atCenterOf(pos);
+                level.playSound(null, pPos.x, pPos.y, pPos.z, CEESoundEvents.SF6_TRIP.get(), SoundSource.BLOCKS, 1, 1f);
+            }
         }
 
-        if (this.otherDevice != null && !this.powered && !this.otherDevice.powered) {
-            if (this.insulatorDevice != null && this.insulatorDevice.powered)
-                return;
-            if (this.insulatorDevice2 != null && this.insulatorDevice2.powered)
-                return;
+        if (closed)
             bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, otherPos), CONNECTION);
-        }
     }
 
     @Override
@@ -86,7 +99,6 @@ public class SF6BreakerDevice extends SimpleElectricalDevice implements VirtualR
     public void updateRedstoneInput(int power, Direction direction) {
         byte[] powerLevels = this.power;
         powerLevels[direction.ordinal()] = (byte) power;
-        boolean prevPowered = this.powered;
         boolean p = false;
         for (byte b : powerLevels) {
             if (b > 0) {
@@ -95,11 +107,6 @@ public class SF6BreakerDevice extends SimpleElectricalDevice implements VirtualR
             }
         }
         this.powered = p;
-
-        if (p != prevPowered) {
-            Vec3 pPos = Vec3.atCenterOf(pos);
-            level.playSound(null, pPos.x, pPos.y, pPos.z, CEESoundEvents.SF6_TRIP.get(), SoundSource.BLOCKS, 0.5f, 1f);
-        }
     }
 }
 

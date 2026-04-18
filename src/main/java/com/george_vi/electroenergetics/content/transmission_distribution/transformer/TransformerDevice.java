@@ -40,8 +40,7 @@ public class TransformerDevice extends SimpleElectricalDevice {
 
         this.temp = updateTemp(this.temp, (float) Math.min(70_000, Math.abs(power)) / 10);
 
-        if (this.be == null)
-            if (level.getBlockEntity(pos) instanceof TransformerBlockEntity be)
+        if (this.be == null && level.isLoaded(pos) && level.getBlockEntity(pos) instanceof TransformerBlockEntity be)
                 this.be = be;
 
         if (this.be != null) {

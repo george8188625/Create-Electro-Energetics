@@ -311,7 +311,7 @@ public class CEEBlocks {
             .build()
             .register();
 
-    public static final BlockEntry<EnergyMeterBlock> ENERGY_METER = REGISTRATE.block("energy_meter", properties -> new EnergyMeterBlock(properties))
+    public static final BlockEntry<EnergyMeterBlock> ENERGY_METER = REGISTRATE.block("energy_meter", EnergyMeterBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
@@ -329,7 +329,7 @@ public class CEEBlocks {
             .build()
             .register();
 
-    public static final BlockEntry<TriPolarEnergyMeterBlock> TRI_POLAR_ENERGY_METER = REGISTRATE.block("tri_polar_energy_meter", properties -> new TriPolarEnergyMeterBlock(properties))
+    public static final BlockEntry<TriPolarEnergyMeterBlock> TRI_POLAR_ENERGY_METER = REGISTRATE.block("tri_polar_energy_meter", TriPolarEnergyMeterBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
@@ -373,6 +373,8 @@ public class CEEBlocks {
             .blockstate(new GaugeGenerator()::generate)
             .transform(pickaxeOnly())
             .item()
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxCurrent(CEEConfigs.server().voltageValues.maxAmmeterCurrent::get)))
             .transform(ModelGen.customItemModel("gauge", "_", "item"))
             .register();
 
@@ -382,6 +384,8 @@ public class CEEBlocks {
             .blockstate(new GaugeGenerator()::generate)
             .transform(pickaxeOnly())
             .item()
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxVoltage(CEEConfigs.server().voltageValues.maxVoltmeterVoltage::get)))
             .transform(ModelGen.customItemModel("gauge", "_", "item"))
             .register();
 

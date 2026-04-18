@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
 import com.george_vi.electroenergetics.simulation.electrical_properties.*;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.optimization.SetVoltageOptimizationEntry;
 import com.george_vi.electroenergetics.simulation.optimization.SimpleTopologyOptimizationEntry;
 import com.george_vi.electroenergetics.simulation.optimization.StarToDeltaEntry;
 import com.george_vi.electroenergetics.simulation.optimization.TopologyOptimizationEntry;
@@ -109,12 +110,35 @@ public class Network {
         for (WrappedIndexedNode node : allNodes) {
             double groundConductance = node.groundConductance;
             Int2ObjectMap<ElectricalProperties> nodeAdjacency = getAdjacency(node);
-            if (nodeAdjacency.size() == 3 && groundConductance == 0) {
+            if (groundConductance != 0)
+                continue;
+            if (nodeAdjacency.size() == 3) {
                 if (starToDeltaOptimizeInner(node, nodeAdjacency))
+                    return true;
+            } else if (nodeAdjacency.size() == 1) {
+                if (removeSingleDeadBranch(node, nodeAdjacency))
                     return true;
             }
         }
         return false;
+    }
+
+    private boolean removeSingleDeadBranch(WrappedIndexedNode node, Int2ObjectMap<ElectricalProperties> nodeAdjacency) {
+        Iterator<Int2ObjectMap.Entry<ElectricalProperties>> it = nodeAdjacency.int2ObjectEntrySet().iterator();
+        Int2ObjectMap.Entry<ElectricalProperties> baseId = it.next();
+        WrappedIndexedNode base = builder.getNode(baseId.getIntKey());
+        // Return false if the connection is non-purely-resistive
+        if (!baseId.getValue().isSimpleResistor())
+            return false;
+
+        SetVoltageOptimizationEntry e = new SetVoltageOptimizationEntry(base, node);
+        overrideAdjacency(base).remove(node.ordinal);
+        overrideAdjacency(node).remove(base.ordinal);
+        allNodes.remove(node);
+        optimizations.push(e);
+
+        return true;
+
     }
 
     private boolean starToDeltaOptimizeInner(WrappedIndexedNode node, Int2ObjectMap<ElectricalProperties> nodeAdjacency) {
@@ -451,8 +475,7 @@ public class Network {
             toFill[(originalNode.ordinal << microTickBits) | microTick] = mnaResult[i];
         }
 
-        for (Iterator<TopologyOptimizationEntry> it = optimizations.iterator(); it.hasNext();) {
-            TopologyOptimizationEntry entry = it.next();
+        for (TopologyOptimizationEntry entry : optimizations) {
             if (entry instanceof SimpleTopologyOptimizationEntry properties) {
                 double v1 = toFill[(properties.node1().ordinal << microTickBits) | microTick];
                 double v2 = toFill[(properties.node2().ordinal << microTickBits) | microTick];
@@ -462,7 +485,11 @@ public class Network {
                 double vb = toFill[(delta.nb.ordinal << microTickBits) | microTick];
                 double vc = toFill[(delta.nc.ordinal << microTickBits) | microTick];
                 toFill[(delta.centralNode.ordinal << microTickBits) | microTick] = delta.calculateCenter(va, vb, vc);
+            } else if (entry instanceof SetVoltageOptimizationEntry setV) {
+                double vBase = toFill[(setV.base().ordinal << microTickBits) | microTick];
+                toFill[(setV.dead().ordinal << microTickBits) | microTick] = vBase;
             }
+
         }
 
     }
