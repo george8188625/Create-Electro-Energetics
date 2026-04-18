@@ -60,6 +60,8 @@ public class QuadraticWireHelper {
 
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, float detail) {
         float distance = (float) pos1.distanceTo(pos2);
+        if (distance > 1000) // prevent world bricking
+            return List.of();
 
         double resolution = Math.ceil(distance * 2);
         double invResolution = 1 / resolution;

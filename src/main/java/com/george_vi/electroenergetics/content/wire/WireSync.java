@@ -81,8 +81,8 @@ public class WireSync {
     }
 
     public static void handleWireRemoved(InWorldNodeConnection connection, ServerLevel level) {
-        ChunkPos chunk1 = new ChunkPos(connection.node1().sourcePos());
-        ChunkPos chunk2 = new ChunkPos(connection.node2().sourcePos());
+        ChunkPos chunk1 = new ChunkPos(connection.node1().sableSourcePos(level));
+        ChunkPos chunk2 = new ChunkPos(connection.node2().sableSourcePos(level));
         for (ServerPlayer player : level.getPlayers(p -> true)) {
             for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList()))
                 if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {
@@ -93,8 +93,8 @@ public class WireSync {
     }
 
     public static void handleWireAdded(InWorldNodeConnection connection, WireData data, ServerLevel level) {
-        ChunkPos chunk1 = new ChunkPos(connection.node1().sourcePos());
-        ChunkPos chunk2 = new ChunkPos(connection.node2().sourcePos());
+        ChunkPos chunk1 = new ChunkPos(connection.node1().sableSourcePos(level));
+        ChunkPos chunk2 = new ChunkPos(connection.node2().sableSourcePos(level));
         for (ServerPlayer player : level.getPlayers(p -> true)) {
             for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList()))
                 if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {
@@ -132,5 +132,25 @@ public class WireSync {
         loadedChunks.remove(player.getUUID());
         CatnipServices.NETWORK.sendToClient(player, ClearWireConnectionsPacket.clearAll());
         CatnipServices.NETWORK.sendToClient(player, ClearCatenaryPacket.clearAll());
+    }
+
+    public static void handleWireRepositioned(InWorldNodeConnection connection, WireData data, ServerLevel level) {
+        ChunkPos chunk1 = new ChunkPos(connection.node1().sableSourcePos(level));
+        ChunkPos chunk2 = new ChunkPos(connection.node2().sableSourcePos(level));
+
+        for (ServerPlayer player : level.getPlayers(p -> true)) {
+            boolean unloaded = true;
+            for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList())) {
+                if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {
+                    CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection, data));
+                    unloaded = false;
+                    break;
+                }
+            }
+
+            if (unloaded) {
+                CatnipServices.NETWORK.sendToClient(player, ClearWireConnectionsPacket.clearWire(connection));
+            }
+        }
     }
 }

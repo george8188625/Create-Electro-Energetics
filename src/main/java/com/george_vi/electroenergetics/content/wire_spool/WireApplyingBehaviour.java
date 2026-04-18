@@ -80,6 +80,8 @@ public class WireApplyingBehaviour {
         }
 
         InWorldNode hoveredNode = InWorldNode.closestNode(level, mc.hitResult.getLocation(), 1.5f);
+        if (hoveredNode == null)
+            hoveredNode = InWorldNode.closestNode(level, pos, level.getBlockState(pos), 1.5f, mc.hitResult.getLocation());
         Vec3 hoveredPos = null;
 
         // Display all nodes of block
@@ -138,7 +140,7 @@ public class WireApplyingBehaviour {
                 (heldItem.getItem() instanceof WireSpoolItem wsi) && wsi.wireType.get() == CEEWireTypes.COPPER.get();
 
         // Wire too long
-        double wireDistance = Math.sqrt(selectedNode.sourcePos().distSqr(pos));
+        double wireDistance = Math.sqrt(selectedNode.sableSourcePos(level).distSqr(hoveredNode.sableSourcePos(level)));
         if (wireDistance > (isCatenary ? CEEConfigs.server().maxCatenaryLength.get() :
                 (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getMaxLength() : CEEConfigs.server().maxWireLength.get()))) {
             ElectricPropertiesOverlay.INSTANCE.connectionTooLong = true;

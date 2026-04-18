@@ -3,15 +3,20 @@ package com.george_vi.electroenergetics.client;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
+import dev.engine_room.flywheel.api.task.Plan;
+import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visual.EffectVisual;
 import dev.engine_room.flywheel.api.visual.LightUpdatedVisual;
+import dev.engine_room.flywheel.api.visual.TickableVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
+import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
 import dev.engine_room.flywheel.lib.visual.SimpleTickableVisual;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -23,7 +28,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual, SimpleTickableVisual {
+public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual, SimpleTickableVisual, SimpleDynamicVisual {
     private final InWorldNodeConnection connection;
     private final WireType wireType;
     private final VisualizationContext visualizationContext;
@@ -75,8 +80,8 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     @Override
     public void update(float partialTick) {
         ClientLevel level = Minecraft.getInstance().level;
-        Vec3 pos1 = connection.node1().getPosition(level);
-        Vec3 pos2 = connection.node2().getPosition(level);
+        Vec3 pos1 = connection.node1().getPosition(level, partialTick);
+        Vec3 pos2 = connection.node2().getPosition(level, partialTick);
 
         if (pos1 == null || pos2 == null) {
             pos1 = connection.node1().sourcePos().getCenter();
@@ -181,7 +186,12 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     }
 
     @Override
-    public void tick(Context context) {
-        update(0);
+    public void tick(TickableVisual.Context context) {
+//        update(0);
+    }
+
+    @Override
+    public void beginFrame(DynamicVisual.Context ctx) {
+        update(ctx.partialTick());
     }
 }

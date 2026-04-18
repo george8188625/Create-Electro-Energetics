@@ -75,6 +75,9 @@ public class WireSpoolItem extends Item {
 
         InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1.5f);
 
+        if (hoveredNode == null)
+            hoveredNode = InWorldNode.closestNode(level, pos, state, 1.5f, context.getClickLocation());
+
 
         if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
             if (!(player.level() instanceof ServerLevel sl))
@@ -87,7 +90,7 @@ public class WireSpoolItem extends Item {
                     hoveredNode.equals(originalNode) ||
                     (hoveredNode.sourcePos().equals(originalNode.sourcePos()) && !db.canSelfConnect(level, pos, state, hoveredNode.id(), originalNode.id())) ||
                     (sd.isConnected(hoveredNode, originalNode)) ||
-                    Math.sqrt(originalNode.sourcePos().distSqr(hoveredNode.sourcePos())) > wireType.get().getMaxLength()) {
+                    Math.sqrt(originalNode.sableSourcePos(level).distSqr(hoveredNode.sableSourcePos(level))) > wireType.get().getMaxLength()) {
                 AllSoundEvents.DENY.playOnServer(level, pos);
                 return InteractionResult.FAIL;
             }

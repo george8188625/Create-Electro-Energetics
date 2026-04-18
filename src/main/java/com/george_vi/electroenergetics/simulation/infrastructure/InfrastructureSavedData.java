@@ -85,6 +85,7 @@ public class InfrastructureSavedData extends SavedData {
 
             nodeTag.put("Pos", NbtUtils.writeBlockPos(e.getKey().sourcePos()));
             nodeTag.putInt("ID", e.getKey().id());
+            nodeTag.putBoolean("DynamicPos", DYNAMIC_POSITION_NODES.contains(e.getKey()));
 
             Vec3 lastKnownPos = getNodePosition(e.getKey());
             if (lastKnownPos != null) {
@@ -201,7 +202,7 @@ public class InfrastructureSavedData extends SavedData {
             sd.NODE_POSITIONS.put(node, lastKnownPos == null ? node.sourcePos().getCenter() : lastKnownPos);
             sd.LOCAL_NODE_POSITIONS.put(node, lastKnownLocalPos == null ? VecHelper.CENTER_OF_ORIGIN : lastKnownLocalPos);
             sd.NODES.put(node, connectedNodes);
-            if (isDynamicPosition(level, node))
+            if (tag.getBoolean("DynamicPos"))
                 sd.DYNAMIC_POSITION_NODES.add(node);
             sd.NODES_BY_POS.computeIfAbsent(pos, ((p) -> new ArrayList<>()));
             sd.NODES_BY_POS.computeIfPresent(pos, ((p, nodes) -> {
@@ -374,12 +375,12 @@ public class InfrastructureSavedData extends SavedData {
 
     private void updateAllNodePositions() {
         // for Sable
+        List<InWorldNodeConnection> connectionsToUpdate = new ArrayList<>();
         for (InWorldNode node : DYNAMIC_POSITION_NODES) {
             Vec3 localPos = LOCAL_NODE_POSITIONS.computeIfAbsent(node, (n) -> VecHelper.CENTER_OF_ORIGIN);
             Vec3 pos = node.toGlobalPos(localPos, level);
             if (pos == null)
                 continue;
-            List<InWorldNodeConnection> connectionsToUpdate = new ArrayList<>();
             NODE_POSITIONS.compute(node, (n, p) -> {
                 if (p == null || p.distanceToSqr(pos) > 0.003) {
                     getConnections(node, connectionsToUpdate::add);
@@ -388,11 +389,12 @@ public class InfrastructureSavedData extends SavedData {
                 return p;
             });
 
-            for (InWorldNodeConnection connection : connectionsToUpdate) {
-                wireSimulationState.removeConnection(connection);
-                wireSimulationState.addConnection(connection, getConnectionData(connection), false);
-            }
-
+        }
+        for (InWorldNodeConnection connection : connectionsToUpdate) {
+            wireSimulationState.removeConnection(connection);
+            WireData connectionData = getConnectionData(connection);
+            wireSimulationState.addConnection(connection, connectionData, false);
+            WireSync.handleWireRepositioned(connection, connectionData, level);
         }
     }
 

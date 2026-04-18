@@ -95,6 +95,9 @@ repositories {
         name = "RyanHCode Maven"
         url = "https://maven.ryanhcode.dev/releases"
     }
+    maven {
+        url = "https://api.modrinth.com/maven"
+    }
 }
 
 dependencies {
@@ -106,6 +109,9 @@ dependencies {
 
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+
+    runtimeOnly("maven.modrinth:sable:1.0.4+mc1.21.1-neoforge")
+    runtimeOnly("maven.modrinth:create-aeronautics:1.0.2+mc1.21.1")
 
     runtimeOnly "curse.maven:createaddition-439890:7262496"
     implementation "curse.maven:supplementaries-412082:7688722"

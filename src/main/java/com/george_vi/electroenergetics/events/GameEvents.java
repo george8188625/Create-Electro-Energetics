@@ -72,7 +72,7 @@ public class GameEvents {
     }
 
     @SubscribeEvent
-    public static void serverLevelTickEvent(LevelTickEvent.Pre event) {
+    public static void serverLevelTickEvent(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(level);
             sd.tick();

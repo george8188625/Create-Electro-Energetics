@@ -3,9 +3,13 @@ package com.george_vi.electroenergetics.foundation.nodes;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.mojang.serialization.Codec;
 import dev.ryanhcode.sable.companion.SableCompanion;
+import dev.ryanhcode.sable.companion.SubLevelAccess;
+import dev.ryanhcode.sable.companion.math.Pose3dc;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.Util;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -72,6 +76,22 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
                 .orElse(null);
     }
 
+    public static InWorldNode closestNode(Level level, BlockPos pos, BlockState state, float threshold, Vec3 clickedPos) {
+
+        List<Pair<Vec3, InWorldNode>> nodes = new ArrayList<>();
+
+        if (state.getBlock() instanceof ElectricalDeviceBlock<?> db)
+            for (Map.Entry<Integer, Vec3> e : db.getNodePositions(level, pos, state).entrySet())
+                nodes.add(Pair.of(e.getValue(), new InWorldNode(e.getKey(), pos)));
+
+
+        return nodes.stream()
+                .filter(e -> e.getSecond().toGlobalPos(e.getFirst(), level).distanceTo(SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)clickedPos)) <= threshold)
+                .min(Comparator.comparingDouble(e -> e.getSecond().toGlobalPos(e.getFirst(), level).distanceTo(clickedPos)))
+                .map(Pair::getSecond)
+                .orElse(null);
+    }
+
     private static @NotNull List<BlockPos> getNodeSearchBlockPositions(Vec3 clickedPos) {
         List<BlockPos> offsets = new ArrayList<>();
         Vec3 relativePos = new Vec3(clickedPos.x() % 1, clickedPos.y() % 1, clickedPos.z() % 1);
@@ -96,6 +116,16 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         return toGlobalPos(localPos, level);
     }
 
+    public Vec3 getPosition(ClientLevel level, float partialTicks) {
+        BlockState state = level.getBlockState(sourcePos);
+        if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
+            return null;
+        Vec3 localPos = db.getNodePosition(level, sourcePos, state, id);
+        if (localPos == null)
+            return null;
+        return toGlobalPos(localPos, level, partialTicks);
+    }
+
     public Vec3 getLocalPosition(Level level) {
         BlockState state = level.getBlockState(sourcePos);
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
@@ -109,6 +139,21 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
     public Vec3 toGlobalPos(Vec3 pos, Level level) {
         Position globalPos = pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
         return SableCompanion.INSTANCE.projectOutOfSubLevel(level, globalPos);
+    }
+
+    public Vec3 toGlobalPos(Vec3 pos, Level level, float partialTicks) {
+        Vec3 globalPos = pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
+        SubLevelAccess subLevelAccess = SableCompanion.INSTANCE.getContaining(level, globalPos);
+        if (subLevelAccess == null)
+            return globalPos;
+
+        Pose3dc logicalPose = subLevelAccess.logicalPose();
+        Pose3dc lastPose = subLevelAccess.lastPose();
+
+        Vec3 lastPos = lastPose.transformPosition(globalPos);
+        Vec3 logicalPos = logicalPose.transformPosition(globalPos);
+
+        return VecHelper.lerp(partialTicks, lastPos, logicalPos);
     }
 
     @Override
@@ -148,5 +193,9 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         if (n.id == id)
             return sourcePos().compareTo(n.sourcePos());
         return id - n.id;
+    }
+
+    public BlockPos sableSourcePos(Level level) {
+        return BlockPos.containing(SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)sourcePos.getCenter()));
     }
 }
