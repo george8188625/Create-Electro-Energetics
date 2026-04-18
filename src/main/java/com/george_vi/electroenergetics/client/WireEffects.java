@@ -27,32 +27,22 @@ public class WireEffects {
     @OnlyIn(Dist.CLIENT)
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.isPaused())
+        if (!mc.isPaused())
             return;
 
         for (Pair<InWorldNodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
             InWorldNodeConnection connection = wire.getFirst();
 
-            Vec3 pos1 = null;
-            Vec3 pos2 = null;
+            Vec3 pos1 = connection.node1().getPosition(mc.level);
+            Vec3 pos2 = connection.node2().getPosition(mc.level);
 
-            BlockState state1 = mc.level.getBlockState(connection.node1().sourcePos());
-            BlockState state2 = mc.level.getBlockState(connection.node2().sourcePos());
+            if (pos1 == null || pos2 == null) {
+                pos1 = connection.node1().sourcePos().getCenter();
+                pos2 = connection.node2().sourcePos().getCenter();
+            }
 
-            if (state1.getBlock() instanceof ElectricalDeviceBlock<?> db)
-                pos1 = db.getNodePosition(mc.level, connection.node1().sourcePos(), state1, connection.node1().id());
-            if (state2.getBlock() instanceof ElectricalDeviceBlock<?> db)
-                pos2 = db.getNodePosition(mc.level, connection.node2().sourcePos(), state2, connection.node2().id());
-
-            if (pos1 == null || pos2 == null)
-                continue;
-
-            BlockPos devicePos1 = connection.node1().sourcePos();
-            BlockPos devicePos2 = connection.node2().sourcePos();
-            pos1 = pos1.add(devicePos1.getX(), devicePos1.getY(), devicePos1.getZ());
-            pos2 = pos2.add(devicePos2.getX(), devicePos2.getY(), devicePos2.getZ());
-
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wire.getSecond().wireType().getSag());
+            double distance = pos1.distanceTo(pos2);
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wire.getSecond().getSag(distance));
 
             spawnDrippingWater(points);
         }

@@ -36,11 +36,11 @@ public class WireSync {
             }
         }
 
-        List<InWorldNode> newNodes = new ArrayList<>(sd.getNodes().stream().filter(n -> newChunks.contains(new ChunkPos(n.sourcePos()))).toList());
+        List<InWorldNode> newNodes = new ArrayList<>(sd.getNodes().stream().filter(n -> newChunks.contains(new ChunkPos(n.sableSourcePos(player.level())))).toList());
 
         for (InWorldNode node : newNodes) {
             for (InWorldNodeConnection connection : sd.getConnections(node)) {
-                if (chunks.contains(new ChunkPos(connection.node2().sourcePos())))
+                if (chunks.contains(new ChunkPos(connection.node2().sableSourcePos(player.level()))))
                     continue;
                 CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection, sd.getConnectionData(connection)));
             }
@@ -62,11 +62,11 @@ public class WireSync {
         for (ChunkPos chunkPos : chunksToRemove)
             chunks.remove(chunkPos);
 
-        List<InWorldNode> nodesToRemove = new ArrayList<>(sd.getNodes().stream().filter(n -> chunksToRemove.contains(new ChunkPos(n.sourcePos()))).toList());
+        List<InWorldNode> nodesToRemove = new ArrayList<>(sd.getNodes().stream().filter(n -> chunksToRemove.contains(new ChunkPos(n.sableSourcePos(player.level())))).toList());
         List<InWorldNodeConnection> connectionsToRemove = new ArrayList<>();
         for (InWorldNode node : nodesToRemove) {
             for (InWorldNodeConnection connection : sd.getConnections(node)) {
-                if (chunks.contains(new ChunkPos(connection.node2().sourcePos())))
+                if (chunks.contains(new ChunkPos(connection.node2().sableSourcePos(player.level()))))
                     continue;
                 connectionsToRemove.add(connection);
             }

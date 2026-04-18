@@ -114,12 +114,12 @@ dependencies {
     runtimeOnly("maven.modrinth:create-aeronautics:1.0.2+mc1.21.1")
 
     runtimeOnly "curse.maven:createaddition-439890:7262496"
-    implementation "curse.maven:supplementaries-412082:7688722"
-    implementation "curse.maven:selene-499980:7522321"
+    compileOnly "curse.maven:supplementaries-412082:7688722"
+    compileOnly "curse.maven:selene-499980:7522321"
     implementation("cc.tweaked:cc-tweaked-1.21.1-forge:1.116.1")
     runtimeOnly("curse.maven:spark-361579:6225208")
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-    implementation "curse.maven:create-blueprinted-1487864:7767092"
+    runtimeOnly "curse.maven:create-blueprinted-1487864:7767092"
     jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:[${sable_companion_version},)")) {
         version {
             prefer sable_companion_version

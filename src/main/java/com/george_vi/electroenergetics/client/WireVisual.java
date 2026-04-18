@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.client;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import dev.engine_room.flywheel.api.task.Plan;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visual.EffectVisual;
@@ -22,6 +23,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -31,6 +33,7 @@ import java.util.List;
 public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual, SimpleTickableVisual, SimpleDynamicVisual {
     private final InWorldNodeConnection connection;
     private final WireType wireType;
+    private final WireData wireData;
     private final VisualizationContext visualizationContext;
 
     private Vec3 prevPos1;
@@ -38,10 +41,11 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     protected final List<TransformedInstance> instances = new ArrayList<>();
     final LongSet lightSections;
 
-    public WireVisual(VisualizationContext visualizationContext, InWorldNodeConnection connection, WireType wireType) {
+    public WireVisual(VisualizationContext visualizationContext, InWorldNodeConnection connection, WireType wireType, WireData wireData) {
         this.visualizationContext = visualizationContext;
         this.connection = connection;
         this.wireType = wireType;
+        this.wireData = wireData;
 
         ClientLevel level = Minecraft.getInstance().level;
         Vec3 pos1 = connection.node1().getPosition(level);
@@ -70,8 +74,9 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
         prevPos1 = pos1;
         prevPos2 = pos2;
+        double distance = pos1.distanceTo(pos2);
 
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireType.getSag());
+        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
         createWire(visualizationContext, wireType, points, pos2, level);
 
@@ -100,7 +105,8 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             instance.delete();
 
         instances.clear();
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireType.getSag());
+        double distance = pos1.distanceTo(pos2);
+        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
         createWire(visualizationContext, wireType, points, pos2, level);
     }
@@ -127,7 +133,8 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
         pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
 
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireType.getSag());
+        double distance = pos1.distanceTo(pos2);
+        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
         boolean useOld = true;
         if (instances.size() != points.size()) {

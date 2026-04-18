@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import net.minecraft.core.BlockPos;
@@ -17,11 +18,11 @@ public class BridgeCollector {
     }
 
 
-    public void bridge(InWorldNode node1, InWorldNode node2, double resistance, double voltageSource, double currentSource) {
+    public void bridge(Node node1, Node node2, double resistance, double voltageSource, double currentSource) {
         bridge(node1, node2, new ElectricalProperties(resistance, voltageSource, currentSource));
     }
 
-    public void bridge(InWorldNode node1, InWorldNode node2, ElectricalProperties electricalProperties) {
+    public void bridge(Node node1, Node node2, ElectricalProperties electricalProperties) {
         circuitBuilder.connect(node1, node2, electricalProperties);
     }
 
@@ -37,7 +38,7 @@ public class BridgeCollector {
         circuitBuilder.addNode(new InWorldNode(id, pos));
     }
 
-    public void addInternalNode(InWorldNode node) {
+    public void addInternalNode(Node node) {
         circuitBuilder.addNode(node);
     }
 
@@ -139,7 +140,7 @@ public class BridgeCollector {
             return this;
         }
 
-        public Builder node(InWorldNode node) {
+        public Builder node(Node node) {
             collector.addInternalNode(node);
             return this;
         }
@@ -149,7 +150,7 @@ public class BridgeCollector {
             return this;
         }
 
-        public Builder resistor(InWorldNode n1, InWorldNode n2, double resistance) {
+        public Builder resistor(Node n1, Node n2, double resistance) {
             collector.bridge(n1, n2, resistance, 0, 0);
             return this;
         }

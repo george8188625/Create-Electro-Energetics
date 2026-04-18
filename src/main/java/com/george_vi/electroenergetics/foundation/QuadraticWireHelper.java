@@ -26,7 +26,7 @@ public class QuadraticWireHelper {
     }
 
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip) {
-        return cablePoints(pos1, pos2, dip, 1);
+        return cablePoints(pos1, pos2, dip, 1f);
     }
 
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, Vec3 position) {
@@ -63,10 +63,10 @@ public class QuadraticWireHelper {
         if (distance > 1000) // prevent world bricking
             return List.of();
 
-        double resolution = Math.ceil(distance * 2);
+        double resolution = (distance * 2);
         double invResolution = 1 / resolution;
-        int totalPoints = Mth.ceil(resolution / detail);
-        int ppp = Math.max(1, Mth.ceil(resolution / totalPoints));
+        int totalPoints = (int) (resolution / detail);
+        int ppp = (int) Math.max(1, (resolution / totalPoints));
         List<Vec3> points = new ArrayList<>(totalPoints);
         float a = (0.05f / distance) * dip;
         for (int x = 0; x < resolution; x++) {

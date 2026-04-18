@@ -89,6 +89,7 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] `R` SF6 crafting recipe
 - [ ] `R` More involving recipes
 - [ ] `R` Pump voltage limit
+- [ ] `R` Centered indicator bulbs
 - [ ] Indicator bulbs can be controlled by train signals
 - [ ] Normally closed mode for momentary switch
 ### Ponders

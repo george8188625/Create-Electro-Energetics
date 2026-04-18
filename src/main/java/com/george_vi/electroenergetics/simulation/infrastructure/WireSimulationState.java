@@ -91,10 +91,14 @@ public class WireSimulationState {
             throw new IllegalArgumentException("CatenaryConnectionData used as data for normal wire creation!");
         Vec3 pos1 = sd.getNodePosition(connection.node1());
         Vec3 pos2 = sd.getNodePosition(connection.node2());
-
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(), 0.5f);
+        double distance = pos1.distanceTo(pos2);
+        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), 0.5f);
 
         double miny = pos1.y;
+
+        if (wireData.length == 0) // New connection
+            wireData.length = distance;
+
         for (Vec3 point : points)
             miny = Math.min(miny, point.y());
 
@@ -166,6 +170,9 @@ public class WireSimulationState {
 //                ((ServerLevel)level).sendParticles(ParticleTypes.SCRAPE, points.get(i).x, points.get(i).y, points.get(i).z, 3, 0, 0, 0, 0);
             }
         }
+
+        if (catenaryData.length == 0)
+            catenaryData.length = pos1.distanceTo(pos2);
 
         List<CutWireEntry> cuts = new ArrayList<>();
         cutsByWire.put(connection, cuts);
@@ -325,6 +332,43 @@ public class WireSimulationState {
 
     public Collection<ConnectionEntry> getAllConnectionEntries() {
         return connections.values();
+    }
+
+    public boolean relocateConnection(InWorldNodeConnection connection, WireData wireData) {
+        removeConnection(connection);
+
+        Vec3 pos1 = sd.getNodePosition(connection.node1());
+        Vec3 pos2 = sd.getNodePosition(connection.node2());
+        double distance = pos1.distanceTo(pos2);
+        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), 0.5f);
+
+        double miny = pos1.y;
+
+        double lengthDiff = pos1.distanceTo(pos2) - wireData.length;
+        boolean breakWire = wireData.getSag() == 0 ? (Math.abs(lengthDiff) > 0.5) : (lengthDiff > 4);
+
+        for (Vec3 point : points)
+            miny = Math.min(miny, point.y());
+
+        List<CutWireEntry> cuts = new ArrayList<>();
+        cutsByWire.put(connection, cuts);
+        AABB bb = new AABB(pos1, pos2).setMinY(miny).inflate(0.25);
+        ConnectionEntry connectionEntry = new ConnectionEntry(pos1, pos2, points, wireData, bb, cuts);
+        connections.put(connection, connectionEntry);
+
+        SectionPos prevSection = null;
+        for (Vec3 point : points) {
+            SectionPos section = SectionPos.of(point);
+            if (!Objects.equals(prevSection, section)) {
+                connectionsBySection.computeIfAbsent(section.asLong(), s -> new HashMap<>()).put(connection, connectionEntry);
+                prevSection = section;
+            }
+        }
+
+        sd.wireCrossContactModule.onWireAdded(connection, connectionEntry);
+        reloadLazyConnections();
+
+        return breakWire;
     }
 
     public static class WireCutHandle {

@@ -61,7 +61,7 @@ public abstract class WireInteractionBehaviour {
 
         List<Pair<Float, WireAttachment>> attachments = new ArrayList<>(data.attachments());
         attachments.add(Pair.of(point.point(), toAttach));
-        sd.setConnectionData(new InWorldNodeConnection(point.node1(), point.node2()), new WireData(data.wireType(), data.temperature(), attachments));
+        sd.setConnectionData(new InWorldNodeConnection(point.node1(), point.node2()), new WireData(data.wireType(), data.temperature(), attachments, data.length));
 
         AllSoundEvents.WRENCH_ROTATE.playOnServer(level, BlockPos.containing(point.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), data.wireType().getSag())));
 

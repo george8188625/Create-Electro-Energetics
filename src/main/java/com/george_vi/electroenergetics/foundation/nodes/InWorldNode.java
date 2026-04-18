@@ -87,7 +87,7 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
 
         return nodes.stream()
                 .filter(e -> e.getSecond().toGlobalPos(e.getFirst(), level).distanceTo(SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)clickedPos)) <= threshold)
-                .min(Comparator.comparingDouble(e -> e.getSecond().toGlobalPos(e.getFirst(), level).distanceTo(clickedPos)))
+                .min(Comparator.comparingDouble(e -> e.getSecond().toGlobalPos(e.getFirst(), level).distanceTo(SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)clickedPos))))
                 .map(Pair::getSecond)
                 .orElse(null);
     }
@@ -139,6 +139,10 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
     public Vec3 toGlobalPos(Vec3 pos, Level level) {
         Position globalPos = pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
         return SableCompanion.INSTANCE.projectOutOfSubLevel(level, globalPos);
+    }
+
+    public Vec3 toGlobalPosNoSable(Vec3 pos, Level level) {
+        return pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
     }
 
     public Vec3 toGlobalPos(Vec3 pos, Level level, float partialTicks) {

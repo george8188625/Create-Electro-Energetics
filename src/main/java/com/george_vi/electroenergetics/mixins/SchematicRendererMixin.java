@@ -67,6 +67,7 @@ public class SchematicRendererMixin {
                 pos1 = connection.node1().sourcePos().getCenter();
                 pos2 = connection.node2().sourcePos().getCenter();
             }
+            double distance = pos1.distanceTo(pos2);
 
             boolean isBlock1Outer = state1.getBlock() instanceof ElectricalDeviceBlock<?> db &&
                     db.isOuterInsulator(schematic, connection.node1().sourcePos(), state1, connection.node1().id());
@@ -74,8 +75,8 @@ public class SchematicRendererMixin {
                     db.isOuterInsulator(schematic, connection.node2().sourcePos(), state2, connection.node2().id());
 
             for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
-                Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
-                float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
+                Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.getSag(distance));
+                float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst(), wireData.getSag(distance));
 
                 ms.pushPose();
                 PoseTransformStack msr = TransformStack.of(ms);
@@ -89,7 +90,7 @@ public class SchematicRendererMixin {
                 ms.popPose();
             }
 
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag());
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
             WireRenderer.renderWire(points, pos1, pos2, ms, buffers, wireData.wireType(), schematic);
 

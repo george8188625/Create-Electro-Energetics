@@ -56,29 +56,22 @@ public class WireInteractionHandler {
         InWorldNodeConnection bestConnection = null;
         float bestProgress = 0;
         Vec3 bestPosition = null;
-        WireType bestWireType = null;
+        WireData bestWireData = null;
+        double bestWirePointDistance = 0;
 
         for (Pair<InWorldNodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
             InWorldNodeConnection connection = wire.getFirst();
 
-            Vec3 pos1 = null;
-            Vec3 pos2 = null;
+            Vec3 pos1 = connection.node1().getPosition(mc.level);
+            Vec3 pos2 = connection.node2().getPosition(mc.level);
 
-            BlockState state1 = mc.level.getBlockState(connection.node1().sourcePos());
-            BlockState state2 = mc.level.getBlockState(connection.node2().sourcePos());
+            if (pos1 == null || pos2 == null) {
+                pos1 = connection.node1().sourcePos().getCenter();
+                pos2 = connection.node2().sourcePos().getCenter();
+            }
 
-            if (state1.getBlock() instanceof ElectricalDeviceBlock<?> db)
-                pos1 = db.getNodePosition(mc.level, connection.node1().sourcePos(), state1, connection.node1().id());
-            if (state2.getBlock() instanceof ElectricalDeviceBlock<?> db)
-                pos2 = db.getNodePosition(mc.level, connection.node2().sourcePos(), state2, connection.node2().id());
-
-            if (pos1 == null || pos2 == null)
-                continue;
-
-            pos1 = connection.node1().toGlobalPos(pos1, mc.level);
-            pos2 = connection.node2().toGlobalPos(pos2, mc.level);
-
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wire.getSecond().wireType().getSag(), 1f);
+            double wirePointsDistance = pos1.distanceTo(pos2);
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wire.getSecond().getSag(wirePointsDistance), 1f);
 
             double miny = pos1.y;
             for (Vec3 point : points)
@@ -92,7 +85,6 @@ public class WireInteractionHandler {
                 Vec3 prevPoint = i == 0 ? pos1 : points.get(i - 1);
                 Vec3 point = points.get(i);
                 Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
-
                 double distance = point.distanceTo(from);
                 if (distance >= bestDist)
                     continue;
@@ -121,7 +113,8 @@ public class WireInteractionHandler {
                     bestProgress = (float) Mth.lerp(t, i - 1, i + 1) / (points.size() - 0.5f);
                 }
                 bestPosition = VecHelper.lerp((float) t, prevPoint, nextPoint);
-                bestWireType = wire.getSecond().wireType();
+                bestWireData = wire.getSecond();
+                bestWirePointDistance = wirePointsDistance;
             }
         }
 
@@ -139,7 +132,7 @@ public class WireInteractionHandler {
         if (pos1 == null || pos2 == null)
             return;
 
-        bestPosition = QuadraticWireHelper.posAt(pos1, pos2, targetedPoint.point(), bestWireType.getSag());
+        bestPosition = QuadraticWireHelper.posAt(pos1, pos2, targetedPoint.point(), bestWireData.getSag(bestWirePointDistance));
         WireInteractionBehaviour.DisplayType displayType = behaviour.getWireDisplayType(targetedPoint, mc.level, mc.player, stackInHand);
         if (displayType == WireInteractionBehaviour.DisplayType.DOT) {
             Outliner.getInstance().chaseAABB("cee_wire_interaction_point", AABB.ofSize(bestPosition, 0.01, 0.01, 0.01))
@@ -148,7 +141,7 @@ public class WireInteractionHandler {
                     .disableLineNormals();
         } else if (displayType == WireInteractionBehaviour.DisplayType.LINE) {
 
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, bestWireType.getSag(), 1f);
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, bestWireData.getSag(), 1f);
             points.add(pos2);
 
             for (int i = 0; i < points.size() - 1; i++) {
@@ -156,7 +149,7 @@ public class WireInteractionHandler {
                 Vec3 nextPoint = points.get(i + 1);
 
                 Outliner.getInstance().showLine("cee_wire_interaction_line_" + i, point, nextPoint)
-                        .lineWidth(0.07f * 16 * bestWireType.getThickness())
+                        .lineWidth(0.07f * 16 * bestWireData.wireType().getThickness())
                         .colored(behaviour.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
                         .disableLineNormals();
             }

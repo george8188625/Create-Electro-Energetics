@@ -116,6 +116,7 @@ public class InfrastructureSavedData extends SavedData {
 
                 subNodeTag.putString("WireType", CEERegistries.WIRE_TYPE.getKey(connectionData.wireType()).toString());
                 subNodeTag.putFloat("Temperature", connectionData.temperature());
+                subNodeTag.putDouble("Length", connectionData.length);
 
                 connectedNodesList.add(subNodeTag);
             }
@@ -137,6 +138,7 @@ public class InfrastructureSavedData extends SavedData {
                 CatenaryConnectionData data = CATENARY_DATA.get(new CatenaryConnection(e.getKey(), otherPos));
                 tg.putFloat("Temperature", data.temperature);
                 tg.putBoolean("IsLow", data.isLow);
+                tg.putDouble("Length", data.length);
                 connectionList.add(tg);
             }
             catenaryTag.put("From", NbtUtils.writeBlockPos(e.getKey()));
@@ -195,7 +197,7 @@ public class InfrastructureSavedData extends SavedData {
                 });
 
                 InWorldNodeConnection connection = new InWorldNodeConnection(new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")), new InWorldNode(id, pos));
-                WireData wireData = new WireData(wireType, Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature"), attachments);
+                WireData wireData = new WireData(wireType, Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature"), attachments, connectionTag.getDouble("Length"));
 
                 sd.CONNECTION_DATA.computeIfAbsent(connection, c -> wireData);
             });
@@ -234,7 +236,7 @@ public class InfrastructureSavedData extends SavedData {
                 BlockPos to = new BlockPos(arr[0], arr[1], arr[2]);
 
                 sd.CATENARY_ADJACENCY.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
-                CatenaryConnectionData catenaryData = new CatenaryConnectionData(0, false);
+                CatenaryConnectionData catenaryData = new CatenaryConnectionData(0, false, 0);
                 sd.CATENARY_DATA.put(new CatenaryConnection(from, to), catenaryData);
 
             });
@@ -250,7 +252,7 @@ public class InfrastructureSavedData extends SavedData {
 
                 sd.CATENARY_ADJACENCY.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
                 boolean isLow = tg.getBoolean("IsLow");
-                CatenaryConnectionData catenaryData = new CatenaryConnectionData(Float.isNaN(tg.getFloat("Temperature")) ? 0f : tg.getFloat("Temperature"), isLow);
+                CatenaryConnectionData catenaryData = new CatenaryConnectionData(Float.isNaN(tg.getFloat("Temperature")) ? 0f : tg.getFloat("Temperature"), isLow, tg.getDouble("Length"));
                 sd.CATENARY_DATA.put(new CatenaryConnection(from, to), catenaryData);
             });
         });
@@ -391,10 +393,15 @@ public class InfrastructureSavedData extends SavedData {
 
         }
         for (InWorldNodeConnection connection : connectionsToUpdate) {
-            wireSimulationState.removeConnection(connection);
             WireData connectionData = getConnectionData(connection);
-            wireSimulationState.addConnection(connection, connectionData, false);
-            WireSync.handleWireRepositioned(connection, connectionData, level);
+            if (connectionData == null)
+                continue;
+
+            if (wireSimulationState.relocateConnection(connection, connectionData)) {
+                Vec3 pos = VecHelper.lerp(0.5f, connection.node1().sableSourcePos(level).getCenter(), connection.node2().sableSourcePos(level).getCenter());
+                Containers.dropItemStack(level, pos.x, pos.y, pos.z, new ItemStack(removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
+            } else
+                WireSync.handleWireRepositioned(connection, connectionData, level);
         }
     }
 
@@ -458,7 +465,7 @@ public class InfrastructureSavedData extends SavedData {
         WireData connectionData = CONNECTION_DATA.remove(connection);
         if (connectionData != null) {
             for (Pair<Float, WireAttachment> attachment : connectionData.attachments()) {
-                Vec3 pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sourcePos()), Vec3.atCenterOf(connection.node2().sourcePos()), attachment.getFirst(), connectionData.wireType().getSag());
+                Vec3 pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sableSourcePos(level)), Vec3.atCenterOf(connection.node2().sableSourcePos(level)), attachment.getFirst(), connectionData.wireType().getSag());
 
                 for (ItemStack stack : attachment.getSecond().getDrops(level))
                     Containers.dropItemStack(level, pos.x(), pos.y(), pos.z(), stack);
@@ -492,7 +499,7 @@ public class InfrastructureSavedData extends SavedData {
             return nodes;
         });
         InWorldNodeConnection connection = new InWorldNodeConnection(node1, node2);
-        WireData data = new WireData(wireType, 0f, Collections.emptyList());
+        WireData data = new WireData(wireType, 0f, Collections.emptyList(), 0);
         CONNECTION_DATA.put(connection, data);
         setDirty();
 
@@ -575,7 +582,7 @@ public class InfrastructureSavedData extends SavedData {
         boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
         boolean isLow = isStartingLow || isEndingLow;
 
-        CatenaryConnectionData data = new CatenaryConnectionData(0, isLow);
+        CatenaryConnectionData data = new CatenaryConnectionData(0, isLow, 0);
         CATENARY_DATA.put(new CatenaryConnection(pos1, pos2), data);
         InWorldNode node1 = new InWorldNode(0, pos1);
         InWorldNode node2 = new InWorldNode(0, pos2);

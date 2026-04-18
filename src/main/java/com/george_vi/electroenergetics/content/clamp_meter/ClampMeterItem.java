@@ -130,7 +130,7 @@ public class ClampMeterItem extends Item {
             float progress = ((ticks + 6 * i) % 24) / 24f;
 
             float pointOnWire = (float) (((point.point() * distance) + ((amperage > 0 ? progress : 1.0 - progress) * 1.2f) - 0.6f) / distance);
-            Vec3 position = QuadraticWireHelper.posAt(pos1, pos2, pointOnWire > 1 ? 1 : pointOnWire < 0 ? 0 : pointOnWire, wireData.wireType().getSag());
+            Vec3 position = QuadraticWireHelper.posAt(pos1, pos2, pointOnWire > 1 ? 1 : pointOnWire < 0 ? 0 : pointOnWire, wireData.getSag(distance));
             Outliner.getInstance().chaseAABB("cee_clamp_meter_current_visualization_" + dotID, AABB.ofSize(position, 0.01, 0.01, 0.01))
                     .lineWidth(0.15f * Math.min(1, progress * 4))
                     .colored(Color.SPRING_GREEN)

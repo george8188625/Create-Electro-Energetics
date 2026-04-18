@@ -26,7 +26,7 @@ public class DyeWireInteractionBehaviour extends WireInteractionBehaviour {
         WireData wireConnectionData = sd.getConnectionData(point.connection());
         if (wireConnectionData.wireType() != CEEWireTypes.STANDARD.get() && !CEEWireTypes.COLORED_WIRES.values().stream().anyMatch(w -> w.get() == wireConnectionData.wireType()))
             return;
-        sd.setConnectionData(point.connection(), new WireData(CEEWireTypes.COLORED_WIRES.get(color).get(), wireConnectionData.temperature(), wireConnectionData.attachments()));
+        sd.setConnectionData(point.connection(), new WireData(CEEWireTypes.COLORED_WIRES.get(color).get(), wireConnectionData.temperature(), wireConnectionData.attachments(), wireConnectionData.length));
 
     }
 

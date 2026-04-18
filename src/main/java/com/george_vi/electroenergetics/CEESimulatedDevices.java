@@ -26,6 +26,7 @@ import com.george_vi.electroenergetics.content.ground_rod.GroundRodDevice;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbDevice;
 import com.george_vi.electroenergetics.content.pole.ConcretePoleDevice;
 import com.george_vi.electroenergetics.content.potentiometer.PotentiometerDevice;
+import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographDevice;
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayDevice;
 import com.george_vi.electroenergetics.content.relay.RelayDevice;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterDevice;
@@ -55,6 +56,11 @@ public class CEESimulatedDevices {
             () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("connector"),
                     ((type, level, pos, sd) ->
                             new ConnectorDevice(level, pos, sd, type))));
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<PantographDevice>> PANTOGRAPH = DEVICES.register("pantograph",
+            () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("pantograph"),
+                    ((type, level, pos, sd) ->
+                            new PantographDevice(level, pos, sd, type))));
 
     public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<DoubleConnectorDevice>> DOUBLE_CONNECTOR = DEVICES.register("double_connector",
             () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("connector"),

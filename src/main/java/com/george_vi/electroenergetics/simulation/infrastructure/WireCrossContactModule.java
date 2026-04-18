@@ -115,7 +115,7 @@ public class WireCrossContactModule {
                 }
             }
 
-            if (bestDist < 0.04) {
+            if (bestDist < 0.08) {
 
                 WireData wireData2 = connectionData2.wireData;
                 if (wireData.wireType().insulated() || wireData2.wireType().insulated())

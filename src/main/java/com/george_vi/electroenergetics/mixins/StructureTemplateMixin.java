@@ -171,7 +171,7 @@ public class StructureTemplateMixin {
                 attachments.add(Pair.of(point, attachment));
             });
 
-            electroEnergetics$allWireConnections.add(Pair.of(new InWorldNodeConnection(node1, node2), new WireData(wireType, connectionTag.getFloat("Temperature"), attachments)));
+            electroEnergetics$allWireConnections.add(Pair.of(new InWorldNodeConnection(node1, node2), new WireData(wireType, connectionTag.getFloat("Temperature"), attachments, connectionTag.getDouble("Length"))));
         });
     }
 

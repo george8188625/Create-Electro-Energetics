@@ -125,7 +125,7 @@ public class WireApplyingBehaviour {
         if (hoveredPos == null)
             return;
 
-        hoveredPos = hoveredNode.toGlobalPos(hoveredPos, mc.level);
+        hoveredPos = hoveredNode.toGlobalPosNoSable(hoveredPos, mc.level);
 
         Outliner.getInstance().showAABB("electroenergetics_node_selection", AABB.ofSize(hoveredPos, 5/16f, 5/16f, 5/16f), 3)
                 .colored(FontHelper.Palette.STANDARD_CREATE.highlight().getColor().getValue())

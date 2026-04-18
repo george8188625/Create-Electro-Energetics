@@ -33,12 +33,12 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
         for (int i = 0; i < attachments.size(); i++) {
             Pair<Float, WireAttachment> attachment = attachments.get(i);
             if (Math.abs(point.point() - attachment.getFirst()) * Math.sqrt(point.node1().sourcePos().distSqr(point.node2().sourcePos())) < attachment.getSecond().getWidth() / 2 + 0.25) {
-                AllSoundEvents.WRENCH_REMOVE.playOnServer(level, BlockPos.containing(point.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), data.wireType().getSag())));
-                Vec3 pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), 1.0f - attachment.getFirst(), data.wireType().getSag());
+                AllSoundEvents.WRENCH_REMOVE.playOnServer(level, BlockPos.containing(point.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), data.getSag())));
+                Vec3 pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(point.node1().sourcePos()), Vec3.atCenterOf(point.node2().sourcePos()), 1.0f - attachment.getFirst(), data.getSag());
                 for (ItemStack drop : attachment.getSecond().getDrops(level))
                     Containers.dropItemStack(level, pos.x, pos.y, pos.z, drop);
                 attachments.remove(i);
-                sd.setConnectionData(new InWorldNodeConnection(point.node1(), point.node2()), new WireData(data.wireType(), data.temperature(), attachments));
+                sd.setConnectionData(new InWorldNodeConnection(point.node1(), point.node2()), new WireData(data.wireType(), data.temperature(), attachments, data.length));
                 return;
             }
         }

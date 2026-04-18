@@ -11,7 +11,6 @@ import net.minecraft.world.level.Level;
 public class ElectricPumpDevice extends SimpleElectricalDevice {
     public ElectricPumpBlockEntity be;
 
-
     public ElectricPumpDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
         super(level, pos, deviceSD, type);
     }

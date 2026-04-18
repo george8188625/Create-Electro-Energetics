@@ -20,6 +20,7 @@ import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import dev.engine_room.flywheel.lib.visualization.VisualizationHelper;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.Camera;
@@ -38,10 +39,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WireRenderer {
     public static List<Pair<InWorldNodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
@@ -54,6 +52,7 @@ public class WireRenderer {
     @OnlyIn(Dist.CLIENT)
     public static void render(LevelRenderer levelRenderer, PoseStack pose, Camera camera) {
         Minecraft mc = Minecraft.getInstance();
+        float partialTick = AnimationTickHolder.getPartialTicks();
         mc.level.getProfiler().push("renderWires");
         if (!(levelRenderer instanceof LevelRendererAccessor acc))
             return;
@@ -173,8 +172,8 @@ public class WireRenderer {
             BlockState state1 = mc.level.getBlockState(connection.node1().sourcePos());
             BlockState state2 = mc.level.getBlockState(connection.node2().sourcePos());
 
-            Vec3 pos1 = connection.node1().getPosition(mc.level);
-            Vec3 pos2 = connection.node2().getPosition(mc.level);
+            Vec3 pos1 = connection.node1().getPosition(mc.level, partialTick);
+            Vec3 pos2 = connection.node2().getPosition(mc.level, partialTick);
 
             if (pos1 == null || pos2 == null) {
                 pos1 = connection.node1().sourcePos().getCenter();
@@ -189,8 +188,9 @@ public class WireRenderer {
             mc.getProfiler().popPush("renderWireAttachments");
             for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
                 mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachment.getSecond().type).toString());
-                Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
-                float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst(), wireData.wireType().getSag());
+                double distance = pos1.distanceTo(pos2);
+                Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.getSag(distance));
+                float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst(), wireData.getSag(distance));
 
                 if (offset.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
                     continue;
@@ -209,9 +209,10 @@ public class WireRenderer {
             mc.getProfiler().popPush("renderWires");
 
             if (isBlock1Outer || isBlock2Outer || renderImmediately) {
-                List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag());
-                List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag(), mc.gameRenderer.getMainCamera().getPosition()) :
-                        QuadraticWireHelper.cablePoints(pos1, pos2, wireData.wireType().getSag());
+                double distance = pos1.distanceTo(pos2);
+                List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
+                List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), mc.gameRenderer.getMainCamera().getPosition()) :
+                        QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
                 if (renderImmediately)
                     level(renderedPoints, pos1, pos2, pose, buffer, levelRenderer, wireData.wireType(), mc.level);
@@ -349,7 +350,7 @@ public class WireRenderer {
             }
         }
         WIRE_CONNECTIONS.add(Pair.of(newConnection, data));
-        WireEffect we = new WireEffect(Minecraft.getInstance().level, newConnection, data.wireType());
+        WireEffect we = new WireEffect(Minecraft.getInstance().level, newConnection, data.wireType(), data);
         WireEffect owe = WIRE_EFFECTS.put(newConnection, we);
         if (owe != null)
             VisualizationHelper.queueRemove(owe);
@@ -368,7 +369,8 @@ public class WireRenderer {
         if (!CATENARY.contains(connection.swap())) {
             if (!CATENARY.contains(connection)) {
                 CATENARY.add(connection);
-                WireEffect we = new WireEffect(Minecraft.getInstance().level, connection, CEEWireTypes.STANDARD.get());
+                WireEffect we = new WireEffect(Minecraft.getInstance().level, connection, CEEWireTypes.STANDARD.get(),
+                        new WireData(CEEWireTypes.STANDARD.get(), 0, Collections.emptyList(), 0));
                 VisualizationHelper.queueAdd(we);
                 CATENARY_EFFECTS.put(connection, we);
             }
@@ -406,13 +408,15 @@ public class WireRenderer {
         CATENARY_EFFECTS.clear();
         WIRE_EFFECTS.clear();
         for (CatenaryConnection connection : CATENARY) {
-            WireEffect we = new WireEffect(Minecraft.getInstance().level, connection, CEEWireTypes.STANDARD.get());
+            WireEffect we = new WireEffect(Minecraft.getInstance().level, connection, CEEWireTypes.STANDARD.get(),
+                    new WireData(CEEWireTypes.STANDARD.get(), 0, Collections.emptyList(), 0));
             VisualizationHelper.queueAdd(we);
             CATENARY_EFFECTS.put(connection, we);
         }
 
         for (Pair<InWorldNodeConnection, WireData> connection : WIRE_CONNECTIONS) {
-            WireEffect we = new WireEffect(Minecraft.getInstance().level, connection.getFirst(), connection.getSecond().wireType());
+            WireEffect we = new WireEffect(Minecraft.getInstance().level, connection.getFirst(), connection.getSecond().wireType(),
+                    new WireData(CEEWireTypes.STANDARD.get(), 0, Collections.emptyList(), 0));
             VisualizationHelper.queueAdd(we);
             WIRE_EFFECTS.put(connection.getFirst(), we);
         }
