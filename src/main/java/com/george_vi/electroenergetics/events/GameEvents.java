@@ -37,6 +37,7 @@ import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @EventBusSubscriber(modid = CreateElectroEnergetics.ID)
@@ -68,6 +69,14 @@ public class GameEvents {
                 sd.wireSimulationState.onReloadConfigs();
                 sd.wireSimulationState.reloadLazyConnections();
             }
+    }
+
+    @SubscribeEvent
+    public static void serverLevelTickEvent(LevelTickEvent.Pre event) {
+        if (event.getLevel() instanceof ServerLevel level) {
+            InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+            sd.tick();
+        }
     }
 
     @SubscribeEvent

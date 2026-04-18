@@ -45,7 +45,6 @@ public abstract class SimulatedDevice {
     }
 
     /**
-     *
      * @return Whether the device should be removed when the block has been changed from/to the specified state
      */
     public boolean shouldRemove(BlockState oldState, BlockState newState) {
@@ -59,7 +58,7 @@ public abstract class SimulatedDevice {
 
     }
 
-    public boolean isValid() {
+    public final boolean isValid() {
         return isValid;
     }
 

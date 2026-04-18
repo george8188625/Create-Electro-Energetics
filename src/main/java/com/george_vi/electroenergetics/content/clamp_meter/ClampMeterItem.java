@@ -87,7 +87,7 @@ public class ClampMeterItem extends Item {
             if (wire == null)
                 return;
 
-            double resistance = SimulationTicker.getWireResistance(point.node1(), point.node2(), wire.getSecond().wireType().getResistance());
+            double resistance = SimulationTicker.getWireResistance(point.node1(), point.node2(), wire.getSecond().wireType().getResistance(), level);
             CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> setMetering((float) (voltage / resistance)));
         }
     }

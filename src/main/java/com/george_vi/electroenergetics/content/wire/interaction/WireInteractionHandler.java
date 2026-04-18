@@ -75,8 +75,8 @@ public class WireInteractionHandler {
             if (pos1 == null || pos2 == null)
                 continue;
 
-            pos1 = connection.node1().toGlobalPos(pos1);
-            pos2 = connection.node2().toGlobalPos(pos2);
+            pos1 = connection.node1().toGlobalPos(pos1, mc.level);
+            pos2 = connection.node2().toGlobalPos(pos2, mc.level);
 
             List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wire.getSecond().wireType().getSag(), 1f);
 

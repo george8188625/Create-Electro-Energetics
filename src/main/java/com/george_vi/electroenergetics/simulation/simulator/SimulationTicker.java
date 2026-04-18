@@ -15,12 +15,14 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureS
 import com.george_vi.electroenergetics.simulation.util.*;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
+import dev.ryanhcode.sable.companion.SableCompanion;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Position;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
@@ -279,8 +281,8 @@ public class SimulationTicker {
         return VOLTAGES.getOrDefault(node, 0d);
     }
 
-    public static double getWireResistance(InWorldNode node1, InWorldNode node2, double resistance) {
-        double res = Math.sqrt(node1.sourcePos().distSqr(node2.sourcePos())) * resistance;
+    public static double getWireResistance(InWorldNode node1, InWorldNode node2, double resistance, Level level) {
+        double res = SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)node1.sourcePos().getCenter()).distanceTo(SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)node2.sourcePos().getCenter())) * resistance;
         return res == 0 ? resistance : res;
     }
 }

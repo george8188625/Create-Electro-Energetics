@@ -15,10 +15,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntIntImmutablePair;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -35,8 +31,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -117,7 +111,9 @@ public class CEECommands {
         source.sendSuccess(() -> Component.literal("-+------<< Simulation Stats >>-------------+-"), false);
         for (Map.Entry<Level, SimulationStats> entry : SimulationTicker.allStats.entrySet()) {
             SimulationStats stats = entry.getValue();
+            InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) entry.getKey());
             source.sendSuccess(() -> Component.literal("totalNodes: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalNodes)).withStyle(orange)), false);
+            source.sendSuccess(() -> Component.literal("dynamicPositionNodes: ").withStyle(blue).append(Component.literal(String.valueOf(sd.DYNAMIC_POSITION_NODES.size())).withStyle(orange)), false);
 
             int[] totalOptimizedNodes = stats.totalOptimizedNodes;
             StringBuilder stringBuilder = new StringBuilder();

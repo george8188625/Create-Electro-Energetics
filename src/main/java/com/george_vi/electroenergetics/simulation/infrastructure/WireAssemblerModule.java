@@ -34,7 +34,7 @@ public class WireAssemblerModule {
             InWorldNodeConnection connection = e.getKey();
             ConnectionEntry connectionData = e.getValue();
             double resistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(),
-                    connectionData.resistance.getAsDouble());
+                    connectionData.resistance.getAsDouble(), level);
             List<WireSimulationState.CutWireEntry> cuts = connectionData.cuts;
 
             if (cuts.isEmpty())

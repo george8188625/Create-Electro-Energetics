@@ -50,7 +50,6 @@ public class SchematicPrinterMixin {
                 return;
             electroEnergetics$wirePhase = true;
             InfrastructureSavedData sd = InfrastructureSavedData.load(blockReader.getLevel());
-            DevicesSavedData deviceSD = DevicesSavedData.load(blockReader.getLevel());
 
             for (Map.Entry<InWorldNodeConnection, WireData> e : sl.getWireConnections().entrySet()) {
                 InWorldNodeConnection connection = e.getKey();

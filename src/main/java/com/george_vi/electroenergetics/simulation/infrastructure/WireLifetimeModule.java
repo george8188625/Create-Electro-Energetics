@@ -44,7 +44,7 @@ public class WireLifetimeModule {
             List<WireSimulationState.CutWireEntry> cuts = connectionData.cuts;
 
             double current = 0;
-            double wholeWireResistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), connectionData.resistance.getAsDouble());
+            double wholeWireResistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), connectionData.resistance.getAsDouble(), level);
             if (cuts == null || cuts.isEmpty()) {
                 double vd = Math.abs(results.getVoltageAt(connection.node1(), connection.node2()));
                 current = vd / wholeWireResistance;
@@ -96,7 +96,7 @@ public class WireLifetimeModule {
                     isCatenary = connectionData.isCatenary;
 
                 }
-                else if (SimulationTicker.getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType.getResistance()) < SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType.getResistance())) {
+                else if (SimulationTicker.getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType.getResistance(), level) < SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType.getResistance(), level)) {
                     longestWireToBreak = connection;
                     longestWireTypeToBreak = wireType;
                     isCatenary = connectionData.isCatenary;

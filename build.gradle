@@ -91,6 +91,10 @@ repositories {
         url = "https://modmaven.dev"
     }
     maven { url "https://cursemaven.com" }
+    maven {
+        name = "RyanHCode Maven"
+        url = "https://maven.ryanhcode.dev/releases"
+    }
 }
 
 dependencies {
@@ -110,6 +114,11 @@ dependencies {
     runtimeOnly("curse.maven:spark-361579:6225208")
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
     implementation "curse.maven:create-blueprinted-1487864:7767092"
+    jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:[${sable_companion_version},)")) {
+        version {
+            prefer sable_companion_version
+        }
+    }
 
 }
 

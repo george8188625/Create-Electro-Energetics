@@ -2,10 +2,12 @@ package com.george_vi.electroenergetics.foundation.nodes;
 
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.mojang.serialization.Codec;
+import dev.ryanhcode.sable.companion.SableCompanion;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Position;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
@@ -64,8 +66,8 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         }
 
         return nodes.stream()
-                .filter(e -> e.getSecond().toGlobalPos(e.getFirst()).distanceTo(clickedPos) <= threshold)
-                .min(Comparator.comparingDouble(e -> e.getSecond().toGlobalPos(e.getFirst()).distanceTo(clickedPos)))
+                .filter(e -> e.getSecond().toGlobalPos(e.getFirst(), level).distanceTo(clickedPos) <= threshold)
+                .min(Comparator.comparingDouble(e -> e.getSecond().toGlobalPos(e.getFirst(), level).distanceTo(clickedPos)))
                 .map(Pair::getSecond)
                 .orElse(null);
     }
@@ -91,11 +93,22 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         Vec3 localPos = db.getNodePosition(level, sourcePos, state, id);
         if (localPos == null)
             return null;
-        return toGlobalPos(localPos);
+        return toGlobalPos(localPos, level);
     }
 
-    public Vec3 toGlobalPos(Vec3 pos) {
-        return pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
+    public Vec3 getLocalPosition(Level level) {
+        BlockState state = level.getBlockState(sourcePos);
+        if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
+            return null;
+        Vec3 localPos = db.getNodePosition(level, sourcePos, state, id);
+        if (localPos == null)
+            return null;
+        return localPos;
+    }
+
+    public Vec3 toGlobalPos(Vec3 pos, Level level) {
+        Position globalPos = pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
+        return SableCompanion.INSTANCE.projectOutOfSubLevel(level, globalPos);
     }
 
     @Override

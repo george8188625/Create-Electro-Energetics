@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.buzzer;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.block.Blocks;
 
 public class BuzzerDevice extends SimpleElectricalDevice {
     public float temp;
+    BuzzerBlockEntity be;
 
     public BuzzerDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
         super(level, pos, deviceSD, type);
@@ -30,28 +32,22 @@ public class BuzzerDevice extends SimpleElectricalDevice {
 
     @Override
     public void postTick(SimulationResults results) {
-        if (level.isLoaded(pos)) {
-            if (level.getBlockEntity(pos) instanceof BuzzerBlockEntity be) {
+
+        if (this.be == null && level.isLoaded(pos))
+            if (level.getBlockEntity(pos) instanceof BuzzerBlockEntity be)
+                this.be = be;
+
+        if (this.be != null) {
+            if (this.be.isRemoved())
+                this.be = null;
+            else {
                 be.setVoltage(Math.abs(results.getVoltageAt(pos, 0, 1)));
             }
         }
 
         float loss = (float) results.getHeatLoss(pos, 0, 1);
         this.temp = updateTemp(this.temp, Math.min(loss, 10000));
-
-        if (!CEEConfigs.server().componentDamage.get())
-            return;
-
-        if (this.temp > 550) {
-            if (level.isLoaded(pos)) {
-                CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos.getCenter(), 40, new SendSparkPacket(pos.getCenter(), SendSparkPacket.SparkSize.SMALL));
-                ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0,0, 0);
-            }
-
-            deviceSD.removeDevice(pos);
-            level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
-        } else if (this.temp > 400)
-            showOverheatingParticles(level, pos);
+        handleTemp(level, pos, deviceSD, temp, 400, 550);
     }
 
     @Override
