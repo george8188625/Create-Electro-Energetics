@@ -34,7 +34,7 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Normal automatic breakers (MCBs)
 - [ ] Solar panels
 - [x] `R` Current & Potential transformers
-- [ ] MV switch
+- [ ] `R` MV switch
 ### Electronics
 - [ ] Transistors
 - [ ] Variacs
@@ -47,17 +47,17 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Redstone triode - A triode, but instead of outputting an electrical signal, it outputs a redstone signal adjustable from 0 to 15. It will be a kind of bridge between electricity and redstone, simpler and more configurable than a comparator, and considerably more space-efficient.
 - [ ] `R` Redstone threshold activator - uses current or redstone to activate or deactivate a redstone signal. (Used for SF6 breakers)
 ### Content
-- [ ] Changeable buzzer pitch
-- [ ] Galvanic basin recipes 
-- [ ] Zipline hook - Like IE skyhook
+- [ ] `R` Changeable buzzer pitch
+- [ ] `R` Galvanic basin recipes 
+- [ ] `R` Basin electrodes - allows for new recipe types using electricity
+- [ ] `R` Zipline hook - Like IE skyhook
 - [ ] Electric doors - Buzz in door
 - [x] `R` Resistive heater - Electric blaze burner
 - [ ] A coil-gun-like weapon
 - [ ] Solenoid valves - opens or closes create's pipes
 - [ ] Diagonal concrete beams
-- [ ] Colored heavily insulated wire
+- [ ] `R` Colored heavily insulated wire
 - [ ] Multiblock accumulators
-- [ ] Basin electrodes - allows for new recipe types using electricity
 - [ ] `R` Bundled cables
 - [ ] Bell (like buzzer)
 - [ ] L1, L2, L3, N ... signs
@@ -66,6 +66,7 @@ These are potential and planned features. Feel free to contribute by implementin
 - - [ ] Voltmeter
 - - [ ] Accumulators
 - [ ] `R` Electrical panel casing - used to make electrical panels
+- [ ] Traction motors - motors catered towards powering vehicles with a more dynamic sound 
 ### Big, cool, heavy and complex machinery
 - [ ] Electric Arc Furnace - an actually large and realistic(-ish) one
 - - [ ] Electrodes
@@ -90,8 +91,9 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] `R` More involving recipes
 - [ ] `R` Pump voltage limit
 - [ ] `R` Centered indicator bulbs
-- [ ] Indicator bulbs can be controlled by train signals
-- [ ] Normally closed mode for momentary switch
+- [ ] `R` Implement wire assembly/disassembly with Create: Simulated
+- [ ] `R` Indicator bulbs can be controlled by train signals
+- [ ] `R` Normally closed mode for momentary switch
 ### Ponders
 - [x] `R` Resistance
 - [ ] `R` Voltage divider
