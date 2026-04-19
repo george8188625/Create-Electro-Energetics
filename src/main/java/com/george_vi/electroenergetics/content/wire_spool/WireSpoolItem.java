@@ -86,22 +86,41 @@ public class WireSpoolItem extends Item {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
             InWorldNode originalNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
 
-            if ((hoveredNode == null || originalNode == null || !sd.getNodes().contains(originalNode)) ||
-                    hoveredNode.equals(originalNode) ||
-                    (hoveredNode.sourcePos().equals(originalNode.sourcePos()) && !db.canSelfConnect(level, pos, state, hoveredNode.id(), originalNode.id())) ||
+            if (hoveredNode == null || originalNode == null) {
+                AllSoundEvents.DENY.playOnServer(level, pos);
+                return InteractionResult.FAIL;
+            }
+
+            BlockPos originalPos = originalNode.sourcePos();
+            BlockPos hoveredPos = hoveredNode.sourcePos();
+
+            if (hoveredNode.equals(originalNode) ||
+                    (hoveredPos.equals(originalPos) && !db.canSelfConnect(level, pos, state, hoveredNode.id(), originalNode.id())) ||
                     (sd.isConnected(hoveredNode, originalNode)) ||
                     Math.sqrt(originalNode.sableSourcePos(level).distSqr(hoveredNode.sableSourcePos(level))) > wireType.get().getMaxLength()) {
                 AllSoundEvents.DENY.playOnServer(level, pos);
                 return InteractionResult.FAIL;
             }
 
-            if (wireType.get() == CEEWireTypes.COPPER.get() && db instanceof CatenaryHolderBlock && (level.getBlockState(originalNode.sourcePos()).getBlock() instanceof CatenaryHolderBlock)) {
-                if (Math.sqrt(originalNode.sourcePos().distSqr(hoveredNode.sourcePos())) > CEEConfigs.server().maxCatenaryLength.get()) {
+            BlockState originalState = level.getBlockState(originalPos);
+            BlockState hoveredState = level.getBlockState(hoveredPos);
+
+            if (originalState.getBlock() instanceof ElectricalDeviceBlock<?> edb)
+                edb.ensureNodes(sl, originalPos, originalState);
+
+            if (hoveredState.getBlock() instanceof ElectricalDeviceBlock<?> edb)
+                edb.ensureNodes(sl, hoveredPos, hoveredState);
+
+            if (!sd.getNodes().contains(hoveredNode) || !sd.getNodes().contains(originalNode))
+                return InteractionResult.FAIL;
+
+            if (wireType.get() == CEEWireTypes.COPPER.get() && db instanceof CatenaryHolderBlock && (level.getBlockState(originalPos).getBlock() instanceof CatenaryHolderBlock)) {
+                if (Math.sqrt(originalPos.distSqr(hoveredPos)) > CEEConfigs.server().maxCatenaryLength.get()) {
                     AllSoundEvents.DENY.playOnServer(level, pos);
                     return InteractionResult.FAIL;
                 }
 
-                sd.connectCatenary(hoveredNode.sourcePos(), originalNode.sourcePos());
+                sd.connectCatenary(hoveredPos, originalPos);
                 WireSparkEffectTicker.placedConnections.computeIfAbsent(level, l -> new Stack<>()).add(Pair.of(new InWorldNodeConnection(originalNode, hoveredNode), Pair.of(hoveredNode.getPosition(level), player)));
             } else {
                 if (wireType.get() == CEEWireTypes.STANDARD.get() && player.getOffhandItem().getItem() instanceof DyeItem di) {

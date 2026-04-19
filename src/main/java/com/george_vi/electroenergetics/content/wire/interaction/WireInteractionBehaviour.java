@@ -86,7 +86,7 @@ public abstract class WireInteractionBehaviour {
     }
 
     public enum DisplayType {
-        DOT, LINE;
+        DOT, LINE, NONE;
     }
 
     public static class Empty extends WireInteractionBehaviour {

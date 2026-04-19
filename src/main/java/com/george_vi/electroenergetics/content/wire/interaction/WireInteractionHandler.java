@@ -141,7 +141,7 @@ public class WireInteractionHandler {
                     .disableLineNormals();
         } else if (displayType == WireInteractionBehaviour.DisplayType.LINE) {
 
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, bestWireData.getSag(), 1f);
+            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, bestWireData.getSag(bestWirePointDistance), 1f);
             points.add(pos2);
 
             for (int i = 0; i < points.size() - 1; i++) {

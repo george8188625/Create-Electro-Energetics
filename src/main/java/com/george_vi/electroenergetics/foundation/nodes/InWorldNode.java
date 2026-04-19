@@ -9,7 +9,6 @@ import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.Util;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -116,7 +115,7 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         return toGlobalPos(localPos, level);
     }
 
-    public Vec3 getPosition(ClientLevel level, float partialTicks) {
+    public Vec3 getPosition(Level level, float partialTicks) {
         BlockState state = level.getBlockState(sourcePos);
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
             return null;

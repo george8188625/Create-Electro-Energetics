@@ -35,7 +35,7 @@ public class WireLifetimeModule {
             return;
 
         InWorldNodeConnection longestWireToBreak = null;
-        WireType longestWireTypeToBreak = null;
+        WireData longestWireDataToBreak = null;
         boolean isCatenary = false;
         for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             InWorldNodeConnection connection = e.getKey();
@@ -44,7 +44,7 @@ public class WireLifetimeModule {
             List<WireSimulationState.CutWireEntry> cuts = connectionData.cuts;
 
             double current = 0;
-            double wholeWireResistance = SimulationTicker.getWireResistance(connection.node1(), connection.node2(), connectionData.resistance.getAsDouble(), level);
+            double wholeWireResistance = connectionData.wireData.getResistance();
             if (cuts == null || cuts.isEmpty()) {
                 double vd = Math.abs(results.getVoltageAt(connection.node1(), connection.node2()));
                 current = vd / wholeWireResistance;
@@ -93,33 +93,49 @@ public class WireLifetimeModule {
             if (newTemp > wireType.getMaxTemperature() && increase) {
                 if (longestWireToBreak == null) {
                     longestWireToBreak = connection;
-                    longestWireTypeToBreak = wireType;
+                    longestWireDataToBreak = connectionData.wireData;
                     isCatenary = connectionData.isCatenary;
 
                 }
-                else if (SimulationTicker.getWireResistance(longestWireToBreak.node1(), longestWireToBreak.node2(), wireType.getResistance(), level) < SimulationTicker.getWireResistance(connection.node1(), connection.node2(), wireType.getResistance(), level)) {
+                else if (longestWireDataToBreak.length < connectionData.wireData.length) {
                     longestWireToBreak = connection;
-                    longestWireTypeToBreak = wireType;
+                    longestWireDataToBreak = connectionData.wireData;
                     isCatenary = connectionData.isCatenary;
                 }
             }
 
         }
+
         if (longestWireToBreak != null && sd.level.random.nextFloat() > 0.96f) {
             if (isCatenary) {
                 sd.removeCatenary(longestWireToBreak.node1().sourcePos(), longestWireToBreak.node2().sourcePos());
                 return;
             }
-            WireType replaceWith = longestWireTypeToBreak.overheatedReplacement();
+            WireType replaceWith = longestWireDataToBreak.wireType().overheatedReplacement();
+            sd.removeConnection(longestWireToBreak);
+            Vec3 pos1 = longestWireToBreak.node1().getPosition(level);
+            Vec3 pos2 = longestWireToBreak.node2().getPosition(level);
+            if (pos1 == null || pos2 == null)
+                return;
+
             if (replaceWith == null) {
-                sd.removeConnection(longestWireToBreak);
-                CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),
-                        longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.BUBBLE_POP, longestWireTypeToBreak.getSag(), 4));
+                CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f,
+                                longestWireToBreak.node1().sourcePos().getCenter(),
+                                longestWireToBreak.node2().sourcePos().getCenter()),
+                        longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20,
+                        new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(),
+                                ParticleTypes.BUBBLE_POP, longestWireDataToBreak.getSag(pos1.distanceTo(pos2)), 4));
             } else {
                 WireData wireConnectionData = sd.getConnectionData(longestWireToBreak);
+                if (wireConnectionData == null)
+                    return;
                 sd.setConnectionData(longestWireToBreak, new WireData(replaceWith, wireConnectionData.temperature(), wireConnectionData.attachments(), wireConnectionData.length));
-                CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f, longestWireToBreak.node1().sourcePos().getCenter(), longestWireToBreak.node2().sourcePos().getCenter()),
-                        longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(), ParticleTypes.LARGE_SMOKE, longestWireTypeToBreak.getSag(), 4));
+                CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f,
+                                longestWireToBreak.node1().sourcePos().getCenter(),
+                                longestWireToBreak.node2().sourcePos().getCenter()),
+                        longestWireToBreak.node1().sourcePos().getCenter().distanceTo(longestWireToBreak.node2().sourcePos().getCenter()) + 20,
+                        new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(),
+                                ParticleTypes.LARGE_SMOKE, longestWireDataToBreak.getSag(pos1.distanceTo(pos2)), 4));
             }
         }
     }

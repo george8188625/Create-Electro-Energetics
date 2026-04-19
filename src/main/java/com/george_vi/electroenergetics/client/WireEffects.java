@@ -27,7 +27,7 @@ public class WireEffects {
     @OnlyIn(Dist.CLIENT)
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
-        if (!mc.isPaused())
+        if (mc.isPaused())
             return;
 
         for (Pair<InWorldNodeConnection, WireData> wire : WireRenderer.getAllConnections()) {

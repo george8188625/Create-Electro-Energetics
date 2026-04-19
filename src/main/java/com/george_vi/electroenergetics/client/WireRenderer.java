@@ -416,7 +416,7 @@ public class WireRenderer {
 
         for (Pair<InWorldNodeConnection, WireData> connection : WIRE_CONNECTIONS) {
             WireEffect we = new WireEffect(Minecraft.getInstance().level, connection.getFirst(), connection.getSecond().wireType(),
-                    new WireData(CEEWireTypes.STANDARD.get(), 0, Collections.emptyList(), 0));
+                    connection.getSecond());
             VisualizationHelper.queueAdd(we);
             WIRE_EFFECTS.put(connection.getFirst(), we);
         }

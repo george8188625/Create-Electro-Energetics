@@ -92,6 +92,8 @@ public class WireSimulationState {
         Vec3 pos1 = sd.getNodePosition(connection.node1());
         Vec3 pos2 = sd.getNodePosition(connection.node2());
         double distance = pos1.distanceTo(pos2);
+        if (distance > 1000)
+            return; // Hope it's gonna be correct the next update. (it is)
         List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), 0.5f);
 
         double miny = pos1.y;

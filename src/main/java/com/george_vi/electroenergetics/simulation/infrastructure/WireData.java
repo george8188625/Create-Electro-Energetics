@@ -6,6 +6,8 @@ import com.george_vi.electroenergetics.simulation.WireType;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.data.Pair;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
@@ -49,12 +51,19 @@ public class WireData {
     }
 
     public float getSag(double distance) {
-        float baseSag = wireType.getSag();
+        float baseSag = (float) (wireType.getSag() * length / 6);
 
-        double factor = length / distance;
 
-        factor *= Mth.lerp(2, 1, factor);
-        return (float) (factor * baseSag);
+        double factor = -distance + length + 1;
+        factor = Mth.clamp(factor, 0.2, 30);
+
+        double a = (factor * baseSag);
+        return (float) ((6 / distance) * a);
+
+    }
+
+    public double getResistance() {
+        return Math.max(0.001, wireType.getResistance() * length);
     }
 
     public WireType wireType() {

@@ -38,6 +38,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class InfrastructureSavedData extends SavedData {
+    public ArrayList<InWorldNodeConnection> sableToUpdate = new ArrayList<>();
     Map<InWorldNode, List<InWorldNode>> NODES = new HashMap<>();
     Map<InWorldNode, Vec3> NODE_POSITIONS = new HashMap<>();
     Map<InWorldNode, Vec3> LOCAL_NODE_POSITIONS = new HashMap<>();
@@ -373,6 +374,12 @@ public class InfrastructureSavedData extends SavedData {
 
     public void tick() {
         updateAllNodePositions();
+
+        for (InWorldNodeConnection connection : sableToUpdate) {
+            WireData connectionData = getConnectionData(connection);
+            if (connectionData != null)
+                setConnectionData(connection, connectionData);
+        }
     }
 
     private void updateAllNodePositions() {
@@ -409,6 +416,17 @@ public class InfrastructureSavedData extends SavedData {
         NODES.putIfAbsent(node, new ArrayList<>());
         NODE_POSITIONS.putIfAbsent(node, node.sourcePos().getCenter());
         LOCAL_NODE_POSITIONS.putIfAbsent(node, VecHelper.CENTER_OF_ORIGIN);
+        NODES_BY_POS.computeIfAbsent(node.sourcePos(), k -> new ArrayList<>()).add(node);
+        wireSimulationState.onNodeChange(NODES.keySet());
+
+        if (isDynamicPosition(level, node))
+            DYNAMIC_POSITION_NODES.add(node);
+    }
+
+    public void addTemporaryNode(InWorldNode node, Vec3 pos, Vec3 localPos) {
+        NODES.putIfAbsent(node, new ArrayList<>());
+        NODE_POSITIONS.putIfAbsent(node, pos);
+        LOCAL_NODE_POSITIONS.putIfAbsent(node, localPos);
         NODES_BY_POS.computeIfAbsent(node.sourcePos(), k -> new ArrayList<>()).add(node);
         wireSimulationState.onNodeChange(NODES.keySet());
 
@@ -503,8 +521,28 @@ public class InfrastructureSavedData extends SavedData {
         CONNECTION_DATA.put(connection, data);
         setDirty();
 
-        WireSync.handleWireAdded(connection, data, level);
         wireSimulationState.addConnection(connection, data, false);
+        WireSync.handleWireAdded(connection, data, level);
+        return connection;
+    }
+
+    public InWorldNodeConnection connectNoUpdate(InWorldNode node1, InWorldNode node2, WireData data) {
+        if (node1.equals(node2))
+            throw new IllegalArgumentException("Tried to connect a wire between a single node: " + node1);
+
+        if (!(NODES.containsKey(node1) && NODES.containsKey(node2)))
+            throw new IllegalArgumentException("Node: " + (NODES.containsKey(node2) ? node1.toString() : node2.toString()) + "doesn't exist.");
+        NODES.compute(node1, (node, nodes) -> {
+            nodes.add(node2);
+            return nodes;
+        });
+        NODES.compute(node2, (node, nodes) -> {
+            nodes.add(node1);
+            return nodes;
+        });
+        InWorldNodeConnection connection = new InWorldNodeConnection(node1, node2);
+        CONNECTION_DATA.put(connection, data);
+        setDirty();
         return connection;
     }
 
@@ -569,6 +607,20 @@ public class InfrastructureSavedData extends SavedData {
 
             LOCAL_NODE_POSITIONS.put(node, newPos);
             NODE_POSITIONS.put(node, pos = node.toGlobalPos(newPos, level));
+        }
+        return pos;
+    }
+
+    public Vec3 getLocalNodePosition(InWorldNode node) {
+        Vec3 pos = LOCAL_NODE_POSITIONS.get(node);
+        if (pos == null || level.isLoaded(node.sourcePos())) {
+            Vec3 newPos = node.getLocalPosition(level);
+
+            if (newPos == null)
+                newPos = VecHelper.CENTER_OF_ORIGIN;
+
+            LOCAL_NODE_POSITIONS.put(node, pos = newPos);
+            NODE_POSITIONS.put(node, node.toGlobalPos(newPos, level));
         }
         return pos;
     }

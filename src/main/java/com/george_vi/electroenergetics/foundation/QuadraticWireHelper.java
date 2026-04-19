@@ -4,6 +4,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class QuadraticWireHelper {
@@ -61,9 +62,17 @@ public class QuadraticWireHelper {
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, float detail) {
         float distance = (float) pos1.distanceTo(pos2);
         if (distance > 1000) // prevent world bricking
-            return List.of();
+            return Collections.emptyList();
 
         double resolution = (distance * 2);
+        if (dip > 40) {
+            dip /= 16;
+            resolution *= 4;
+        } if (dip > 10 || distance < 1.1) {
+            dip /= 4;
+            resolution *= 2;
+        }
+
         double invResolution = 1 / resolution;
         int totalPoints = (int) (resolution / detail);
         int ppp = (int) Math.max(1, (resolution / totalPoints));

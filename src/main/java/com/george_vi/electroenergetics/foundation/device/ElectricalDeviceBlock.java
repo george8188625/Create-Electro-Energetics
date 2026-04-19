@@ -2,14 +2,18 @@ package com.george_vi.electroenergetics.foundation.device;
 
 import com.george_vi.electroenergetics.devices.device.DeviceBlock;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public interface ElectricalDeviceBlock<T extends SimulatedDevice> extends DeviceBlock<T> {
@@ -61,5 +65,12 @@ public interface ElectricalDeviceBlock<T extends SimulatedDevice> extends Device
      */
     default boolean isNodeAccessible(Level level, BlockPos pos, BlockState state, int id) {
         return true;
+    }
+
+    default void ensureNodes(ServerLevel level, BlockPos pos, BlockState state) {
+        List<Integer> nodes = new ArrayList<>(getNodePositions(level, pos, state).keySet());
+
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        sd.registerOrUpdateNodes(pos, nodes);
     }
 }

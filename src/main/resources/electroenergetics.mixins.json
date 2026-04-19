@@ -24,6 +24,7 @@
     "SchematicLevelMixin",
     "SchematicPrinterMixin",
     "StructureTemplateMixin",
+    "SubLevelAssemblyHelperMixin",
     "TrainMixin"
   ]
 }

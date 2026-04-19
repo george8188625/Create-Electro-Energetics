@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.content.wire.attachments.BannerWireIntera
 import com.george_vi.electroenergetics.content.wire.attachments.BuntingWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.attachments.DamperWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
+import com.george_vi.electroenergetics.content.wire_spool.ChangeLengthWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.DyeWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolWireInteractionBehaviour;
 import net.neoforged.bus.api.IEventBus;
@@ -24,6 +25,7 @@ public class CEEWireInteractionBehaviours {
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> DYE = WIRE_INTERACTION_BEHAVIOURS.register("dye", DyeWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> DAMPER = WIRE_INTERACTION_BEHAVIOURS.register("damper", DamperWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> ATTACHMENT_REMOVAL = WIRE_INTERACTION_BEHAVIOURS.register("attachment_removal", AttachmentRemovalWireInteractionBehaviour::new);
+    public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> CHANGE_LENGTH = WIRE_INTERACTION_BEHAVIOURS.register("change_length", ChangeLengthWireInteractionBehaviour::new);
     public static void register(IEventBus bus) {
         WIRE_INTERACTION_BEHAVIOURS.register(bus);
     }

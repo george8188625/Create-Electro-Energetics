@@ -36,6 +36,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     private final WireData wireData;
     private final VisualizationContext visualizationContext;
 
+    private double prevLength;
     private Vec3 prevPos1;
     private Vec3 prevPos2;
     protected final List<TransformedInstance> instances = new ArrayList<>();
@@ -55,8 +56,12 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             pos1 = connection.node1().sourcePos().getCenter();
             pos2 = connection.node2().sourcePos().getCenter();
         }
+        double distance = pos1.distanceTo(pos2);
 
         lightSections = new LongOpenHashSet();
+
+        if (distance > 1000)
+            return; // Wire is wrong. It's going to be updated at some point.
 
         int minSectionX = SectionPos.blockToSectionCoord(Math.min(pos1.x, pos2.x));
         int minSectionY = SectionPos.blockToSectionCoord(Math.min(pos1.y, pos2.y));
@@ -74,7 +79,6 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
         prevPos1 = pos1;
         prevPos2 = pos2;
-        double distance = pos1.distanceTo(pos2);
 
         List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
@@ -96,11 +100,12 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
         pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
 
-        if (pos1.equals(prevPos1) && pos2.equals(prevPos2))
+        if (pos1.equals(prevPos1) && pos2.equals(prevPos2) && prevLength == wireData.length)
             return;
 
         prevPos1 = pos1;
         prevPos2 = pos2;
+        prevLength = wireData.length;
         for (TransformedInstance instance : instances)
             instance.delete();
 
@@ -134,6 +139,9 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
 
         double distance = pos1.distanceTo(pos2);
+        if (distance > 1000)
+            return;
+
         List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
         boolean useOld = true;

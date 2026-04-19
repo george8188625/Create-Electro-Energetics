@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -89,7 +90,7 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.POTENTIOMETER.asStack());
                         output.accept(CEEBlocks.RESISTOR.asStack());
                         output.accept(CEEBlocks.CREATIVE_RESISTOR.asStack());
-                        if (CEEConfigs.client().showACContent.get()) {
+                        if (FMLLoader.getDist().isDedicatedServer() || CEEConfigs.client().showACContent.get()) {
                             output.accept(CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES.asStack());
                             output.accept(CEEBlocks.SYNCHROSCOPE.asStack());
                         }
