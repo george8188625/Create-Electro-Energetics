@@ -7,6 +7,7 @@ import com.george_vi.electroenergetics.content.buzzer.BuzzerBlockEntity;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlockEntity;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
+import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorRenderer;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.inductor.InductorBlockEntity;
@@ -41,6 +42,7 @@ import com.george_vi.electroenergetics.content.transmission_distribution.transfo
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreBlockEntity;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorBlockEntity;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
+import com.simibubi.create.content.kinetics.base.OrientedRotatingVisual;
 import com.simibubi.create.content.kinetics.base.ShaftRenderer;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
@@ -96,9 +98,9 @@ public class CEEBlockEntityTypes {
             .register();
 
     public static final BlockEntityEntry<ElectricMotorBlockEntity> ELECTRIC_MOTOR = REGISTRATE.blockEntity("electric_motor", ElectricMotorBlockEntity::new)
-            .visual(() -> SingleAxisRotatingVisual::shaft, false)
-            .validBlock(CEEBlocks.ELECTRIC_MOTOR::get)
-            .renderer(() -> ShaftRenderer::new)
+            .visual(() -> OrientedRotatingVisual.of(CEEPartialModels.ELECTRIC_MOTOR_SHAFT), false)
+            .validBlocks(CEEBlocks.ELECTRIC_MOTORS)
+            .renderer(() -> ElectricMotorRenderer::new)
             .register();
 
     public static final BlockEntityEntry<AlternatorRotorBlockEntity> ALTERNATOR_ROTOR = REGISTRATE.blockEntity("alternator_rotor", AlternatorRotorBlockEntity::new)

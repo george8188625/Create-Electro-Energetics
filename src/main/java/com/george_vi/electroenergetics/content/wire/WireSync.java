@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
@@ -36,11 +37,13 @@ public class WireSync {
             }
         }
 
-        List<InWorldNode> newNodes = new ArrayList<>(sd.getNodes().stream().filter(n -> newChunks.contains(new ChunkPos(n.sableSourcePos(player.level())))).toList());
+        List<InWorldNode> newNodes = new ArrayList<>(sd.getNodes().stream().filter(n ->
+                newChunks.contains(new ChunkPos(BlockPos.containing(sd.getNodePositionOrCenter(n))))).toList());
 
         for (InWorldNode node : newNodes) {
             for (InWorldNodeConnection connection : sd.getConnections(node)) {
-                if (chunks.contains(new ChunkPos(connection.node2().sableSourcePos(player.level()))))
+                Vec3 pos = sd.getNodePositionOrCenter(connection.node2());
+                if (chunks.contains(new ChunkPos(BlockPos.containing(pos))))
                     continue;
                 CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection, sd.getConnectionData(connection)));
             }
@@ -66,7 +69,9 @@ public class WireSync {
         List<InWorldNodeConnection> connectionsToRemove = new ArrayList<>();
         for (InWorldNode node : nodesToRemove) {
             for (InWorldNodeConnection connection : sd.getConnections(node)) {
-                if (chunks.contains(new ChunkPos(connection.node2().sableSourcePos(player.level()))))
+                Vec3 pos = sd.getNodePositionOrCenter(connection.node2());
+                ChunkPos chunk = new ChunkPos(BlockPos.containing(pos));
+                if (chunks.contains(chunk))
                     continue;
                 connectionsToRemove.add(connection);
             }
@@ -81,8 +86,11 @@ public class WireSync {
     }
 
     public static void handleWireRemoved(InWorldNodeConnection connection, ServerLevel level) {
-        ChunkPos chunk1 = new ChunkPos(connection.node1().sableSourcePos(level));
-        ChunkPos chunk2 = new ChunkPos(connection.node2().sableSourcePos(level));
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        Vec3 pos1 = sd.getNodePositionOrCenter(connection.node1());
+        ChunkPos chunk1 = new ChunkPos(BlockPos.containing(pos1));
+        Vec3 pos2 = sd.getNodePositionOrCenter(connection.node1());
+        ChunkPos chunk2 = new ChunkPos(BlockPos.containing(pos2));
         for (ServerPlayer player : level.getPlayers(p -> true)) {
             for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList()))
                 if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {
@@ -93,8 +101,11 @@ public class WireSync {
     }
 
     public static void handleWireAdded(InWorldNodeConnection connection, WireData data, ServerLevel level) {
-        ChunkPos chunk1 = new ChunkPos(connection.node1().sableSourcePos(level));
-        ChunkPos chunk2 = new ChunkPos(connection.node2().sableSourcePos(level));
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        Vec3 pos1 = sd.getNodePositionOrCenter(connection.node1());
+        ChunkPos chunk1 = new ChunkPos(BlockPos.containing(pos1));
+        Vec3 pos2 = sd.getNodePositionOrCenter(connection.node1());
+        ChunkPos chunk2 = new ChunkPos(BlockPos.containing(pos2));
         for (ServerPlayer player : level.getPlayers(p -> true)) {
             for (ChunkPos loadedChunk : loadedChunks.getOrDefault(player.getUUID(), Collections.emptyList()))
                 if (loadedChunk.equals(chunk1) || loadedChunk.equals(chunk2)) {

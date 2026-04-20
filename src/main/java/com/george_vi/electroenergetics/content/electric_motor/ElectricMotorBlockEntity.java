@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.electric_motor;
 
+import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
@@ -13,6 +14,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
+import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.math.VecHelper;
@@ -44,6 +46,11 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @OnlyIn(Dist.CLIENT)
     protected ElectricHumSoundInstance soundInstance;
+
+    @OnlyIn(Dist.CLIENT)
+    protected ElectricHumSoundInstance windSoundInstance;
+
+    LerpedFloat soundSpeed = LerpedFloat.linear();
 
 
     public ElectricMotorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -107,15 +114,28 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @OnlyIn(Dist.CLIENT)
     public void tickAudio() {
-        if (averageVoltage.get() > 60) {
+        soundSpeed.chase(speed, Math.abs(soundSpeed.getValue()) > Math.abs(speed) ? 5 : 1, LerpedFloat.Chaser.LINEAR);
+        soundSpeed.tickChaser();
+        float speedNormalized = Math.abs(soundSpeed.getValue()) / 256f;
+        if (averageVoltage.get() > 67) {
             if (soundInstance == null || soundInstance.isStopped()) {
                 Minecraft.getInstance()
                         .getSoundManager()
-                        .play(soundInstance = new ElectricHumSoundInstance(worldPosition));
-            } else if (soundInstance != null) {
+                        .play(soundInstance = new ElectricHumSoundInstance(CEESoundEvents.DC_TRAIN.get(), worldPosition));
+            } else if (soundInstance != null && speedNormalized != 0) {
                 soundInstance.keepAlive();
-                soundInstance.setVolume((averageVoltage.get() / (averageVoltage.get() + 1) > 1.3) || isOverStressed() ? 0.2f : 0.05f);
+                soundInstance.setVolume(Math.min(0.5f, speedNormalized * 0.75f));
+                soundInstance.setPitch(Mth.lerp(speedNormalized, 0.1f, 2));
             }
+        }
+        if (windSoundInstance == null || windSoundInstance.isStopped()) {
+            Minecraft.getInstance()
+                    .getSoundManager()
+                    .play(windSoundInstance = new ElectricHumSoundInstance(CEESoundEvents.TRAIN_WIND_STATIC.get(), worldPosition));
+        } else if (windSoundInstance != null && speedNormalized != 0) {
+            windSoundInstance.keepAlive();
+            windSoundInstance.setVolume(speedNormalized * 0.5f);
+            windSoundInstance.setPitch(Mth.lerp(speedNormalized, 0.1f, 1.5f));
         }
     }
 
@@ -152,12 +172,12 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
         @Override
         public Vec3 getLocalOffset(LevelAccessor level, BlockPos pos, BlockState state) {
             Direction facing = state.getValue(DeployerBlock.FACING);
-            Vec3 vec = VecHelper.voxelSpace(8f, 8f, 16f);
+            Vec3 vec = VecHelper.voxelSpace(8f, 8f, 15f);
 
             vec = VecHelper.rotateCentered(vec, AngleHelper.horizontalAngle(getSide()), Direction.Axis.Y);
             vec = VecHelper.rotateCentered(vec, AngleHelper.verticalAngle(getSide()), Direction.Axis.X);
             vec = vec.subtract(Vec3.atLowerCornerOf(facing.getNormal())
-                    .scale(-2 / 16f));
+                    .scale(2 / 16f));
 
             return vec;
         }

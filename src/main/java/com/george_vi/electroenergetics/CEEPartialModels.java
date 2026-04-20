@@ -68,6 +68,7 @@ public class CEEPartialModels {
     public static final PartialModel RESISTIVE_HEATER_HEATING_ELEMENT = PartialModel.of(CreateElectroEnergetics.rl("block/resistive_heater/heating_element"));
     public static final PartialModel RESISTIVE_HEATER_HEATING_ELEMENT_GLOW = PartialModel.of(CreateElectroEnergetics.rl("block/resistive_heater/heating_element_glow"));
     public static final PartialModel SYNCHROSCOPE_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/synchroscope/dial"));
+    public static final PartialModel ELECTRIC_MOTOR_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/electric_motor/shaft"));
 
     public static final Map<DyeColor, PartialModel> COLORED_WIRE_SEGMENTS = new HashMap<>();
     static {

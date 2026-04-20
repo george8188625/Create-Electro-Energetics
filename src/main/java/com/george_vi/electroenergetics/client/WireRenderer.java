@@ -66,6 +66,7 @@ public class WireRenderer {
 
         float baseCatenaryWidth = 0.66f;
         boolean renderImmediately = !VisualizationManager.supportsVisualization(mc.level);
+        Vec3 cameraPosition = mc.gameRenderer.getMainCamera().getPosition();
         if (renderImmediately)
             for (CatenaryConnection connection : List.copyOf(CATENARY)) {
                 BlockState startingState = mc.level.getBlockState(connection.pos1());
@@ -82,14 +83,14 @@ public class WireRenderer {
                 for (int i = 0; i < lowerWirePoints.size(); i++) {
                     Vec3 point = lowerWirePoints.get(i);
 
-                    if (point.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                    if (point.distanceTo(cameraPosition) > CEEConfigs.client().wireRenderDistance.get())
                         continue;
 
                     Vec3 nextPoint = i == lowerWirePoints.size() - 1 ? end : lowerWirePoints.get(i + 1);
 
                     // the reason for catenaries to have variable width, is that when the player is far away, normal-width catenaries look out of place, and they give off a vibe of something solid or smth??
 
-                    float catenaryWidth = (float) Mth.clamp(baseCatenaryWidth / (mc.gameRenderer.getMainCamera().getPosition().distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
+                    float catenaryWidth = (float) Mth.clamp(baseCatenaryWidth / (cameraPosition.distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
 
                     CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
                             .translate(point)
@@ -117,14 +118,14 @@ public class WireRenderer {
                 for (int i = 0; i < upperWirePoints.size(); i++) {
                     Vec3 point = upperWirePoints.get(i);
 
-                    if (point.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                    if (point.distanceTo(cameraPosition) > CEEConfigs.client().wireRenderDistance.get())
                         continue;
 
                     Vec3 nextPoint = i == upperWirePoints.size() - 1 ? topEnd : upperWirePoints.get(i + 1);
 
                     // the reason for catenaries to have variable width, is that when the player is far away, normal-width catenaries look out of place, and they give off a vibe of something solid or smth??
 
-                    float catenaryWidth = (float) Mth.clamp(baseCatenaryWidth / (mc.gameRenderer.getMainCamera().getPosition().distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
+                    float catenaryWidth = (float) Mth.clamp(baseCatenaryWidth / (cameraPosition.distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
 
                     CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
                             .translate(point)
@@ -192,7 +193,7 @@ public class WireRenderer {
                 Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.getSag(distance));
                 float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst(), wireData.getSag(distance));
 
-                if (offset.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                if (offset.distanceTo(cameraPosition) > CEEConfigs.client().wireRenderDistance.get())
                     continue;
 
                 pose.pushPose();
@@ -211,7 +212,7 @@ public class WireRenderer {
             if (isBlock1Outer || isBlock2Outer || renderImmediately) {
                 double distance = pos1.distanceTo(pos2);
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
-                List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), mc.gameRenderer.getMainCamera().getPosition()) :
+                List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), cameraPosition) :
                         QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
                 if (renderImmediately)
@@ -220,7 +221,7 @@ public class WireRenderer {
                 if (points.size() >= 10) {
                     if (isBlock1Outer) {
                         Vec3 nextPoint = points.get(5);
-                        if (nextPoint.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                        if (nextPoint.distanceTo(cameraPosition) > CEEConfigs.client().wireRenderDistance.get())
                             continue;
                         CachedBuffers.partial(CEEPartialModels.INSULATOR, Blocks.ANDESITE.defaultBlockState())
                                 .translate(pos1)
@@ -236,7 +237,7 @@ public class WireRenderer {
 
                     if (isBlock2Outer) {
                         Vec3 nextPoint = points.get(points.size() - 6);
-                        if (nextPoint.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
+                        if (nextPoint.distanceTo(cameraPosition) > CEEConfigs.client().wireRenderDistance.get())
                             continue;
                         CachedBuffers.partial(CEEPartialModels.INSULATOR, Blocks.ANDESITE.defaultBlockState())
                                 .translate(pos2)

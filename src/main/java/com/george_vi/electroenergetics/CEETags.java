@@ -20,6 +20,7 @@ public class CEETags {
     public static final TagKey<Item> IRON_NUGGET = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "nuggets/iron"));;
     public static final TagKey<Item> IRON_INGOT = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ingots/iron"));;
     public static final TagKey<Item> IRON_PLATE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "plates/iron"));
+    public static final TagKey<Item> ELECTRIC_MOTORS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("electric_motors"));
 
     public static final TagKey<Block> TRAIN_SOUND_MODIFIER = TagKey.create(Registries.BLOCK, CreateElectroEnergetics.rl("train_sound_modifier"));
 

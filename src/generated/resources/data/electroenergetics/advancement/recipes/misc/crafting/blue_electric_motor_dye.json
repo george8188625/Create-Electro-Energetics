@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_electric_motors": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#electroenergetics:electric_motors"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "electroenergetics:crafting/blue_electric_motor_dye"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_electric_motors"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "electroenergetics:crafting/blue_electric_motor_dye"
+    ]
+  }
+}

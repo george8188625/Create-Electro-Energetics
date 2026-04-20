@@ -9,6 +9,7 @@ import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
 import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
 import net.createmod.ponder.api.registration.SharedTextRegistrationHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
 public class CEEPonderPlugin implements PonderPlugin {
     @Override
@@ -128,7 +129,7 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .add(CEEBlocks.TRANSFORMER_CORE.getId())
                 .add(CEEBlocks.TRANSFORMER.getId())
                 .add(CEEBlocks.VOLTAGE_REGULATOR.getId())
-                .add(CEEBlocks.ELECTRIC_MOTOR.getId())
+                .add(CEEBlocks.ELECTRIC_MOTORS[DyeColor.RED.ordinal()].getId())
                 .add(CEEBlocks.ALTERNATOR_ROTOR.getId())
                 .add(CEEBlocks.ALTERNATOR_BRUSHES.getId())
                 .add(CEEBlocks.FUSE.getId())

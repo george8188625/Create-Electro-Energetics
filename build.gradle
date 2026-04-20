@@ -114,6 +114,8 @@ dependencies {
     implementation("dev.eriksonn.aeronautics:aeronautics-neoforge-${minecraft_version}:${aeronautics_version}")
     implementation("dev.simulated_team.simulated:simulated-neoforge-${minecraft_version}:${simulated_version}")
 
+    runtimeOnly "curse.maven:create-threaded-trains-1381890:7208558"
+
     runtimeOnly "curse.maven:createaddition-439890:7262496"
     compileOnly "curse.maven:supplementaries-412082:7688722"
     compileOnly "curse.maven:selene-499980:7522321"

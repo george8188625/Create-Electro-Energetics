@@ -24,7 +24,6 @@
     "electroenergetics:accumulator",
     "electroenergetics:ammeter",
     "electroenergetics:voltmeter",
-    "electroenergetics:electric_motor",
     "electroenergetics:electric_pump",
     "electroenergetics:transformer",
     "electroenergetics:transformer_core",
@@ -55,6 +54,22 @@
     "electroenergetics:grounding_sign",
     "electroenergetics:potentiometer",
     "electroenergetics:resistive_heater",
-    "electroenergetics:synchroscope"
+    "electroenergetics:synchroscope",
+    "electroenergetics:white_electric_motor",
+    "electroenergetics:orange_electric_motor",
+    "electroenergetics:magenta_electric_motor",
+    "electroenergetics:light_blue_electric_motor",
+    "electroenergetics:yellow_electric_motor",
+    "electroenergetics:lime_electric_motor",
+    "electroenergetics:pink_electric_motor",
+    "electroenergetics:gray_electric_motor",
+    "electroenergetics:light_gray_electric_motor",
+    "electroenergetics:cyan_electric_motor",
+    "electroenergetics:purple_electric_motor",
+    "electroenergetics:blue_electric_motor",
+    "electroenergetics:brown_electric_motor",
+    "electroenergetics:green_electric_motor",
+    "electroenergetics:red_electric_motor",
+    "electroenergetics:black_electric_motor"
   ]
 }

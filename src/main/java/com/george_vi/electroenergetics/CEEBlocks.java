@@ -65,6 +65,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -389,18 +390,6 @@ public class CEEBlocks {
             .transform(ModelGen.customItemModel("gauge", "_", "item"))
             .register();
 
-    public static final BlockEntry<ElectricMotorBlock> ELECTRIC_MOTOR = REGISTRATE.block("electric_motor", ElectricMotorBlock::new)
-            .tag(CEETags.TRAIN_ELECTRIC_MOTOR)
-            .initialProperties(SharedProperties::stone)
-            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate(BlockStateGen.directionalBlockProvider(true))
-            .transform(pickaxeOnly())
-            .item()
-            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
-            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
-                    .addResistance(CEEConfigs.server().resistanceValues.motorResistance::get)))
-            .build()
-            .register();
 
     public static final BlockEntry<ElectricPumpBlock> ELECTRIC_PUMP = REGISTRATE.block("electric_pump", ElectricPumpBlock::new)
             .initialProperties(SharedProperties::copperMetal)
@@ -773,7 +762,27 @@ public class CEEBlocks {
             .build()
             .register();
 
+    @SuppressWarnings("unchecked")
+    public static final BlockEntry<ElectricMotorBlock>[] ELECTRIC_MOTORS = new BlockEntry[DyeColor.values().length];
 
+    static {
+        for (DyeColor color : DyeColor.values()) {
+            ELECTRIC_MOTORS[color.ordinal()] = REGISTRATE.block(color.getSerializedName() + "_electric_motor", ElectricMotorBlock::new)
+                    .tag(CEETags.TRAIN_ELECTRIC_MOTOR)
+                    .initialProperties(SharedProperties::stone)
+                    .properties(p -> p.mapColor(color))
+                    .blockstate((c, p) ->
+                            p.directionalBlock(c.get(), p.models().getExistingFile(p.modLoc("block/electric_motor/block_" + color.getSerializedName()))))
+                    .transform(pickaxeOnly())
+                    .item()
+                    .tag(CEETags.ELECTRIC_MOTORS)
+                    .model((c, p) -> p.withExistingParent(p.name(c::getEntry), p.modLoc("block/electric_motor/item_" + color.getSerializedName())))
+                    .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                            .addResistance(CEEConfigs.server().resistanceValues.motorResistance::get)))
+                    .build()
+                    .register();
+        }
+    }
     public static void register() {
 
     }

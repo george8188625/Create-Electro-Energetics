@@ -60,10 +60,11 @@ public class LUSolver {
         for (int i = 0; i < n; i++) {
             SparseRow rowI = A.data[i];
             double sum = b[i];
-            for (int col : rowI.getNz())
+            for (int colIndex = 0; colIndex < rowI.getFlatNzSize(); colIndex++) {
+                int col = rowI.getFlatNz()[colIndex];
                 if (col < i)
                     sum -= rowI.values[col] * y[col];
-
+            }
             y[i] = sum;
         }
 
@@ -72,10 +73,11 @@ public class LUSolver {
         for (int i = n - 1; i >= 0; i--) {
             SparseRow rowI = A.data[i];
             double sum = y[i];
-            for (int col : rowI.getNz())
+            for (int colIndex = 0; colIndex < rowI.getFlatNzSize(); colIndex++) {
+                int col = rowI.getFlatNz()[colIndex];
                 if (col < n && col > i)
                     sum -= rowI.values[col] * x[col];
-
+            }
 
             x[i] = sum / rowI.values[i];
         }

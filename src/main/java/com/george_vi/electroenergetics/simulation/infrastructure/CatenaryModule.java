@@ -129,11 +129,12 @@ public class CatenaryModule {
                 }
             }
 
-            if (!connected)
+            if (!connected || (trainData.pantographs.isEmpty() && trainData.accumulatorCharge <= 0.001)) {
+                trainData.groundNode = null;
+                trainData.trainNode = null;
                 continue;
+            }
 
-            if (trainData.pantographs.isEmpty() && trainData.accumulatorCharge <= 0.001)
-                continue;
             double trainSpeed = Math.abs(train.speed);
             float acceleration = (float) (trainSpeed - trainData.lastSpeed);
 
@@ -179,7 +180,7 @@ public class CatenaryModule {
             else
                 voltage = 0;
             boolean active = trainData.hasCreativeSource || voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
-            double trainSpeed = Math.abs(train.speed);
+            double trainSpeed = train.derailed ? 0 : Math.abs(train.speed);
 
             // Sparks
             for (TrainPantographEntry pantograph : trainData.pantographs) {

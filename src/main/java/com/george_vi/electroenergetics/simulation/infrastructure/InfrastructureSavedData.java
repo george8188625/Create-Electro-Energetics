@@ -387,6 +387,8 @@ public class InfrastructureSavedData extends SavedData {
         List<InWorldNodeConnection> connectionsToUpdate = new ArrayList<>();
         for (InWorldNode node : DYNAMIC_POSITION_NODES) {
             Vec3 localPos = LOCAL_NODE_POSITIONS.computeIfAbsent(node, (n) -> VecHelper.CENTER_OF_ORIGIN);
+            if (isSableAndUnloadedNode(node))
+                continue;
             Vec3 pos = node.toGlobalPos(localPos, level);
             if (pos == null)
                 continue;
@@ -597,10 +599,18 @@ public class InfrastructureSavedData extends SavedData {
         return NODES.keySet();
     }
 
+    public Vec3 getNodePositionOrCenter(InWorldNode node) {
+        Vec3 pos = getNodePosition(node);
+        return pos == null ? node.sourcePos().getCenter() : pos;
+    }
+
     public Vec3 getNodePosition(InWorldNode node) {
         Vec3 pos = NODE_POSITIONS.get(node);
         if (pos == null || level.isLoaded(node.sourcePos())) {
             Vec3 newPos = node.getLocalPosition(level);
+
+            if (isSableAndUnloadedNode(node))
+                return pos;
 
             if (newPos == null)
                 newPos = VecHelper.CENTER_OF_ORIGIN;
@@ -620,9 +630,20 @@ public class InfrastructureSavedData extends SavedData {
                 newPos = VecHelper.CENTER_OF_ORIGIN;
 
             LOCAL_NODE_POSITIONS.put(node, pos = newPos);
-            NODE_POSITIONS.put(node, node.toGlobalPos(newPos, level));
+            if (!isSableAndUnloadedNode(node))
+                NODE_POSITIONS.put(node, node.toGlobalPos(newPos, level));
         }
         return pos;
+    }
+
+    private boolean isSableAndUnloadedNode(InWorldNode node) {
+        // Sable SubLevels don't load like wires.
+        // This prevents the nodes from updating their position to an astronomically high value.
+        int cX = node.sourcePos().getX() >> 4;
+        int cZ = node.sourcePos().getZ() >> 4;
+        if (cX >= 1280_000 && cZ >= 1280_000)
+            return SableCompanion.INSTANCE.getContaining(level, node.sourcePos()) == null;
+        return false;
     }
 
     public void connectCatenary(BlockPos pos1, BlockPos pos2) {

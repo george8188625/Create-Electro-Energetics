@@ -16,6 +16,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -291,17 +293,25 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_industrial_iron_block", has(AllBlocks.INDUSTRIAL_IRON_BLOCK))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/magnet_block"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ELECTRIC_MOTOR)
-                .pattern(" IC")
-                .pattern("MRM")
-                .pattern("CI ")
-                .define('I', AllBlocks.INDUSTRIAL_IRON_BLOCK)
-                .define('C', CEEBlocks.CONNECTOR)
-                .define('M', CEEBlocks.MAGNET_BLOCK)
-                .define('R', CEEBlocks.ALTERNATOR_ROTOR)
-                .unlockedBy("has_rotor", has(CEEBlocks.ALTERNATOR_ROTOR))
-                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/electric_motor"));
+        for (DyeColor color : DyeColor.values()) {
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ELECTRIC_MOTORS[color.ordinal()])
+                    .pattern("DIC")
+                    .pattern("MRM")
+                    .pattern("CID")
+                    .define('I', AllBlocks.INDUSTRIAL_IRON_BLOCK)
+                    .define('C', CEEBlocks.CONNECTOR)
+                    .define('M', CEEBlocks.MAGNET_BLOCK)
+                    .define('R', CEEBlocks.ALTERNATOR_ROTOR)
+                    .define('D', DyeItem.byColor(color))
+                    .unlockedBy("has_rotor", has(CEEBlocks.ALTERNATOR_ROTOR))
+                    .save(recipeOutput, CreateElectroEnergetics.rl("crafting/" + color.getSerializedName() + "_electric_motor"));
 
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, CEEBlocks.ELECTRIC_MOTORS[color.ordinal()])
+                    .requires(CEETags.ELECTRIC_MOTORS)
+                    .requires(DyeItem.byColor(color))
+                    .unlockedBy("has_electric_motors", has(CEETags.ELECTRIC_MOTORS))
+                    .save(recipeOutput, CreateElectroEnergetics.rl("crafting/" + color.getSerializedName() + "_electric_motor_dye"));
+        }
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ELECTRIC_PUMP)
                 .pattern(" MC")
                 .pattern("APA")

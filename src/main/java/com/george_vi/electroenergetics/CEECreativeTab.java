@@ -1,12 +1,15 @@
 package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlock;
 import com.simibubi.create.AllCreativeModeTabs;
+import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLLoader;
@@ -69,7 +72,11 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.TRANSFORMER.asStack());
                         output.accept(CEEBlocks.VOLTAGE_REGULATOR.asStack());
                         output.accept(CEEBlocks.CURRENT_TRANSFORMER.asStack());
-                        output.accept(CEEBlocks.ELECTRIC_MOTOR.asStack());
+                        for (BlockEntry<ElectricMotorBlock> e : CEEBlocks.ELECTRIC_MOTORS)
+                            output.accept(e.asStack(), e == CEEBlocks.ELECTRIC_MOTORS[DyeColor.RED.ordinal()] ?
+                                    CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS :
+                                    CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
+
                         output.accept(CEEBlocks.ELECTRIC_PUMP.asStack());
                         output.accept(CEEBlocks.ALTERNATOR_ROTOR.asStack());
                         output.accept(CEEBlocks.ALTERNATOR_BRUSHES.asStack());

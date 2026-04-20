@@ -80,28 +80,28 @@ public class ElectricMotorBlock extends DirectionalKineticElectricBlock<Electric
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(FACING).getAxis() == Direction.Axis.Y)
-            return Map.of(0, new Vec3(2/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f),
-                    1, new Vec3(14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f));
+            return Map.of(0, new Vec3(2/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f, 8/16f),
+                    1, new Vec3(14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f, 8/16f));
         if (state.getValue(FACING).getAxis() == Direction.Axis.X)
-            return Map.of(0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f, 2/16f),
-                    1, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f, 14/16f));
+            return Map.of(0, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f, 8/16f, 2/16f),
+                    1, new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f, 8/16f, 14/16f));
 
-        return Map.of(0, new Vec3(2/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f),
-                1, new Vec3(14/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f));
+        return Map.of(0, new Vec3(2/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f),
+                1, new Vec3(14/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f));
 
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         if (state.getValue(FACING).getAxis() == Direction.Axis.Y)
-            return id == 0 ? new Vec3(2/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f) :
-                    new Vec3(14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f);
+            return id == 0 ? new Vec3(2/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f, 8/16f) :
+                    new Vec3(14/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f, 8/16f);
         if (state.getValue(FACING).getAxis() == Direction.Axis.X)
-            return id == 0 ? new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f, 2/16f) :
-                    new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f, 8/16f, 14/16f);
+            return id == 0 ? new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f, 8/16f, 2/16f) :
+                    new Vec3((state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f, 8/16f, 14/16f);
 
-        return id == 0 ? new Vec3(2/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f) :
-                new Vec3(14/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 3 : 13)/16f);
+        return id == 0 ? new Vec3(2/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f) :
+                new Vec3(14/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f);
 
     }
 
