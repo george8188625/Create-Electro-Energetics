@@ -126,52 +126,8 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
     @Override
     public void updateLight(float partialTick) {
-        ClientLevel level = Minecraft.getInstance().level;
-        Vec3 pos1 = connection.node1().getPosition(level);
-        Vec3 pos2 = connection.node2().getPosition(level);
-
-        if (pos1 == null || pos2 == null) {
-            pos1 = connection.node1().sourcePos().getCenter();
-            pos2 = connection.node2().sourcePos().getCenter();
-        }
-
-        pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
-        pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
-
-        double distance = pos1.distanceTo(pos2);
-        if (distance > 1000)
-            return;
-
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
-
-        boolean useOld = true;
-        if (instances.size() != points.size()) {
-            for (TransformedInstance instance : instances)
-                instance.delete();
-            instances.clear();
-            useOld = false;
-        }
-
-        for (int i = 0; i < points.size(); i++) {
-            Vec3 point = points.get(i);
-            Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
-            TransformedInstance instance = useOld ? instances.get(i).setIdentityTransform() : visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
-                    .createInstance();
-            BlockPos pointBlockPos = BlockPos.containing(point).offset(visualizationContext.renderOrigin());
-            BlockPos nextBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
-            BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
-            instance.translate(point)
-                    .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
-                    .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                    .rotateZ(0.001f)
-                    .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                    .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
-                            WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
-                                    LevelRenderer.getLightColor(level, nextBlockPos)));
-            instance.setChanged();
-            if (!useOld)
-                instances.add(instance);
-        }
+        // forces it to recreate the wires on the next frame.
+        prevLength = -1;
     }
 
     private void createWire(VisualizationContext visualizationContext, WireType wireType, List<Vec3> points, Vec3 pos2, ClientLevel level) {

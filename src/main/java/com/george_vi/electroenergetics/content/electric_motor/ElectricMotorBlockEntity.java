@@ -1,21 +1,18 @@
 package com.george_vi.electroenergetics.content.electric_motor;
 
 import com.george_vi.electroenergetics.CEESoundEvents;
-import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.RMSHolder;
+import com.george_vi.electroenergetics.foundation.scroll_value.KineticUnlockableScrollValueBehaviour;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.deployer.DeployerBlock;
-import com.simibubi.create.content.kinetics.motor.KineticScrollValueBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
-import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.ChatFormatting;
@@ -39,10 +36,13 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     float load = 0;
     double voltageBeforeLastChange = 0;
+    float speedBeforeLastChange = 0;
 
-    protected ScrollValueBehaviour generatedSpeed;
+    float motorSpeed;
 
-    RMSHolder averageVoltage = new RMSHolder(16);
+    protected KineticUnlockableScrollValueBehaviour generatedSpeed;
+
+    RMSHolder averageVoltage;
 
     @OnlyIn(Dist.CLIENT)
     protected ElectricHumSoundInstance soundInstance;
@@ -55,12 +55,40 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     public ElectricMotorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+        setLazyTickRate(12);
+        averageVoltage = new RMSHolder(8 * (1 << CEEConfigs.server().simulationConfig.microTickBits.get()));
+    }
+
+    @Override
+    public void lazyTick() {
+        super.lazyTick();
+        if (generatedSpeed.isUnlocked()) {
+            motorSpeed = Mth.lerp(1f, motorSpeed, (float) Mth.clamp(averageVoltage.getSigned() / 4, -256, 256));
+            if (Math.abs(motorSpeed - speedBeforeLastChange) > 2) {
+                voltageBeforeLastChange = averageVoltage.getSigned();
+                speedBeforeLastChange = motorSpeed;
+                reActivateSource = true;
+            }
+        } else {
+            motorSpeed = averageVoltage.get() > 80 ? generatedSpeed.getValue() : 0;
+
+            if (Math.abs(averageVoltage.getSigned() - voltageBeforeLastChange) > 2) {
+                voltageBeforeLastChange = averageVoltage.getSigned();
+                speedBeforeLastChange = motorSpeed;
+                reActivateSource = true;
+            }
+        }
     }
 
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
         tag.putFloat("Load", load);
+        tag.putFloat("MotorSpeed", motorSpeed);
+        if (!clientPacket) {
+            tag.putDouble("VoltageBeforeLastChange", voltageBeforeLastChange);
+            tag.putFloat("SpeedBeforeLastChange", speedBeforeLastChange);
+        }
         averageVoltage.write(tag, "Voltage");
     }
 
@@ -68,6 +96,11 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         load = tag.getFloat("Load");
+        motorSpeed = tag.getFloat("MotorSpeed");
+        if (!clientPacket) {
+            voltageBeforeLastChange = tag.getDouble("VoltageBeforeLastChange");
+            speedBeforeLastChange = tag.getFloat("SpeedBeforeLastChange");
+        }
         averageVoltage.read(tag, "Voltage");
     }
 
@@ -75,29 +108,92 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         super.addBehaviours(behaviours);
         int max = 256;
-        generatedSpeed = new KineticScrollValueBehaviour(CreateLang.translateDirect("kinetics.creative_motor.rotation_speed"),
+        generatedSpeed = new KineticUnlockableScrollValueBehaviour(CreateLang.translateDirect("kinetics.creative_motor.rotation_speed"),
                 this, new ValueBox());
         generatedSpeed.between(-max, max);
         generatedSpeed.value = 32;
-        generatedSpeed.withCallback(i -> this.updateGeneratedRotation());
+        generatedSpeed.withCallback(i -> updateRotation());
         behaviours.add(generatedSpeed);
+    }
+
+    public void updateRotation() {
+        if (generatedSpeed.isUnlocked()) {
+            motorSpeed = (float) Mth.clamp(averageVoltage.getSigned() / 2, -256, 256);
+            if (Math.abs(motorSpeed - speedBeforeLastChange) > 2) {
+                voltageBeforeLastChange = averageVoltage.getSigned();
+                speedBeforeLastChange = motorSpeed;
+                reActivateSource = true;
+            }
+        } else {
+            motorSpeed = generatedSpeed.getValue();
+
+            voltageBeforeLastChange = averageVoltage.getSigned();
+            speedBeforeLastChange = motorSpeed;
+            reActivateSource = true;
+        }
     }
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        super.addToGoggleTooltip(tooltip, isPlayerSneaking);
-        Lang.builder(CreateElectroEnergetics.ID)
+//        super.addToGoggleTooltip(tooltip, isPlayerSneaking);
+        if (speed == 0)
+            return false;
+
+        // Maximum capacity
+        float stressBase = calculateAddedStressCapacity();
+
+        CreateLang.translate("gui.goggles.generator_stats")
+                .forGoggles(tooltip);
+        CEELang.builder()
+                .translate("gui.goggles.maximum_capacity")
+                .style(ChatFormatting.GRAY)
+                .forGoggles(tooltip);
+
+        float speed = getTheoreticalSpeed();
+        if (speed != getGeneratedSpeed() && speed != 0)
+            stressBase *= getGeneratedSpeed() / speed;
+
+        float stressTotal = Math.abs(stressBase * speed);
+
+        CreateLang.number(stressTotal)
+                .translate("generic.unit.stress")
+                .style(ChatFormatting.AQUA)
+                .space()
+                .add(CEELang.translate("gui.goggles.at_current_voltage")
+                        .style(ChatFormatting.DARK_GRAY))
+                .forGoggles(tooltip, 1);
+
+        // Current generation
+
+        CEELang.builder()
+                .translate("gui.goggles.current_generation")
+                .style(ChatFormatting.GRAY)
+                .forGoggles(tooltip);
+
+        CreateLang.number(load * stressTotal)
+                .translate("generic.unit.stress")
+                .style(ChatFormatting.AQUA)
+                .space()
+                .add(CreateLang.translate("gui.goggles.at_current_speed")
+                        .style(ChatFormatting.DARK_GRAY))
+                .forGoggles(tooltip, 1);
+
+        // Energy consumption
+        double load = Mth.clamp(this.load, 0.05, 1);
+        float wattage = Math.round(averageVoltage.get() * averageVoltage.get() /
+                (0.8 * Math.min(CEEConfigs.server().resistanceValues.motorResistance.get() * 6,
+                        CEEConfigs.server().resistanceValues.motorResistance.get() / load)));
+
+        CEELang.builder()
                 .translate("gui.goggles.energy_consumption")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        float wattage = Math.round(averageVoltage.get() * averageVoltage.get() /
-                (0.8 * Math.min(CEEConfigs.server().resistanceValues.motorResistance.get() * 3, CEEConfigs.server().resistanceValues.motorResistance.get() / Mth.clamp(load, 0.1, 3))));
-        Lang.builder(CreateElectroEnergetics.ID)
+        CEELang.builder()
                 .add(CEELang.formatPower(wattage))
                 .style(ChatFormatting.AQUA)
                 .space()
-                .add(Component.translatable("electroenergetics.gui.goggles.at_current_load")
-                        .withStyle(ChatFormatting.DARK_GRAY))
+                .add(CEELang.translate("gui.goggles.at_current_load")
+                        .style(ChatFormatting.DARK_GRAY))
                 .forGoggles(tooltip, 1);
 
         return true;
@@ -105,16 +201,13 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public void tick() {
-        if (Math.abs(averageVoltage.get() - voltageBeforeLastChange) > 10) {
-            voltageBeforeLastChange = averageVoltage.get();
-            reActivateSource = true;
-        }
         super.tick();
     }
 
     @OnlyIn(Dist.CLIENT)
     public void tickAudio() {
-        soundSpeed.chase(speed, Math.abs(soundSpeed.getValue()) > Math.abs(speed) ? 5 : 1, LerpedFloat.Chaser.LINEAR);
+        float speed = isOverStressed() ? 0 : this.speed;
+        soundSpeed.chase(speed, Math.abs(soundSpeed.getValue()) > Math.abs(speed) || generatedSpeed.isUnlocked() ? 5 : 1, LerpedFloat.Chaser.LINEAR);
         soundSpeed.tickChaser();
         float speedNormalized = Math.abs(soundSpeed.getValue()) / 256f;
         if (averageVoltage.get() > 67) {
@@ -141,7 +234,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public float calculateAddedStressCapacity() {
-        float speed = Math.abs(generatedSpeed.getValue());
+        float speed = Math.abs(getMotorSpeed());
         float capacity = speed == 0 ? 0 : (float) ((averageVoltage.get() * averageVoltage.get()) / CEEConfigs.server().resistanceValues.motorResistance.get()) / speed;
         this.lastCapacityProvided = capacity;
         return capacity;
@@ -149,7 +242,11 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public float getGeneratedSpeed() {
-        return convertToDirection(averageVoltage.get() < 80 ? 0 : generatedSpeed.getValue(), getBlockState().getValue(ElectricMotorBlock.FACING));
+        return convertToDirection(averageVoltage.get() < 80 ? 0 : getMotorSpeed(), getBlockState().getValue(ElectricMotorBlock.FACING));
+    }
+
+    private float getMotorSpeed() {
+        return motorSpeed;
     }
 
     @Override
@@ -162,7 +259,13 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
         sendData();
     }
 
-    class ValueBox extends ValueBoxTransform.Sided {
+    @Override
+    public int getFlickerScore() {
+        // Makes create not destroy the block when it's speed is repeatedly changed.
+        return 0;
+    }
+
+    static class ValueBox extends ValueBoxTransform.Sided {
 
         @Override
         protected Vec3 getSouthLocation() {

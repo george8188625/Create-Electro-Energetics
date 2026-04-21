@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.electric_motor;
 
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.base.DirectionalKineticElectricBlock;
@@ -8,6 +9,12 @@ import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -21,15 +28,16 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
 
 public class ElectricMotorBlock extends DirectionalKineticElectricBlock<ElectricMotorDevice> implements IBE<ElectricMotorBlockEntity>, SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-
 
     public ElectricMotorBlock(Properties properties) {
         super(properties);
@@ -60,6 +68,21 @@ public class ElectricMotorBlock extends DirectionalKineticElectricBlock<Electric
         }
 
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
+
+        if (stack.getItem() instanceof DyeItem item) {
+            DyeColor color = item.getDyeColor();
+
+            level.setBlockAndUpdate(pos, CEEBlocks.ELECTRIC_MOTORS[color.ordinal()].get().withPropertiesOf(state));
+
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -103,6 +126,11 @@ public class ElectricMotorBlock extends DirectionalKineticElectricBlock<Electric
         return id == 0 ? new Vec3(2/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f) :
                 new Vec3(14/16f, 8/16f, (state.getValue(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? 3 : 13)/16f);
 
+    }
+
+    @Override
+    protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
     }
 
     @Override

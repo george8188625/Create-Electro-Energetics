@@ -16,6 +16,8 @@
   "electroenergetics.gui.goggles.electric_stats": "Electric Stats",
   "electroenergetics.gui.goggles.energy_consumption": "Energy Consumption:",
   "electroenergetics.gui.goggles.energy_generation": "Energy Generation:",
+  "electroenergetics.gui.goggles.current_generation": "Current Generation:",
+  "electroenergetics.gui.goggles.maximum_capacity": "Maximum Capacity:",
   "electroenergetics.gui.goggles.power": "Power:",
   "electroenergetics.gui.goggles.primary_voltage": "Primary Coil Voltage:",
   "electroenergetics.gui.goggles.secondary_voltage": "Secondary Coil Voltage:",
@@ -136,6 +138,9 @@
   "electroenergetics.gauge.scaling_symbol": "÷",
   "electroenergetics.gauge.scaling_forward": "x",
   "electroenergetics.gauge.scaling_backward": "÷",
+  "electroenergetics.electric_motor.unlocked_symbol": "🔓",
+  "electroenergetics.electric_motor.unlocked": "Unlocked",
+  "electroenergetics.electric_motor.unlocked_explanation": "Dynamic",
 
   "electroenergetics.hint.synchroscope_misconfigured": "It appears this _Synchroscope_ has not been wired correctly. Ensure the _phases_ are connected in a consistent order.",
   "electroenergetics.hint.synchroscope_misconfigured.title": "Misconfigured",

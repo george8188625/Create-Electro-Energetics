@@ -1,5 +1,5 @@
 {
-  "parent": "electroenergetics:block/electric_motor/item",
+  "parent": "electroenergetics:block/electric_motor/block",
   "textures": {
     "casing": "electroenergetics:block/electric_motor/yellow"
   }

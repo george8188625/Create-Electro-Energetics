@@ -54,6 +54,26 @@ public class RMSHolder {
     }
 
     public double getSigned() {
-        return values[(pointer - 1 + windowSize) % windowSize] > 0 ? rms : -rms;
+        double max = 0, min = 0, sum = 0;
+        for (int i = 0; i < values.length; i++) {
+            double v = values[i];
+            sum += v * v;
+
+            if (i == 0) {
+                max = min = v;
+                continue;
+            }
+
+            if (v > max) max = v;
+            if (v < min) min = v;
+        }
+
+        double rms = Math.sqrt(sum / values.length);
+
+        if (min < 0 && max < 0)
+            rms = -rms;
+        else if (min < 0 && max < min * -0.1)
+            rms = -rms;
+        return rms;
     }
 }

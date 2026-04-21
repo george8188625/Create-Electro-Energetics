@@ -72,7 +72,7 @@ public class WireApplyingBehaviour {
 
             Vec3 nodePosition = db.getNodePosition(level, pos, selectedState, selectedNode.id());
             if (nodePosition != null) {
-                selectedPos = selectedNode.toGlobalPos(nodePosition, mc.level);
+                selectedPos = selectedNode.toGlobalPosNoSable(nodePosition, mc.level);
                 Outliner.getInstance().showAABB("electroenergetics_selected_node", AABB.ofSize(selectedPos, 4 / 16f, 4 / 16f, 4 / 16f), 3)
                         .colored(FontHelper.Palette.STANDARD_CREATE.primary().getColor().getValue())
                         .withFaceTexture(AllSpecialTextures.SELECTION);

@@ -772,11 +772,14 @@ public class CEEBlocks {
                     .initialProperties(SharedProperties::stone)
                     .properties(p -> p.mapColor(color))
                     .blockstate((c, p) ->
-                            p.directionalBlock(c.get(), p.models().getExistingFile(p.modLoc("block/electric_motor/block_" + color.getSerializedName()))))
+                            p.directionalBlock(c.get(), p.models().withExistingParent(c.getName(), p.modLoc("block/electric_motor/block"))
+                                            .texture("casing", p.modLoc("block/electric_motor/" + color.getSerializedName()))))
                     .transform(pickaxeOnly())
                     .item()
                     .tag(CEETags.ELECTRIC_MOTORS)
-                    .model((c, p) -> p.withExistingParent(p.name(c::getEntry), p.modLoc("block/electric_motor/item_" + color.getSerializedName())))
+                    .model((c, p) ->
+                            p.withExistingParent(p.name(c::getEntry), p.modLoc("block/electric_motor/item"))
+                                    .texture("casing", p.modLoc("block/electric_motor/" + color.getSerializedName())))
                     .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                             .addResistance(CEEConfigs.server().resistanceValues.motorResistance::get)))
                     .build()

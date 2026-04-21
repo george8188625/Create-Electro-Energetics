@@ -54,7 +54,7 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Electric doors - Buzz in door
 - [x] `R` Resistive heater - Electric blaze burner
 - [ ] A coil-gun-like weapon
-- [ ] Solenoid valves - opens or closes create's pipes
+- [ ] Solenoid valves - opens or closes Create's pipes
 - [ ] Diagonal concrete beams
 - [ ] `R` Colored heavily insulated wire
 - [ ] Multiblock accumulators
@@ -71,7 +71,7 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Electric Arc Furnace - an actually large and realistic(-ish) one
 - - [ ] Electrodes
 - - [ ] Recipe system
-- - [ ] EAF multiblock behaviour
+- - [ ] EAF multiblock behavior
 - [ ] `R` Multiblock electric motors + electric motor nerf
 - [ ] `R` The great alternator rework
 ### Integration
