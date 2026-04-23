@@ -23,6 +23,7 @@ import com.george_vi.electroenergetics.content.energy_meter.TriPolarEnergyMeterB
 import com.george_vi.electroenergetics.content.fuse.FuseBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlock;
+import com.george_vi.electroenergetics.content.gauge.ElectricGaugeMovementBehaviour;
 import com.george_vi.electroenergetics.content.ground_rod.GroundRodBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlock;
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlockItem;
@@ -373,7 +374,9 @@ public class CEEBlocks {
             .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
             .blockstate(new GaugeGenerator()::generate)
             .transform(pickaxeOnly())
+            .onRegister(movementBehaviour(new ElectricGaugeMovementBehaviour(false)))
             .item()
+            .tag(AllTags.AllItemTags.CONTRAPTION_CONTROLLED.tag)
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addMaxCurrent(CEEConfigs.server().voltageValues.maxAmmeterCurrent::get)))
             .transform(ModelGen.customItemModel("gauge", "_", "item"))
@@ -384,7 +387,9 @@ public class CEEBlocks {
             .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
             .blockstate(new GaugeGenerator()::generate)
             .transform(pickaxeOnly())
+            .onRegister(movementBehaviour(new ElectricGaugeMovementBehaviour(true)))
             .item()
+            .tag(AllTags.AllItemTags.CONTRAPTION_CONTROLLED.tag)
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addMaxVoltage(CEEConfigs.server().voltageValues.maxVoltmeterVoltage::get)))
             .transform(ModelGen.customItemModel("gauge", "_", "item"))

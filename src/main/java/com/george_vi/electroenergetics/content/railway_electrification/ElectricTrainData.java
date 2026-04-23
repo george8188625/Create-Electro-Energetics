@@ -17,4 +17,14 @@ public class ElectricTrainData {
     public AttachedNode trainNode;
     public AttachedNode groundNode;
     public WireSimulationState.WireCutHandle wireCutHandle;
+
+    // Voltage value for display on gauges (voltmeters/ammeters) attached to train contraptions
+    public double displayVoltage = 0;
+    // Total current draw for display on ammeters attached to train contraptions
+    public double displayCurrent = 0;
+
+    // Packet throttling for gauge data sync
+    public double lastSyncedVoltage = 0;
+    public double lastSyncedCurrent = 0;
+    public int ticksSinceGaugeSync = 0;
 }
