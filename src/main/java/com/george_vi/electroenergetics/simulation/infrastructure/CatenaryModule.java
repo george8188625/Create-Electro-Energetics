@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.simulation.infrastructure;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.ElectricTrainData;
+import com.george_vi.electroenergetics.content.railway_electrification.gauges.SyncTrainGaugeDataPacket;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.TrainPantographEntry;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
@@ -14,6 +15,7 @@ import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Carriage;
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.Train;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
@@ -26,6 +28,8 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 public class CatenaryModule {
+    private static final double GAUGE_SYNC_THRESHOLD = 0.05; // 5% change threshold for network sync
+
     final InfrastructureSavedData sd;
     final ServerLevel level;
     final WireSimulationState wireSimulationState;
@@ -138,13 +142,24 @@ public class CatenaryModule {
             double trainSpeed = Math.abs(train.speed);
             float acceleration = (float) (trainSpeed - trainData.lastSpeed);
 
+            // This needs to happen in this method as the train speed is updated after it.
+            trainData.lastSpeed = trainSpeed;
+
             AttachedNode groundNode = trainData.groundNode = new AttachedNode(id, "CEEPantographGroundNode");
             AttachedNode trainNode = trainData.trainNode = new AttachedNode(id, "CEETrainNode");
             builder.addNode(groundNode);
             builder.addNode(trainNode);
             builder.ground(groundNode, 10);
-            double trainResistance = Math.abs(train.speed) > 0.01 ?
-                    acceleration > 0.001 ? CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() : CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get() : 9999;
+
+            double trainResistance;
+            if (Math.abs(train.speed) > 0.01) {
+                trainResistance = acceleration > 0.001
+                        ? CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get()
+                        : CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get();
+            } else {
+                trainResistance = 9999;
+            }
+
             if (trainData.accumulatorCharge < trainData.accumulators)
                 trainResistance = 1 / (1 / CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() + 1 / trainResistance);
             builder.connect(groundNode, trainNode, ElectricalProperties.resistor(trainResistance));
@@ -179,19 +194,57 @@ public class CatenaryModule {
                 voltage = Math.abs(results.getVoltageAt(groundNode, trainNode));
             else
                 voltage = 0;
+
+            // Store voltage for gauge displays on train contraptions
+            trainData.displayVoltage = voltage;
+
             boolean active = trainData.hasCreativeSource || voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
             double trainSpeed = train.derailed ? 0 : Math.abs(train.speed);
+
+            // Calculate total current draw for ammeter displays
+            double totalCurrent = 0;
 
             // Sparks
             for (TrainPantographEntry pantograph : trainData.pantographs) {
                 if (pantograph.node == null || trainNode == null)
                     continue;
                 double current = Math.abs(results.getCurrentThrough(trainNode, pantograph.node));
+                totalCurrent += current;
+
                 Vec3 sparkPos = pantographSparkPosition(level, train, pantograph, current);
                 if (sparkPos != null)
                     CatnipServices.NETWORK.sendToClientsAround(level, sparkPos,
                             40, new SendSparkPacket(sparkPos, SendSparkPacket.SparkSize.MEDIUM));
                 pantograph.lastCurrent = current;
+            }
+
+            // Store total current for ammeter displays on train contraptions
+            trainData.displayCurrent = totalCurrent;
+
+            // Sync voltage and current to clients for gauge displays (with throttling to reduce network traffic)
+            // Only send when values change significantly or every 5 ticks minimum
+            trainData.ticksSinceGaugeSync++;
+            boolean significantVoltageChange = Math.abs(voltage - trainData.lastSyncedVoltage) > Math.max(voltage, trainData.lastSyncedVoltage) * GAUGE_SYNC_THRESHOLD;
+            boolean significantCurrentChange = Math.abs(totalCurrent - trainData.lastSyncedCurrent) > Math.max(totalCurrent, trainData.lastSyncedCurrent) * GAUGE_SYNC_THRESHOLD;
+            boolean shouldSync = trainData.ticksSinceGaugeSync >= 5 || significantVoltageChange || significantCurrentChange;
+
+            if (shouldSync && !train.carriages.isEmpty()) {
+                Carriage.DimensionalCarriageEntity firstCarriage = train.carriages.getFirst().getDimensional(level.dimension());
+                if (firstCarriage != null && firstCarriage.entity != null) {
+                    CarriageContraptionEntity entity = firstCarriage.entity.get();
+                    if (entity != null) {
+                        Vec3 trainPos = entity.position();
+                        CatnipServices.NETWORK.sendToClientsAround(
+                            level,
+                            trainPos,
+                            100,
+                            new SyncTrainGaugeDataPacket(train.id, voltage, totalCurrent)
+                        );
+                        trainData.lastSyncedVoltage = voltage;
+                        trainData.lastSyncedCurrent = totalCurrent;
+                        trainData.ticksSinceGaugeSync = 0;
+                    }
+                }
             }
 
             if (!active) {
@@ -218,7 +271,6 @@ public class CatenaryModule {
             }
             float acceleration = (float) (trainSpeed - trainData.lastSpeed);
 
-            trainData.lastSpeed = trainSpeed;
             for (Map.Entry<Integer, Vec3> ce : positions.entrySet()) {
                 Integer carriageID = ce.getKey();
                 Vec3 pos = ce.getValue();

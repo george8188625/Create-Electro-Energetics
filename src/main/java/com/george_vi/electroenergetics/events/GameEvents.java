@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.commands.CEECommands;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
+import com.george_vi.electroenergetics.content.railway_electrification.gauges.ClientTrainGaugeData;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.content.wire.WireSync;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
@@ -18,7 +19,6 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureS
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -52,6 +52,7 @@ public class GameEvents {
         WireInteractionHandler.tick();
         WireEffects.tick();
         ElectricTrainSounds.tick();
+        ClientTrainGaugeData.tick();
     }
 
     @OnlyIn(Dist.CLIENT)
