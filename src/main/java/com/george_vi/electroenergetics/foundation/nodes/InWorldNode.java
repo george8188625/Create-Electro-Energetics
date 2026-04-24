@@ -201,4 +201,26 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
     public BlockPos sableSourcePos(Level level) {
         return BlockPos.containing(SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)sourcePos.getCenter()));
     }
+
+    /**
+     * Sometimes nodes in Sable's sublevels may not be fully loaded.
+     * In some cases this may result in extremely long wire connections.
+     * @return true if non-sublevel or sublevel and loaded, false if sublevel and unloaded
+     */
+    public boolean isFullyLoadable(Level level) {
+       return isPosFullyLoadable(level, sourcePos);
+    }
+
+    /**
+     * Sometimes nodes in Sable's sublevels may not be fully loaded.
+     * In some cases this may result in extremely long wire connections.
+     * @return true if non-sublevel or sublevel and loaded, false if sublevel and unloaded
+     */
+    public static boolean isPosFullyLoadable(Level level, BlockPos pos) {
+        int cX = pos.getX() >> 4;
+        int cZ = pos.getZ() >> 4;
+        if (cX >= 1280_000 && cZ >= 1280_000)
+            return SableCompanion.INSTANCE.getContaining(level, pos) != null;
+        return true;
+    }
 }

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "M": {
+      "item": "electroenergetics:magnet"
+    }
+  },
+  "pattern": [
+    "AA ",
+    "MAM",
+    "AA "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:stator"
+  }
+}

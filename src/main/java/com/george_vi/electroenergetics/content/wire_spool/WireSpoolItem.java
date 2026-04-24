@@ -123,8 +123,8 @@ public class WireSpoolItem extends Item {
                 sd.connectCatenary(hoveredPos, originalPos);
                 WireSparkEffectTicker.placedConnections.computeIfAbsent(level, l -> new Stack<>()).add(Pair.of(new InWorldNodeConnection(originalNode, hoveredNode), Pair.of(hoveredNode.getPosition(level), player)));
             } else {
-                if (wireType.get() == CEEWireTypes.STANDARD.get() && player.getOffhandItem().getItem() instanceof DyeItem di) {
-                    WireType newWiretype = CEEWireTypes.COLORED_WIRES.getOrDefault(di.getDyeColor(), CEEWireTypes.STANDARD).get();
+                if (wireType.get() instanceof WireType.Dyeable dyeableWire && player.getOffhandItem().getItem() instanceof DyeItem di) {
+                    WireType newWiretype = dyeableWire.getDyed(di.getDyeColor());
                     sd.connect(originalNode, hoveredNode, newWiretype);
                 } else
                     sd.connect(originalNode, hoveredNode, wireType.get());

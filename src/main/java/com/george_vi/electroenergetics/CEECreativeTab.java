@@ -78,6 +78,7 @@ public class CEECreativeTab {
                                     CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
 
                         output.accept(CEEBlocks.ELECTRIC_PUMP.asStack());
+                        output.accept(CEEBlocks.STATOR.asStack());
                         output.accept(CEEBlocks.ALTERNATOR_ROTOR.asStack());
                         output.accept(CEEBlocks.ALTERNATOR_BRUSHES.asStack());
                         output.accept(CEEBlocks.MAGNET_BLOCK.asStack());

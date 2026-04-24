@@ -312,6 +312,7 @@ public class CEERecipeGen extends RecipeProvider {
                     .unlockedBy("has_electric_motors", has(CEETags.ELECTRIC_MOTORS))
                     .save(recipeOutput, CreateElectroEnergetics.rl("crafting/" + color.getSerializedName() + "_electric_motor_dye"));
         }
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ELECTRIC_PUMP)
                 .pattern(" MC")
                 .pattern("APA")
@@ -323,6 +324,15 @@ public class CEERecipeGen extends RecipeProvider {
                 .define('W', CEEItems.WIRE_SPOOL)
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/electric_pump"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.STATOR)
+                .pattern("AA ")
+                .pattern("MAM")
+                .pattern("AA ")
+                .define('M', CEEBlocks.MAGNET_BLOCK)
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .unlockedBy("has_magnet_block", has(CEEBlocks.MAGNET_BLOCK))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/stator"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ENERGY_METER)
                 .pattern("C C")

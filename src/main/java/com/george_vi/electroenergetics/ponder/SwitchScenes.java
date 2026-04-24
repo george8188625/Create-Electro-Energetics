@@ -245,13 +245,13 @@ public class SwitchScenes {
 
         scene.idle(20);
 
-        connections.createConnection(new InWorldNode(1, 4, 1, 2), new InWorldNode(0, 4, 1, 1), CEEWireTypes.COLORED_WIRES.get(DyeColor.CYAN).get());
-        connections.createConnection(new InWorldNode(0, 4, 1, 1), new InWorldNode(3, 2, 1, 1), CEEWireTypes.COLORED_WIRES.get(DyeColor.CYAN).get());
-        connections.createConnection(new InWorldNode(2, 2, 1, 1), new InWorldNode(0, 1, 1, 1), CEEWireTypes.COLORED_WIRES.get(DyeColor.CYAN).get());
-        connections.createConnection(new InWorldNode(0, 1, 1, 1), new InWorldNode(0, 1, 1, 3), CEEWireTypes.COLORED_WIRES.get(DyeColor.CYAN).get());
-        connections.createConnection(new InWorldNode(0, 1, 1, 3), new InWorldNode(0, 3, 1, 3), CEEWireTypes.COLORED_WIRES.get(DyeColor.CYAN).get());
-        connections.createConnection(new InWorldNode(1, 3, 1, 3), new InWorldNode(0, 4, 1, 3), CEEWireTypes.COLORED_WIRES.get(DyeColor.CYAN).get());
-        connections.createConnection(new InWorldNode(0, 4, 1, 3), new InWorldNode(0, 4, 1, 2), CEEWireTypes.COLORED_WIRES.get(DyeColor.CYAN).get());
+        connections.createConnection(new InWorldNode(1, 4, 1, 2), new InWorldNode(0, 4, 1, 1), CEEWireTypes.COLORED_WIRES[DyeColor.CYAN.ordinal()].get());
+        connections.createConnection(new InWorldNode(0, 4, 1, 1), new InWorldNode(3, 2, 1, 1), CEEWireTypes.COLORED_WIRES[DyeColor.CYAN.ordinal()].get());
+        connections.createConnection(new InWorldNode(2, 2, 1, 1), new InWorldNode(0, 1, 1, 1), CEEWireTypes.COLORED_WIRES[DyeColor.CYAN.ordinal()].get());
+        connections.createConnection(new InWorldNode(0, 1, 1, 1), new InWorldNode(0, 1, 1, 3), CEEWireTypes.COLORED_WIRES[DyeColor.CYAN.ordinal()].get());
+        connections.createConnection(new InWorldNode(0, 1, 1, 3), new InWorldNode(0, 3, 1, 3), CEEWireTypes.COLORED_WIRES[DyeColor.CYAN.ordinal()].get());
+        connections.createConnection(new InWorldNode(1, 3, 1, 3), new InWorldNode(0, 4, 1, 3), CEEWireTypes.COLORED_WIRES[DyeColor.CYAN.ordinal()].get());
+        connections.createConnection(new InWorldNode(0, 4, 1, 3), new InWorldNode(0, 4, 1, 2), CEEWireTypes.COLORED_WIRES[DyeColor.CYAN.ordinal()].get());
         scene.idle(20);
 
         scene.overlay().showText(20)

@@ -22,8 +22,8 @@ public class InfrastructureScenes {
         scene.configureBasePlate(0, 0, 5);
         scene.world().showSection(util.select().layer(0), Direction.UP);
 
-        WireType positiveWireType = CEEWireTypes.COLORED_WIRES.get(DyeColor.RED).get();
-        WireType negativeWireType = CEEWireTypes.COLORED_WIRES.get(DyeColor.BLACK).get();
+        WireType positiveWireType = CEEWireTypes.COLORED_WIRES[DyeColor.RED.ordinal()].get();
+        WireType negativeWireType = CEEWireTypes.COLORED_WIRES[DyeColor.BLACK.ordinal()].get();
 
         BlockPos meter = util.grid().at(2, 3, 2);
         BlockPos source = util.grid().at(2, 1, 0);

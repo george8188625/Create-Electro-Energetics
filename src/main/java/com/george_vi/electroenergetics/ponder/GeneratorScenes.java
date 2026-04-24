@@ -23,8 +23,8 @@ public class GeneratorScenes {
         scene.configureBasePlate(0, 0, 9);
         scene.world().showSection(util.select().layer(0), Direction.UP);
 
-        WireType positiveWireType = CEEWireTypes.COLORED_WIRES.get(DyeColor.RED).get();
-        WireType negativeWireType = CEEWireTypes.COLORED_WIRES.get(DyeColor.BLACK).get();
+        WireType positiveWireType = CEEWireTypes.COLORED_WIRES[DyeColor.RED.ordinal()].get();
+        WireType negativeWireType = CEEWireTypes.COLORED_WIRES[DyeColor.BLACK.ordinal()].get();
         Selection rotors = util.select().fromTo(6, 3, 6, 8, 3, 6);
         Selection magnets = util.select().fromTo(7, 1, 8, 8, 5, 4).substract(rotors);
         Selection connectors1 = util.select().fromTo(6, 1, 8, 6, 5, 4).substract(rotors);
@@ -51,7 +51,7 @@ public class GeneratorScenes {
         scene.world().showSection(magnets, Direction.DOWN);
         scene.idle(20);
         scene.overlay().showText(70)
-                .text("Surround the rotors with magnets")
+                .text("Surround the rotors with stators")
                 .pointAt(util.grid().at(7, 3, 4).getCenter())
                 .attachKeyFrame()
                 .placeNearTarget();

@@ -28,6 +28,7 @@
     "electroenergetics:transformer",
     "electroenergetics:transformer_core",
     "electroenergetics:radiator_panel",
+    "electroenergetics:stator",
     "electroenergetics:voltage_regulator",
     "electroenergetics:current_transformer",
     "electroenergetics:alternator_rotor",

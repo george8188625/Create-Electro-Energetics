@@ -41,6 +41,7 @@ import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterB
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlockEntity;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlock;
+import com.george_vi.electroenergetics.content.rotor.StatorBlock;
 import com.george_vi.electroenergetics.content.rotor.ThreePhaseAlternatorBrushesBlock;
 import com.george_vi.electroenergetics.content.sign.WarningSignBlock;
 import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeBlock;
@@ -440,6 +441,20 @@ public class CEEBlocks {
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
+            .register();
+
+    public static final BlockEntry<StatorBlock> STATOR = REGISTRATE.block("stator", StatorBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) ->
+                    DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                            bs -> p.modLoc(bs.getValue(StatorBlock.FULL) ?
+                                    "block/stator/block_full" :
+                                    "block/stator/block")))
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/block"))

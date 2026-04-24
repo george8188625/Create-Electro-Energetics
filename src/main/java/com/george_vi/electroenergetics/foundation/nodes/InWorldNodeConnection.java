@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.IntStream;
@@ -84,5 +85,14 @@ public final class InWorldNodeConnection implements Comparable<InWorldNodeConnec
         int c = node1.compareTo(o.node1);
         if (c != 0) return c;
         return node2.compareTo(o.node2);
+    }
+
+    /**
+     * Sometimes nodes in Sable's sublevels may not be fully loaded.
+     * In some cases this may result in extremely long wire connections.
+     * @return true if non-sublevel or sublevel and loaded, false if sublevel and unloaded
+     */
+    public boolean isFullyLoaded(Level level) {
+        return node1.isFullyLoadable(level) && node2.isFullyLoadable(level);
     }
 }

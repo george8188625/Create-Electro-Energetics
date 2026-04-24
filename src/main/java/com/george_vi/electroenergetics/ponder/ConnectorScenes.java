@@ -93,7 +93,7 @@ public class ConnectorScenes {
         scene.idle(40);
 
         connections.removeConnection(coloredWire);
-        connections.createConnection(new InWorldNode(0, util.grid().at(2, 1, 4)), new InWorldNode(0, util.grid().at(1, 1, 2)), CEEWireTypes.COLORED_WIRES.get(DyeColor.LIGHT_BLUE).get());
+        connections.createConnection(new InWorldNode(0, util.grid().at(2, 1, 4)), new InWorldNode(0, util.grid().at(1, 1, 2)), CEEWireTypes.COLORED_WIRES[DyeColor.LIGHT_BLUE.ordinal()].get());
 
         scene.idle(40);
 

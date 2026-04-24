@@ -6,21 +6,19 @@ import com.george_vi.electroenergetics.content.railway_electrification.catenary.
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
+import com.george_vi.electroenergetics.simulation.infrastructure.ConnectionEntry;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireSimulationState;
-import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.SubLevelAccess;
-import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +33,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.UnaryOperator;
 
 import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 
@@ -192,8 +189,8 @@ public class PantographBlockEntity extends SmartBlockEntity {
         InWorldNodeConnection connectedConnection = null;
         float connectionProgress = 0;
 
-        for (Map.Entry<InWorldNodeConnection, WireData> connection : sd.getAllConnections().entrySet()) {
-            if (connection.getValue().wireType().getSag() != 0)
+        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> connection : sd.wireSimulationState.getAllConnections()) {
+            if (connection.getValue().wireData.wireType().getSag() != 0)
                 continue;
             Vec3 start = connection.getKey().node1().getPosition(level);
             Vec3 end = connection.getKey().node2().getPosition(level);
@@ -201,7 +198,7 @@ public class PantographBlockEntity extends SmartBlockEntity {
                 continue;
             start = subLevelAccess.logicalPose().transformPositionInverse(start);
             end = subLevelAccess.logicalPose().transformPositionInverse(end);
-            float halfThickness = connection.getValue().wireType().getThickness() * 0.5f;
+            float halfThickness = connection.getValue().wireData.wireType().getThickness() * 0.5f;
             float progress = closestPointOnWire(start, end, pantographPos);
             Vec3 cp = checkCatenary(start, end, pantographPos, progress, halfPantoReach);
             if (cp != null) {
@@ -239,7 +236,8 @@ public class PantographBlockEntity extends SmartBlockEntity {
             if (lastConnection == null) {
                 sd.wireSimulationState.removeCutsFrom(handle);
                 attachedNode = sd.wireSimulationState.createCut(handle, connectedConnection, connectionProgress);
-            } else if (!lastConnection.equals(connectedConnection)) {
+            } else if (!lastConnection.equals(connectedConnection) ||
+                    !sd.wireSimulationState.cutExists(handle, attachedNode)) {
                 sd.wireSimulationState.removeCutsFrom(handle);
                 attachedNode = sd.wireSimulationState.createCut(handle, connectedConnection, connectionProgress);
             } else {

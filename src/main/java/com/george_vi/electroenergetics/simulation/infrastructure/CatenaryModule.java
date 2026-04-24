@@ -113,7 +113,8 @@ public class CatenaryModule {
                             if (pantograph.node == null) {
                                 pantograph.node = wireSimulationState.createCut(trainData.wireCutHandle, connectionEntry, t);
                                 pantograph.onConnection = connectionEntry;
-                            } else if (pantograph.onConnection != connectionEntry) {
+                            } else if (pantograph.onConnection != connectionEntry ||
+                                    !sd.wireSimulationState.cutExists(trainData.wireCutHandle, pantograph.node)) {
                                 wireSimulationState.removeCut(trainData.wireCutHandle, pantograph.node);
                                 pantograph.node = wireSimulationState.createCut(trainData.wireCutHandle, connectionEntry, t);
                                 pantograph.onConnection = connectionEntry;

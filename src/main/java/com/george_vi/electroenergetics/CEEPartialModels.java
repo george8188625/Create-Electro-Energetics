@@ -70,11 +70,15 @@ public class CEEPartialModels {
     public static final PartialModel SYNCHROSCOPE_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/synchroscope/dial"));
     public static final PartialModel ELECTRIC_MOTOR_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/electric_motor/shaft"));
 
-    public static final Map<DyeColor, PartialModel> COLORED_WIRE_SEGMENTS = new HashMap<>();
+    public static final PartialModel[] COLORED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];
+    public static final PartialModel[] COLORED_HEAVILY_INSULATED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];
+
     static {
         for (DyeColor color : DyeColor.values()) {
-            COLORED_WIRE_SEGMENTS.put(color,
-                    PartialModel.of(CreateElectroEnergetics.rl("block/colored_wire/" + color.getName())));
+            COLORED_WIRE_SEGMENTS[color.ordinal()] =
+                    PartialModel.of(CreateElectroEnergetics.rl("block/colored_wire/" + color.getName()));
+            COLORED_HEAVILY_INSULATED_WIRE_SEGMENTS[color.ordinal()] =
+                    PartialModel.of(CreateElectroEnergetics.rl("block/colored_heavily_insulated_wire/" + color.getName()));
         }
     }
 

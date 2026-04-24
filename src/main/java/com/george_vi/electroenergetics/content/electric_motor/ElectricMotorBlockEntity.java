@@ -166,7 +166,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
         // Current generation
 
         CEELang.builder()
-                .translate("gui.goggles.current_generation")
+                .translate("gui.goggles.current_load")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 
@@ -210,17 +210,19 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
         soundSpeed.chase(speed, Math.abs(soundSpeed.getValue()) > Math.abs(speed) || generatedSpeed.isUnlocked() ? 5 : 1, LerpedFloat.Chaser.LINEAR);
         soundSpeed.tickChaser();
         float speedNormalized = Math.abs(soundSpeed.getValue()) / 256f;
-        if (averageVoltage.get() > 67) {
-            if (soundInstance == null || soundInstance.isStopped()) {
-                Minecraft.getInstance()
-                        .getSoundManager()
-                        .play(soundInstance = new ElectricHumSoundInstance(CEESoundEvents.DC_TRAIN.get(), worldPosition));
-            } else if (soundInstance != null && speedNormalized != 0) {
-                soundInstance.keepAlive();
-                soundInstance.setVolume(Math.min(0.5f, speedNormalized * 0.75f));
-                soundInstance.setPitch(Mth.lerp(speedNormalized, 0.1f, 2));
-            }
+        if (Math.abs(speedNormalized) < 0.1f)
+            return;
+
+        if (soundInstance == null || soundInstance.isStopped()) {
+            Minecraft.getInstance()
+                    .getSoundManager()
+                    .play(soundInstance = new ElectricHumSoundInstance(CEESoundEvents.DC_TRAIN.get(), worldPosition));
+        } else if (soundInstance != null && speedNormalized != 0) {
+            soundInstance.keepAlive();
+            soundInstance.setVolume(Math.min(0.5f, speedNormalized * 0.75f));
+            soundInstance.setPitch(Mth.lerp(speedNormalized, 0.1f, 2));
         }
+
         if (windSoundInstance == null || windSoundInstance.isStopped()) {
             Minecraft.getInstance()
                     .getSoundManager()

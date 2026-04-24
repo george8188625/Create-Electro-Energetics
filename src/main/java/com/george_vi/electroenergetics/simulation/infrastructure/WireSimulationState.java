@@ -305,6 +305,17 @@ public class WireSimulationState {
     }
 
     /**
+     * It is possible your cuts may get removed at some point (wire relocations, etc.)
+     * @param handle handle
+     * @return If the node exists
+     */
+    public boolean cutExists(WireCutHandle handle, AttachedNode node) {
+        if (handle.invalidated)
+            throw new IllegalArgumentException("Used an invalidated wire cut handle! " + handle);
+        return cutsByHandle.get(handle.id).containsKey(node);
+    }
+
+    /**
      * Removes all cuts owned by this handle and invalidates it.
      * @param handle handle
      */
@@ -397,7 +408,7 @@ public class WireSimulationState {
     public record CutWireEntry(AttachedNode node, float point, WireCutHandle handle, List<CutWireEntry> originalList) {
         @Override
         public @NotNull String toString() {
-            return node + "at" + point + "@" + handle;
+            return node + " at " + point + "@" + handle;
         }
 
         @Override

@@ -4,8 +4,8 @@ import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
-import com.simibubi.create.content.kinetics.waterwheel.WaterWheelBlockEntity;
 import com.simibubi.create.foundation.block.IBE;
+import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.placement.IPlacementHelper;
 import net.createmod.catnip.placement.PlacementHelpers;
 import net.createmod.catnip.placement.PlacementOffset;
@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -47,7 +48,8 @@ public class AlternatorRotorBlock extends RotatedPillarKineticBlock implements I
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
         IPlacementHelper placementHelper = PlacementHelpers.get(placementHelperId);
         if (!player.isShiftKeyDown() && player.mayBuild()) {
             if (placementHelper.matchesItem(stack)) {
@@ -57,6 +59,14 @@ public class AlternatorRotorBlock extends RotatedPillarKineticBlock implements I
             }
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
+    @Override
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock,
+                                   BlockPos neighborPos, boolean movedByPiston) {
+
+        level.updateNeighborsAt(pos, state.getBlock());
+        super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
     }
 
     @Override
@@ -84,7 +94,7 @@ public class AlternatorRotorBlock extends RotatedPillarKineticBlock implements I
 
         @Override
         public Predicate<ItemStack> getItemPredicate() {
-            return CEEBlocks.MAGNET_BLOCK::isIn;
+            return CEEBlocks.STATOR::isIn;
         }
 
         @Override
@@ -93,12 +103,23 @@ public class AlternatorRotorBlock extends RotatedPillarKineticBlock implements I
         }
 
         @Override
-        public PlacementOffset getOffset(Player player, Level level, BlockState state, BlockPos pos, BlockHitResult ray) {
-            // Sort it so that the positions don't look like they're at random.
-            for (BlockPos offset : WaterWheelBlockEntity.LARGE_OFFSETS.get(state.getValue(AXIS)).stream().sorted().toList()) {
-                BlockPos targetPos = offset.offset(pos);
+        public PlacementOffset getOffset(Player player, Level level, BlockState state, BlockPos pos,
+                                         BlockHitResult ray) {
+            Direction.Axis rotorAxis = state.getValue(AXIS);
+            for (Direction direction : Iterate.directions) {
+                if (direction.getAxis() == rotorAxis)
+                    continue;
+                BlockPos targetPos = pos.relative(direction);
                 if (level.getBlockState(targetPos).canBeReplaced()) {
-                    return PlacementOffset.success(targetPos);
+
+                    Direction facing = direction.getOpposite();
+                    boolean roll = rotorAxis.isVertical() ? false :
+                            facing.getAxis().isHorizontal() ? true :
+                            rotorAxis == Direction.Axis.X;
+                    return PlacementOffset.success(targetPos)
+                            .withTransform(bs ->
+                                    bs.setValue(StatorBlock.ROLL, roll)
+                                    .setValue(StatorBlock.FACING, facing));
                 }
             }
 

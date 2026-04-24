@@ -1,4 +1,4 @@
-// 1.21.1	2026-04-21T00:49:12.715367691	Recipes
+// 1.21.1	2026-04-24T14:46:26.204801794	Recipes
 e4558ff2c12de196a56a9f67ffe27050cdfe38f7 data/electroenergetics/advancement/recipes/decorations/stonecutting/electric_shock_sign.json
 1e443110466e17eb3a8f102e9fc77c86fc29380e data/electroenergetics/advancement/recipes/decorations/stonecutting/grounding_sign.json
 e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/recipes/decorations/stonecutting/high_voltage_sign.json
@@ -88,6 +88,7 @@ f41e8f592ff9f5bc895be6528c68e059de5d502f data/electroenergetics/advancement/reci
 f64092c81c6378275ddb4f9d8c3a97c0c222f1ab data/electroenergetics/advancement/recipes/misc/crafting/relay.json
 1711c82650dd28434b70ebf3f48aba96e0931154 data/electroenergetics/advancement/recipes/misc/crafting/resistive_heater.json
 ecd1ed0912d84760107ca56a6bcf4a19c9df0a89 data/electroenergetics/advancement/recipes/misc/crafting/resistor.json
+2d16bccf014ef56a6b6dde1666e3a38930752f9e data/electroenergetics/advancement/recipes/misc/crafting/stator.json
 6890916e291f0104ee223b69f71a1e43191dd0e5 data/electroenergetics/advancement/recipes/misc/crafting/transformer.json
 69ee77a7633c6d0dd07edbb3ba46dc95b1c05511 data/electroenergetics/advancement/recipes/misc/crafting/tri_polar_energy_meter.json
 e7a3dfbc9c10192284a14b8fa8a040dbfc6a1c31 data/electroenergetics/advancement/recipes/misc/crafting/triple_connector.json
@@ -185,6 +186,7 @@ de531cc73b76a0f5618351e5b5c8adb93e2e0a3c data/electroenergetics/recipe/crafting/
 6cb114479d3f53f997875b5a77488d4e18d56c6e data/electroenergetics/recipe/crafting/relay.json
 2f694b047961e496c7c9c4cecb79b6566b0f88ea data/electroenergetics/recipe/crafting/resistive_heater.json
 481f4f886c0bb763c2b8a16076742ba4fb0ff0a2 data/electroenergetics/recipe/crafting/resistor.json
+a5476e1f8cf9015461d52623fa408c754d370f12 data/electroenergetics/recipe/crafting/stator.json
 2d12bffe38df9717772bd5c50c67ace02cd25348 data/electroenergetics/recipe/crafting/transformer.json
 0ba73251adc9a9fd9c2f1d6494ddd070dbb8f555 data/electroenergetics/recipe/crafting/tri_polar_energy_meter.json
 a954acdc1a807b0753429c4be3c85dcf10691018 data/electroenergetics/recipe/crafting/triple_connector.json

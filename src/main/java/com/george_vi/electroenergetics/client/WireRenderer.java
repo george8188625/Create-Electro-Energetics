@@ -25,6 +25,7 @@ import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -53,7 +54,11 @@ public class WireRenderer {
     public static void render(LevelRenderer levelRenderer, PoseStack pose, Camera camera) {
         Minecraft mc = Minecraft.getInstance();
         float partialTick = AnimationTickHolder.getPartialTicks();
-        mc.level.getProfiler().push("renderWires");
+        ClientLevel level = mc.level;
+        if (level == null)
+            return;
+        
+        level.getProfiler().push("renderWires");
         if (!(levelRenderer instanceof LevelRendererAccessor acc))
             return;
 
@@ -65,18 +70,25 @@ public class WireRenderer {
         pose.translate(-camera.getPosition().x(), -camera.getPosition().y(), -camera.getPosition().z());
 
         float baseCatenaryWidth = 0.66f;
-        boolean renderImmediately = !VisualizationManager.supportsVisualization(mc.level);
+        boolean renderImmediately = !VisualizationManager.supportsVisualization(level);
         Vec3 cameraPosition = mc.gameRenderer.getMainCamera().getPosition();
         if (renderImmediately)
             for (CatenaryConnection connection : List.copyOf(CATENARY)) {
-                BlockState startingState = mc.level.getBlockState(connection.pos1());
-                BlockState endingState = mc.level.getBlockState(connection.pos2());
-                AABB bb = AABB.encapsulatingFullBlocks(connection.pos1(), connection.pos2());
+                BlockPos pos1 = connection.pos1();
+                BlockPos pos2 = connection.pos2();
+
+                if (!InWorldNode.isPosFullyLoadable(level, pos1) ||
+                        !InWorldNode.isPosFullyLoadable(level, pos1))
+                    continue;
+                
+                BlockState startingState = level.getBlockState(pos1);
+                BlockState endingState = level.getBlockState(pos2);
+                AABB bb = AABB.encapsulatingFullBlocks(pos1, pos2);
                 if (!levelRenderer.getFrustum().isVisible(bb))
                     continue;
 
-                Vec3 start = Vec3.atCenterOf(connection.pos1()).add(0, -0.5, 0);
-                Vec3 end = Vec3.atCenterOf(connection.pos2()).add(0, -0.5, 0);
+                Vec3 start = Vec3.atCenterOf(pos1).add(0, -0.5, 0);
+                Vec3 end = Vec3.atCenterOf(pos2).add(0, -0.5, 0);
 
                 List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(start, end, 0, 10);
 
@@ -90,16 +102,16 @@ public class WireRenderer {
 
                     // the reason for catenaries to have variable width, is that when the player is far away, normal-width catenaries look out of place, and they give off a vibe of something solid or smth??
 
-                    float catenaryWidth = (float) Mth.clamp(baseCatenaryWidth / (cameraPosition.distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
+                    float catenaryThickness = (float) Mth.clamp(baseCatenaryWidth / (cameraPosition.distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
 
                     CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
                             .translate(point)
                             .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                             .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                            .scale(catenaryWidth, catenaryWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                            .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                                    maxLightLevel(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
-                                            LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
+                            .scale(catenaryThickness, catenaryThickness, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                            .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).scale(0.5))) :
+                                    maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
+                                            LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
                             .renderInto(pose, buffer.getBuffer(RenderType.solid()));
                 }
                 boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
@@ -125,16 +137,16 @@ public class WireRenderer {
 
                     // the reason for catenaries to have variable width, is that when the player is far away, normal-width catenaries look out of place, and they give off a vibe of something solid or smth??
 
-                    float catenaryWidth = (float) Mth.clamp(baseCatenaryWidth / (cameraPosition.distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
+                    float catenaryThickness = (float) Mth.clamp(baseCatenaryWidth / (cameraPosition.distanceTo(point) / 30), 0.4f, baseCatenaryWidth);
 
                     CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
                             .translate(point)
                             .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                             .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                            .scale(catenaryWidth, catenaryWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                            .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                                    maxLightLevel(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
-                                            LevelRenderer.getLightColor(mc.level, BlockPos.containing(nextPoint))))
+                            .scale(catenaryThickness, catenaryThickness, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                            .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).scale(0.5))) :
+                                    maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
+                                            LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
                             .renderInto(pose, buffer.getBuffer(RenderType.solid()));
                     if (i == 0)
                         continue;
@@ -149,7 +161,7 @@ public class WireRenderer {
                         closest = start;
                     else {
                         double t = ap.dot(ab) / denom;
-                        t = Math.max(0, Math.min(1, t));
+                        t = Mth.clamp(t, 0, 1);
                         closest = start.add(ab.scale(t));
                     }
 
@@ -157,10 +169,10 @@ public class WireRenderer {
                             .translate(point)
                             .rotateY((float) Math.atan2(closest.x() - point.x(), closest.z() - point.z()))
                             .rotateX(-(float) Math.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
-                            .scale(catenaryWidth * 0.66f, catenaryWidth * 0.66f, (float) (point.distanceTo(closest) * 2) + 0.02f)
-                            .light(BlockPos.containing(point).equals(BlockPos.containing(closest)) ? LevelRenderer.getLightColor(mc.level, BlockPos.containing(point.add(closest).multiply(0.5, 0.5, 0.5))) :
-                                    maxLightLevel(LevelRenderer.getLightColor(mc.level, BlockPos.containing(point)),
-                                            LevelRenderer.getLightColor(mc.level, BlockPos.containing(closest))))
+                            .scale(catenaryThickness * 0.66f, catenaryThickness * 0.66f, (float) (point.distanceTo(closest) * 2) + 0.02f)
+                            .light(BlockPos.containing(point).equals(BlockPos.containing(closest)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(closest).scale(0.5))) :
+                                    maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
+                                            LevelRenderer.getLightColor(level, BlockPos.containing(closest))))
                             .rotateZDegrees(45)
                             .renderInto(pose, buffer.getBuffer(RenderType.solid()));
                 }
@@ -170,11 +182,11 @@ public class WireRenderer {
             InWorldNodeConnection connection = wire.getFirst();
             WireData wireData = wire.getSecond();
 
-            BlockState state1 = mc.level.getBlockState(connection.node1().sourcePos());
-            BlockState state2 = mc.level.getBlockState(connection.node2().sourcePos());
+            BlockState state1 = level.getBlockState(connection.node1().sourcePos());
+            BlockState state2 = level.getBlockState(connection.node2().sourcePos());
 
-            Vec3 pos1 = connection.node1().getPosition(mc.level, partialTick);
-            Vec3 pos2 = connection.node2().getPosition(mc.level, partialTick);
+            Vec3 pos1 = connection.node1().getPosition(level, partialTick);
+            Vec3 pos2 = connection.node2().getPosition(level, partialTick);
 
             if (pos1 == null || pos2 == null) {
                 pos1 = connection.node1().sourcePos().getCenter();
@@ -182,16 +194,18 @@ public class WireRenderer {
             }
 
             boolean isBlock1Outer = state1.getBlock() instanceof ElectricalDeviceBlock<?> db &&
-                    db.isOuterInsulator(mc.level, connection.node1().sourcePos(), state1, connection.node1().id());
+                    db.isOuterInsulator(level, connection.node1().sourcePos(), state1, connection.node1().id());
             boolean isBlock2Outer = state2.getBlock() instanceof ElectricalDeviceBlock<?> db &&
-                    db.isOuterInsulator(mc.level, connection.node2().sourcePos(), state2, connection.node2().id());
+                    db.isOuterInsulator(level, connection.node2().sourcePos(), state2, connection.node2().id());
 
             mc.getProfiler().popPush("renderWireAttachments");
             for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
-                mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachment.getSecond().type).toString());
+                WireAttachment attachmentType = attachment.getSecond();
+                float positionOnWire = attachment.getFirst();
+                mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachmentType.type).toString());
                 double distance = pos1.distanceTo(pos2);
-                Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), wireData.getSag(distance));
-                float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, attachment.getFirst(), wireData.getSag(distance));
+                Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, positionOnWire, wireData.getSag(distance));
+                float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, positionOnWire, wireData.getSag(distance));
 
                 if (offset.distanceTo(cameraPosition) > CEEConfigs.client().wireRenderDistance.get())
                     continue;
@@ -202,21 +216,24 @@ public class WireRenderer {
                 double angleY = Math.toDegrees(Math.atan2(pos2.x - pos1.x, pos2.z - pos1.z)) + 90;
                 msr.rotateYDegrees((float) angleY);
                 msr.rotateXDegrees(180);
-                int light = LevelRenderer.getLightColor(mc.level, BlockPos.containing(offset));
-                attachment.getSecond().type.render(pose, buffer, levelRenderer, attachment.getSecond(), offset, light, elevation);
+                int light = LevelRenderer.getLightColor(level, BlockPos.containing(offset));
+                attachmentType.type.render(pose, buffer, levelRenderer, attachmentType, offset, light, elevation);
                 pose.popPose();
                 mc.getProfiler().pop();
             }
             mc.getProfiler().popPush("renderWires");
 
             if (isBlock1Outer || isBlock2Outer || renderImmediately) {
+                if (!connection.isFullyLoaded(level))
+                    continue;
                 double distance = pos1.distanceTo(pos2);
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
-                List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), cameraPosition) :
+                List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? 
+                        QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), cameraPosition) :
                         QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
                 if (renderImmediately)
-                    level(renderedPoints, pos1, pos2, pose, buffer, levelRenderer, wireData.wireType(), mc.level);
+                    level(renderedPoints, pos1, pos2, pose, buffer, levelRenderer, wireData.wireType(), level);
 
                 if (points.size() >= 10) {
                     if (isBlock1Outer) {
@@ -226,13 +243,14 @@ public class WireRenderer {
                         CachedBuffers.partial(CEEPartialModels.INSULATOR, Blocks.ANDESITE.defaultBlockState())
                                 .translate(pos1)
                                 .rotateY((float) Math.atan2(nextPoint.x() - pos1.x(), nextPoint.z() - pos1.z()))
-                                .rotateX(-(float) Math.atan2(nextPoint.y - pos1.y, Math.hypot(nextPoint.x - pos1.x, nextPoint.z - pos1.z)))
-                                .light(LevelRenderer.getLightColor(mc.level, BlockPos.containing(pos1.add(nextPoint).multiply(0.5, 0.5, 0.5))))
+                                .rotateX(-(float) Math.atan2(nextPoint.y - pos1.y, 
+                                        Math.hypot(nextPoint.x - pos1.x, nextPoint.z - pos1.z)))
+                                .light(LevelRenderer.getLightColor(level, 
+                                        BlockPos.containing(pos1.add(nextPoint).scale(0.5))))
                                 .renderInto(pose, buffer.getBuffer(RenderType.solid()));
 
-                        if (!outerInsulatorJumpers.containsKey(connection.node1()))
-                            outerInsulatorJumpers.put(connection.node1(), new ArrayList<>());
-                        outerInsulatorJumpers.get(connection.node1()).add(nextPoint);
+                        outerInsulatorJumpers.computeIfAbsent(connection.node2(), (k) -> new ArrayList<>())
+                                .add(nextPoint);
                     }
 
                     if (isBlock2Outer) {
@@ -242,20 +260,20 @@ public class WireRenderer {
                         CachedBuffers.partial(CEEPartialModels.INSULATOR, Blocks.ANDESITE.defaultBlockState())
                                 .translate(pos2)
                                 .rotateY((float) Math.atan2(nextPoint.x() - pos2.x(), nextPoint.z() - pos2.z()))
-                                .rotateX(-(float) Math.atan2(nextPoint.y - pos2.y, Math.hypot(nextPoint.x - pos2.x, nextPoint.z - pos2.z)))
-                                .light(LevelRenderer.getLightColor(mc.level, BlockPos.containing(pos2.add(nextPoint).multiply(0.5, 0.5, 0.5))))
+                                .rotateX(-(float) Math.atan2(nextPoint.y - pos2.y,
+                                        Math.hypot(nextPoint.x - pos2.x, nextPoint.z - pos2.z)))
+                                .light(LevelRenderer.getLightColor(level,
+                                        BlockPos.containing(pos2.add(nextPoint).scale(0.5))))
                                 .renderInto(pose, buffer.getBuffer(RenderType.solid()));
 
-                        if (!outerInsulatorJumpers.containsKey(connection.node2()))
-                            outerInsulatorJumpers.put(connection.node2(), new ArrayList<>());
-                        outerInsulatorJumpers.get(connection.node2()).add(nextPoint);
+                        outerInsulatorJumpers.computeIfAbsent(connection.node2(), (k) -> new ArrayList<>())
+                                .add(nextPoint);
                     }
                 }
             }
         }
 
         for (Map.Entry<InWorldNode, List<Vec3>> e : outerInsulatorJumpers.entrySet()) {
-            InWorldNode node = e.getKey();
             List<Vec3> positionsToConnect = e.getValue();
 
             for (int i = 0; i < positionsToConnect.size() - 1; i++) {
@@ -264,13 +282,13 @@ public class WireRenderer {
 
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 3);
 
-                level(points, pos1, pos2, pose, buffer, levelRenderer, CEEWireTypes.IRON.get(), mc.level);
+                level(points, pos1, pos2, pose, buffer, levelRenderer, CEEWireTypes.IRON.get(), level);
             }
         }
 
         pose.popPose();
 
-        mc.level.getProfiler().pop();
+        level.getProfiler().pop();
     }
 
     public static void level(List<Vec3> points, Vec3 pos1, Vec3 pos2, PoseStack pose, MultiBufferSource buffer, LevelRenderer levelRenderer, WireType wireType, BlockAndTintGetter level) {
@@ -293,7 +311,7 @@ public class WireRenderer {
                     .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
+                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).scale(0.5))) :
                             maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
                                     LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
                     .renderInto(pose, buffer.getBuffer(RenderType.solid()));
@@ -312,14 +330,18 @@ public class WireRenderer {
             if (point.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
                 continue;
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
+            BlockPos pointBlockPos = BlockPos.containing(point);
+            BlockPos nextPointBlockPos = BlockPos.containing(nextPoint);
             CachedBuffers.partial(wireType.getModel(), Blocks.ANDESITE.defaultBlockState())
                     .translate(point)
                     .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                    .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))) :
-                            maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
-                                    LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
+                    .light(pointBlockPos.equals(nextPointBlockPos) ?
+                            LevelRenderer.getLightColor(level,
+                                    BlockPos.containing(point.add(nextPoint).scale(0.5))) :
+                            maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
+                                    LevelRenderer.getLightColor(level, nextPointBlockPos)))
                     .renderInto(pose, buffer.getBuffer(RenderType.solid()));
         }
     }

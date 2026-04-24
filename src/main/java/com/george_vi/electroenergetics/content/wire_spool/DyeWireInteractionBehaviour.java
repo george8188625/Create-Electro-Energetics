@@ -1,10 +1,10 @@
 package com.george_vi.electroenergetics.content.wire_spool;
 
-import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
+import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import net.createmod.catnip.data.Pair;
@@ -23,10 +23,12 @@ public class DyeWireInteractionBehaviour extends WireInteractionBehaviour {
             return;
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-        WireData wireConnectionData = sd.getConnectionData(point.connection());
-        if (wireConnectionData.wireType() != CEEWireTypes.STANDARD.get() && !CEEWireTypes.COLORED_WIRES.values().stream().anyMatch(w -> w.get() == wireConnectionData.wireType()))
+        WireData wireData = sd.getConnectionData(point.connection());
+        if (!(wireData.wireType() instanceof WireType.Dyeable dyeableWire))
             return;
-        sd.setConnectionData(point.connection(), new WireData(CEEWireTypes.COLORED_WIRES.get(color).get(), wireConnectionData.temperature(), wireConnectionData.attachments(), wireConnectionData.length));
+
+        sd.setConnectionData(point.connection(), new WireData(dyeableWire.getDyed(color), wireData.temperature(),
+                wireData.attachments(), wireData.length));
 
     }
 
@@ -39,8 +41,7 @@ public class DyeWireInteractionBehaviour extends WireInteractionBehaviour {
     public DisplayType getWireDisplayType(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
         Pair<InWorldNodeConnection, WireData> wireData = WireRenderer.getAllConnections().stream().filter(p -> p.getFirst().equals(point.connection())).findFirst().orElse(null);
         if (wireData == null ||
-            (wireData.getSecond().wireType() != CEEWireTypes.STANDARD.get() &&
-                    !CEEWireTypes.COLORED_WIRES.values().stream().anyMatch(w -> w.get() == wireData.getSecond().wireType())))
+            !(wireData.getSecond().wireType() instanceof WireType.Dyeable))
             return null;
 
         return DisplayType.LINE;

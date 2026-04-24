@@ -2,10 +2,14 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
+import javax.annotation.Nullable;
 import java.util.function.DoubleSupplier;
+import java.util.function.Function;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
@@ -39,7 +43,7 @@ public class WireType {
     final IntSupplier maxLength;
     final float thickness;
 
-    WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage, Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength, float thickness) {
+    private WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage, Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength, float thickness) {
         this.resistance = resistance;
         this.model = model;
         this.droppedItem = droppedItem;
@@ -115,8 +119,15 @@ public class WireType {
         IntSupplier maxLength = () -> CEEConfigs.server().maxWireLength.get();
         float thickness = 1/16f;
 
+        Function<DyeColor, WireType> dyeTypeFunction;
+        DyeColor dyeColor;
+
         public WireType build() {
-            return new WireType(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage, overheatedReplacement, maxTemperature, sag, maxLength, thickness);
+            if (dyeTypeFunction != null)
+                return new Dyeable(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
+                        overheatedReplacement, maxTemperature, sag, maxLength, thickness, dyeTypeFunction, dyeColor);
+            return new WireType(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
+                    overheatedReplacement, maxTemperature, sag, maxLength, thickness);
         }
 
         public Builder(PartialModel model) {
@@ -172,5 +183,53 @@ public class WireType {
             maxLength = v;
             return this;
         }
+
+        public Builder dyeable(Function<DyeColor, WireType> dyeTypeFunction) {
+            this.dyeTypeFunction = dyeTypeFunction;
+            return this;
+        }
+
+        public Builder dyeable(Function<DyeColor, WireType> dyeTypeFunction, DyeColor color) {
+            this.dyeTypeFunction = dyeTypeFunction;
+            dyeColor = color;
+            return this;
+        }
+
+        public Builder dyeable(DeferredHolder<WireType, WireType>[] allDyes) {
+            return dyeable((dye) -> allDyes[dye.ordinal()].get());
+        }
+
+        public Builder dyeable(DeferredHolder<WireType, WireType>[] allDyes, DyeColor color) {
+            dyeColor = color;
+            return dyeable(allDyes);
+        }
+    }
+
+    public static class Dyeable extends WireType {
+        private final Function<DyeColor, WireType> typeFunction;
+        private final DyeColor dyeColor;
+
+        private Dyeable(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem,
+                double insulationResistance, DoubleSupplier maxInsulationVoltage,
+                Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag,
+                IntSupplier maxLength, float thickness, Function<DyeColor, WireType> typeFunction,
+                @Nullable DyeColor dyeColor) {
+            super(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage, overheatedReplacement, maxTemperature, sag, maxLength, thickness);
+            this.typeFunction = typeFunction;
+            this.dyeColor = dyeColor;
+        }
+
+        public WireType getDyed(DyeColor color) {
+            return typeFunction.apply(color);
+        }
+
+        public DyeColor getColor() {
+            return dyeColor;
+        }
+
+        public boolean isDyed() {
+            return dyeColor != null;
+        }
+
     }
 }

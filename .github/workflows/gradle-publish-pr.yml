@@ -29,7 +29,7 @@ jobs:
       run: |
         PROPERTY="mod_version"
         OLD_VALUE=$(grep "^$PROPERTY=" gradle.properties | cut -d'=' -f2)
-        NEW_VALUE="${OLD_VALUE}-${{ github.run_number }}"
+        NEW_VALUE="${OLD_VALUE}-pr-${{ github.run_number }}"
         sed -i "s/^$PROPERTY=.*/$PROPERTY=$NEW_VALUE/" gradle.properties
 
     - name: Build with Gradle Wrapper

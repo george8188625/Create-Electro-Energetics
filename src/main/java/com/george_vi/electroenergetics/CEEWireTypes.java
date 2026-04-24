@@ -23,6 +23,9 @@ public class CEEWireTypes {
             .maxLength(CEEConfigs.server().maxWireLength::get)
             .build());
 
+    @SuppressWarnings("unchecked")
+    public static final DeferredHolder<WireType, WireType>[] COLORED_WIRES = new DeferredHolder[DyeColor.values().length];
+
     public static final DeferredHolder<WireType, WireType> STANDARD = WIRE_TYPES.register("standard", () -> new WireType.Builder(CEEPartialModels.WIRE_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
             .droppedItem(CEEItems.INSULATED_WIRE)
@@ -32,19 +35,24 @@ public class CEEWireTypes {
             .replaceOnOverheated(COPPER)
             .insulationResistance(330_000)
             .maxLength(CEEConfigs.server().maxWireLength::get)
+            .dyeable(COLORED_WIRES)
             .build());
+
+    @SuppressWarnings("unchecked")
+    public static final DeferredHolder<WireType, WireType>[] COLORED_HEAVILY_INSULATED_WIRES = new DeferredHolder[DyeColor.values().length];
 
     public static final DeferredHolder<WireType, WireType> HEAVILY_INSULATED = WIRE_TYPES.register("heavily_insulated", () -> new WireType.Builder(CEEPartialModels.HEAVILY_INSULATED_WIRE_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
             .droppedItem(CEEItems.HEAVILY_INSULATED_WIRE)
             .spoolItem(CEEItems.HEAVILY_INSULATED_WIRE_SPOOL::get)
             .maxInsulationVoltage(CEEConfigs.server().voltageValues.heavilyInsulatedWireMaxVoltage::get)
-            .maxTemperature(() -> 3540)
+            .maxTemperature(() -> 5000)
             .replaceOnOverheated(COPPER)
             .insulationResistance(660_000)
             .maxLength(CEEConfigs.server().maxHeavilyInsulatedWireLength::get)
             .sag(0.7f)
             .thickness(3/16f)
+            .dyeable(COLORED_HEAVILY_INSULATED_WIRES)
             .build());
 
     public static final DeferredHolder<WireType, WireType> CREATIVE = WIRE_TYPES.register("creative", () -> new WireType.Builder(CEEPartialModels.CREATIVE_WIRE_SEGMENT)
@@ -92,11 +100,12 @@ public class CEEWireTypes {
             .maxLength(CEEConfigs.server().maxWireLength::get)
             .build());
 
-    public static final Map<DyeColor, DeferredHolder<WireType, WireType>> COLORED_WIRES = new HashMap<>();
 
     static {
         for (DyeColor color : DyeColor.values()) {
-            COLORED_WIRES.put(color, WIRE_TYPES.register("colored_" + color.getName(), () -> new WireType.Builder(CEEPartialModels.COLORED_WIRE_SEGMENTS.get(color))
+            COLORED_WIRES[color.ordinal()] =
+                    WIRE_TYPES.register("colored_" + color.getSerializedName(),
+                    () -> new WireType.Builder(CEEPartialModels.COLORED_WIRE_SEGMENTS[color.ordinal()])
                     .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
                     .droppedItem(CEEItems.INSULATED_WIRE)
                     .spoolItem(CEEItems.WIRE_SPOOL::get)
@@ -105,7 +114,24 @@ public class CEEWireTypes {
                     .replaceOnOverheated(COPPER)
                     .insulationResistance(330_000)
                     .maxLength(CEEConfigs.server().maxWireLength::get)
-                    .build()));
+                    .dyeable(COLORED_HEAVILY_INSULATED_WIRES, color)
+                    .build());
+
+            COLORED_HEAVILY_INSULATED_WIRES[color.ordinal()] =
+                    WIRE_TYPES.register(color.getSerializedName() + "_heavily_insulated",
+                    () -> new WireType.Builder(CEEPartialModels.COLORED_HEAVILY_INSULATED_WIRE_SEGMENTS[color.ordinal()])
+                    .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+                    .droppedItem(CEEItems.HEAVILY_INSULATED_WIRE)
+                    .spoolItem(CEEItems.HEAVILY_INSULATED_WIRE_SPOOL::get)
+                    .maxInsulationVoltage(CEEConfigs.server().voltageValues.heavilyInsulatedWireMaxVoltage::get)
+                    .maxTemperature(() -> 5000)
+                    .replaceOnOverheated(COPPER)
+                    .insulationResistance(660_000)
+                    .maxLength(CEEConfigs.server().maxHeavilyInsulatedWireLength::get)
+                    .sag(0.7f)
+                    .thickness(3/16f)
+                    .dyeable(COLORED_HEAVILY_INSULATED_WIRES, color)
+                    .build());
         }
     }
 

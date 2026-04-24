@@ -17,6 +17,7 @@
   "electroenergetics.gui.goggles.energy_consumption": "Energy Consumption:",
   "electroenergetics.gui.goggles.energy_generation": "Energy Generation:",
   "electroenergetics.gui.goggles.current_generation": "Current Generation:",
+  "electroenergetics.gui.goggles.current_load": "Current Load:",
   "electroenergetics.gui.goggles.maximum_capacity": "Maximum Capacity:",
   "electroenergetics.gui.goggles.power": "Power:",
   "electroenergetics.gui.goggles.primary_voltage": "Primary Coil Voltage:",
