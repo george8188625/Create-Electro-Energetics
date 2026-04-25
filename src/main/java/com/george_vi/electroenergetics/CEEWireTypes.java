@@ -114,7 +114,7 @@ public class CEEWireTypes {
                     .replaceOnOverheated(COPPER)
                     .insulationResistance(330_000)
                     .maxLength(CEEConfigs.server().maxWireLength::get)
-                    .dyeable(COLORED_HEAVILY_INSULATED_WIRES, color)
+                    .dyeable(COLORED_WIRES, color)
                     .build());
 
             COLORED_HEAVILY_INSULATED_WIRES[color.ordinal()] =

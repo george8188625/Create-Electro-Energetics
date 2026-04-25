@@ -65,7 +65,14 @@ public class AlternatorRotorBlock extends RotatedPillarKineticBlock implements I
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock,
                                    BlockPos neighborPos, boolean movedByPiston) {
 
-        level.updateNeighborsAt(pos, state.getBlock());
+        Direction.Axis axis = state.getValue(AlternatorRotorBlock.AXIS);
+
+        // Pass the update only when updated by a stator
+        for (Direction direction : Iterate.directions) {
+            if (direction.getAxis() == axis)
+                continue;
+            level.neighborChanged(pos.relative(direction), state.getBlock(), pos);
+        }
         super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
     }
 
