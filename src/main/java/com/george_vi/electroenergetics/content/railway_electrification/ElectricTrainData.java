@@ -16,6 +16,7 @@ public class ElectricTrainData {
     public double lastSpeed;
     public AttachedNode trainNode;
     public AttachedNode groundNode;
+    public WireSimulationState connectedWireState;
     public WireSimulationState.WireCutHandle wireCutHandle;
 
     // Voltage value for display on gauges (voltmeters/ammeters) attached to train contraptions
