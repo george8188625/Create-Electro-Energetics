@@ -150,10 +150,21 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
     @Override
     public void update(float partialTick) {
         ClientLevel level = Minecraft.getInstance().level;
+        assert level != null;
+
         Vec3 start = Vec3.atBottomCenterOf(connection.pos1().subtract(visualizationContext.renderOrigin()));
         Vec3 end = Vec3.atBottomCenterOf(connection.pos2().subtract(visualizationContext.renderOrigin()));
 
         float wireWidth = 0.66f;
+
+        // Check if chunks are loaded on the client
+        boolean chunksLoaded = level.isLoaded(BlockPos.containing(start)) && level.isLoaded(BlockPos.containing(end));
+
+        // Clear instances if not loaded
+        if (!chunksLoaded) {
+            delete();
+            return;
+        }
 
         BlockState startingState = level.getBlockState(connection.pos1());
         BlockState endingState = level.getBlockState(connection.pos2());

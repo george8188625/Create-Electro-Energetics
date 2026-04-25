@@ -89,12 +89,29 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     @Override
     public void update(float partialTick) {
         ClientLevel level = Minecraft.getInstance().level;
+        assert level != null;
+
         Vec3 pos1 = connection.node1().getPosition(level, partialTick);
         Vec3 pos2 = connection.node2().getPosition(level, partialTick);
 
         if (pos1 == null || pos2 == null) {
             pos1 = connection.node1().sourcePos().getCenter();
             pos2 = connection.node2().sourcePos().getCenter();
+        }
+
+        boolean isFullyLoaded = connection.isFullyLoaded(level);
+
+        // Check if chunks are loaded on the client
+        boolean chunksLoaded = level.isLoaded(BlockPos.containing(pos1)) && level.isLoaded(BlockPos.containing(pos2));
+
+        // Clear instances if not loaded
+        if (!isFullyLoaded || !chunksLoaded) {
+            if (!instances.isEmpty()) {
+                for (TransformedInstance instance : instances)
+                    instance.delete();
+                instances.clear();
+            }
+            return;
         }
 
         pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
