@@ -230,7 +230,7 @@ public class CatenaryModule {
             boolean shouldSync = trainData.ticksSinceGaugeSync >= 5 || significantVoltageChange || significantCurrentChange;
 
             if (shouldSync && !train.carriages.isEmpty()) {
-                Carriage.DimensionalCarriageEntity firstCarriage = train.carriages.getFirst().getDimensional(level.dimension());
+                Carriage.DimensionalCarriageEntity firstCarriage = train.carriages.getFirst().getDimensionalIfPresent(level.dimension());
                 if (firstCarriage != null && firstCarriage.entity != null) {
                     CarriageContraptionEntity entity = firstCarriage.entity.get();
                     if (entity != null) {
@@ -260,7 +260,9 @@ public class CatenaryModule {
             Map<Integer, Vec3> positions = new HashMap<>();
             for (Carriage carriage : train.carriages) {
                 if (((IPantographList)carriage).electroEnergetics$hasElectricMotor()) {
-                    Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(level);
+                    Carriage.DimensionalCarriageEntity dce = carriage.getDimensionalIfPresent(level.dimension());
+                    if (dce == null)
+                        continue;
 
                     int carriageIndex = train.carriages.indexOf(carriage);
                     if (carriage.isOnTwoBogeys()) {
