@@ -32,13 +32,13 @@ public class CatenaryModule {
 
     final InfrastructureSavedData sd;
     final ServerLevel level;
-    final WireSimulationState wireSimulationState;
+    final WireSimulationState levelWireSimulationState;
     private final Set<Train> allTrains = new HashSet<>();
 
     public CatenaryModule(InfrastructureSavedData sd, ServerLevel level, WireSimulationState wireSimulationState) {
         this.sd = sd;
         this.level = level;
-        this.wireSimulationState = wireSimulationState;
+        this.levelWireSimulationState = wireSimulationState;
     }
 
     public void buildCircuit(CircuitBuilder builder) {
@@ -83,7 +83,7 @@ public class CatenaryModule {
                     pantographPos = pivotPosition.add(pantographPos);
 //                    level.sendParticles(ParticleTypes.ELECTRIC_SPARK, pantographPos.x, pantographPos.y, pantographPos.z, 3, 0, 0, 0, 0);
 
-                    for (ConnectionEntry connectionEntry : wireSimulationState.getAllConnectionEntries()) {
+                    for (ConnectionEntry connectionEntry : levelWireSimulationState.getAllConnectionEntries()) {
                         if (connectionEntry.wireData.wireType().getSag() != 0 && !(connectionEntry.wireData instanceof CatenaryConnectionData))
                             continue;
                         Vec3 start = connectionEntry.pos1;
@@ -106,20 +106,42 @@ public class CatenaryModule {
                         distance = VecHelper.rotate(distance, -pitch, Direction.Axis.X);
                         float xTol = (float) ((distance.y + pantograph.type.reach / 2) * 0.2f + 0.125f);
                         if (Math.abs(distance.z()) < pantograph.type.sidewaysReach && Math.abs(distance.x()) < xTol && Math.abs(distance.y()) < pantograph.type.reach / 2) {
-                            if (trainData.wireCutHandle == null)
-                                trainData.wireCutHandle = wireSimulationState.createHandle("ElectricTrain");
+
+                            // If we have a handle, but it's from a different dimension, then invalidate it
+                            // (we'll create a new one)
+                            if (trainData.wireCutHandle != null && trainData.connectedWireState != levelWireSimulationState) {
+                                trainData.connectedWireState.invalidateHandle(trainData.wireCutHandle);
+                                trainData.wireCutHandle = null;
+                            }
+
+                            if (trainData.wireCutHandle == null) {
+                                trainData.connectedWireState = levelWireSimulationState;
+                                trainData.wireCutHandle = trainData.connectedWireState.createHandle("ElectricTrain");
+                            }
+
                             pantograph.prevPos = pantograph.pos;
                             pantograph.pos = closest;
+
+                            // If not connected, connect
                             if (pantograph.node == null) {
-                                pantograph.node = wireSimulationState.createCut(trainData.wireCutHandle, connectionEntry, t);
+                                pantograph.node = trainData.connectedWireState.createCut(trainData.wireCutHandle, connectionEntry, t);
                                 pantograph.onConnection = connectionEntry;
-                            } else if (pantograph.onConnection != connectionEntry ||
-                                    !sd.wireSimulationState.cutExists(trainData.wireCutHandle, pantograph.node)) {
-                                wireSimulationState.removeCut(trainData.wireCutHandle, pantograph.node);
-                                pantograph.node = wireSimulationState.createCut(trainData.wireCutHandle, connectionEntry, t);
-                                pantograph.onConnection = connectionEntry;
-                            } else {
-                                wireSimulationState.relocateCut(trainData.wireCutHandle, pantograph.node, t);
+                            }
+                            // If connected to another within this dimension
+                            else if (trainData.connectedWireState == levelWireSimulationState)
+                            {
+                                if (pantograph.onConnection != connectionEntry ||
+                                        !trainData.connectedWireState.cutExists(trainData.wireCutHandle, pantograph.node)) {
+                                    trainData.connectedWireState.removeCut(trainData.wireCutHandle, pantograph.node);
+                                    pantograph.node = levelWireSimulationState.createCut(trainData.wireCutHandle, connectionEntry, t);
+
+                                    pantograph.onConnection = connectionEntry;
+                                    trainData.connectedWireState = levelWireSimulationState;
+                                }
+                                // Continue being connected
+                                else {
+                                    trainData.connectedWireState.relocateCut(trainData.wireCutHandle, pantograph.node, t);
+                                }
                             }
                             connected = true;
 //                            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, closest.x, closest.y, closest.z, 3, 0, 0, 0, 0);
@@ -129,14 +151,20 @@ public class CatenaryModule {
                     pantograph.prevPos = pantograph.pos;
                     pantograph.pos = null;
                     if (trainData.wireCutHandle != null && pantograph.node != null)
-                        wireSimulationState.removeCut(trainData.wireCutHandle, pantograph.node);
+                        trainData.connectedWireState.removeCut(trainData.wireCutHandle, pantograph.node);
 
                 }
             }
 
+            // Only modify properties if the train is being powered by a source in this dimension, otherwise we end up
+            // resetting the train properties even if it's being powered in a different dimension.
+            if(trainData.connectedWireState != levelWireSimulationState)
+                continue;
+
             if (!connected || (trainData.pantographs.isEmpty() && trainData.accumulatorCharge <= 0.001)) {
                 trainData.groundNode = null;
                 trainData.trainNode = null;
+
                 continue;
             }
 
@@ -175,8 +203,10 @@ public class CatenaryModule {
         while (trainIterator.hasNext()) {
             Train train = trainIterator.next();
             if (!Create.RAILWAYS.trains.containsKey(train.id) && ((ICEETrainExtension)train).getElectricTrainData().wireCutHandle != null) {
-                wireSimulationState.invalidateHandle(((ICEETrainExtension) train).getElectricTrainData().wireCutHandle);
-                ((ICEETrainExtension) train).getElectricTrainData().wireCutHandle = null;
+                var trainData = ((ICEETrainExtension) train).getElectricTrainData();
+
+                trainData.connectedWireState.invalidateHandle(trainData.wireCutHandle);
+                trainData.wireCutHandle = null;
                 trainIterator.remove();
             }
         }
