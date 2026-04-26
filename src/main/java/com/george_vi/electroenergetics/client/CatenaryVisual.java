@@ -162,8 +162,21 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
 
         // Clear instances if not loaded
         if (!chunksLoaded) {
-            delete();
+            for (TransformedInstance instance : upperInstances)
+                instance.setVisible(false);
+
+            for (TransformedInstance instance : lowerInstances)
+                instance.setVisible(false);
+
             return;
+        }
+        else
+        {
+            for (TransformedInstance instance : upperInstances)
+                instance.setVisible(true);
+
+            for (TransformedInstance instance : lowerInstances)
+                instance.setVisible(true);
         }
 
         BlockState startingState = level.getBlockState(connection.pos1());
