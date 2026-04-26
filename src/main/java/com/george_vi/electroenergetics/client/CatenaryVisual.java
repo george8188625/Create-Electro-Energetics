@@ -158,7 +158,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
         float wireWidth = 0.66f;
 
         // Check if chunks are loaded on the client
-        boolean chunksLoaded = level.isLoaded(BlockPos.containing(start)) && level.isLoaded(BlockPos.containing(end));
+        boolean chunksLoaded = level.isLoaded(connection.pos1()) && level.isLoaded(connection.pos2());
 
         // Clear instances if not loaded
         if (!chunksLoaded) {
