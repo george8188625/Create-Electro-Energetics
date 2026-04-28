@@ -249,7 +249,7 @@ public class WireRenderer {
                                         BlockPos.containing(pos1.add(nextPoint).scale(0.5))))
                                 .renderInto(pose, buffer.getBuffer(RenderType.solid()));
 
-                        outerInsulatorJumpers.computeIfAbsent(connection.node2(), (k) -> new ArrayList<>())
+                        outerInsulatorJumpers.computeIfAbsent(connection.node1(), (k) -> new ArrayList<>())
                                 .add(nextPoint);
                     }
 
