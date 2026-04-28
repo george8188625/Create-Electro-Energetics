@@ -133,9 +133,9 @@ public class SchematicPrinterMixin {
                     deviceSD.addDevice(CEESimulatedDevices.TEMPORARY.get(), node2.sourcePos(), new CompoundTag());
 
                 if (!sd.hasNode(node1))
-                    sd.addTemporaryNode(node1);
+                    sd.createNode(node1);
                 if (!sd.hasNode(node2))
-                    sd.addTemporaryNode(node2);
+                    sd.createNode(node2);
 
                 if (!sd.getConnections(node1).contains(connection)) {
                     sd.setConnectionData(sd.connect(node1, node2, wireData.wireType()), wireData);

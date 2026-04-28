@@ -1,11 +1,11 @@
 package com.george_vi.electroenergetics.mixins;
 
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
-import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(SubLevelAssemblyHelper.class)
@@ -47,7 +46,7 @@ public class SubLevelAssemblyHelperMixin {
                     Vec3 nodePos = sd.getNodePosition(originalNode);
                     Vec3 localNodePos = sd.getLocalNodePosition(originalNode);
                     if (nodePos != null && localNodePos != null)
-                        sd.addTemporaryNode(destinationNode, nodePos, localNodePos);
+                        sd.createNode(destinationNode, nodePos, localNodePos);
                     else
                         continue;
 
@@ -57,5 +56,7 @@ public class SubLevelAssemblyHelperMixin {
             }
         }
 
+        DevicesSavedData devicesSD = DevicesSavedData.load(level);
+        DevicesSavedData.moveSubLevelDevices(transform, blocks, devicesSD);
     }
 }

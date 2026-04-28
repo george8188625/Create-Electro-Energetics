@@ -77,6 +77,8 @@ public class GameEvents {
         if (event.getLevel() instanceof ServerLevel level) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(level);
             sd.tick();
+            DevicesSavedData dsd = sd.deviceSD;
+            dsd.tick();
         }
     }
 
@@ -89,18 +91,20 @@ public class GameEvents {
     public static void enterDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player))
             return;
-
-        WireSync.unloadForPlayer(player);
-        WireSync.handlePlayerEnterNewSection(player, new ChunkPos(player.blockPosition()));
+        InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) player.level());
+        WireSync wireSync = sd.wireSync;
+        wireSync.unloadForPlayer(player);
+        wireSync.handlePlayerEnterNewSection(player, ChunkPos.asLong(player.blockPosition()));
     }
 
     @SubscribeEvent
     public static void login(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player))
             return;
-
-        WireSync.unloadForPlayer(player);
-        WireSync.handlePlayerEnterNewSection(player, new ChunkPos(player.blockPosition()));
+        InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) player.level());
+        WireSync wireSync = sd.wireSync;
+        wireSync.unloadForPlayer(player);
+        wireSync.handlePlayerEnterNewSection(player, ChunkPos.asLong(player.blockPosition()));
     }
 
     @SubscribeEvent
@@ -110,8 +114,9 @@ public class GameEvents {
 
         if (event.getNewPos().getX() == event.getOldPos().getX() && event.getNewPos().getZ() == event.getOldPos().getZ())
             return;
-
-        WireSync.handlePlayerEnterNewSection(player, event.getNewPos().chunk());
+        InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) player.level());
+        WireSync wireSync = sd.wireSync;
+        wireSync.handlePlayerEnterNewSection(player, event.getNewPos().chunk().toLong());
     }
 
     @SubscribeEvent

@@ -217,10 +217,14 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
      * @return true if non-sublevel or sublevel and loaded, false if sublevel and unloaded
      */
     public static boolean isPosFullyLoadable(Level level, BlockPos pos) {
-        int cX = pos.getX() >> 4;
-        int cZ = pos.getZ() >> 4;
-        if (cX >= 1280_000 && cZ >= 1280_000)
+        if (isFromSubLevel(level, pos))
             return SableCompanion.INSTANCE.getContaining(level, pos) != null;
         return true;
+    }
+
+    public static boolean isFromSubLevel(Level level, BlockPos pos) {
+        int cX = pos.getX() >> 4;
+        int cZ = pos.getZ() >> 4;
+        return cX >= 1280_000 && cZ >= 1280_000;
     }
 }

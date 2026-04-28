@@ -2,8 +2,10 @@ package com.george_vi.electroenergetics.devices.device;
 
 import com.george_vi.electroenergetics.CEERegistries;
 import com.mojang.logging.LogUtils;
+import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -99,6 +101,29 @@ public class DevicesSavedData extends SavedData {
                 .computeIfAbsent(new Factory<>(() -> new DevicesSavedData(level), (tag, provider) -> DevicesSavedData.load(level, tag, provider)), "simulated_devices");
     }
 
+    public Deque<Pair<BlockPos, SimulatedDevice>> devicesToAddSable = new ArrayDeque<>();
+
+    public void tick() {
+        while (!devicesToAddSable.isEmpty()) {
+            Pair<BlockPos, SimulatedDevice> e = devicesToAddSable.pop();
+            BlockPos destinationPos = e.getFirst();
+            SimulatedDevice device = e.getSecond();
+
+            // Move device to the sublevel destination
+            CompoundTag deviceTag = new CompoundTag();
+            device.write(deviceTag);
+            SimulatedDevice deviceAtPos = getDevice(destinationPos);
+            if (deviceAtPos != null) {
+                deviceAtPos.read(deviceTag);
+                continue;
+            }
+            addDevice(device.type, destinationPos, deviceTag);
+        }
+    }
+
+    /**
+     * Adds a device to the specified position. If it already exists, calls {@link SimulatedDevice#update()}
+     */
     @SuppressWarnings("unchecked")
     public <T extends SimulatedDevice> T addDevice(SimulatedDeviceType<T> deviceType, BlockPos pos, CompoundTag tag) {
         SimulatedDevice oldDevice = DEVICES_BY_POS.get(pos.asLong());
@@ -180,6 +205,18 @@ public class DevicesSavedData extends SavedData {
         if (collection == null)
             return Collections.emptyList();
         return new ArrayList<>(collection);
+    }
+
+    public static void moveSubLevelDevices(SubLevelAssemblyHelper.AssemblyTransform transform,
+                                           Iterable<BlockPos> blocks, DevicesSavedData devicesSD) {
+        for (BlockPos originalPos : blocks) {
+            BlockPos destinationPos = transform.apply(originalPos);
+            SimulatedDevice device = devicesSD.getDevice(originalPos);
+
+            // It's deferred to make sure the device addition doesn't cause the wires to break.
+            if (device != null)
+                devicesSD.devicesToAddSable.add(Pair.of(destinationPos, device));
+        }
     }
 
     // Backwards compatible with 1.20

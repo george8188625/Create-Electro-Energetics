@@ -210,9 +210,9 @@ public class StructureTemplateMixin {
                 deviceSD.addDevice(CEESimulatedDevices.TEMPORARY.get(), pos2, new CompoundTag());
 
             if (!sd.hasNode(node1))
-                sd.addTemporaryNode(node1);
+                sd.createNode(node1);
             if (!sd.hasNode(node2))
-                sd.addTemporaryNode(node2);
+                sd.createNode(node2);
 
             WireData wireData = wireDataPair.getSecond();
             sd.setConnectionData(sd.connect(node1, node2, wireData.wireType()), wireData);

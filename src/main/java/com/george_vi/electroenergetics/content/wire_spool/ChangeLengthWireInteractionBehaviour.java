@@ -44,7 +44,7 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
             Vec3 pos = VecHelper.lerp(0.5f, connection.node1().sableSourcePos(level).getCenter(), connection.node2().sableSourcePos(level).getCenter());
             Containers.dropItemStack(level, pos.x, pos.y, pos.z, new ItemStack(sd.removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
         } else
-            WireSync.handleWireRepositioned(connection, connectionData, (ServerLevel) level);
+            sd.wireSync.handleWireRepositioned(connection, connectionData);
     }
 
     @Override
