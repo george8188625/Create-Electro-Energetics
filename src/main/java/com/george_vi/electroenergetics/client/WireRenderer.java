@@ -78,7 +78,7 @@ public class WireRenderer {
                 BlockPos pos2 = connection.pos2();
 
                 if (!InWorldNode.isPosFullyLoadable(level, pos1) ||
-                        !InWorldNode.isPosFullyLoadable(level, pos1))
+                        !InWorldNode.isPosFullyLoadable(level, pos2))
                     continue;
                 
                 BlockState startingState = level.getBlockState(pos1);
