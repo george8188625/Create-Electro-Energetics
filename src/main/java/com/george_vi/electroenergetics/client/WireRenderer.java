@@ -44,8 +44,10 @@ import java.util.*;
 
 public class WireRenderer {
     public static List<Pair<InWorldNodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
+
     @OnlyIn(Dist.CLIENT)
     protected static Map<InWorldNodeConnection, WireEffect> WIRE_EFFECTS = new HashMap<>();
+
     @OnlyIn(Dist.CLIENT)
     protected static Map<CatenaryConnection, WireEffect> CATENARY_EFFECTS = new HashMap<>();
     public static List<CatenaryConnection> CATENARY = new ArrayList<>();

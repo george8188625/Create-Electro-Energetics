@@ -184,6 +184,10 @@ public class WireSync {
         }
     }
 
+    /**
+     * Instead of storing a bunch of chunk positions, it stores a range (rectangle) of chunk.
+     *
+     */
     private static class ChunkCuboidEntry implements LongIterable {
         public int minX;
         public int maxX;
@@ -199,6 +203,9 @@ public class WireSync {
             this.maxZ = maxZ;
         }
 
+        /**
+         * Creates a range originating in the specified chunk position, with the distance to edge of the specified range
+         */
         public ChunkCuboidEntry(int xOrigin, int zOrigin, int range) {
             minX = xOrigin - range;
             maxX = xOrigin + range + 1;
@@ -207,19 +214,20 @@ public class WireSync {
             maxZ = zOrigin + range + 1;
         }
 
+        /**
+         * Supplies chunks that exist in the original range, but not in {@code other} to {@code removalConsumer}.
+         * Supplies chunks that do not exist in the original range, but do in {@code other} to {@code additionConsumer}
+         */
         public void supplyDiff(ChunkCuboidEntry other, LongConsumer removalConsumer, LongConsumer additionConsumer) {
-            int totalMinX = Math.min(minX, other.minX);
-            int totalMinZ = Math.min(minZ, other.minZ);
-            int totalMaxX = Math.max(maxX, other.maxX);
-            int totalMaxZ = Math.max(maxZ, other.maxZ);
-            for (int x = totalMinX; x <= totalMaxX; x++) {
-                for (int z = totalMinZ; z <= totalMaxZ; z++) {
-                    if (includes(x, z) && !other.includes(x, z))
-                        removalConsumer.accept(ChunkPos.asLong(x, z));
-                    else if (!includes(x, z) && other.includes(x, z))
-                        additionConsumer.accept(ChunkPos.asLong(x, z));
-                }
-            }
+            forEach(l -> {
+                if (!other.includes(l))
+                    removalConsumer.accept(l);
+            });
+
+            other.forEach(l -> {
+                if (!includes(l))
+                    additionConsumer.accept(l);
+            });
         }
 
         public boolean includes(long chunk) {
@@ -234,6 +242,9 @@ public class WireSync {
             return maxX - minX == 0 || maxZ - minZ == 0;
         }
 
+        /**
+         * @return Iterator that iterates over all the chunks.
+         */
         @Override
         public @NotNull LongIterator iterator() {
             return new LongIterator() {
