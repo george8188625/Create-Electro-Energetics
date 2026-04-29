@@ -1,0 +1,6 @@
+{
+  "block.electroenergetics.gray_electric_motor": "Grey Electric Motor",
+  "block.electroenergetics.light_gray_electric_motor": "Light Grey Electric Motor",
+  "block.electroenergetics.sulfur_hexafluoride_breaker": "Sulphur Hexafluoride Breaker",
+  "electroenergetics.subtitle.sulfur_hexafluoride_breaker_trip": "Sulphur Hexafluoride Breaker Trips"
+}
