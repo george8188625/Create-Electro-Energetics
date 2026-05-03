@@ -105,7 +105,7 @@
   "electroenergetics.subtitle.arcing": "Arcing",
   "electroenergetics.subtitle.electric_train": "Electric Train Sounds",
   "electroenergetics.subtitle.buzzer": "Buzzer Buzzes",
-  "electroenergetics.subtitle.votlage_regulator": "Voltage Regulator Steps",
+  "electroenergetics.subtitle.voltage_regulator": "Voltage Regulator Steps",
   "electroenergetics.subtitle.sulfur_hexafluoride_breaker_trip": "Sulfur Hexafluoride Breaker Trips",
 
   "electroenergetics.transformer.ratio": "Primary to Secondary Ratio",

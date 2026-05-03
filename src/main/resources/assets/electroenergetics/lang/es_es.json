@@ -310,7 +310,7 @@
   "electroenergetics.subtitle.electric_train": "Sonidos de tren eléctrico",
   "electroenergetics.subtitle.hum": "Zumbido",
   "electroenergetics.subtitle.train_relay": "Relé de tren",
-  "electroenergetics.subtitle.votlage_regulator": "Paso del regulador de tensión",
+  "electroenergetics.subtitle.voltage_regulator": "Paso del regulador de tensión",
   "electroenergetics.tooltip.energy_meter.energy": "Energía total: %1$s",
   "electroenergetics.tooltip.energy_meter.owner": "Propietario: %1$s",
   "electroenergetics.tooltip.max_current": "Corriente máxima:",

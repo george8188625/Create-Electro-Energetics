@@ -309,7 +309,7 @@
   "electroenergetics.subtitle.hum": "嗡",
   "electroenergetics.subtitle.sulfur_hexafluoride_breaker_trip": "六氟化硫断路器",
   "electroenergetics.subtitle.train_relay": "电车励磁音",
-  "electroenergetics.subtitle.votlage_regulator": "稳压器档位",
+  "electroenergetics.subtitle.voltage_regulator": "稳压器档位",
   "electroenergetics.tooltip.energy_meter.energy": "总用电量： %1$s",
   "electroenergetics.tooltip.energy_meter.owner": "所有者： %1$s",
   "electroenergetics.tooltip.max_current": "最大电流：",
