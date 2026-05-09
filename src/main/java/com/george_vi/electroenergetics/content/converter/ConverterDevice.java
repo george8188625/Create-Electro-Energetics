@@ -21,10 +21,12 @@ public class ConverterDevice extends SimpleElectricalDevice {
     public double storedEnergy;
     public ConverterBlockEntity be;
 
-    static final int MAX_ENERGY = 100_000;
-
     public ConverterDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
         super(level, pos, deviceSD, type);
+    }
+
+    private double getMaxEnergy() {
+        return CEEConfigs.server().converterMaxPowerKw.get() * 1000;
     }
 
     @Override
@@ -50,14 +52,14 @@ public class ConverterDevice extends SimpleElectricalDevice {
 
             this.storedEnergy -= power;
 
-            if (this.storedEnergy < MAX_ENERGY && level.isLoaded(pos)) {
+            if (this.storedEnergy < getMaxEnergy() && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
                 IEnergyStorage energyStorage = level.getCapability(
                         Capabilities.EnergyStorage.BLOCK,
                         pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()),
                         state.getValue(ConverterBlock.FACING));
                 if (energyStorage != null)
-                    this.storedEnergy += energyStorage.extractEnergy((int) ((MAX_ENERGY - this.storedEnergy) / CEEConfigs.server().wattFeTConversionRate.get()), false) * CEEConfigs.server().wattFeTConversionRate.get();
+                    this.storedEnergy += energyStorage.extractEnergy((int) ((getMaxEnergy() - this.storedEnergy) / CEEConfigs.server().wattFeTConversionRate.get()), false) * CEEConfigs.server().wattFeTConversionRate.get();
             }
 
             displayedPower = power;
@@ -79,11 +81,11 @@ public class ConverterDevice extends SimpleElectricalDevice {
 
             displayedPower = -power;
             if (vd > 1)
-                this.resistance = Math.max(20, vd / (Math.max((MAX_ENERGY - this.storedEnergy), 0.01) / vd));
+                this.resistance = Math.max(20, vd / (Math.max((getMaxEnergy() - this.storedEnergy), 0.01) / vd));
 
         }
 
-        this.storedEnergy = Mth.clamp(this.storedEnergy, 0, MAX_ENERGY);
+        this.storedEnergy = Mth.clamp(this.storedEnergy, 0, getMaxEnergy());
 
         if (this.be == null && level.isLoaded(pos))
             if (level.getBlockEntity(pos) instanceof ConverterBlockEntity be)
