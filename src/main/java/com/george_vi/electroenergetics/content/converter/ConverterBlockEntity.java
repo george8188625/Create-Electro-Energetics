@@ -169,7 +169,7 @@ public class ConverterBlockEntity extends SmartBlockEntity implements IHaveGoggl
         final ConverterBlockEntity be;
 
         public ConverterEnergyStorage(ConverterBlockEntity be) {
-            super(Mth.floor(ConverterDevice.MAX_ENERGY / CEEConfigs.server().wattFeTConversionRate.get()));
+            super(Mth.floor(CEEConfigs.server().converterMaxPowerKw.get() * 1000 / CEEConfigs.server().wattFeTConversionRate.get()));
             this.be = be;
         }
 
