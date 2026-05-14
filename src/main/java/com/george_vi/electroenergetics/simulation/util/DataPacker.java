@@ -12,4 +12,12 @@ public class DataPacker {
     public static int unpackSecondI(long packed) {
         return (int) (packed & 0xFFFFFFFFL);
     }
+
+    /**
+     * Packs the ints together, ensures the result of {@code (a, b)} is equal to {@code (b, a)}
+     */
+    public static long packAndCanonicalize(int id1, int id2) {
+        return id2 > id1 ? pack(id1, id2) : pack(id2, id1);
+    }
+
 }

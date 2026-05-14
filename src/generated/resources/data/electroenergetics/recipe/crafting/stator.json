@@ -7,12 +7,15 @@
     },
     "M": {
       "item": "electroenergetics:magnet"
+    },
+    "S": {
+      "tag": "c:plates/iron"
     }
   },
   "pattern": [
-    "AA ",
-    "MAM",
-    "AA "
+    "AS",
+    "MS",
+    "AS"
   ],
   "result": {
     "count": 1,

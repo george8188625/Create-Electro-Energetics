@@ -8,9 +8,11 @@ import dev.ryanhcode.sable.companion.math.Pose3dc;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
@@ -103,6 +105,17 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
                 for (int z = 0; z < 2; z++)
                     offsets.add(new BlockPos(x * xDirection, y * yDirection, z * zDirection));
         return offsets;
+    }
+
+    /**
+     * Reads the node from a compoundTag, converts legacy format to new.
+     */
+    public static InWorldNode readFromTag(CompoundTag connectionTag) {
+        int[] nodes = connectionTag.getIntArray("Node");
+        if (nodes.length != 4)
+            return new InWorldNode(connectionTag.getInt("ID"),
+                    NBTHelper.readBlockPos(connectionTag, "Pos"));
+        return new InWorldNode(nodes[0], nodes[1], nodes[2], nodes[3]);
     }
 
     public Vec3 getPosition(Level level) {

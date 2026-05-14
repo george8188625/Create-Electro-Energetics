@@ -3,15 +3,40 @@
   "pools": [
     {
       "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "electroenergetics:accumulator"
+        }
+      ],
+      "functions": [
+        {
+          "add": false,
+          "conditions": [
+            {
+              "block": "electroenergetics:accumulator",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "stack": "double_opposite"
+              }
+            }
+          ],
+          "count": 2.0,
+          "function": "minecraft:set_count"
+        },
+        {
+          "add": false,
+          "conditions": [
+            {
+              "block": "electroenergetics:accumulator",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "stack": "double_parallel"
+              }
+            }
+          ],
+          "count": 2.0,
+          "function": "minecraft:set_count"
         }
       ],
       "rolls": 1.0

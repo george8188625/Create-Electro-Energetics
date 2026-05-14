@@ -12,6 +12,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -77,7 +78,7 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
             graphics.drawString(mc.font, formattedVoltage, x - mc.font.width(formattedVoltage) / 2, y, color.getRGB());
 
             if (invalidConnection || connectionTooLong) {
-                MutableComponent component = Lang.builder(CreateElectroEnergetics.ID)
+                MutableComponent component = CEELang.builder()
                         .translate(connectionTooLong ? "wire_spool.too_far_away" : "wire_spool.invalid_connection")
                         .style(ChatFormatting.RED)
                         .component();
@@ -85,6 +86,11 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
             }
 
         } else if (mode == OverlayMode.AMMETER) {
+            MutableComponent nodeLabel = CEELang.builder()
+                    .translate("clamp_meter.current")
+                    .component().withStyle(ChatFormatting.BOLD);
+            graphics.drawString(mc.font, nodeLabel, x - mc.font.width(nodeLabel) / 2, y, titleColor.getRGB());
+            y += 12;
             MutableComponent formattedAmperage = CEELang.formatAmperage(amperage).component();
             graphics.drawString(mc.font, formattedAmperage, x - mc.font.width(formattedAmperage) / 2, y, color.getRGB());
         }

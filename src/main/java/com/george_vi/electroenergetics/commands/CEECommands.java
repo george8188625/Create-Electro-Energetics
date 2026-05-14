@@ -112,8 +112,10 @@ public class CEECommands {
         for (Map.Entry<Level, SimulationStats> entry : SimulationTicker.allStats.entrySet()) {
             SimulationStats stats = entry.getValue();
             InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) entry.getKey());
-            source.sendSuccess(() -> Component.literal("totalNodes: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalNodes)).withStyle(orange)), false);
-            source.sendSuccess(() -> Component.literal("dynamicPositionNodes: ").withStyle(blue).append(Component.literal(String.valueOf(sd.DYNAMIC_POSITION_NODES.size())).withStyle(orange)), false);
+            source.sendSuccess(() -> Component.literal("totalNodes: ").withStyle(blue)
+                    .append(Component.literal(String.valueOf(stats.totalNodes)).withStyle(orange)), false);
+            source.sendSuccess(() -> Component.literal("dynamicPositionNodes: ").withStyle(blue)
+                    .append(Component.literal(String.valueOf(sd.DYNAMIC_POSITION_NODES.size())).withStyle(orange)), false);
 
             int[] totalOptimizedNodes = stats.totalOptimizedNodes;
             StringBuilder stringBuilder = new StringBuilder();
@@ -132,9 +134,12 @@ public class CEECommands {
             source.sendSuccess(() -> Component.literal("perNetwork: ").withStyle(blue)
                     .append(Component.literal(stringBuilder.toString()).withStyle(orange)), false);
 
-            source.sendSuccess(() -> Component.literal("totalDevices: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalDevices)).withStyle(orange)), false);
-            source.sendSuccess(() -> Component.literal("totalMicroTickers: ").withStyle(blue).append(Component.literal(String.valueOf(stats.totalMicroTickers)).withStyle(orange)), false);
-            source.sendSuccess(() -> Component.literal("mtpt: ").withStyle(blue).append(Component.literal(String.valueOf(1 << CEEConfigs.server().simulationConfig.microTickBits.get())).withStyle(orange)), false);
+            source.sendSuccess(() -> Component.literal("totalDevices: ").withStyle(blue)
+                    .append(Component.literal(String.valueOf(stats.totalDevices)).withStyle(orange)), false);
+            source.sendSuccess(() -> Component.literal("totalMicroTickers: ").withStyle(blue)
+                    .append(Component.literal(String.valueOf(stats.totalMicroTickers)).withStyle(orange)), false);
+            source.sendSuccess(() -> Component.literal("mtpt: ").withStyle(blue)
+                    .append(Component.literal(String.valueOf(1 << CEEConfigs.server().simulationConfig.microTickBits.get())).withStyle(orange)), false);
 
         }
 

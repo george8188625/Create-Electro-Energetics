@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
+import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
@@ -54,8 +55,8 @@ public abstract class DirectionalKineticElectricBlock<T extends SimulatedDevice>
         // If destroyed by creative player, remove all connections, so they don't drop.
         if (level instanceof ServerLevel sl && player.isCreative()) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            for (InWorldNode node : sd.getNodesAt(pos))
-                for (InWorldNodeConnection connection : sd.getConnections(node))
+            for (InWorldNodeData nodeData : sd.getNodesAt(pos))
+                for (InWorldNodeConnection connection : sd.getConnections(nodeData))
                     sd.removeConnection(connection);
         }
         return super.playerWillDestroy(level, pos, state, player);
@@ -67,8 +68,8 @@ public abstract class DirectionalKineticElectricBlock<T extends SimulatedDevice>
         // Automatically put broken wires in the inventory, or spool them if possible.
         if (context.getLevel() instanceof ServerLevel sl && player != null) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            for (InWorldNode node : sd.getNodesAt(context.getClickedPos()))
-                for (InWorldNodeConnection connection : sd.getConnections(node)) {
+            for (InWorldNodeData nodeData : sd.getNodesAt(context.getClickedPos()))
+                for (InWorldNodeConnection connection : sd.getConnections(nodeData)) {
                     WireData wireData = sd.removeConnection(connection);
                     boolean found = false;
                     for (int i = 0; i < player.getInventory().items.size(); i++) {

@@ -149,104 +149,6 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
 
     @Override
     public void update(float partialTick) {
-        ClientLevel level = Minecraft.getInstance().level;
-        assert level != null;
-
-        Vec3 start = Vec3.atBottomCenterOf(connection.pos1().subtract(visualizationContext.renderOrigin()));
-        Vec3 end = Vec3.atBottomCenterOf(connection.pos2().subtract(visualizationContext.renderOrigin()));
-
-        float wireWidth = 0.66f;
-
-        // Check if chunks are loaded on the client
-        boolean chunksLoaded = level.isLoaded(connection.pos1()) && level.isLoaded(connection.pos2());
-
-        // Clear instances if not loaded
-        if (!chunksLoaded) {
-            for (TransformedInstance instance : upperInstances)
-                instance.setVisible(false);
-
-            for (TransformedInstance instance : lowerInstances)
-                instance.setVisible(false);
-
-            return;
-        }
-        else
-        {
-            for (TransformedInstance instance : upperInstances)
-                instance.setVisible(true);
-
-            for (TransformedInstance instance : lowerInstances)
-                instance.setVisible(true);
-        }
-
-        BlockState startingState = level.getBlockState(connection.pos1());
-        BlockState endingState = level.getBlockState(connection.pos2());
-        boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
-        boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
-        boolean low = isStartingLow || isEndingLow;
-
-        if (low && !prevLow) {
-            for (TransformedInstance instance : upperInstances)
-                instance.delete();
-            upperInstances.clear();
-        } else if (!low && prevLow) {
-            Vec3 topStart = start.add(0, 1.5, 0);
-            Vec3 topEnd = end.add(0, 1.5, 0);
-
-            float distance = (float) topStart.distanceTo(topEnd);
-
-            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 350f * (0.05f / distance), 4);
-
-            for (int i = 0; i < upperWirePoints.size(); i++) {
-                Vec3 point = upperWirePoints.get(i);
-
-                Vec3 nextPoint = i == upperWirePoints.size() - 1 ? topEnd : upperWirePoints.get(i + 1);
-
-                TransformedInstance instance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
-                        .createInstance();
-                BlockPos pointBlockPos = BlockPos.containing(point).offset(visualizationContext.renderOrigin());
-                BlockPos nextBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
-                BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
-                instance.translate(point)
-                        .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
-                        .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
-                        .scale(wireWidth, wireWidth, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
-                        .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
-                                WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
-                                        LevelRenderer.getLightColor(level, nextBlockPos)));
-                upperInstances.add(instance);
-                if (i == 0)
-                    continue;
-                if (i == upperWirePoints.size() - 1)
-                    if (point.distanceToSqr(topEnd) < 1.3)
-                        continue;
-                Vec3 closest;
-                Vec3 ab = end.subtract(start);
-                Vec3 ap = point.subtract(start);
-                double denom = ab.lengthSqr();
-                if (denom == 0)
-                    closest = start;
-                else {
-                    double t = ap.dot(ab) / denom;
-                    t = Math.max(0, Math.min(1, t));
-                    closest = start.add(ab.scale(t));
-                }
-
-                TransformedInstance messengerInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
-                        .createInstance();
-                BlockPos closestBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
-                BlockPos closestMiddleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
-                messengerInstance.translate(point)
-                        .rotateY((float) Mth.atan2(closest.x() - point.x(), closest.z() - point.z()))
-                        .rotateX(-(float) Mth.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
-                        .scale(wireWidth, wireWidth, (float) (point.distanceTo(closest) * 2) + 0.02f)
-                        .light(pointBlockPos.equals(closestBlockPos) ? LevelRenderer.getLightColor(level, closestMiddleBlockPos) :
-                                WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
-                                        LevelRenderer.getLightColor(level, closestBlockPos)));
-                upperInstances.add(messengerInstance);
-            }
-        }
-        prevLow = low;
     }
 
     @Override
@@ -316,7 +218,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                     closest = start;
                 else {
                     double t = ap.dot(ab) / denom;
-                    t = Math.max(0, Math.min(1, t));
+                    t = Mth.clamp(t, 0, 1);
                     closest = start.add(ab.scale(t));
                 }
 
@@ -339,6 +241,103 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
 
     @Override
     public void tick(Context context) {
-        update(0);
+        ClientLevel level = Minecraft.getInstance().level;
+        assert level != null;
+
+        Vec3 start = Vec3.atBottomCenterOf(connection.pos1().subtract(visualizationContext.renderOrigin()));
+        Vec3 end = Vec3.atBottomCenterOf(connection.pos2().subtract(visualizationContext.renderOrigin()));
+
+        float wireThickness = 0.66f;
+
+        // Check if chunks are loaded on the client
+        boolean chunksLoaded = level.isLoaded(connection.pos1()) && level.isLoaded(connection.pos2());
+
+        // Clear instances if not loaded
+        if (!chunksLoaded) {
+            for (TransformedInstance instance : upperInstances)
+                instance.setVisible(false);
+
+            for (TransformedInstance instance : lowerInstances)
+                instance.setVisible(false);
+
+            return;
+        }
+        else
+        {
+            for (TransformedInstance instance : upperInstances)
+                instance.setVisible(true);
+
+            for (TransformedInstance instance : lowerInstances)
+                instance.setVisible(true);
+        }
+
+        BlockState startingState = level.getBlockState(connection.pos1());
+        BlockState endingState = level.getBlockState(connection.pos2());
+        boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+        boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+        boolean low = isStartingLow || isEndingLow;
+
+        if (low && !prevLow) {
+            for (TransformedInstance instance : upperInstances)
+                instance.delete();
+            upperInstances.clear();
+        } else if (!low && prevLow) {
+            Vec3 topStart = start.add(0, 1.5, 0);
+            Vec3 topEnd = end.add(0, 1.5, 0);
+
+            float distance = (float) topStart.distanceTo(topEnd);
+
+            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 350f * (0.05f / distance), 4);
+
+            for (int i = 0; i < upperWirePoints.size(); i++) {
+                Vec3 point = upperWirePoints.get(i);
+
+                Vec3 nextPoint = i == upperWirePoints.size() - 1 ? topEnd : upperWirePoints.get(i + 1);
+
+                TransformedInstance instance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
+                        .createInstance();
+                BlockPos pointBlockPos = BlockPos.containing(point).offset(visualizationContext.renderOrigin());
+                BlockPos nextBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
+                BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
+                instance.translate(point)
+                        .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                        .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                        .scale(wireThickness, wireThickness, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                        .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
+                                WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
+                                        LevelRenderer.getLightColor(level, nextBlockPos)));
+                upperInstances.add(instance);
+                if (i == 0)
+                    continue;
+                if (i == upperWirePoints.size() - 1)
+                    if (point.distanceToSqr(topEnd) < 1.3)
+                        continue;
+                Vec3 closest;
+                Vec3 ab = end.subtract(start);
+                Vec3 ap = point.subtract(start);
+                double denom = ab.lengthSqr();
+                if (denom == 0)
+                    closest = start;
+                else {
+                    double t = ap.dot(ab) / denom;
+                    t = Mth.clamp(t, 0, 1);
+                    closest = start.add(ab.scale(t));
+                }
+
+                TransformedInstance messengerInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
+                        .createInstance();
+                BlockPos closestBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
+                BlockPos closestMiddleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
+                messengerInstance.translate(point)
+                        .rotateY((float) Mth.atan2(closest.x() - point.x(), closest.z() - point.z()))
+                        .rotateX(-(float) Mth.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
+                        .scale(wireThickness, wireThickness, (float) (point.distanceTo(closest) * 2) + 0.02f)
+                        .light(pointBlockPos.equals(closestBlockPos) ? LevelRenderer.getLightColor(level, closestMiddleBlockPos) :
+                                WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
+                                        LevelRenderer.getLightColor(level, closestBlockPos)));
+                upperInstances.add(messengerInstance);
+            }
+        }
+        prevLow = low;
     }
 }

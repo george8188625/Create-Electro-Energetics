@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 
 public class ConnectionEntry {
-    private static int cutNodeIds = 0;
     public final Vec3 pos1;
     public final Vec3 pos2;
     public final List<Vec3> points;
@@ -32,7 +31,8 @@ public class ConnectionEntry {
         this.resistance = wireData.wireType()::getResistance;
     }
 
-    public ConnectionEntry(Vec3 pos1, Vec3 pos2, List<Vec3> points, WireData wireData, AABB bb, boolean isCatenary, List<WireSimulationState.CutWireEntry> cuts) {
+    public ConnectionEntry(Vec3 pos1, Vec3 pos2, List<Vec3> points, WireData wireData, AABB bb,
+                           boolean isCatenary, List<WireSimulationState.CutWireEntry> cuts) {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.points = points;

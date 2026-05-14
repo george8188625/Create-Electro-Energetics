@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -69,6 +70,11 @@ public class InsulatorBlock extends SimpleElectricalDeviceBlock<InsulatorDevice>
                                      LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         updateWater(level, state, pos);
         return state;
+    }
+
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        return fluidState(state);
     }
 
     @Override

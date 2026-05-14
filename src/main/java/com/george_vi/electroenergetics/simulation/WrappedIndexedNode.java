@@ -21,6 +21,9 @@ public class WrappedIndexedNode {
     public int localNetworkID;
     public Int2ObjectArrayMap<ElectricalProperties> localAdjacencyOverride = null;
 
+    // for Network#seriesOptimize
+    public boolean isDissolved;
+
     public WrappedIndexedNode(Node node, int ordinal) {
         if (node == null)
             throw new IllegalArgumentException("node can't be null!");

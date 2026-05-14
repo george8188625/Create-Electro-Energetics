@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.mixins;
 
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import net.minecraft.server.MinecraftServer;
@@ -25,8 +26,15 @@ public class MinecraftServerMixin {
 
     @Inject(method = "tickServer", at = @At(value = "TAIL"), remap = false)
     public void electroEnergetics$tickServerPost(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
-        for (ServerLevel level : ((MinecraftServer)(Object)this).getAllLevels())
-            InfrastructureSavedData.load(level).ticker.endTick();
+        for (ServerLevel level : ((MinecraftServer)(Object)this).getAllLevels()) {
+            InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+            sd.ticker.endTick();
+            // It's called after the simulation, because certain devices can "move" ownership of certain devices into
+            // micro-tickers, which causes devices to not move the data correctly when moving across Sable's sublevels,
+            // as the fields would be written to while the simulation is still running.
+            DevicesSavedData dsd = sd.deviceSD;
+            dsd.tick();
+        }
     }
 
     @Inject(method = "runServer", at = @At(value = "HEAD"), remap = false)

@@ -1,10 +1,7 @@
 package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEERegistries;
-import com.george_vi.electroenergetics.CEEWireTypes;
-import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.content.wire.WireSync;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
@@ -23,7 +20,7 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
 
     @Override
     public void interactWire(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
-        if (!(player.level() instanceof ServerLevel sl))
+        if (!(level instanceof ServerLevel sl))
             return;
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
@@ -44,7 +41,7 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
             Vec3 pos = VecHelper.lerp(0.5f, connection.node1().sableSourcePos(level).getCenter(), connection.node2().sableSourcePos(level).getCenter());
             Containers.dropItemStack(level, pos.x, pos.y, pos.z, new ItemStack(sd.removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
         } else
-            sd.wireSync.handleWireRepositioned(connection, connectionData);
+            sd.wireSync.handleWireAdded(connection, connectionData);
     }
 
     @Override

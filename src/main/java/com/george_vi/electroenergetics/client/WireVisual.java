@@ -4,7 +4,6 @@ import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
-import dev.engine_room.flywheel.api.task.Plan;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visual.EffectVisual;
 import dev.engine_room.flywheel.api.visual.LightUpdatedVisual;
@@ -17,13 +16,11 @@ import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
 import dev.engine_room.flywheel.lib.visual.SimpleTickableVisual;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import net.createmod.catnip.animation.AnimationTickHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -75,19 +72,20 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
                 for (int z = minSectionZ; z <= maxSectionZ; z++)
                     lightSections.add(SectionPos.asLong(x, y, z));
 
-        pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
-        pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
+        pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(),
+                visualizationContext.renderOrigin().getZ());
+        pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(),
+                visualizationContext.renderOrigin().getZ());
         prevPos1 = pos1;
         prevPos2 = pos2;
 
         List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
         createWire(visualizationContext, wireType, points, pos2, level);
-
     }
 
-    @Override
-    public void update(float partialTick) {
+    public void recreateInstances(float partialTick) {
+
         ClientLevel level = Minecraft.getInstance().level;
         assert level != null;
 
@@ -117,20 +115,23 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
         pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
 
-        if (pos1.equals(prevPos1) && pos2.equals(prevPos2) && prevLength == wireData.length)
-            return;
+//        if (pos1.equals(prevPos1) && pos2.equals(prevPos2) && prevLength == wireData.length)
+//            return;
 
         prevPos1 = pos1;
         prevPos2 = pos2;
         prevLength = wireData.length;
-        for (TransformedInstance instance : instances)
-            instance.delete();
 
-        instances.clear();
         double distance = pos1.distanceTo(pos2);
         List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
         createWire(visualizationContext, wireType, points, pos2, level);
+
+    }
+
+    @Override
+    public void update(float partialTick) {
+//        recreateInstances(partialTick);
     }
 
     @Override
@@ -147,24 +148,41 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         prevLength = -1;
     }
 
-    private void createWire(VisualizationContext visualizationContext, WireType wireType, List<Vec3> points, Vec3 pos2, ClientLevel level) {
+    private void createWire(VisualizationContext visualizationContext, WireType wireType, List<Vec3> points, Vec3 pos2,
+                            ClientLevel level) {
+        // The reason that it doesn't remove instances here, is it's not safe to do this here. It just sets to invisible.
+        int usedInstances = 0;
         for (int i = 0; i < points.size(); i++) {
+            usedInstances++;
             Vec3 point = points.get(i);
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
-            TransformedInstance instance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
-                    .createInstance();
+            TransformedInstance instance;
+
+            if (i >= instances.size()) {
+                instance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(wireType.getModel()))
+                        .createInstance();
+                instances.add(instance);
+            } else
+                instance = instances.get(i);
+
             BlockPos pointBlockPos = BlockPos.containing(point).offset(visualizationContext.renderOrigin());
             BlockPos nextBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
             BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
-            instance.translate(point)
+            instance.setVisible(true);
+            instance.setIdentityTransform()
+                    .translate(point)
                     .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
                     .rotateZ(0.001f)
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
                     .light(pointBlockPos.equals(nextBlockPos) ? LevelRenderer.getLightColor(level, middleBlockPos) :
                             WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
-                                    LevelRenderer.getLightColor(level, nextBlockPos)));
-            instances.add(instance);
+                                    LevelRenderer.getLightColor(level, nextBlockPos)))
+                    .setChanged();
+        }
+        for (int i = usedInstances; i < instances.size(); i++) {
+            instances.get(i).setVisible(false);
+            instances.get(i).setChanged();
         }
     }
 
@@ -180,6 +198,6 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
     @Override
     public void beginFrame(DynamicVisual.Context ctx) {
-        update(ctx.partialTick());
+        recreateInstances(ctx.partialTick());
     }
 }

@@ -1,11 +1,13 @@
 package com.george_vi.electroenergetics.events;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEESimulatedDeviceFeatureTypes;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.client.WireEffects;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.commands.CEECommands;
+import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.gauges.ClientTrainGaugeData;
@@ -17,23 +19,40 @@ import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.WireSparkEffectTicker;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.simibubi.create.AllTags;
+import com.simibubi.create.content.trains.track.TrackBlock;
+import com.simibubi.create.content.trains.track.TrackBlockEntity;
+import com.simibubi.create.content.trains.track.TrackBlockOutline;
+import com.simibubi.create.content.trains.track.TrackShape;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
+import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -53,6 +72,20 @@ public class GameEvents {
         WireEffects.tick();
         ElectricTrainSounds.tick();
         ClientTrainGaugeData.tick();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void renderHighlightBlock(RenderHighlightEvent.Block event) {
+        BlockPos pos = event.getTarget().getBlockPos();
+        Minecraft mc = Minecraft.getInstance();
+        Level level = mc.level;
+        if (level == null)
+            return;
+
+        BlockState state = level.getBlockState(pos);
+        if (CEEBlocks.ACCUMULATOR.has(state))
+            AccumulatorBlock.renderHighlightBlock(event, state);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -77,8 +110,16 @@ public class GameEvents {
         if (event.getLevel() instanceof ServerLevel level) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(level);
             sd.tick();
-            DevicesSavedData dsd = sd.deviceSD;
-            dsd.tick();
+
+            // It's not done through EntityEvent.EnteringSection, because other mods may position the entity multiple
+            // times a tick.
+            // e.g. Sitting in a seat on a sable contraption causes it to teleport twice a tick between the plot
+            // location and the normal location, causing WireSync to send a ton of wire update packets and flickering.
+            for (ServerPlayer player : level.players()) {
+                Vec3 pos = player.position();
+                sd.wireSync.handlePlayerEnterNewSection(player,
+                        ChunkPos.asLong(Mth.floor(pos.x) >> 4, Mth.floor(pos.z) >> 4));
+            }
         }
     }
 
@@ -107,17 +148,6 @@ public class GameEvents {
         wireSync.handlePlayerEnterNewSection(player, ChunkPos.asLong(player.blockPosition()));
     }
 
-    @SubscribeEvent
-    public static void enterSection(EntityEvent.EnteringSection event) {
-        if (!(event.getEntity() instanceof ServerPlayer player))
-            return;
-
-        if (event.getNewPos().getX() == event.getOldPos().getX() && event.getNewPos().getZ() == event.getOldPos().getZ())
-            return;
-        InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel) player.level());
-        WireSync wireSync = sd.wireSync;
-        wireSync.handlePlayerEnterNewSection(player, event.getNewPos().chunk().toLong());
-    }
 
     @SubscribeEvent
     public static void playerInteractItem(PlayerInteractEvent.RightClickItem event) {

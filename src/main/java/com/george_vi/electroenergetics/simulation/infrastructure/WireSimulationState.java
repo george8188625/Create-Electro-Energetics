@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.minecraft.core.SectionPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -358,7 +359,7 @@ public class WireSimulationState {
         double miny = pos1.y;
 
         double lengthDiff = pos1.distanceTo(pos2) - wireData.length;
-        boolean breakWire = wireData.getSag() == 0 ? (Math.abs(lengthDiff) > 0.5) : (lengthDiff > 4);
+        boolean shouldBreakWire = wireData.getSag() == 0 ? (Math.abs(lengthDiff) > 0.5) : (lengthDiff > 4);
 
         for (Vec3 point : points)
             miny = Math.min(miny, point.y());
@@ -369,11 +370,14 @@ public class WireSimulationState {
         ConnectionEntry connectionEntry = new ConnectionEntry(pos1, pos2, points, wireData, bb, cuts);
         connections.put(connection, connectionEntry);
 
-        SectionPos prevSection = null;
+        long prevSection = 0;
         for (Vec3 point : points) {
-            SectionPos section = SectionPos.of(point);
-            if (!Objects.equals(prevSection, section)) {
-                connectionsBySection.computeIfAbsent(section.asLong(), s -> new HashMap<>()).put(connection, connectionEntry);
+            long section = SectionPos.asLong(
+                    Mth.floor(point.x) >> 4,
+                    Mth.floor(point.y) >> 4,
+                    Mth.floor(point.z) >> 4);
+            if (section != prevSection) {
+                connectionsBySection.computeIfAbsent(section, s -> new HashMap<>()).put(connection, connectionEntry);
                 prevSection = section;
             }
         }
@@ -381,7 +385,7 @@ public class WireSimulationState {
         sd.wireCrossContactModule.onWireAdded(connection, connectionEntry);
         reloadLazyConnections();
 
-        return breakWire;
+        return shouldBreakWire;
     }
 
     public static class WireCutHandle {

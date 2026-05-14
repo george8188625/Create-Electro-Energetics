@@ -13,6 +13,7 @@ public class CVoltages extends ConfigBase {
     public final ConfigDouble inductorVoltage = d(500, 0, "inductorVoltage", "[in Volts]");
     public final ConfigDouble maxVoltmeterVoltage = d(10_000, 0, "maxVoltmeterVoltage", "[in Volts]");
     public final ConfigDouble maxAmmeterCurrent = d(200, 0, "maxAmmeterCurrent", "[in Amps]");
+    public final ConfigDouble maxAccumulatorCharge = d(36000, 0, "maxAccumulatorCharge", "[in Coulombs]");
 
     @Override
     public String getName() {

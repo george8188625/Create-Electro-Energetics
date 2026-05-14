@@ -118,7 +118,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("BWB")
                 .pattern("WSW")
                 .pattern("BWB")
-                .define('W', CEEBlocks.INDUCTOR)
+                .define('W', CEEItems.COPPER_WIRE_SPOOL)
                 .define('S', AllBlocks.SHAFT)
                 .define('B', AllBlocks.INDUSTRIAL_IRON_BLOCK)
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
@@ -284,7 +284,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/relay"));
 
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.MAGNET_BLOCK)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.MAGNET_BLOCK, 4)
                 .pattern(" I ")
                 .pattern("IAI")
                 .pattern(" I ")
@@ -326,11 +326,12 @@ public class CEERecipeGen extends RecipeProvider {
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/electric_pump"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.STATOR)
-                .pattern("AA ")
-                .pattern("MAM")
-                .pattern("AA ")
+                .pattern("AS")
+                .pattern("MS")
+                .pattern("AS")
                 .define('M', CEEBlocks.MAGNET_BLOCK)
                 .define('A', AllItems.ANDESITE_ALLOY)
+                .define('S', CEETags.IRON_PLATE)
                 .unlockedBy("has_magnet_block", has(CEEBlocks.MAGNET_BLOCK))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/stator"));
 

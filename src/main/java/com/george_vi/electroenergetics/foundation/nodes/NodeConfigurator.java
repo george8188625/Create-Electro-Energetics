@@ -21,6 +21,10 @@ public class NodeConfigurator {
         return new NodeConfigurator(getRotatedNodes(vec), origin);
     }
 
+    public NodeConfigurator scale(double x, double y, double z) {
+        return new NodeConfigurator(getScaledNodes(x, y, z), origin);
+    }
+
     public Vec3 getNodePos(Direction direction, int id) {
         Int2ObjectMap<Vec3> nodes = rotate(origin, direction);
         return nodes.get(id);
@@ -44,6 +48,17 @@ public class NodeConfigurator {
         return result;
     }
 
+    protected Int2ObjectMap<Vec3> getScaledNodes(double x, double y, double z) {
+        Int2ObjectMap<Vec3> result = new Int2ObjectArrayMap<>();
+        nodes.forEach((id, node) ->
+                result.put(id.intValue(), node
+                        .subtract(VecHelper.CENTER_OF_ORIGIN)
+                        .multiply(x, y, z)
+                        .add(VecHelper.CENTER_OF_ORIGIN)));
+
+        return result;
+    }
+
 
     public static class Builder {
         Int2ObjectMap<Vec3> nodes = new Int2ObjectArrayMap<>();
@@ -51,6 +66,11 @@ public class NodeConfigurator {
 
         public Builder add(Vec3 pos) {
             nodes.put(id++, pos);
+            return this;
+        }
+
+        public Builder add(float x, float y, float z) {
+            nodes.put(id++, new Vec3(x / 16f, y / 16f, z / 16f));
             return this;
         }
 

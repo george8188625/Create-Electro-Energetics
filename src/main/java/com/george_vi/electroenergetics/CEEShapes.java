@@ -116,6 +116,15 @@ public class CEEShapes {
 
     public static final VoxelShaper RESISTIVE_HEATER = shape(2, 0, 2, 14, 9, 14).forDirectional();
 
+    public static final VoxelShaper ACCUMULATOR_SINGLE_ROLL = shape(4, 0, 0, 12, 11, 16).forDirectional();
+
+    public static final VoxelShaper ACCUMULATOR_SINGLE = shape(0, 0, 4, 16, 11, 12).forDirectional();
+
+    public static final VoxelShaper ACCUMULATOR_OUTLINE_F = shape(0, 0, 0, 16, 11, 8).forDirectional();
+    public static final VoxelShaper ACCUMULATOR_OUTLINE = shape(0, 0, 8, 16, 11, 16).forDirectional();
+    public static final VoxelShaper ACCUMULATOR_OUTLINE_RF = shape(8, 0, 0, 16, 11, 16).forDirectional();
+    public static final VoxelShaper ACCUMULATOR_OUTLINE_R = shape(0, 0, 0, 8, 11, 16).forDirectional();
+
 
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);

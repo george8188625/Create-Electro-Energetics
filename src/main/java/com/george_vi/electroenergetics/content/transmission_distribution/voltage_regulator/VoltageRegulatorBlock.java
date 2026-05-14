@@ -7,6 +7,7 @@ import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
+import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
@@ -127,8 +128,8 @@ public class VoltageRegulatorBlock extends SimpleElectricalDeviceBlock<VoltageRe
             }
 
             if (change || sliced != state.getValue(SLICED))
-                for (InWorldNode node : sd.getNodesAt(pos)) {
-                    List<InWorldNodeConnection> connections = sd.getConnections(node);
+                for (InWorldNodeData nodeData : sd.getNodesAt(pos)) {
+                    List<InWorldNodeConnection> connections = sd.getConnections(nodeData);
                     for (InWorldNodeConnection connection : connections)
                         Containers.dropItemStack(sl, pos.getX(), pos.getY(), pos.getZ(),
                                 new ItemStack(sd.removeConnection(connection).wireType().getDrops(),

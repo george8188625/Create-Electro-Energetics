@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
+import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
@@ -115,8 +116,8 @@ public class CurrentTransformerBlock extends SimpleElectricalDeviceBlock<Current
             }
 
             if (change)
-                for (InWorldNode node : sd.getNodesAt(pos)) {
-                    List<InWorldNodeConnection> connections = sd.getConnections(node);
+                for (InWorldNodeData nodeData : sd.getNodesAt(pos)) {
+                    List<InWorldNodeConnection> connections = sd.getConnections(nodeData);
                     for (InWorldNodeConnection connection : connections)
                         Containers.dropItemStack(sl, pos.getX(), pos.getY(), pos.getZ(),
                                 new ItemStack(sd.removeConnection(connection).wireType().getDrops(),

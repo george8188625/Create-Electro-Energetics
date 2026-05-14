@@ -19,6 +19,25 @@ public class CEENodeConfigurations {
             .add(new Vec3(13/16f, 5/16f, 0.5f))
             .simple();
 
+    public static final NodeConfigurator ACCUMULATOR_SINGLE = new NodeConfigurator.Builder()
+            .add(4, 11, 8) // +
+            .add(12, 11, 8) // -
+            .simple();
+
+    public static final NodeConfigurator ACCUMULATOR_PARALLEL = new NodeConfigurator.Builder()
+            .add(4, 11, 4) // +
+            .add(12, 11, 4) // -
+            .add(4, 11, 12) // +
+            .add(12, 11, 12) // -
+            .simple();
+
+    public static final NodeConfigurator ACCUMULATOR_OPPOSITE = new NodeConfigurator.Builder()
+            .add(12, 11, 4) // +
+            .add(4, 11, 4) // -
+            .add(4, 11, 12) // +
+            .add(12, 11, 12) // -
+            .simple();
+
     public static final NodeConfigurator DOUBLE_CONNECTOR_MEDIUM = new NodeConfigurator.Builder()
             .add(new Vec3(3/16f, 8/16f, 0.5f))
             .add(new Vec3(13/16f, 8/16f, 0.5f))

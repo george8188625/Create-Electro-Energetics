@@ -30,6 +30,10 @@ public class QuadraticWireHelper {
         return cablePoints(pos1, pos2, dip, 1f);
     }
 
+    public static List<Vec3> cablePointsRaw(Vec3 pos1, Vec3 pos2, float dip) {
+        return cablePointsRaw(pos1, pos2, dip, 1f);
+    }
+
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, Vec3 position) {
         float distance = (float) pos1.distanceTo(pos2);
         float wireLength = (float) pos1.distanceTo(pos2);
@@ -76,6 +80,30 @@ public class QuadraticWireHelper {
         double invResolution = 1 / resolution;
         int totalPoints = (int) (resolution / detail);
         int ppp = (int) Math.max(1, (resolution / totalPoints));
+        List<Vec3> points = new ArrayList<>(totalPoints);
+        float a = (0.05f / distance) * dip;
+        for (int x = 0; x < resolution; x++) {
+            float particleLevel = (float) (a * x * (x - resolution));
+            double pX = (pos2.x - pos1.x) * (invResolution) * x + pos1.x;
+            double pY = (pos2.y - pos1.y) * (invResolution) * x + pos1.y + particleLevel;
+            double pZ = (pos2.z - pos1.z) * (invResolution) * x + pos1.z;
+            Vec3 point = new Vec3(pX, pY, pZ);
+            if (x % ppp == 0)
+                points.add(point);
+        }
+        return points;
+    }
+
+    public static List<Vec3> cablePointsRaw(Vec3 pos1, Vec3 pos2, float dip, float detail) {
+        float distance = (float) pos1.distanceTo(pos2);
+        if (distance > 1000) // prevent world bricking
+            return Collections.emptyList();
+
+        double resolution = Mth.ceil(distance * 2);
+
+        double invResolution = 1 / resolution;
+        int totalPoints = Mth.ceil(resolution / detail);
+        int ppp = Math.max(1, Mth.ceil(resolution / totalPoints));
         List<Vec3> points = new ArrayList<>(totalPoints);
         float a = (0.05f / distance) * dip;
         for (int x = 0; x < resolution; x++) {

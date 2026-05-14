@@ -25,10 +25,20 @@ public class CEEPonderPlugin implements PonderPlugin {
                         CEEItems.CREATIVE_WIRE_SPOOL.getId(), CEEItems.HEAVILY_INSULATED_WIRE_SPOOL.getId())
                 .addStoryBoard("basics", ElectricityBasicsScenes::theBasics)
                 .addStoryBoard("connectors", ConnectorScenes::connectors)
-                .addStoryBoard("connectors_chunks", ConnectorScenes::chunks);
+                .addStoryBoard("connectors_chunks", ConnectorScenes::chunks)
+                .addStoryBoard("wire_attachments", ConnectorScenes::wireAttachments);
 
-        helper.forComponents(CEEBlocks.BULB.getId(), CEEBlocks.AMMETER.getId())
-                .addStoryBoard("basics", ElectricityBasicsScenes::theBasics);
+        helper.forComponents(CEEBlocks.ACCUMULATOR.getId())
+                .addStoryBoard("accumulator", AccumulatorScenes::accumulator)
+                .addStoryBoard("accumulators_series", AccumulatorScenes::accumulatorsSeries);
+
+        helper.forComponents(CEEBlocks.AMMETER.getId())
+                .addStoryBoard("basics", ElectricityBasicsScenes::theBasics)
+                .addStoryBoard("gauges", ElectricityBasicsScenes::gauges);
+
+        helper.forComponents(CEEBlocks.BULB.getId())
+                .addStoryBoard("basics", ElectricityBasicsScenes::theBasics)
+                .addStoryBoard("bulb_mob_spawning", ConnectorScenes::bulbMobSpawning);
 
         helper.forComponents(CEEBlocks.TRANSFORMER.getId())
                 .addStoryBoard("transformer_core", TransformerScenes::turns)
@@ -50,7 +60,8 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .addStoryBoard("diode", ElectricityBasicsScenes::diode);
 
         helper.forComponents(CEEBlocks.VOLTMETER.getId())
-                .addStoryBoard("voltage", ElectricityBasicsScenes::voltage);
+                .addStoryBoard("voltage_introduction", ElectricityBasicsScenes::voltageIntroduction)
+                .addStoryBoard("gauges", ElectricityBasicsScenes::gauges);
 
         helper.forComponents(CEEBlocks.HV_SWITCH.getId())
                 .addStoryBoard("hv_switch", SwitchScenes::hvSwitch);
@@ -82,6 +93,8 @@ public class CEEPonderPlugin implements PonderPlugin {
     public void registerSharedText(SharedTextRegistrationHelper helper) {
         helper.registerSharedText("voltage0", "0V");
         helper.registerSharedText("voltage12", "12V");
+        helper.registerSharedText("voltage24", "24V");
+        helper.registerSharedText("voltage240", "240V");
         helper.registerSharedText("voltage300", "300V");
         helper.registerSharedText("voltage600", "600V");
         helper.registerSharedText("voltage1500", "1500V");

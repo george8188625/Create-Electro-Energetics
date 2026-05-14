@@ -222,6 +222,7 @@ public class Network {
 
         List<WrappedIndexedNode> toDissolve = new ArrayList<>();
         for (WrappedIndexedNode node : allNodes) {
+            node.isDissolved = false;
             double groundConductance = node.groundConductance;
             Int2ObjectMap<ElectricalProperties> nodeAdjacency = getAdjacency(node);
             if (nodeAdjacency.size() == 2 && groundConductance == 0) {
@@ -231,16 +232,15 @@ public class Network {
             }
         }
 
-        Set<WrappedIndexedNode> dissolved = new HashSet<>();
         for (WrappedIndexedNode node : toDissolve) {
-            if (dissolved.contains(node))
+            if (node.isDissolved)
                 continue;
 
             IntSet connections = getAdjacency(node).keySet();
             if (connections.size() < 2)
                 continue;
 
-            IntIterator it = connections.iterator();
+            IntIterator it = connections.intIterator();
             WrappedIndexedNode prevNode = builder.getNode(it.nextInt());
             WrappedIndexedNode nextNode = builder.getNode(it.nextInt());
 
@@ -248,7 +248,9 @@ public class Network {
             nodeChain.add(prevNode);
             nodeChain.add(node);
             nodeChain.add(nextNode);
-            dissolved.addAll(nodeChain);
+            prevNode.isDissolved = true;
+            node.isDissolved = true;
+            nextNode.isDissolved = true;
             LinkedList<ElectricalProperties> resistanceChain = new LinkedList<>();
             resistanceChain.add(getAdjacency(prevNode).get(node.ordinal));
             resistanceChain.add(getAdjacency(nextNode).get(node.ordinal));
@@ -279,7 +281,7 @@ public class Network {
             WrappedIndexedNode leftNode = prevNode;
             WrappedIndexedNode prevLeftNode = node;
             while (true) {
-                if (dissolved.contains(leftNode) || !toDissolve.contains(leftNode))
+                if (leftNode.isDissolved || !toDissolve.contains(leftNode))
                     break;
                 IntSet leftConnections = getAdjacency(leftNode).keySet();
                 if (leftConnections.size() != 2)
@@ -293,14 +295,14 @@ public class Network {
                 prevLeftNode = leftNode;
                 leftNode = newLeftNode;
                 nodeChain.addFirst(leftNode);
-                dissolved.add(leftNode);
+                leftNode.isDissolved = true;
                 resistanceChain.addFirst(getAdjacency(leftNode).get(prevLeftNode.ordinal));
             }
 
             WrappedIndexedNode rightNode = nextNode;
             WrappedIndexedNode prevRightNode = node;
             while (true) {
-                if (dissolved.contains(rightNode) || !toDissolve.contains(rightNode))
+                if (rightNode.isDissolved || !toDissolve.contains(rightNode))
                     break;
                 IntSet rightConnections = getAdjacency(rightNode).keySet();
                 if (rightConnections.size() != 2)
@@ -314,7 +316,7 @@ public class Network {
                 prevRightNode = rightNode;
                 rightNode = newRightNode;
                 nodeChain.addLast(rightNode);
-                dissolved.add(rightNode);
+                rightNode.isDissolved = true;
                 resistanceChain.addLast(getAdjacency(rightNode).get(prevRightNode.ordinal));
             }
             result = true;

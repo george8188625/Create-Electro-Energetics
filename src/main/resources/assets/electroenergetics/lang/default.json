@@ -5,6 +5,8 @@
   "electroenergetics.wire_spool.cancelled_connection": "Selection Cleared",
   "electroenergetics.wire_spool.invalid_connection": "Invalid connection!",
 
+  "electroenergetics.clamp_meter.current": "Current:",
+
   "electroenergetics.gui.energy_meter": "Energy Meter",
   "electroenergetics.gui.energy_meter.disconnected": "Power Disconnected",
   "electroenergetics.gui.energy_meter.connected": "Power Connected",
@@ -30,6 +32,7 @@
   "electroenergetics.gui.goggles.stored_energy": "Stored Energy:",
   "electroenergetics.gui.goggles.max_heat_dissipation": "Max Heat Dissipation:",
   "electroenergetics.gui.goggles.rpm_equivalent": "RPM equivalent:",
+  "electroenergetics.gui.goggles.state_of_charge": "State of Charge:",
 
   "electroenergetics.tooltip.energy_meter.owner": "Owner: %1$s",
   "electroenergetics.tooltip.energy_meter.energy": "Total Energy: %1$s",

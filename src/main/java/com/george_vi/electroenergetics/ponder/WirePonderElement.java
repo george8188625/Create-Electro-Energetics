@@ -1,9 +1,15 @@
 package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
+import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import com.george_vi.electroenergetics.simulation.WireType;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
+import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.ponder.api.level.PonderLevel;
 import net.createmod.ponder.foundation.element.AnimatedSceneElementBase;
@@ -19,18 +25,19 @@ import java.util.List;
 
 public class WirePonderElement extends AnimatedSceneElementBase {
     final InWorldNode node1, node2;
-    final WireType type;
+    final WireData wireData;
     final boolean catenary;
 
-    public WirePonderElement(InWorldNode node1, InWorldNode node2, WireType type, boolean catenary) {
+    public WirePonderElement(InWorldNode node1, InWorldNode node2, WireData data, boolean catenary) {
         this.node1 = node1;
         this.node2 = node2;
-        this.type = type;
+        this.wireData = data;
         this.catenary = catenary;
     }
 
     @Override
     protected void renderLast(PonderLevel world, MultiBufferSource buffer, GuiGraphics graphics, float fade, float pt) {
+
         Vec3 pos1 = node1.getPosition(world);
         Vec3 pos2 = node2.getPosition(world);
         if (catenary) {
@@ -103,11 +110,11 @@ public class WirePonderElement extends AnimatedSceneElementBase {
             return;
         }
 
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, type.getSag());
+        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag());
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
-            CachedBuffers.partial(type.getModel(), Blocks.ANDESITE.defaultBlockState())
+            CachedBuffers.partial(wireData.wireType().getModel(), Blocks.ANDESITE.defaultBlockState())
                     .translate(point)
                     .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
                     .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
@@ -115,6 +122,24 @@ public class WirePonderElement extends AnimatedSceneElementBase {
                     .scaleZ((float) (point.distanceTo(nextPoint) * 2))
                     .light(LevelRenderer.getLightColor(world, BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))))
                     .renderInto(graphics.pose(), buffer.getBuffer(RenderType.SOLID));
+        }
+
+        for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
+            WireAttachment attachmentType = attachment.getSecond();
+            float positionOnWire = attachment.getFirst();
+            double distance = pos1.distanceTo(pos2);
+            Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, positionOnWire, wireData.getSag(distance));
+            float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, positionOnWire, wireData.getSag(distance));
+
+            graphics.pose().pushPose();
+            PoseTransformStack msr = TransformStack.of(graphics.pose());
+            msr.translate(offset);
+            double angleY = Math.toDegrees(Math.atan2(pos2.x - pos1.x, pos2.z - pos1.z)) + 90;
+            msr.rotateYDegrees((float) angleY);
+            msr.rotateXDegrees(180);
+            int light = LevelRenderer.getLightColor(world, BlockPos.containing(offset));
+            attachmentType.type.render(graphics.pose(), buffer, attachmentType, offset, light, elevation);
+            graphics.pose().popPose();
         }
     }
 }

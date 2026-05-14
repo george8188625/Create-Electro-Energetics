@@ -9,18 +9,21 @@ import com.george_vi.electroenergetics.content.railway_electrification.catenary.
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.content.wire.WireSync;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
-import com.george_vi.electroenergetics.foundation.nodes.Node;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
-import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import com.mojang.logging.LogUtils;
 import dev.ryanhcode.sable.companion.SableCompanion;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.nbt.NBTHelper;
@@ -35,26 +38,33 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 public class InfrastructureSavedData extends SavedData {
-    public ArrayList<InWorldNodeConnection> sableToUpdate = new ArrayList<>();
-    Map<InWorldNode, List<InWorldNode>> NODES = new HashMap<>();
-    Map<InWorldNode, Vec3> NODE_POSITIONS = new HashMap<>();
-    Map<InWorldNode, Vec3> LOCAL_NODE_POSITIONS = new HashMap<>();
+    public LongList sableToUpdate = new LongArrayList();
+
+    // NODES:
+    Map<InWorldNode, InWorldNodeData> ALL_NODES = new HashMap<>();
+    List<InWorldNodeData> NODES_BY_ID = new ArrayList<>();
+    private final IntStack freeNodeIDs = new IntArrayList();
+
+    Map<BlockPos, List<InWorldNodeData>> NODES_BY_POS = new HashMap<>();
+
     // These nodes are in sublevels and their positions are updated frequently
-    public Set<InWorldNode> DYNAMIC_POSITION_NODES = new HashSet<>();
-    Map<BlockPos, List<InWorldNode>> NODES_BY_POS = new HashMap<>();
-    Map<InWorldNodeConnection, WireData> CONNECTION_DATA = new HashMap<>();
-    /**
-     * Only non-dynamic nodes!
-     */
+    public Set<InWorldNodeData> DYNAMIC_POSITION_NODES = new HashSet<>();
+
+    // Only non-dynamic nodes!
     Long2ObjectMap<Set<InWorldNode>> NODES_BY_CHUNK = new Long2ObjectOpenHashMap<>();
 
-    // Trains
+    // CONNECTIONS:
+    // Packed longs are used instead of IWNC to join node identity with wires
+    Long2ObjectMap<WireData> CONNECTION_DATA = new Long2ObjectOpenHashMap<>();
+
+    // TRAINS:
     Map<BlockPos, List<BlockPos>> CATENARY_ADJACENCY = new HashMap<>();
     Map<CatenaryConnection, CatenaryConnectionData> CATENARY_DATA = new HashMap<>();
 
@@ -87,19 +97,22 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider provider) {
+    public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag, HolderLookup.@NotNull Provider provider) {
 
         // Save Nodes / Node Connections
 
         ListTag nodeList = new ListTag();
-        for (Map.Entry<InWorldNode, List<InWorldNode>> e : NODES.entrySet()) {
+        for (Map.Entry<InWorldNode, InWorldNodeData> e : ALL_NODES.entrySet()) {
+            InWorldNode node = e.getKey();
+            InWorldNodeData nodeData = e.getValue();
+
             CompoundTag nodeTag = new CompoundTag();
 
-            nodeTag.put("Pos", NbtUtils.writeBlockPos(e.getKey().sourcePos()));
-            nodeTag.putInt("ID", e.getKey().id());
-            nodeTag.putBoolean("DynamicPos", DYNAMIC_POSITION_NODES.contains(e.getKey()));
+            nodeTag.put("Pos", NbtUtils.writeBlockPos(node.sourcePos()));
+            nodeTag.putInt("ID", node.id());
+            nodeTag.putBoolean("DynamicPos", nodeData.isDynamic);
 
-            Vec3 lastKnownPos = getNodePosition(e.getKey());
+            Vec3 lastKnownPos = getNodePosition(node);
             if (lastKnownPos != null) {
                 CompoundTag lastKnownPosTag = new CompoundTag();
                 lastKnownPosTag.putDouble("X", lastKnownPos.x);
@@ -107,16 +120,23 @@ public class InfrastructureSavedData extends SavedData {
                 lastKnownPosTag.putDouble("Z", lastKnownPos.z);
                 nodeTag.put("LastKnownPos", lastKnownPosTag);
             }
+
             ListTag connectedNodesList = new ListTag();
-            for (InWorldNode node : e.getValue()) {
+
+            // Save adjacent nodes and connections.
+            nodeData.adjacency.forEach((adjacentNodeID, connectionData) -> {
+                InWorldNodeData adjacentNodeData = NODES_BY_ID.get(adjacentNodeID);
+                if (adjacentNodeData == null) {
+                    // This should never happen, but if it does, oh well
+                    LOGGER.warn("Could not save wire connection. connection to an invalid node, skipping");
+                    return;
+                }
+                InWorldNode adjacentNode = adjacentNodeData.node;
+
                 CompoundTag subNodeTag = new CompoundTag();
 
-                subNodeTag.put("Pos", NbtUtils.writeBlockPos(node.sourcePos()));
-                subNodeTag.putInt("ID", node.id());
-                WireData connectionData = CONNECTION_DATA.get(new InWorldNodeConnection(e.getKey(), node));
-
-                if (connectionData == null)
-                    continue;
+                subNodeTag.put("Pos", NbtUtils.writeBlockPos(adjacentNode.sourcePos()));
+                subNodeTag.putInt("ID", adjacentNode.id());
 
                 ListTag attachmentList = new ListTag();
                 for (Pair<Float, WireAttachment> attachment : connectionData.attachments()) {
@@ -126,12 +146,14 @@ public class InfrastructureSavedData extends SavedData {
                 }
                 subNodeTag.put("Attachments", attachmentList);
 
-                subNodeTag.putString("WireType", CEERegistries.WIRE_TYPE.getKey(connectionData.wireType()).toString());
+                ResourceLocation key = CEERegistries.WIRE_TYPE.getKey(connectionData.wireType());
+                if (key != null) // This would never happen
+                    subNodeTag.putString("WireType", key.toString());
                 subNodeTag.putFloat("Temperature", connectionData.temperature());
                 subNodeTag.putDouble("Length", connectionData.length);
 
                 connectedNodesList.add(subNodeTag);
-            }
+            });
 
             nodeTag.put("ConnectedNodes", connectedNodesList);
             nodeList.add(nodeTag);
@@ -162,41 +184,80 @@ public class InfrastructureSavedData extends SavedData {
         return compoundTag;
     }
 
-    static InfrastructureSavedData load(ServerLevel level, CompoundTag compoundTag, HolderLookup.Provider provider) {
+    static InfrastructureSavedData load(ServerLevel level, CompoundTag infrastructureTag, HolderLookup.Provider provider) {
         InfrastructureSavedData sd = new InfrastructureSavedData(level);
-        sd.NODES = new HashMap<>();
+        sd.ALL_NODES = new HashMap<>();
         sd.NODES_BY_POS = new HashMap<>();
-        sd.CONNECTION_DATA = new HashMap<>();
+        sd.CONNECTION_DATA = new Long2ObjectOpenHashMap<>();
         sd.CATENARY_ADJACENCY = new HashMap<>();
         sd.CATENARY_DATA = new HashMap<>();
-        // Read Nodes / Node Connections
 
-        NBTHelper.iterateCompoundList(compoundTag.getList("Nodes", Tag.TAG_COMPOUND), tag -> {
+        // Read nodes
+        ListTag nodeList = infrastructureTag.getList("Nodes", Tag.TAG_COMPOUND);
 
-            BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
-            int id = tag.getInt("ID");
+        NBTHelper.iterateCompoundList(nodeList, nodeTag -> {
+            InWorldNode node = InWorldNode.readFromTag(nodeTag);
+            InWorldNodeData nodeData = sd.newNode(node);
 
-            CompoundTag lastKnownPosTag = tag.getCompound("LastKnownPos");
-            CompoundTag lastKnownLocalPosTag = tag.getCompound("LastKnownLocalPos");
-            Vec3 lastKnownPos = tag.contains("LastKnownPos") ? new Vec3(lastKnownPosTag.getDouble("X"), lastKnownPosTag.getDouble("Y"), lastKnownPosTag.getDouble("Z")) : null;
-            Vec3 lastKnownLocalPos = tag.contains("LastKnownLocalPos") ? new Vec3(lastKnownLocalPosTag.getDouble("X"), lastKnownLocalPosTag.getDouble("Y"), lastKnownLocalPosTag.getDouble("Z")) : null;
-            List<InWorldNode> connectedNodes = new ArrayList<>();
-            InWorldNode node = new InWorldNode(id, pos);
-            NBTHelper.iterateCompoundList(tag.getList("ConnectedNodes", Tag.TAG_COMPOUND), connectionTag -> {
-                InWorldNode connectedNode = new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos"));
-                if (connectedNode.equals(node)) {
-                    LOGGER.warn("Could not load a wire connection, as both ends connect to a single node: {}, skipping...", connectedNode);
+            CompoundTag lastKnownGlobalPosTag = nodeTag.getCompound("LastKnownPos");
+            CompoundTag lastKnownLocalPosTag = nodeTag.getCompound("LastKnownLocalPos");
+
+            Vec3 lastKnownGlobalPos = nodeTag.contains("LastKnownPos") ?
+                    new Vec3(lastKnownGlobalPosTag.getDouble("X"),
+                            lastKnownGlobalPosTag.getDouble("Y"),
+                            lastKnownGlobalPosTag.getDouble("Z")) : null;
+
+            Vec3 lastKnownLocalPos = nodeTag.contains("LastKnownLocalPos") ?
+                    new Vec3(lastKnownLocalPosTag.getDouble("X"),
+                            lastKnownLocalPosTag.getDouble("Y"),
+                            lastKnownLocalPosTag.getDouble("Z")) : null;
+
+            // It can be null, as InWorldNodeData returns center when its null.
+            nodeData.globalPos = lastKnownGlobalPos;
+            nodeData.localPos = lastKnownLocalPos;
+
+            if (nodeTag.getBoolean("DynamicPos")) {
+                sd.DYNAMIC_POSITION_NODES.add(nodeData);
+                nodeData.isDynamic = true;
+            }
+
+            sd.NODES_BY_POS.computeIfAbsent(node.sourcePos(), ((p) -> new ArrayList<>())).add(nodeData);
+        });
+
+        // Read node connections
+        NBTHelper.iterateCompoundList(nodeList, nodeTag -> {
+            InWorldNode node = InWorldNode.readFromTag(nodeTag);
+            InWorldNodeData nodeData = sd.getNodeData(node);
+
+            NBTHelper.iterateCompoundList(nodeTag.getList("ConnectedNodes", Tag.TAG_COMPOUND), connectionTag -> {
+                InWorldNode adjacentNode = InWorldNode.readFromTag(connectionTag);
+                InWorldNodeData adjacentNodeData = sd.getNodeData(adjacentNode);
+                if (adjacentNodeData == null) {
+                    LOGGER.warn("Could not load wire connection. connection to an invalid node, skipping");
                     return;
                 }
 
-                connectedNodes.add(connectedNode);
-                WireType wireType = CEERegistries.WIRE_TYPE.get(ResourceLocation.tryParse(connectionTag.getString("WireType")));
+
+                if (adjacentNode.equals(node)) {
+                    LOGGER.warn("Could not load wire connection. both ends connect to the same node: {}, skipping", adjacentNode);
+                    return;
+                }
+
+                // Since the nodes are stored as an adjacency graph, only read a connection once
+                if (adjacentNode.compareTo(node) > 0)
+                    return;
+
+                // Parse wire type
+                String wireTypeID = connectionTag.getString("WireType");
+                WireType wireType = CEERegistries.WIRE_TYPE.get(ResourceLocation.tryParse(wireTypeID));
+
                 if (wireType == null) {
-                    LOGGER.warn("Could not load wire type between nodes: {}, {} with id: {} in: {}, changing to standard...", node, connectedNode, connectionTag.getString("WireType"), level.dimension().location());
+                    LOGGER.warn("Could not load wire type between: {}, {} with id: {} in: {}, changing to standard...",
+                            node, adjacentNode, wireTypeID, level.dimension().location());
                     wireType = CEEWireTypes.STANDARD.get();
                 }
 
-
+                // Parse attachments
                 List<Pair<Float, WireAttachment>> attachments = new ArrayList<>();
                 NBTHelper.iterateCompoundList(connectionTag.getList("Attachments", Tag.TAG_COMPOUND), attachmentTag -> {
                     float point = attachmentTag.getFloat("Point");
@@ -208,40 +269,35 @@ public class InfrastructureSavedData extends SavedData {
                     }
                 });
 
-                InWorldNodeConnection connection = new InWorldNodeConnection(new InWorldNode(connectionTag.getInt("ID"), NBTHelper.readBlockPos(connectionTag, "Pos")), new InWorldNode(id, pos));
-                WireData wireData = new WireData(wireType, Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature"), attachments, connectionTag.getDouble("Length"));
+                // Finalize everything
+                InWorldNodeConnection connection = new InWorldNodeConnection(node, adjacentNode);
+                double length = connectionTag.getDouble("Length");
+                float temperature = Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature");
+                WireData wireData = new WireData(wireType, temperature, attachments, length);
 
-                sd.CONNECTION_DATA.computeIfAbsent(connection, c -> wireData);
+                nodeData.adjacency.put(adjacentNodeData.id, wireData);
+                adjacentNodeData.adjacency.put(nodeData.id, wireData);
+                sd.CONNECTION_DATA.computeIfAbsent(DataPacker.packAndCanonicalize(nodeData.id, adjacentNodeData.id), c -> wireData);
             });
-            sd.NODE_POSITIONS.put(node, lastKnownPos == null ? node.sourcePos().getCenter() : lastKnownPos);
-            sd.LOCAL_NODE_POSITIONS.put(node, lastKnownLocalPos == null ? VecHelper.CENTER_OF_ORIGIN : lastKnownLocalPos);
-            sd.NODES.put(node, connectedNodes);
-            if (tag.getBoolean("DynamicPos"))
-                sd.DYNAMIC_POSITION_NODES.add(node);
-            sd.NODES_BY_POS.computeIfAbsent(pos, ((p) -> new ArrayList<>()));
-            sd.NODES_BY_POS.computeIfPresent(pos, ((p, nodes) -> {
-                nodes.add(node);
-                return nodes;
-            }));
         });
 
         // Migrate devices from old versions
-
-        if (compoundTag.contains("Devices", Tag.TAG_LIST)) {
+        if (infrastructureTag.contains("Devices", Tag.TAG_LIST)) {
             DevicesSavedData deviceSD = DevicesSavedData.load(level);
-            migrateFromLegacy(compoundTag.getList("Devices", Tag.TAG_COMPOUND), deviceSD);
+            migrateFromLegacy(infrastructureTag.getList("Devices", Tag.TAG_COMPOUND), deviceSD);
         }
 
         // Read Railway Catenary
-
-        NBTHelper.iterateCompoundList(compoundTag.getList("Catenary", Tag.TAG_COMPOUND), tag -> {
+        ListTag catenaryList = infrastructureTag.getList("Catenary", Tag.TAG_COMPOUND);
+        NBTHelper.iterateCompoundList(catenaryList, tag -> {
             BlockPos from = NBTHelper.readBlockPos(tag, "From");
 
             // Legacy
-            tag.getList("Connections", Tag.TAG_INT_ARRAY).forEach(tg -> {
-                int[] arr = ((IntArrayTag)tg).getAsIntArray();
+            tag.getList("Connections", Tag.TAG_INT_ARRAY).forEach(connectionTag -> {
+                int[] arr = ((IntArrayTag)connectionTag).getAsIntArray();
                 if (arr.length != 3) {
-                    LOGGER.warn("Could not load catenary connection, invalid position, at pos: {} in: {}", from.toShortString(), level.dimension().location());
+                    LOGGER.warn("Could not load catenary connection, at pos: {} in: {}",
+                            from.toShortString(), level.dimension().location());
                     return;
                 }
 
@@ -253,18 +309,21 @@ public class InfrastructureSavedData extends SavedData {
 
             });
 
-            NBTHelper.iterateCompoundList(tag.getList("Connections", Tag.TAG_COMPOUND), tg -> {
-                int[] arr = tg.getIntArray("Pos");
+            NBTHelper.iterateCompoundList(tag.getList("Connections", Tag.TAG_COMPOUND), connectionTag -> {
+                int[] arr = connectionTag.getIntArray("Pos");
                 if (arr.length != 3) {
-                    LOGGER.warn("Could not load catenary connection, invalid position, at pos: {} in: {}", from.toShortString(), level.dimension().location());
+                    LOGGER.warn("Could not load catenary connection, invalid position at pos: {} in: {}",
+                            from.toShortString(), level.dimension().location());
                     return;
                 }
 
                 BlockPos to = new BlockPos(arr[0], arr[1], arr[2]);
 
                 sd.CATENARY_ADJACENCY.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
-                boolean isLow = tg.getBoolean("IsLow");
-                CatenaryConnectionData catenaryData = new CatenaryConnectionData(Float.isNaN(tg.getFloat("Temperature")) ? 0f : tg.getFloat("Temperature"), isLow, tg.getDouble("Length"));
+                boolean isLow = connectionTag.getBoolean("IsLow");
+                float temperature = Float.isNaN(connectionTag.getFloat("Temperature")) ? 0f : connectionTag.getFloat("Temperature");
+                double length = connectionTag.getDouble("Length");
+                CatenaryConnectionData catenaryData = new CatenaryConnectionData(temperature, isLow, length);
                 sd.CATENARY_DATA.put(new CatenaryConnection(from, to), catenaryData);
             });
         });
@@ -279,17 +338,19 @@ public class InfrastructureSavedData extends SavedData {
     private void loadSimulationState() {
         if (simulationInitialized)
             return;
-        if (NODES.isEmpty() && CONNECTION_DATA.isEmpty() && CATENARY_DATA.isEmpty())
+        if (ALL_NODES.isEmpty() && CONNECTION_DATA.isEmpty() && CATENARY_DATA.isEmpty())
             return;
 
         simulationInitialized = true;
 
-        for (InWorldNode node : NODES.keySet()) {
-            onNodeUpdateOrCreate(node);
-        }
+        ALL_NODES.forEach(this::onNodeUpdateOrCreate);
 
-        for (Map.Entry<InWorldNodeConnection, WireData> e : CONNECTION_DATA.entrySet()) {
-            wireSimulationState.addConnection(e.getKey(), e.getValue(), true);
+        for (Long2ObjectMap.Entry<WireData> e : CONNECTION_DATA.long2ObjectEntrySet()) {
+            int node1 = DataPacker.unpackFirstI(e.getLongKey());
+            int node2 = DataPacker.unpackSecondI(e.getLongKey());
+            InWorldNodeData data1 = NODES_BY_ID.get(node1);
+            InWorldNodeData data2 = NODES_BY_ID.get(node2);
+            wireSimulationState.addConnection(new InWorldNodeConnection(data1.node, data2.node), e.getValue(), true);
         }
 
         for (Map.Entry<CatenaryConnection, CatenaryConnectionData> e : CATENARY_DATA.entrySet()) {
@@ -298,7 +359,7 @@ public class InfrastructureSavedData extends SavedData {
             wireSimulationState.addCatenaryConnection(connection, e.getValue(), true);
         }
 
-        wireSimulationState.onNodeChange(NODES.keySet());
+        wireSimulationState.onNodeChange(ALL_NODES.keySet());
     }
 
     public static void migrateFromLegacy(ListTag legacyDevices, DevicesSavedData deviceSD) {
@@ -335,26 +396,35 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public void registerOrUpdateNodes(BlockPos pos, List<Integer> nodeIDs) {
-        List<InWorldNode> nodes = new ArrayList<>(nodeIDs.size());
-        List<InWorldNode> oldNodesList = NODES_BY_POS.put(pos, nodes);
-        Set<InWorldNode> oldNodes = oldNodesList == null ? new HashSet<>() : new HashSet<>(oldNodesList);
+        // Put the nodes list into the by pos map, get the previous one into oldNodesList.
+        List<InWorldNodeData> nodes = new ArrayList<>(nodeIDs.size());
+        List<InWorldNodeData> oldNodesList = NODES_BY_POS.put(pos, nodes);
+        Set<InWorldNodeData> unvisitedNodes = oldNodesList == null ? new HashSet<>() : new HashSet<>(oldNodesList);
 
         // Update node positions
         for (int id : nodeIDs) {
             InWorldNode node = new InWorldNode(id, pos);
-            oldNodes.remove(node);
-            nodes.add(node);
-            NODES.putIfAbsent(node, new ArrayList<>());
-            if (isDynamicPosition(level, node))
-                DYNAMIC_POSITION_NODES.add(node);
+            InWorldNodeData nodeData = getNodeData(node);
+
+            if (nodeData == null)
+                nodeData = newNode(node);
+
+            unvisitedNodes.remove(nodeData);
+            nodes.add(nodeData);
+
+            if (isDynamicPosition(level, node)) {
+                nodeData.isDynamic = true;
+                DYNAMIC_POSITION_NODES.add(nodeData);
+            }
+
             Vec3 newPos = node.getLocalPosition(level);
             if (newPos == null)
-                newPos = VecHelper.CENTER_OF_ORIGIN;
-            if (!Objects.equals(newPos, LOCAL_NODE_POSITIONS.put(node, newPos))) {
-                Vec3 globalPos = node.toGlobalPos(newPos, level);
-                NODE_POSITIONS.put(node, globalPos);
-                onNodeUpdateOrCreate(node);
-                onNodePosUpdate(node, globalPos);
+                newPos = InWorldNodeData.CENTER;
+            if (!Objects.equals(newPos, nodeData.getLocalPos())) {
+                nodeData.globalPos = node.toGlobalPos(newPos, level);
+
+                onNodeUpdateOrCreate(node, nodeData);
+                onNodePosUpdate(node, nodeData);
                 for (InWorldNodeConnection connection : getConnections(node)) {
                     wireSimulationState.removeConnection(connection);
                     wireSimulationState.addConnection(connection, getConnectionData(connection), false);
@@ -363,10 +433,10 @@ public class InfrastructureSavedData extends SavedData {
         }
 
         // All forgotten nodes are going to be removed
-        for (InWorldNode node : oldNodes) {
-            for (InWorldNodeConnection connection : getConnections(node))
+        for (InWorldNodeData nodeData : unvisitedNodes) {
+            for (InWorldNodeConnection connection : getConnections(nodeData))
                 removeAndDropConnection(connection);
-            removeNode(node);
+            removeNode(nodeData.node);
         }
 
         // Update catenary isLow
@@ -390,38 +460,44 @@ public class InfrastructureSavedData extends SavedData {
                 }
             }
         }
-        wireSimulationState.onNodeChange(NODES.keySet());
+        wireSimulationState.onNodeChange(ALL_NODES.keySet());
     }
 
     public void tick() {
         updateAllNodePositions();
 
-        for (InWorldNodeConnection connection : sableToUpdate) {
+        for (long connection : sableToUpdate) {
+            int node1 = DataPacker.unpackFirstI(connection);
+            int node2 = DataPacker.unpackFirstI(connection);
+
             WireData connectionData = getConnectionData(connection);
             if (connectionData != null)
                 setConnectionData(connection, connectionData);
         }
+
+        sableToUpdate.clear();
     }
 
     private void updateAllNodePositions() {
         // for Sable
         List<InWorldNodeConnection> connectionsToUpdate = new ArrayList<>();
-        for (InWorldNode node : DYNAMIC_POSITION_NODES) {
-            Vec3 localPos = LOCAL_NODE_POSITIONS.computeIfAbsent(node, (n) -> VecHelper.CENTER_OF_ORIGIN);
+        for (InWorldNodeData nodeData : DYNAMIC_POSITION_NODES) {
+            InWorldNode node = nodeData.node;
+            Vec3 localPos = nodeData.getLocalPos();
             if (!node.isFullyLoadable(level))
                 continue;
             Vec3 pos = node.toGlobalPos(localPos, level);
             if (pos == null)
                 continue;
-            NODE_POSITIONS.compute(node, (n, p) -> {
-                if (p == null || p.distanceToSqr(pos) > 0.003) {
-                    getConnections(node, connectionsToUpdate::add);
-                    return pos;
-                }
-                return p;
-            });
 
+            // If the position changed, mark the connections for an update
+            if (nodeData.globalPos == null || nodeData.globalPos.distanceToSqr(pos) > 0.003) {
+                getConnections(nodeData, connectionsToUpdate::add);
+                nodeData.globalPos = pos;
+            }
         }
+
+        // Update them
         for (InWorldNodeConnection connection : connectionsToUpdate) {
             WireData connectionData = getConnectionData(connection);
             if (connectionData == null)
@@ -438,21 +514,31 @@ public class InfrastructureSavedData extends SavedData {
      * Returns all connections of the specified node
      */
     public List<InWorldNodeConnection> getConnections(InWorldNode node) {
+        InWorldNodeData data = getNodeData(node);
+        if (data == null)
+            return Collections.emptyList();
+        return getConnections(data);
+    }
+
+    /**
+     * Returns all connections of the specified node
+     */
+    public List<InWorldNodeConnection> getConnections(InWorldNodeData nodeData) {
         List<InWorldNodeConnection> connections = new ArrayList<>();
-        getConnections(node, connections::add);
+        getConnections(nodeData, connections::add);
         return connections;
     }
 
     /**
      * Supplies all connections of the specified node to the consumer
      */
-    public void getConnections(InWorldNode node, Consumer<InWorldNodeConnection> consumer) {
-        List<InWorldNode> connectedNodes = NODES.get(node);
-        if (connectedNodes == null)
-            return;
-
-        for (InWorldNode connectedNode : connectedNodes)
-            consumer.accept(new InWorldNodeConnection(node, connectedNode));
+    public void getConnections(InWorldNodeData nodeData, Consumer<InWorldNodeConnection> consumer) {
+        for (int connectedNodeID : nodeData.adjacency.keySet()) {
+            InWorldNodeData adjacentNodeData = NODES_BY_ID.get(connectedNodeID);
+            if (adjacentNodeData == null)
+                continue;
+            consumer.accept(new InWorldNodeConnection(nodeData.node, adjacentNodeData.node));
+        }
     }
 
     /**
@@ -461,14 +547,18 @@ public class InfrastructureSavedData extends SavedData {
      */
     public WireData removeConnection(InWorldNodeConnection connection) {
 
-        NODES.get(connection.node1()).remove(connection.node2());
-        NODES.get(connection.node2()).remove(connection.node1());
-        WireData connectionData = CONNECTION_DATA.remove(connection);
-        if (connectionData != null) {
-            for (Pair<Float, WireAttachment> attachment : connectionData.attachments()) {
+        InWorldNodeData node1Data = getNodeDataOrThrow(connection.node1());
+        InWorldNodeData node2Data = getNodeDataOrThrow(connection.node2());
+
+        WireData wireData = node1Data.adjacency.remove(node2Data.id);
+        node2Data.adjacency.remove(node1Data.id);
+
+        CONNECTION_DATA.remove(DataPacker.packAndCanonicalize(node1Data.id, node2Data.id));
+        if (wireData != null) {
+            for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
                 Vec3 pos = QuadraticWireHelper.posAt(Vec3.atCenterOf(connection.node1().sableSourcePos(level)),
                         Vec3.atCenterOf(connection.node2().sableSourcePos(level)), attachment.getFirst(),
-                        connectionData.wireType().getSag());
+                        wireData.wireType().getSag());
 
                 for (ItemStack stack : attachment.getSecond().getDrops(level))
                     Containers.dropItemStack(level, pos.x(), pos.y(), pos.z(), stack);
@@ -478,70 +568,101 @@ public class InfrastructureSavedData extends SavedData {
 
         wireSync.handleWireRemoved(connection);
         wireSimulationState.removeConnection(connection);
-//        wireConnectionManager.wireRemoved(connection);
         setDirty();
-        return connectionData;
+        return wireData;
     }
 
-    public Map<InWorldNodeConnection, WireData> getAllConnections() {
-        return CONNECTION_DATA;
+
+    /**
+     * Removes the specified connection.
+     * @return The previous {@link WireData} if the connection existed. Otherwise, null.
+     */
+    public WireData removeConnectionNoDrops(InWorldNodeConnection connection) {
+
+        InWorldNodeData node1Data = getNodeDataOrThrow(connection.node1());
+        InWorldNodeData node2Data = getNodeDataOrThrow(connection.node2());
+
+        WireData wireData = node1Data.adjacency.remove(node2Data.id);
+        node2Data.adjacency.remove(node1Data.id);
+        CONNECTION_DATA.remove(DataPacker.packAndCanonicalize(node1Data.id, node2Data.id));
+        wireSync.handleWireRemoved(connection);
+        wireSimulationState.removeConnection(connection);
+        setDirty();
+        return wireData;
     }
 
     /**
      * Creates the node connection at the specified position.
      * @return The {@link InWorldNodeConnection} object describing the wire connection.
      */
-    public InWorldNodeConnection connect(InWorldNode node1, InWorldNode node2, WireType wireType) {
+    public long connect(InWorldNode node1, InWorldNode node2, WireType wireType) {
+
+        return connect(node1, node2, new WireData(wireType, 0, Collections.emptyList(), 0));
+    }
+
+
+    /**
+     * Creates the node connection at the specified position.
+     * @return The {@link InWorldNodeConnection} object describing the wire connection.
+     */
+    public long connect(InWorldNode node1, InWorldNode node2, WireData wireData) {
         if (node1.equals(node2))
             throw new IllegalArgumentException("Tried to connect a wire between a single node: " + node1);
 
-        List<InWorldNode> adjacency1 = NODES.get(node1);
-        List<InWorldNode> adjacency2 = NODES.get(node2);
-        if (adjacency1 == null)
-            throw new IllegalArgumentException("Node: " + node1 + "doesn't exist.");
-        else if (adjacency2 == null)
-            throw new IllegalArgumentException("Node: " + node2 + "doesn't exist.");
-        adjacency1.add(node2);
-        adjacency2.add(node1);
+        InWorldNodeData node1Data = getNodeDataOrThrow(node1);
+        InWorldNodeData node2Data = getNodeDataOrThrow(node2);
 
         InWorldNodeConnection connection = new InWorldNodeConnection(node1, node2);
-        WireData data = new WireData(wireType, 0f, Collections.emptyList(), 0);
-        CONNECTION_DATA.put(connection, data);
+
+        node1Data.adjacency.put(node2Data.id, wireData);
+        node2Data.adjacency.put(node1Data.id, wireData);
+
+        long packedConnection = DataPacker.packAndCanonicalize(node1Data.id, node2Data.id);
+        CONNECTION_DATA.put(packedConnection, wireData);
         setDirty();
 
-        wireSimulationState.addConnection(connection, data, false);
-        wireSync.handleWireAdded(connection, data);
-        return connection;
+        wireSimulationState.addConnection(connection, wireData, false);
+        wireSync.handleWireAdded(connection, wireData);
+        return packedConnection;
+    }
+
+
+    /**
+     * Creates a connection, but doesn't update it. Should be updated afterward. Internal. Don't use yourself.
+     */
+    public long connectNoUpdate(InWorldNode node1, InWorldNode node2, @NotNull WireData wireData) {
+        if (node1.equals(node2))
+            throw new IllegalArgumentException("Tried to connect a wire between a single node: " + node1);
+
+        InWorldNodeData node1Data = getNodeDataOrThrow(node1);
+        InWorldNodeData node2Data = getNodeDataOrThrow(node2);
+
+        node1Data.adjacency.put(node2Data.id, wireData);
+        node2Data.adjacency.put(node1Data.id, wireData);
+        long packedConnection = DataPacker.packAndCanonicalize(node1Data.id, node2Data.id);
+        CONNECTION_DATA.put(packedConnection, wireData);
+        setDirty();
+        return packedConnection;
     }
 
     /**
-     * Creates a connection, but doesn't update it. Should be updated afterward. Internal. Don't use.
+     * @return {@code false} if the connections don't exist or aren't connected, {@code true} if they are connected.
      */
-    public InWorldNodeConnection connectNoUpdate(InWorldNode node1, InWorldNode node2, WireData data) {
-        if (node1.equals(node2))
-            throw new IllegalArgumentException("Tried to connect a wire between a single node: " + node1);
-
-        List<InWorldNode> adjacency1 = NODES.get(node1);
-        List<InWorldNode> adjacency2 = NODES.get(node2);
-        if (adjacency1 == null)
-            throw new IllegalArgumentException("Node: " + node1 + "doesn't exist.");
-        else if (adjacency2 == null)
-            throw new IllegalArgumentException("Node: " + node2 + "doesn't exist.");
-        adjacency1.add(node2);
-        adjacency2.add(node1);
-        InWorldNodeConnection connection = new InWorldNodeConnection(node1, node2);
-        CONNECTION_DATA.put(connection, data);
-        setDirty();
-        return connection;
-    }
-
     public boolean isConnected(InWorldNode node1, InWorldNode node2) {
-        return NODES.getOrDefault(node1, Collections.emptyList()).contains(node2) ||
-                (node1.id() == 0 && node2.id() == 0 && CATENARY_ADJACENCY
-                        .getOrDefault(node1.sourcePos(), Collections.emptyList()).contains(node2.sourcePos()));
+        InWorldNodeData node1Data = getNodeData(node1);
+        InWorldNodeData node2Data = getNodeData(node2);
+        return node1Data != null && node2Data != null && node1Data.adjacency.containsKey(node2Data.id);
     }
 
     public WireData getConnectionData(InWorldNodeConnection connection) {
+        InWorldNodeData node1Data = getNodeData(connection.node1());
+        InWorldNodeData node2Data = getNodeData(connection.node2());
+        if (node1Data == null || node2Data == null)
+            return null;
+        return CONNECTION_DATA.get(DataPacker.packAndCanonicalize(node1Data.id, node2Data.id));
+    }
+
+    public WireData getConnectionData(long connection) {
         return CONNECTION_DATA.get(connection);
     }
 
@@ -549,39 +670,43 @@ public class InfrastructureSavedData extends SavedData {
         wireSync.handleWireAdded(connection, data);
         wireSimulationState.removeConnection(connection);
         wireSimulationState.addConnection(connection, data, false);
+        int node1 = getNodeDataOrThrow(connection.node1()).id;
+        int node2 = getNodeDataOrThrow(connection.node2()).id;
+        CONNECTION_DATA.put(DataPacker.packAndCanonicalize(node1, node2), data);
+    }
+
+    public void setConnectionData(long connection, WireData data) {
+        InWorldNodeConnection iwnc = resolveConnection(connection);
+        wireSync.handleWireAdded(iwnc, data);
+        wireSimulationState.removeConnection(iwnc);
+        wireSimulationState.addConnection(iwnc, data, false);
         CONNECTION_DATA.put(connection, data);
+    }
+
+    public InWorldNodeConnection resolveConnection(long connection) {
+        return new InWorldNodeConnection(
+                NODES_BY_ID.get(DataPacker.unpackFirstI(connection)).node,
+                NODES_BY_ID.get(DataPacker.unpackSecondI(connection)).node);
     }
 
     /**
      * Returns all nodes at the specified position.
      */
-    public List<InWorldNode> getNodesAt(BlockPos pos) {
+    public List<InWorldNodeData> getNodesAt(BlockPos pos) {
         return NODES_BY_POS.getOrDefault(pos, Collections.emptyList());
-    }
-
-    /**
-     * @return null if the node doesn't exist, otherwise returns the node.
-     */
-    public InWorldNode getNode(BlockPos pos, int id) {
-        List<InWorldNode> nodes = NODES_BY_POS.get(pos);
-        if (nodes != null)
-            for (InWorldNode node : nodes)
-                if (node.id() == id)
-                    return node;
-        return null;
     }
 
     /**
      * @return All nodes
      */
     public Set<InWorldNode> getNodes() {
-        return NODES.keySet();
+        return ALL_NODES.keySet();
     }
 
     /**
      * @return All dynamically-positioned nodes
      */
-    public Set<InWorldNode> getDynamicNodes() {
+    public Set<InWorldNodeData> getDynamicNodes() {
         return DYNAMIC_POSITION_NODES;
     }
 
@@ -590,7 +715,11 @@ public class InfrastructureSavedData extends SavedData {
      * @return node position or center if it can't find the position.
      */
     public Vec3 getNodePositionOrCenter(InWorldNode node) {
-        Vec3 pos = getNodePosition(node);
+        InWorldNodeData nodeData = getNodeData(node);
+        if (nodeData == null)
+            return node.sourcePos().getCenter();
+        updateNodePosition(nodeData);
+        Vec3 pos = nodeData.globalPos;
         return pos == null ? node.sourcePos().getCenter() : pos;
     }
 
@@ -599,28 +728,9 @@ public class InfrastructureSavedData extends SavedData {
      * @return null if it can't find the position.
      */
     public Vec3 getNodePosition(InWorldNode node) {
-        Vec3 pos = NODE_POSITIONS.get(node);
-        if (pos == null || level.isLoaded(node.sourcePos())) {
-            Vec3 newPos = node.getLocalPosition(level);
-
-            if (!node.isFullyLoadable(level))
-                return pos;
-
-            if (newPos == null)
-                newPos = VecHelper.CENTER_OF_ORIGIN;
-
-            LOCAL_NODE_POSITIONS.put(node, newPos);
-            pos = node.toGlobalPos(newPos, level);
-
-            Vec3 finalPos = pos;
-            NODE_POSITIONS.compute(node, (n, v) -> {
-                if (v != null && v.distanceToSqr(finalPos) <= 0.003)
-                    return v;
-                onNodePosUpdate(node, finalPos);
-                return finalPos;
-            });
-        }
-        return pos;
+        InWorldNodeData nodeData = getNodeDataOrThrow(node);
+        updateNodePosition(nodeData);
+        return nodeData.globalPos;
     }
 
     /**
@@ -628,25 +738,29 @@ public class InfrastructureSavedData extends SavedData {
      * @return null if it can't find the position.
      */
     public Vec3 getLocalNodePosition(InWorldNode node) {
-        Vec3 pos = LOCAL_NODE_POSITIONS.get(node);
-        if (pos == null || level.isLoaded(node.sourcePos())) {
+        InWorldNodeData nodeData = getNodeDataOrThrow(node);
+        updateNodePosition(nodeData);
+        return nodeData.localPos;
+    }
+
+    private void updateNodePosition(InWorldNodeData nodeData) {
+        InWorldNode node = nodeData.node;
+        if (nodeData.globalPos == null || level.isLoaded(node.sourcePos())) {
             Vec3 newPos = node.getLocalPosition(level);
 
-            if (newPos == null)
-                newPos = VecHelper.CENTER_OF_ORIGIN;
-
-            LOCAL_NODE_POSITIONS.put(node, pos = newPos);
             if (node.isFullyLoadable(level)) {
-                Vec3 finalPos = node.toGlobalPos(newPos, level);
-                NODE_POSITIONS.compute(node, (n, v) -> {
-                    if (v != null && v.distanceToSqr(finalPos) <= 0.003)
-                        return v;
-                    onNodePosUpdate(node, finalPos);
-                    return finalPos;
-                });
+                if (newPos == null)
+                    newPos = VecHelper.CENTER_OF_ORIGIN;
+
+                nodeData.localPos = newPos;
+                Vec3 pos = node.toGlobalPos(newPos, level);
+
+                if (nodeData.globalPos == null || nodeData.globalPos.distanceToSqr(pos) > 0.003) {
+                    nodeData.globalPos = pos;
+                    onNodePosUpdate(node, nodeData);
+                }
             }
         }
-        return pos;
     }
 
     /**
@@ -686,63 +800,112 @@ public class InfrastructureSavedData extends SavedData {
      * Creates the specified node at block center.
      * You usually shouldn't call it yourself.
      */
-    public void createNode(InWorldNode node) {
-        createNode(node, node.sourcePos().getCenter(), VecHelper.CENTER_OF_ORIGIN);
+    public InWorldNodeData createNode(InWorldNode node) {
+        return createNode(node, node.sourcePos().getCenter(), VecHelper.CENTER_OF_ORIGIN);
     }
 
     /**
      * Creates the specified node with the specified position.
      * You usually shouldn't call it yourself.
      */
-    public void createNode(InWorldNode node, Vec3 pos, Vec3 localPos) {
-        NODES.putIfAbsent(node, new ArrayList<>());
-        NODE_POSITIONS.putIfAbsent(node, pos);
-        LOCAL_NODE_POSITIONS.putIfAbsent(node, localPos);
-        NODES_BY_POS.computeIfAbsent(node.sourcePos(), k -> new ArrayList<>()).add(node);
-        wireSimulationState.onNodeChange(NODES.keySet());
+    public InWorldNodeData createNode(InWorldNode node, Vec3 globalPos, Vec3 localPos) {
+        InWorldNodeData nodeData = newNode(node);
+        nodeData.localPos = localPos;
+        nodeData.globalPos = globalPos;
+        NODES_BY_POS.computeIfAbsent(node.sourcePos(), k -> new ArrayList<>()).add(nodeData);
 
-        if (isDynamicPosition(level, node))
-            DYNAMIC_POSITION_NODES.add(node);
+        if (isDynamicPosition(level, node)) {
+            nodeData.isDynamic = true;
+            DYNAMIC_POSITION_NODES.add(nodeData);
+        }
 
-        onNodeUpdateOrCreate(node);
-        onNodePosUpdate(node, pos);
+        onNodeUpdateOrCreate(node, nodeData);
+        onNodePosUpdate(node, nodeData);
+
+        return nodeData;
     }
 
     public void removeNodes(BlockPos pos) {
-        List<InWorldNode> nodes = NODES_BY_POS.remove(pos);
-        if (nodes == null)
+        List<InWorldNodeData> nodeIDs = NODES_BY_POS.remove(pos);
+        if (nodeIDs == null)
             return;
 
-        for (InWorldNode node : nodes) {
-            for (InWorldNodeConnection connection : getConnections(node))
+        for (InWorldNodeData nodeData : nodeIDs) {
+            for (InWorldNodeConnection connection : getConnections(nodeData))
                 removeAndDropConnection(connection);
-            removeNode(node);
+            removeNode(nodeData.node);
         }
 
         List<BlockPos> catenaryConnections = List.copyOf(CATENARY_ADJACENCY.getOrDefault(pos, new ArrayList<>()));
         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), CEEItems.COPPER_WIRE.asStack((catenaryConnections.size()) * CEEConfigs.server().wiresPerSpool.get()));
         for (BlockPos connection : catenaryConnections)
             removeCatenary(pos, connection);
-        wireSimulationState.onNodeChange(NODES.keySet());
+        wireSimulationState.onNodeChange(ALL_NODES.keySet());
     }
 
+    // NODE LIFETIME MANAGEMENT:
+
+    /**
+     * Creates a new node, assigns it an ID and
+     * @return the created {@link InWorldNodeData} object
+     */
+    private InWorldNodeData newNode(InWorldNode node) {
+        InWorldNodeData prevNodeData = getNodeData(node);
+        if (prevNodeData != null)
+            return prevNodeData;
+
+        if (freeNodeIDs.isEmpty()) {
+            InWorldNodeData data = new InWorldNodeData(NODES_BY_ID.size(), node);
+            NODES_BY_ID.add(data);
+            ALL_NODES.put(node, data);
+            return data;
+        }
+        int index = freeNodeIDs.popInt();
+        InWorldNodeData data = new InWorldNodeData(index, node);
+        NODES_BY_ID.set(index, data);
+        ALL_NODES.put(node, data);
+        wireSimulationState.onNodeChange(ALL_NODES.keySet());
+        return data;
+    }
 
     /**
      * Removes the specified node from the Infrastructure data and cleans it from all the data structures.
      * You usually shouldn't call it yourself.
      */
-    public void removeNode(InWorldNode node) {
-        NODES.remove(node);
-        NODE_POSITIONS.remove(node);
-        LOCAL_NODE_POSITIONS.remove(node);
-        boolean wasDynamic = DYNAMIC_POSITION_NODES.remove(node);
-        onNodeRemove(node, wasDynamic);
+    public InWorldNodeData removeNode(InWorldNode node) {
+        InWorldNodeData nodeData = ALL_NODES.remove(node);
+        if (nodeData == null)
+            return null;
+        freeNodeIDs.push(nodeData.id);
+        NODES_BY_ID.set(nodeData.id, null);
+        nodeData.invalidate();
+        onNodeRemove(nodeData.node, nodeData);
+        DYNAMIC_POSITION_NODES.remove(nodeData);
+        List<InWorldNodeData> nodesAtPos = NODES_BY_POS.get(nodeData.node.sourcePos());
+        if (nodesAtPos != null)
+            nodesAtPos.remove(nodeData);
+        return nodeData;
     }
+
+    public InWorldNodeData getNodeData(InWorldNode node) {
+        return ALL_NODES.get(node);
+    }
+
+    public InWorldNodeData getNodeDataOrThrow(InWorldNode node) {
+        if (node == null)
+            throw new IllegalArgumentException("node can't be null!");
+        InWorldNodeData data = ALL_NODES.get(node);
+        if (data == null)
+            throw new IllegalArgumentException("Node: " + node + " doesn't exist!");
+        return data;
+    }
+
+    // HOOKS & STUFF:
 
     /**
      * Hook for node update
      */
-    private void onNodeUpdateOrCreate(InWorldNode node) {
+    private void onNodeUpdateOrCreate(InWorldNode node, InWorldNodeData nodeData) {
         if (InWorldNode.isFromSubLevel(level, node.sourcePos()))
             return;
 
@@ -755,15 +918,15 @@ public class InfrastructureSavedData extends SavedData {
     /**
      * Hook for node pos update
      */
-    private void onNodePosUpdate(InWorldNode node, Vec3 newPos) {
+    private void onNodePosUpdate(InWorldNode node, InWorldNodeData nodeData) {
 
     }
 
     /**
      * Hook for node removal
      */
-    private void onNodeRemove(InWorldNode node, boolean wasDynamic) {
-        if (wasDynamic)
+    private void onNodeRemove(InWorldNode node, InWorldNodeData nodeData) {
+        if (nodeData.isDynamic)
             return;
 
         Set<InWorldNode> chunkNodes = NODES_BY_CHUNK.computeIfAbsent(ChunkPos.asLong(node.sourcePos()),
@@ -774,6 +937,8 @@ public class InfrastructureSavedData extends SavedData {
         if (chunkNodes.isEmpty())
             NODES_BY_CHUNK.remove(ChunkPos.asLong(node.sourcePos()));
     }
+
+    // UTILS:
 
     /**
      * Removes the specified connection and drops the items.
@@ -794,12 +959,38 @@ public class InfrastructureSavedData extends SavedData {
         return data;
     }
 
+    /**
+     * Moves all the connections of {@code source} to {@code destination}
+     * If there is already a connection between {@code source} and {@code destination}, it will be skipped
+     */
+    public void migrateConnections(InWorldNode source, InWorldNode destination) {
+        InWorldNodeData sourceData = getNodeData(source);
+        InWorldNodeData destinationData = getNodeData(destination);
+        if (sourceData == null)
+            sourceData = createNode(source);
+
+        if (destinationData == null)
+            destinationData = createNode(destination);
+
+        // clone to prevent CME
+        for (Int2ObjectMap.Entry<WireData> entry : sourceData.adjacency.clone().int2ObjectEntrySet()) {
+            InWorldNodeData otherNode = NODES_BY_ID.get(entry.getIntKey());
+            if (otherNode == destinationData)
+                continue;
+            WireData wireData = entry.getValue();
+            InWorldNodeConnection connection = new InWorldNodeConnection(source, otherNode.node);
+
+            removeConnectionNoDrops(connection);
+            connect(destination, otherNode.node, wireData);
+        }
+    }
+
     public Set<CatenaryConnection> getAllCatenaryConnections() {
        return CATENARY_DATA.keySet();
     }
 
     public boolean hasNode(InWorldNode node) {
-        return NODES.containsKey(node);
+        return ALL_NODES.containsKey(node);
     }
 
     public void getNodesInChunk(long chunk, Consumer<InWorldNode> consumer) {

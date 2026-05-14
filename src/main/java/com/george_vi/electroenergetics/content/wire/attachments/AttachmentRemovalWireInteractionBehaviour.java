@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.wire.attachments;
 
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
@@ -8,7 +9,6 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
-import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
@@ -46,7 +46,7 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
             Pair<Float, WireAttachment> attachment = attachments.get(i);
             if (Math.abs(point.point() - attachment.getFirst()) * distance < attachment.getSecond().getWidth() / 2 + 0.25) {
                 AllSoundEvents.WRENCH_REMOVE.playOnServer(level, BlockPos.containing(point.posAt(pos1, pos2, data.getSag(distance))));
-                Vec3 pos = QuadraticWireHelper.posAt(pos1, pos2, 1.0f - attachment.getFirst(), data.getSag());
+                Vec3 pos = QuadraticWireHelper.posAt(pos1, pos2, attachment.getFirst(), data.getSag());
                 for (ItemStack drop : attachment.getSecond().getDrops(level))
                     Containers.dropItemStack(level, pos.x, pos.y, pos.z, drop);
                 attachments.remove(i);
@@ -58,7 +58,7 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
 
     @Override
     public boolean isActiveFor(ItemStack stack) {
-        return AllItems.WRENCH.isIn(stack);
+        return stack.is(CEETags.ATTACHMENT_REMOVAL_ITEM);
     }
 
     @Override

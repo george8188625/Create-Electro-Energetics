@@ -3,6 +3,8 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
+import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockItem;
+import com.george_vi.electroenergetics.content.accumulator.AccumulatorStack;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerBlock;
 import com.george_vi.electroenergetics.content.connector.*;
@@ -363,10 +365,29 @@ public class CEEBlocks {
     public static final BlockEntry<AccumulatorBlock> ACCUMULATOR = REGISTRATE.block("accumulator", AccumulatorBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate(BlockStateGen.horizontalBlockProvider(false))
+            .blockstate((c, p) ->
+                    DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                            bs -> bs.getValue(AccumulatorBlock.FLIP) ?
+                                    p.modLoc("block/accumulator/block_flip_" + bs.getValue(AccumulatorBlock.STACK).getSerializedName()) :
+                                    p.modLoc("block/accumulator/block_" + bs.getValue(AccumulatorBlock.STACK).getSerializedName())))
             .transform(pickaxeOnly())
-            .item()
-            .model((c, p) -> p.blockItem(c::getEntry))
+            .loot((lt, b) ->
+                    lt.add(b, LootTable.lootTable()
+                            .withPool(LootPool.lootPool()
+                                    .setRolls(ConstantValue.exactly(1f))
+                                    .add(LootItem.lootTableItem(b.asItem()))
+                                    .apply(SetItemCountFunction
+                                            .setCount(ConstantValue.exactly(2f))
+                                            .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(b)
+                                                    .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                            .hasProperty(AccumulatorBlock.STACK, AccumulatorStack.DOUBLE_OPPOSITE))))
+                                    .apply(SetItemCountFunction
+                                            .setCount(ConstantValue.exactly(2f))
+                                            .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(b)
+                                                    .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                            .hasProperty(AccumulatorBlock.STACK, AccumulatorStack.DOUBLE_PARALLEL)))))))
+            .item(AccumulatorBlockItem::new)
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()
             .register();
 

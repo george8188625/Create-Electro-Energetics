@@ -190,10 +190,10 @@ public class WireRenderer {
             Vec3 pos1 = connection.node1().getPosition(level, partialTick);
             Vec3 pos2 = connection.node2().getPosition(level, partialTick);
 
-            if (pos1 == null || pos2 == null) {
+            if (pos1 == null)
                 pos1 = connection.node1().sourcePos().getCenter();
+            if (pos2 == null)
                 pos2 = connection.node2().sourcePos().getCenter();
-            }
 
             boolean isBlock1Outer = state1.getBlock() instanceof ElectricalDeviceBlock<?> db &&
                     db.isOuterInsulator(level, connection.node1().sourcePos(), state1, connection.node1().id());
@@ -230,7 +230,7 @@ public class WireRenderer {
                     continue;
                 double distance = pos1.distanceTo(pos2);
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
-                List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ? 
+                List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ?
                         QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), cameraPosition) :
                         QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 

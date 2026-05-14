@@ -24,8 +24,8 @@ import java.util.*;
 public class WireSync {
     private static final Map<UUID, ChunkCuboidEntry> loadedChunks = new HashMap<>();
 
-    public final InfrastructureSavedData sd;
-    public final ServerLevel level;
+    private final InfrastructureSavedData sd;
+    private final ServerLevel level;
 
     public WireSync(InfrastructureSavedData sd, ServerLevel level) {
         this.sd = sd;
@@ -45,14 +45,19 @@ public class WireSync {
 
         ChunkCuboidEntry chunksToLoad = new ChunkCuboidEntry(originX, originZ, viewDistance);
 
+        if (chunks.equals(chunksToLoad))
+            return;
+
         loadedChunks.put(player.getUUID(), chunksToLoad);
 
-        List<InWorldNode> newNodes = new ArrayList<>(sd.getDynamicNodes().stream().filter(n -> {
-            Vec3 nodePos = sd.getNodePositionOrCenter(n);
-            // If is in chunksToLoad and not in chunks, then it has not yet been loaded, but will be now.
-            return chunksToLoad.includes(Mth.floor(nodePos.x) >> 4, Mth.floor(nodePos.z) >> 4) &&
-                    !chunks.includes(Mth.floor(nodePos.x) >> 4, Mth.floor(nodePos.z) >> 4);
-        }).toList());
+        List<InWorldNode> newNodes = new ArrayList<>(sd.getDynamicNodes().stream()
+                .map(n -> n.node)
+                .filter(n -> {
+                    Vec3 nodePos = sd.getNodePositionOrCenter(n);
+                    // If is in chunksToLoad and not in chunks, then it has not yet been loaded, but will be now.
+                    return chunksToLoad.includes(Mth.floor(nodePos.x) >> 4, Mth.floor(nodePos.z) >> 4) &&
+                            !chunks.includes(Mth.floor(nodePos.x) >> 4, Mth.floor(nodePos.z) >> 4);
+                }).toList());
 
         LongList chunksToRemove = new LongArrayList(viewDistance);
         chunks.supplyDiff(chunksToLoad, chunksToRemove::add, chunk -> sd.getNodesInChunk(chunk, newNodes::add));
@@ -125,6 +130,8 @@ public class WireSync {
         long chunk1 = ChunkPos.asLong(Mth.floor(pos1.x) >> 4, Mth.floor(pos1.z) >> 4);
         Vec3 pos2 = sd.getNodePositionOrCenter(connection.node2());
         long chunk2 = ChunkPos.asLong(Mth.floor(pos2.x) >> 4, Mth.floor(pos2.z) >> 4);
+        data.lastChunk1 = chunk1;
+        data.lastChunk2 = chunk2;
         for (ServerPlayer player : level.getPlayers(p -> true)) {
             for (long loadedChunk : loadedChunks.getOrDefault(player.getUUID(), ChunkCuboidEntry.ZERO))
                 if (loadedChunk == chunk1 || loadedChunk == chunk2) {
@@ -167,21 +174,25 @@ public class WireSync {
     public void handleWireRepositioned(InWorldNodeConnection connection, WireData data) {
         long chunk1 = ChunkPos.asLong(connection.node1().sableSourcePos(level));
         long chunk2 = ChunkPos.asLong(connection.node2().sableSourcePos(level));
+        long lastChunk1 = data.lastChunk1;
+        long lastChunk2 = data.lastChunk2;
+
+        if (chunk1 == lastChunk1 && chunk2 == lastChunk2)
+            return;
 
         for (ServerPlayer player : level.getPlayers(p -> true)) {
-            boolean unloaded = true;
-            for (long loadedChunk : loadedChunks.getOrDefault(player.getUUID(), ChunkCuboidEntry.ZERO)) {
-                if (loadedChunk == chunk1 || loadedChunk == chunk2) {
+            ChunkCuboidEntry playerChunks = loadedChunks.getOrDefault(player.getUUID(), ChunkCuboidEntry.ZERO);
+            if (playerChunks.includes(chunk1) || playerChunks.includes(chunk2)) {
+                if (!playerChunks.includes(lastChunk1) && !playerChunks.includes(lastChunk2))
                     CatnipServices.NETWORK.sendToClient(player, SendWireConnectionsPacket.connectWire(connection, data));
-                    unloaded = false;
-                    break;
-                }
-            }
-
-            if (unloaded) {
-                CatnipServices.NETWORK.sendToClient(player, ClearWireConnectionsPacket.clearWire(connection));
+            } else {
+                if (playerChunks.includes(lastChunk1) || playerChunks.includes(lastChunk2))
+                    CatnipServices.NETWORK.sendToClient(player, ClearWireConnectionsPacket.clearWire(connection));
             }
         }
+
+        data.lastChunk1 = chunk1;
+        data.lastChunk2 = chunk2;
     }
 
     /**
@@ -266,6 +277,18 @@ public class WireSync {
                     return z < maxZ;
                 }
             };
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            ChunkCuboidEntry that = (ChunkCuboidEntry) o;
+            return minX == that.minX && maxX == that.maxX && minZ == that.minZ && maxZ == that.maxZ;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(minX, maxX, minZ, maxZ);
         }
     }
 

@@ -20,13 +20,15 @@ public class CurrentVisualizationPonderElement extends AnimatedSceneElementBase 
     final InWorldNode node1, node2;
     final float speed;
     final float sag;
+    final float offset;
     final boolean valid;
 
-    public CurrentVisualizationPonderElement(InWorldNode node1, InWorldNode node2, float speed, float sag, boolean valid) {
+    public CurrentVisualizationPonderElement(InWorldNode node1, InWorldNode node2, float speed, float sag, float offset, boolean valid) {
         this.node1 = node1;
         this.node2 = node2;
         this.speed = speed;
         this.sag = sag;
+        this.offset = offset;
         this.valid = valid;
     }
 
@@ -34,10 +36,11 @@ public class CurrentVisualizationPonderElement extends AnimatedSceneElementBase 
     protected void renderLast(PonderLevel world, MultiBufferSource buffer, GuiGraphics graphics, float fade, float pt) {
         Vec3 pos1 = node1.getPosition(world);
         Vec3 pos2 = node2.getPosition(world);
-        float progress = speed == 0 ? 0 : (AnimationTickHolder.getRenderTime(world) % (1 / (speed / 10))) * (speed / 10);
+        float progress = speed == 0 ? 0 : (AnimationTickHolder.getRenderTime(world) % (1 / (speed / 10)) + offset) * (speed / 10);
+
         if (speed < 0)
             progress = 1 - Math.abs(progress);
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, sag);
+        List<Vec3> points = QuadraticWireHelper.cablePointsRaw(pos1, pos2, sag);
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);

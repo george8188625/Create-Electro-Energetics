@@ -1,5 +1,5 @@
-// 1.21.1	2026-04-24T14:46:26.201532836	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
-835a327bc6cc6e1714618d6cae3690503044bea1 assets/electroenergetics/blockstates/accumulator.json
+// 1.21.1	2026-05-14T19:14:51.190932416	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+5ee5a3d7ba5b516394038fc15353cc9ae193ee25 assets/electroenergetics/blockstates/accumulator.json
 ef47348e4956fb5ce918e785aa8ad9c8016cd999 assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/ammeter.json
@@ -71,8 +71,8 @@ d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tr
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
 4604190e40f0bc90d1fde5425b9ccebc4ca5f6b0 assets/electroenergetics/blockstates/white_electric_motor.json
 7a3f8f19f08ad111f97aaf22f5b52df2e4fda3c4 assets/electroenergetics/blockstates/yellow_electric_motor.json
-d6c283308227e2118e0327c2c4b5ede15ded0015 assets/electroenergetics/lang/en_ud.json
-85d1f41dd444004c30a6542508b615c3286bce60 assets/electroenergetics/lang/en_us.json
+75f177604b12dee7ca695d1fe67807d571dcac0f assets/electroenergetics/lang/en_ud.json
+6bac02bb6e5c52595cfd729543ddc300b14b3e5b assets/electroenergetics/lang/en_us.json
 706ea17778dccc4e51f059c39b5c730336b598c6 assets/electroenergetics/models/block/black_electric_motor.json
 4cb846021d3aba319f8bb6025abc8817d830996a assets/electroenergetics/models/block/blue_electric_motor.json
 6575b77e5e7449fa7fe5d92fc33cd3873b965bb2 assets/electroenergetics/models/block/brown_electric_motor.json
@@ -92,7 +92,7 @@ f2a0a8c7269e5b0a9318f61027d189a0c74da680 assets/electroenergetics/models/block/m
 1b9c2a5b954bc8ae1e7d4a3c60cc0658933e80fe assets/electroenergetics/models/block/red_electric_motor.json
 5f028036032e5c419190b3db9eaadb55d73845a0 assets/electroenergetics/models/block/white_electric_motor.json
 ab7a08209e1682a15f5c149795c0ea994edaa599 assets/electroenergetics/models/block/yellow_electric_motor.json
-c49ab7eac9e9bc1062c69face97b3675b9eeca79 assets/electroenergetics/models/item/accumulator.json
+d561a8f35d6f7c60ddd36714600c40ae67bcd04c assets/electroenergetics/models/item/accumulator.json
 302dfc4802bee60b3875ed360793c85c7141f857 assets/electroenergetics/models/item/alternator_brushes.json
 1b64ad075ba4be1f594e7b77fcc5505d2f79596d assets/electroenergetics/models/item/alternator_rotor.json
 7933a0aa58d92d62c55097cc8e2eaa4496fbd755 assets/electroenergetics/models/item/ammeter.json
@@ -185,7 +185,7 @@ ec43ed92882dcc88c30951d0f9334d65dfadcd01 assets/electroenergetics/models/item/wi
 6eb688b822cdbe044c1a6f82262a04eea717781e data/c/tags/item/wires/electrum.json
 d224ab78ace4eb3adfceeb8bf02a76d8b93d3efb data/c/tags/item/wires/iron.json
 36b786c7d5a7bfc6414ee3070fb4b020106e08a3 data/create/tags/item/contraption_controlled.json
-bc9582b0d3af5cdda980d10264298392606c2898 data/electroenergetics/loot_table/blocks/accumulator.json
+b8c2ad3cd35442fc88d8cee9802d543717ddd78e data/electroenergetics/loot_table/blocks/accumulator.json
 c6600dc6b5596462d7b6f16748b7feb3a0436466 data/electroenergetics/loot_table/blocks/alternator_brushes.json
 4df158282a308b6e8928b8993049e2c856668e9a data/electroenergetics/loot_table/blocks/alternator_rotor.json
 7d8d53934ab8e6b3eeea0c2942da45f777f53a71 data/electroenergetics/loot_table/blocks/ammeter.json
