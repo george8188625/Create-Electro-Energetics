@@ -66,7 +66,7 @@ public class TransformerCoreDevice extends SimpleElectricalDevice {
         double power = TransformerBehaviour.postTick(nodes, results, transformerData);
 
         if (be == null)
-            if (level.getBlockEntity(pos) instanceof TransformerCoreBlockEntity be)
+            if (level.isLoaded(pos) && level.getBlockEntity(pos) instanceof TransformerCoreBlockEntity be)
                 this.be = be;
 
         if (be != null) {
