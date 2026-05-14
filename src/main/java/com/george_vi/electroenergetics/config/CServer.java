@@ -6,6 +6,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public class CServer extends ConfigBase {
 
     public final ConfigDouble wattFeTConversionRate = d(34, 0.0001d, "wattFeTConversionRate", "this many watts is one FE/tick");
+    public final ConfigDouble converterMaxPowerKw = d(100, 1, "converterMaxPower", "[in kW]");
     public final ConfigInt maxWireLength = i(128, 8, "wireLength", "[in Meters]");
     public final ConfigInt maxHeavilyInsulatedWireLength = i(32, 8, "heavilyInsulatedWireLength", "[in Meters]");
     public final ConfigInt maxBusWireLength = i(8, 1, "busWireLength", "[in Meters]");
