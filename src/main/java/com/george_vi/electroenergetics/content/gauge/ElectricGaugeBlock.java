@@ -150,13 +150,14 @@ public class ElectricGaugeBlock extends SimpleElectricalDeviceBlock<GaugeDevice>
 
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {
+        state = state.setValue(FACING, rot.rotate(state.getValue(FACING)));
         if (rot.ordinal() % 2 == 1)
             state = state.cycle(GaugeBlock.AXIS_ALONG_FIRST_COORDINATE);
-        return super.rotate(state, rot);
+        return state;
     }
 
     @Override
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
-        return state.rotate(mirrorIn.getRotation(state.getValue(FACING)));
+        return state.setValue(FACING, mirrorIn.mirror(state.getValue(FACING)));
     }
 }
