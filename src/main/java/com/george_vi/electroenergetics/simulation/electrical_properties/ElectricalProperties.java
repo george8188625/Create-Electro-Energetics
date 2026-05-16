@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class ElectricalProperties {
     public static final ElectricalProperties ZERO_CONDUCTANCE = ElectricalProperties.resistor(1e+11d);
+    public static final ElectricalProperties INFINITE_CONDUCTANCE = new ElectricalProperties(1e+11d, 0, 0, true);
 
     public double resistance;
     public double voltageSource;

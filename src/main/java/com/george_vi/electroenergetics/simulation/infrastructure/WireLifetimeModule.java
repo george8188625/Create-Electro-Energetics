@@ -111,7 +111,7 @@ public class WireLifetimeModule {
                 return;
             }
             WireType replaceWith = longestWireDataToBreak.wireType().overheatedReplacement();
-            sd.removeConnection(longestWireToBreak);
+            WireData wireConnectionData = sd.removeConnection(longestWireToBreak);
             Vec3 pos1 = longestWireToBreak.node1().getPosition(level);
             Vec3 pos2 = longestWireToBreak.node2().getPosition(level);
             if (pos1 == null || pos2 == null)
@@ -125,10 +125,7 @@ public class WireLifetimeModule {
                         new SendWireParticlesPacket(longestWireToBreak.node1(), longestWireToBreak.node2(),
                                 ParticleTypes.BUBBLE_POP, longestWireDataToBreak.getSag(pos1.distanceTo(pos2)), 4));
             } else {
-                WireData wireConnectionData = sd.getConnectionData(longestWireToBreak);
-                if (wireConnectionData == null)
-                    return;
-                sd.setConnectionData(longestWireToBreak, new WireData(replaceWith, wireConnectionData.temperature(), wireConnectionData.attachments(), wireConnectionData.length));
+                sd.connect(longestWireToBreak.node1(), longestWireToBreak.node2(), new WireData(replaceWith, wireConnectionData.temperature(), wireConnectionData.attachments(), wireConnectionData.length));
                 CatnipServices.NETWORK.sendToClientsAround(level, VecHelper.lerp(0.5f,
                                 longestWireToBreak.node1().sourcePos().getCenter(),
                                 longestWireToBreak.node2().sourcePos().getCenter()),

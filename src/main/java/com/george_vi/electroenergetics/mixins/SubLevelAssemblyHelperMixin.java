@@ -44,7 +44,7 @@ public class SubLevelAssemblyHelperMixin {
                     Vec3 nodePos = sd.getNodePosition(originalNode);
                     Vec3 localNodePos = sd.getLocalNodePosition(originalNode);
                     if (nodePos != null && localNodePos != null)
-                        sd.createNode(destinationNodes.get(i), nodePos, localNodePos);
+                        destinationNodeData = sd.createNode(destinationNodes.get(i), nodePos, localNodePos);
                     else
                         continue;
                 }
@@ -60,6 +60,9 @@ public class SubLevelAssemblyHelperMixin {
 
                     sd.sableToUpdate.add(resolvedConnection);
                 }
+
+                destinationNodeData.label = originalNodeData.label;
+                sd.sableNodesToUpdate.add(destinationNodeData.id);
             }
         }
 

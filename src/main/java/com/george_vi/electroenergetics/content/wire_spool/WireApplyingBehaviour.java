@@ -112,7 +112,7 @@ public class WireApplyingBehaviour {
 
         // Player is not looking at a node
 
-        if (hoveredNode == null || !(heldItem.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(heldItem)))
+        if (hoveredNode == null)
             return;
 
         // Player has selected a node and is looking at one
@@ -131,7 +131,7 @@ public class WireApplyingBehaviour {
                 .colored(FontHelper.Palette.STANDARD_CREATE.highlight().getColor().getValue())
                 .withFaceTexture(AllSpecialTextures.SELECTION);
 
-        if (selectedNode == null)
+        if (selectedNode == null || !(heldItem.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(heldItem)))
             return;
 
         boolean canConnect = true;

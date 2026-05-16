@@ -118,7 +118,7 @@ public class SimulationTicker {
 
         future = electricalWorkerThread.submit(() -> {
             circuitBuilder.connectAll(wiresToJoin);
-            List<List<WrappedIndexedNode>> networks = circuitBuilder.dfs();
+            List<List<WrappedIndexedNode>> networks = circuitBuilder.dfsAndGround();
             stats.totalNodes = circuitBuilder.allNodes().size();
             stats.totalSeparatedNodes = new int[networks.size()];
             stats.totalOptimizedNodes = new int[networks.size()];

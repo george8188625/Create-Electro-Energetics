@@ -68,7 +68,8 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
         double smoothTotalEnergy = be.smoothTotalEnergy.getValue(partialTicks);
         double totalEnergy = be.smoothTotalEnergy.getValue(partialTicks);
 
-        totalEnergy = 10000000 + totalEnergy;
+
+        totalEnergy = 10_000_000 + totalEnergy;
 
         float number0 = (float) (smoothTotalEnergy * 100 % 1);
         float number1 = (float) (smoothTotalEnergy * 10 % 1);

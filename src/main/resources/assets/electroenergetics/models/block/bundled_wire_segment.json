@@ -1,0 +1,36 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "electroenergetics:block/bundled_wire",
+		"particle": "electroenergetics:block/bundled_wire"
+	},
+	"elements": [
+		{
+			"from": [-0.5, -1, 0],
+			"to": [1.5, 1, 8],
+			"rotation": {"angle": -45, "axis": "z", "origin": [0.5, 0, 4]},
+			"faces": {
+				"north": {"uv": [8, 2, 10, 0], "texture": "#0"},
+				"east": {"uv": [0, 0, 8, 2], "texture": "#0"},
+				"south": {"uv": [8, 0, 10, 2], "texture": "#0"},
+				"west": {"uv": [0, 2, 8, 0], "texture": "#0"},
+				"up": {"uv": [0, 0, 8, 2], "rotation": 90, "texture": "#0"},
+				"down": {"uv": [0, 2, 8, 0], "rotation": 90, "texture": "#0"}
+			}
+		},
+		{
+			"from": [-1.5, -1, 0],
+			"to": [0.5, 1, 8],
+			"rotation": {"angle": 45, "axis": "z", "origin": [-0.5, 0, 4]},
+			"faces": {
+				"north": {"uv": [8, 2, 10, 0], "texture": "#0"},
+				"east": {"uv": [0, 0, 8, 2], "texture": "#0"},
+				"south": {"uv": [8, 0, 10, 2], "texture": "#0"},
+				"west": {"uv": [0, 2, 8, 0], "texture": "#0"},
+				"up": {"uv": [0, 0, 8, 2], "rotation": 90, "texture": "#0"},
+				"down": {"uv": [0, 2, 8, 0], "rotation": 90, "texture": "#0"}
+			}
+		}
+	]
+}

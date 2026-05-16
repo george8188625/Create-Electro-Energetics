@@ -21,7 +21,7 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
 
 
     public double activePower = 0;
-    public double totalEnergy = -1;
+    public double totalEnergy = 0;
     public LerpedFloat smoothTotalEnergy = LerpedFloat.linear();
     public int ticks = 0;
     public boolean disconnected;

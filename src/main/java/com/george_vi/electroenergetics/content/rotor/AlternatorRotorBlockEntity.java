@@ -81,7 +81,8 @@ public class AlternatorRotorBlockEntity extends KineticBlockEntity {
         if (Math.abs(speedNormalized) < 0.1f)
             return;
 
-        if (soundInstance == null || soundInstance.isStopped()) {
+        if (soundInstance == null || soundInstance.isStopped() ||
+                !Minecraft.getInstance().getSoundManager().isActive(soundInstance)) {
             Minecraft.getInstance()
                     .getSoundManager()
                     .play(soundInstance = new ElectricHumSoundInstance(CEESoundEvents.DC_TRAIN.get(), worldPosition));
@@ -91,7 +92,8 @@ public class AlternatorRotorBlockEntity extends KineticBlockEntity {
             soundInstance.setPitch(Mth.lerp(speedNormalized, 0.1f, 2));
         }
 
-        if (windSoundInstance == null || windSoundInstance.isStopped()) {
+        if (windSoundInstance == null || windSoundInstance.isStopped() ||
+                !Minecraft.getInstance().getSoundManager().isActive(windSoundInstance)) {
             Minecraft.getInstance()
                     .getSoundManager()
                     .play(windSoundInstance = new ElectricHumSoundInstance(CEESoundEvents.TRAIN_WIND_STATIC.get(), worldPosition));

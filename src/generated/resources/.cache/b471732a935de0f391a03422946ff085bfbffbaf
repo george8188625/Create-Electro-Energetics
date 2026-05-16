@@ -1,4 +1,4 @@
-// 1.21.1	2026-05-14T19:14:51.190932416	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-05-16T22:25:04.467243998	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 5ee5a3d7ba5b516394038fc15353cc9ae193ee25 assets/electroenergetics/blockstates/accumulator.json
 ef47348e4956fb5ce918e785aa8ad9c8016cd999 assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -71,8 +71,8 @@ d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tr
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
 4604190e40f0bc90d1fde5425b9ccebc4ca5f6b0 assets/electroenergetics/blockstates/white_electric_motor.json
 7a3f8f19f08ad111f97aaf22f5b52df2e4fda3c4 assets/electroenergetics/blockstates/yellow_electric_motor.json
-75f177604b12dee7ca695d1fe67807d571dcac0f assets/electroenergetics/lang/en_ud.json
-6bac02bb6e5c52595cfd729543ddc300b14b3e5b assets/electroenergetics/lang/en_us.json
+066a3365168ff99cbefdb04119e9117e7b57cf2a assets/electroenergetics/lang/en_ud.json
+6930dab93f4b6b8f5657fd0d567037f270efd17c assets/electroenergetics/lang/en_us.json
 706ea17778dccc4e51f059c39b5c730336b598c6 assets/electroenergetics/models/block/black_electric_motor.json
 4cb846021d3aba319f8bb6025abc8817d830996a assets/electroenergetics/models/block/blue_electric_motor.json
 6575b77e5e7449fa7fe5d92fc33cd3873b965bb2 assets/electroenergetics/models/block/brown_electric_motor.json
@@ -120,6 +120,7 @@ d580c44ec158271b7a9b7c54369413ee54bc36a2 assets/electroenergetics/models/item/cr
 dd1ca09e01400dd037f629c3e39c86357004615e assets/electroenergetics/models/item/diode.json
 4fac3d7ac210b5d2ce06942f95c00e2f1c965613 assets/electroenergetics/models/item/double_connector.json
 336bc0a3862694534cacb2dc96310f4528e4b9cd assets/electroenergetics/models/item/double_switch.json
+82426bb0ec6af86d103a1c25ca0d2c9bbd4a293b assets/electroenergetics/models/item/duplex_wire_spool.json
 784eafb9507d2b2759b0290775d20ea840af59c3 assets/electroenergetics/models/item/electric_pump.json
 458a2b7361c2528b9abdadabf9af77cfb6d891e3 assets/electroenergetics/models/item/electric_shock_sign.json
 96f0f5d440552d910d746e5fd6ee891dc6c37c82 assets/electroenergetics/models/item/electrum_wire.json

@@ -40,10 +40,13 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class WireRenderer {
     public static List<Pair<InWorldNodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
+
+    private static Map<InWorldNode, String> NODE_LABELS = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     protected static Map<InWorldNodeConnection, WireEffect> WIRE_EFFECTS = new HashMap<>();
@@ -445,6 +448,17 @@ public class WireRenderer {
             VisualizationHelper.queueAdd(we);
             WIRE_EFFECTS.put(connection.getFirst(), we);
         }
+    }
+
+    public static void setNodeLabel(InWorldNode node, @Nullable String label) {
+        if (label == null)
+            NODE_LABELS.remove(node);
+        else
+            NODE_LABELS.put(node, label);
+    }
+
+    public static @Nullable String getNodeLabel(InWorldNode node) {
+        return NODE_LABELS.get(node);
     }
 
     public static int maxLightLevel(int lightColo1, int lightColor2) {

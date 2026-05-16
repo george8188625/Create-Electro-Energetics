@@ -167,7 +167,14 @@ public class CircuitBuilder {
     }
 
     List<List<WrappedIndexedNode>> allNetworks;
-    public List<List<WrappedIndexedNode>> dfs() {
+    private Deque<WrappedIndexedNode> dequeStack;
+
+    /**
+     * Separates all network nodes into isolated sub-circuits. Applies ground to a node with the highest priority, if the sub-circuit doesn't contain a ground node.
+     * @return List of isolated circuits
+     */
+    public List<List<WrappedIndexedNode>> dfsAndGround() {
+        dequeStack = new ArrayDeque<>();
         List<List<WrappedIndexedNode>> allNetworks = new ArrayList<>(allIndexedNodes.size());
         boolean[] visited = new boolean[allIndexedNodes.size()];
         for (int i = 0; i < allIndexedNodes.size(); i++) {
@@ -180,6 +187,7 @@ public class CircuitBuilder {
             dfsInner(node, visited, networkNodes, false);
             allNetworks.add(networkNodes);
         }
+
         NetworksLoop:
         for (List<WrappedIndexedNode> networkNodes : allNetworks) {
             WrappedIndexedNode highestPriorityGround = null;
@@ -201,7 +209,7 @@ public class CircuitBuilder {
             if (highestPriorityGround != null)
                 highestPriorityGround.groundConductance = 1000d;
         }
-        // So wasteful, I know...
+
         allNetworks.clear();
         Arrays.fill(visited, false);
         for (int i = 0; i < allIndexedNodes.size(); i++) {
@@ -219,10 +227,10 @@ public class CircuitBuilder {
     }
 
     private void dfsInner(WrappedIndexedNode startNode, boolean[] visited, List<WrappedIndexedNode> networkNodes, boolean invis) {
-        Deque<WrappedIndexedNode> stack = new ArrayDeque<>();
-        stack.push(startNode);
-        while (!stack.isEmpty()) {
-            WrappedIndexedNode node = stack.pop();
+        dequeStack.clear();
+        dequeStack.push(startNode);
+        while (!dequeStack.isEmpty()) {
+            WrappedIndexedNode node = dequeStack.pop();
             for (IntIterator it = node.adjacency.keySet().iterator(); it.hasNext(); ) {
                 int i = it.nextInt();
                 if (visited[i])
@@ -230,7 +238,7 @@ public class CircuitBuilder {
                 visited[i] = true;
                 WrappedIndexedNode adjacentNode = allIndexedNodes.get(i);
                 networkNodes.add(adjacentNode);
-                stack.push(adjacentNode);
+                dequeStack.push(adjacentNode);
             }
 
             if (invis)
@@ -240,7 +248,7 @@ public class CircuitBuilder {
                     visited[i] = true;
                     WrappedIndexedNode adjacentNode = allIndexedNodes.get(i);
                     networkNodes.add(adjacentNode);
-                    stack.push(adjacentNode);
+                    dequeStack.push(adjacentNode);
                 }
         }
     }

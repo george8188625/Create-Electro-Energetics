@@ -106,10 +106,10 @@ public class WireSpoolItem extends Item {
             BlockState hoveredState = level.getBlockState(hoveredPos);
 
             if (originalState.getBlock() instanceof ElectricalDeviceBlock<?> edb)
-                edb.ensureNodes(sl, originalPos, originalState);
+                edb.ensureNodesExist(sl, originalPos, originalState);
 
             if (hoveredState.getBlock() instanceof ElectricalDeviceBlock<?> edb)
-                edb.ensureNodes(sl, hoveredPos, hoveredState);
+                edb.ensureNodesExist(sl, hoveredPos, hoveredState);
 
             if (!sd.getNodes().contains(hoveredNode) || !sd.getNodes().contains(originalNode))
                 return InteractionResult.FAIL;

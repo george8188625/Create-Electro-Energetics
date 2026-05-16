@@ -46,6 +46,7 @@ import java.util.function.Consumer;
 
 public class InfrastructureSavedData extends SavedData {
     public LongList sableToUpdate = new LongArrayList();
+    public IntList sableNodesToUpdate = new IntArrayList();
 
     // NODES:
     Map<InWorldNode, InWorldNodeData> ALL_NODES = new HashMap<>();
@@ -111,6 +112,9 @@ public class InfrastructureSavedData extends SavedData {
             nodeTag.put("Pos", NbtUtils.writeBlockPos(node.sourcePos()));
             nodeTag.putInt("ID", node.id());
             nodeTag.putBoolean("DynamicPos", nodeData.isDynamic);
+
+            if (nodeData.label != null)
+                nodeTag.putString("Label", nodeData.label);
 
             Vec3 lastKnownPos = getNodePosition(node);
             if (lastKnownPos != null) {
@@ -215,6 +219,9 @@ public class InfrastructureSavedData extends SavedData {
             // It can be null, as InWorldNodeData returns center when its null.
             nodeData.globalPos = lastKnownGlobalPos;
             nodeData.localPos = lastKnownLocalPos;
+
+            if (nodeTag.contains("Label"))
+                nodeData.label = nodeTag.getString("Label");
 
             if (nodeTag.getBoolean("DynamicPos")) {
                 sd.DYNAMIC_POSITION_NODES.add(nodeData);
@@ -467,8 +474,6 @@ public class InfrastructureSavedData extends SavedData {
         updateAllNodePositions();
 
         for (long connection : sableToUpdate) {
-            int node1 = DataPacker.unpackFirstI(connection);
-            int node2 = DataPacker.unpackFirstI(connection);
 
             WireData connectionData = getConnectionData(connection);
             if (connectionData != null)
@@ -476,6 +481,14 @@ public class InfrastructureSavedData extends SavedData {
         }
 
         sableToUpdate.clear();
+
+        for (int nodeID : sableNodesToUpdate) {
+            InWorldNodeData nodeData = NODES_BY_ID.get(nodeID);
+
+            wireSync.handleNodeLabelRename(nodeData);
+        }
+
+        sableNodesToUpdate.clear();
     }
 
     private void updateAllNodePositions() {
@@ -494,6 +507,7 @@ public class InfrastructureSavedData extends SavedData {
             if (nodeData.globalPos == null || nodeData.globalPos.distanceToSqr(pos) > 0.003) {
                 getConnections(nodeData, connectionsToUpdate::add);
                 nodeData.globalPos = pos;
+                wireSync.handleNodeMoved(nodeData);
             }
         }
 
@@ -667,12 +681,12 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public void setConnectionData(InWorldNodeConnection connection, WireData data) {
-        wireSync.handleWireAdded(connection, data);
-        wireSimulationState.removeConnection(connection);
-        wireSimulationState.addConnection(connection, data, false);
         int node1 = getNodeDataOrThrow(connection.node1()).id;
         int node2 = getNodeDataOrThrow(connection.node2()).id;
         CONNECTION_DATA.put(DataPacker.packAndCanonicalize(node1, node2), data);
+        wireSync.handleWireAdded(connection, data);
+        wireSimulationState.removeConnection(connection);
+        wireSimulationState.addConnection(connection, data, false);
     }
 
     public void setConnectionData(long connection, WireData data) {
@@ -926,6 +940,8 @@ public class InfrastructureSavedData extends SavedData {
      * Hook for node removal
      */
     private void onNodeRemove(InWorldNode node, InWorldNodeData nodeData) {
+        wireSync.handleNodeRemove(nodeData);
+
         if (nodeData.isDynamic)
             return;
 

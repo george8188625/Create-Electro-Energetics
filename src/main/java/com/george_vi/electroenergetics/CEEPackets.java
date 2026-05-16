@@ -11,6 +11,7 @@ import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePack
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.RequestVoltageDataPacket;
 import com.george_vi.electroenergetics.simulation.SendVoltageDataPacket;
+import com.george_vi.electroenergetics.simulation.infrastructure.SendNodeLabelPacket;
 import net.createmod.catnip.net.base.BasePacketPayload;
 import net.createmod.catnip.net.base.CatnipPacketRegistry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -22,6 +23,7 @@ import java.util.Locale;
 public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     SEND_WIRE_CONNECTIONS(SendWireConnectionsPacket.class, SendWireConnectionsPacket.STREAM_CODEC),
     SEND_VOLTAGE_DATA(SendVoltageDataPacket.class, SendVoltageDataPacket.STREAM_CODEC),
+    SEND_NODE_LABEL(SendNodeLabelPacket.class, SendNodeLabelPacket.STREAM_CODEC),
     CLEAR_WIRE_CONNECTIONS(ClearWireConnectionsPacket.class, ClearWireConnectionsPacket.STREAM_CODEC),
     SEND_CATENARY(SendCatenaryPacket.class, SendCatenaryPacket.STREAM_CODEC),
     CLEAR_CATENARY(ClearCatenaryPacket.class, ClearCatenaryPacket.STREAM_CODEC),

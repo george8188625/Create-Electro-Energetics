@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.bundled_wire.BundledWireItem;
 import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterItem;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
@@ -43,6 +44,9 @@ public class CEEItems {
             .properties(p -> p.rarity(Rarity.EPIC))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addResistancePerMeter(() -> 0.00001d)))
+            .register();
+
+    public static final ItemEntry<BundledWireItem> DUPLEX_WIRE_SPOOL = REGISTRATE.item("duplex_wire_spool", properties -> new BundledWireItem(properties))
             .register();
 
     public static final ItemEntry<EmptySpoolItem> EMPTY_SPOOL = REGISTRATE.item("empty_spool", EmptySpoolItem::new)

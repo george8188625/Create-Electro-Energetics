@@ -107,6 +107,30 @@ public class ConnectorScenes {
 
         scene.idle(40);
 
+        scene.overlay().showText(40)
+                .text("Nodes can be labeled with a name tag.")
+                .pointAt(util.vector().centerOf(1, 1, 2))
+                .colored(PonderPalette.BLUE)
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(60);
+
+        scene.overlay().showControls(util.vector().centerOf(1, 1, 2), Pointing.DOWN, 20)
+                .withItem(Items.NAME_TAG.getDefaultInstance())
+                .rightClick();
+
+        scene.idle(40);
+
+        scene.overlay().showText(80)
+                .text("The node's label will be displayed when hovering over it with a wire spool.")
+                .pointAt(util.vector().centerOf(1, 1, 2))
+                .colored(PonderPalette.BLUE)
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+
         connections.createConnection(new InWorldNode(1, util.grid().at(2, 1, 0)), new InWorldNode(0, util.grid().at(3, 1, 2)));
         scene.idle(2);
         connections.createConnection(new InWorldNode(1, util.grid().at(2, 1, 4)), new InWorldNode(0, util.grid().at(3, 1, 2)));

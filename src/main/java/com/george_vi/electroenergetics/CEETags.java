@@ -21,7 +21,12 @@ public class CEETags {
     public static final TagKey<Item> IRON_INGOT = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ingots/iron"));;
     public static final TagKey<Item> IRON_PLATE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "plates/iron"));
     public static final TagKey<Item> ELECTRIC_MOTORS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("electric_motors"));
+
+    // This tag defines items that can remove attachments from wires
     public static final TagKey<Item> ATTACHMENT_REMOVAL_ITEM = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("attachment_removal_item"));
+
+    // This tag defines items that can label nodes
+    public static final TagKey<Item> NODE_RENAME_ITEM = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("node_rename_item"));
 
     public static final TagKey<Block> TRAIN_SOUND_MODIFIER = TagKey.create(Registries.BLOCK, CreateElectroEnergetics.rl("train_sound_modifier"));
 

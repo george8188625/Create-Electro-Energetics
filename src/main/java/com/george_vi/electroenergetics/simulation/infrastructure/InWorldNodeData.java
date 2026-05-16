@@ -4,6 +4,8 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
+
 public class InWorldNodeData {
     public static final Vec3 CENTER = new Vec3(0.5, 0.5, 0.5);
 
@@ -15,7 +17,10 @@ public class InWorldNodeData {
     Vec3 localPos;
     Vec3 globalPos;
     boolean isDynamic;
+    public String label = null;
 
+    // for WireSync
+    public long lastChunk;
 
     public InWorldNodeData(int id, InWorldNode node) {
         this.id = id;

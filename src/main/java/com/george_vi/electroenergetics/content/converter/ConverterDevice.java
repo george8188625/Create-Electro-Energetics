@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.converter;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -54,6 +55,8 @@ public class ConverterDevice extends SimpleElectricalDevice {
 
             if (this.storedEnergy < getMaxEnergy() && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
+                if (!CEEBlocks.CONVERTER.has(state))
+                    return;
                 IEnergyStorage energyStorage = level.getCapability(
                         Capabilities.EnergyStorage.BLOCK,
                         pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()),
@@ -71,6 +74,8 @@ public class ConverterDevice extends SimpleElectricalDevice {
 
             if (this.storedEnergy > 0 && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
+                if (!CEEBlocks.CONVERTER.has(state))
+                    return;
                 IEnergyStorage energyStorage = level.getCapability(
                         Capabilities.EnergyStorage.BLOCK,
                         pos.relative(state.getValue(ConverterBlock.FACING).getOpposite()),

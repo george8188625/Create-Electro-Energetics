@@ -23,9 +23,6 @@ public class Network {
     final Set<WrappedIndexedNode> allNodes;
     final CircuitBuilder builder;
     final InfrastructureSavedData sd;
-    // For performance, instead of Couple<Integer>. A single long can hold 2 ints.
-    // First -> First 4 bytes >> 32
-    // Last -> Last 4 bytes
     final Long2DoubleMap voltageSources = new Long2DoubleOpenHashMap();
     final Long2DoubleMap currentSources = new Long2DoubleOpenHashMap();
     final Long2ObjectMap<ElectricalProperties> microTicked = new Long2ObjectOpenHashMap<>();

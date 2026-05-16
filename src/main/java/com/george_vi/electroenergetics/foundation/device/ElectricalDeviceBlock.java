@@ -67,7 +67,7 @@ public interface ElectricalDeviceBlock<T extends SimulatedDevice> extends Device
         return true;
     }
 
-    default void ensureNodes(ServerLevel level, BlockPos pos, BlockState state) {
+    default void ensureNodesExist(ServerLevel level, BlockPos pos, BlockState state) {
         List<Integer> nodes = new ArrayList<>(getNodePositions(level, pos, state).keySet());
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
