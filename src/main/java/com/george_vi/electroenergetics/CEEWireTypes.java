@@ -38,6 +38,17 @@ public class CEEWireTypes {
             .dyeable(COLORED_WIRES)
             .build());
 
+    public static final DeferredHolder<WireType, WireType> DUPLEX = WIRE_TYPES.register("duplex", () -> new WireType.Builder(CEEPartialModels.DUPLEX_WIRE_SEGMENT)
+            .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+            .droppedItem(CEEItems.INSULATED_WIRE)
+            .spoolItem(CEEItems.DUPLEX_WIRE_SPOOL::get)
+            .maxInsulationVoltage(CEEConfigs.server().voltageValues.wireMaxVoltage::get)
+            .maxTemperature(() -> 3540)
+            .insulationResistance(330_000)
+            .maxLength(CEEConfigs.server().maxWireLength::get)
+            .decorative()
+            .build());
+
     @SuppressWarnings("unchecked")
     public static final DeferredHolder<WireType, WireType>[] COLORED_HEAVILY_INSULATED_WIRES = new DeferredHolder[DyeColor.values().length];
 

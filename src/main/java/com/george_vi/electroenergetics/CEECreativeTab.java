@@ -101,6 +101,7 @@ public class CEECreativeTab {
                         if (FMLLoader.getDist().isDedicatedServer() || CEEConfigs.client().showACContent.get()) {
                             output.accept(CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES.asStack());
                             output.accept(CEEBlocks.SYNCHROSCOPE.asStack());
+                            output.accept(CEEBlocks.FREQUENCY_METER.asStack());
                         }
                         output.accept(CEEBlocks.HIGH_VOLTAGE_SIGN.asStack());
                         output.accept(CEEBlocks.ELECTRIC_SHOCK_SIGN.asStack());

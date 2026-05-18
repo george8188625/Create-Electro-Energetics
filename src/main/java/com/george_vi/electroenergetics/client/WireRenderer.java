@@ -461,6 +461,10 @@ public class WireRenderer {
         return NODE_LABELS.get(node);
     }
 
+    public static Map<InWorldNode, String> getNodeLabels() {
+        return NODE_LABELS;
+    }
+
     public static int maxLightLevel(int lightColo1, int lightColor2) {
         return LightTexture.pack(Math.max(LightTexture.block(lightColo1), LightTexture.block(lightColor2)), Math.max(LightTexture.sky(lightColo1), LightTexture.sky(lightColor2)));
     }

@@ -101,6 +101,11 @@ public class CEENodeConfigurations {
             .add(new Vec3(11/16f, 14/16f, 14/16f))
             .simple(Direction.NORTH);
 
+    public static final NodeConfigurator METERING = new NodeConfigurator.Builder()
+            .add(new Vec3(8/16f, 14/16f, 14/16f))
+            .add(new Vec3(8/16f, 2/16f, 14/16f))
+            .simple(Direction.NORTH);
+
     public static final NodeConfigurator TRI_POLAR_METERING = new NodeConfigurator.Builder()
             .add(new Vec3(5/16f, 14/16f, 14/16f))
             .add(new Vec3(8/16f, 14/16f, 14/16f))

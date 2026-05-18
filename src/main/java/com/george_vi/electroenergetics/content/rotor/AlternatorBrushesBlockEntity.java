@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.minecraft.ChatFormatting;
@@ -12,6 +13,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -55,7 +57,10 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
                 dataHolder.stress = totalStress;
                 dataHolder.voltage = totalStress / 100;
                 dataHolder.otherBrush = otherBrush;
-                dataHolder.rpmSpeed = getSpeed();
+                float speed = getSpeed();
+                dataHolder.rpmSpeed = Float.isFinite(dataHolder.rpmSpeed) ?
+                        LerpedFloat.Chaser.LINEAR.chase(dataHolder.rpmSpeed, Math.abs(dataHolder.rpmSpeed) > Math.abs(speed) ? 5 : 2, speed) :
+                        speed;
             }
             return;
         }

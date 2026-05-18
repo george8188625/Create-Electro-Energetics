@@ -14,6 +14,8 @@ import com.george_vi.electroenergetics.content.electronic_components.inductor.In
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorRenderer;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlockEntity;
+import com.george_vi.electroenergetics.content.frequency_meter.FrequencyMeterBlockEntity;
+import com.george_vi.electroenergetics.content.frequency_meter.FrequencyMeterRenderer;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlockEntity;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderRenderer;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
@@ -55,6 +57,7 @@ public class CEEBlockEntityTypes {
             .displaySource(CEEDisplaySources.WATTMETER)
             .validBlocks(CEEBlocks.ENERGY_METER::get, CEEBlocks.TRI_POLAR_ENERGY_METER::get)
             .register();
+
 
     public static final BlockEntityEntry<AccumulatorBlockEntity> ACCUMULATOR = REGISTRATE.blockEntity("accumulator", AccumulatorBlockEntity::new)
             .validBlock(CEEBlocks.ACCUMULATOR)
@@ -183,6 +186,11 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<SynchroscopeBlockEntity> SYNCHROSCOPE = REGISTRATE.blockEntity("synchroscope", SynchroscopeBlockEntity::new)
             .validBlock(CEEBlocks.SYNCHROSCOPE::get)
             .renderer(() -> SynchroscopeRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<FrequencyMeterBlockEntity> FREQUENCY_METER = REGISTRATE.blockEntity("frequency_meter", FrequencyMeterBlockEntity::new)
+            .validBlock(CEEBlocks.FREQUENCY_METER::get)
+            .renderer(() -> FrequencyMeterRenderer::new)
             .register();
 
     public static final BlockEntityEntry<CurrentTransformerBlockEntity> CURRENT_TRANSFORMER = REGISTRATE.blockEntity("current_transformer", CurrentTransformerBlockEntity::new)

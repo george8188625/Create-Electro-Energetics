@@ -1,4 +1,4 @@
-// 1.21.1	2026-05-16T22:25:04.467243998	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-05-18T17:54:54.569840733	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 5ee5a3d7ba5b516394038fc15353cc9ae193ee25 assets/electroenergetics/blockstates/accumulator.json
 ef47348e4956fb5ce918e785aa8ad9c8016cd999 assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -27,6 +27,7 @@ cccb1c3381417ce3b5b50b055b43843bfad6e7a2 assets/electroenergetics/blockstates/di
 5cdddebd1cb19990c46e41930eb66520a2b7bd80 assets/electroenergetics/blockstates/electric_shock_sign.json
 f0944edc3913c468fdd048ec229363665bf83888 assets/electroenergetics/blockstates/emergency_stop_button.json
 b7f4521a989fd25e71aeec651522774d3ad74630 assets/electroenergetics/blockstates/energy_meter.json
+fb7aa10b3134fc87e3b0e6ffaa7443fa2f9de6ea assets/electroenergetics/blockstates/frequency_meter.json
 9ed9770767e79f7225b43560b9cb129734a8d6cd assets/electroenergetics/blockstates/fuse.json
 b8106082a71e6c422a4d7d9cee78d37c9c0c6a92 assets/electroenergetics/blockstates/fuse_holder.json
 62ceb0f5661cc10642ba1090a127ba66fc7c51c1 assets/electroenergetics/blockstates/gray_electric_motor.json
@@ -71,8 +72,8 @@ d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tr
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
 4604190e40f0bc90d1fde5425b9ccebc4ca5f6b0 assets/electroenergetics/blockstates/white_electric_motor.json
 7a3f8f19f08ad111f97aaf22f5b52df2e4fda3c4 assets/electroenergetics/blockstates/yellow_electric_motor.json
-066a3365168ff99cbefdb04119e9117e7b57cf2a assets/electroenergetics/lang/en_ud.json
-6930dab93f4b6b8f5657fd0d567037f270efd17c assets/electroenergetics/lang/en_us.json
+f11afea08397f7f3957ac66c91a80dba109ded6a assets/electroenergetics/lang/en_ud.json
+d0a780a04c8ea2aa081d46efaa64f99c2400fcaa assets/electroenergetics/lang/en_us.json
 706ea17778dccc4e51f059c39b5c730336b598c6 assets/electroenergetics/models/block/black_electric_motor.json
 4cb846021d3aba319f8bb6025abc8817d830996a assets/electroenergetics/models/block/blue_electric_motor.json
 6575b77e5e7449fa7fe5d92fc33cd3873b965bb2 assets/electroenergetics/models/block/brown_electric_motor.json
@@ -128,6 +129,7 @@ dd1ca09e01400dd037f629c3e39c86357004615e assets/electroenergetics/models/item/di
 4bcd9ba8f4d930836cfb42e97333610fa536efe5 assets/electroenergetics/models/item/emergency_stop_button.json
 4ce754c86c48e072bd5c407f85644716d91d8d94 assets/electroenergetics/models/item/empty_spool.json
 4805d181e981a69afb7339bb1367c563750b9dc9 assets/electroenergetics/models/item/energy_meter.json
+51ff774bdbb67e1f81cb8dcd82289bf9d7d795b6 assets/electroenergetics/models/item/frequency_meter.json
 c9f00fe2e3bfe0530de0ccf608b8168abf8f927e assets/electroenergetics/models/item/fuse.json
 f177d43af41e11f08293a5092f8acc6ec32d9e9f assets/electroenergetics/models/item/fuse_holder.json
 177efeb32d3ad25a16f969a97878fc20bb1163a9 assets/electroenergetics/models/item/gray_electric_motor.json
@@ -214,6 +216,7 @@ ac21a70162adad4d082f1863d1e8a5fe507fa79c data/electroenergetics/loot_table/block
 00a99ae852bf7ca6eeac2b6d94eb98a951391bcd data/electroenergetics/loot_table/blocks/electric_shock_sign.json
 eb929e9b4c71d82af50d2692c0cd3c3f318591b8 data/electroenergetics/loot_table/blocks/emergency_stop_button.json
 2b52adcfcd53b40f9c9fc06dc17d09064481a359 data/electroenergetics/loot_table/blocks/energy_meter.json
+b81245e37a0cccb52787d2ca3580ba4a306a723c data/electroenergetics/loot_table/blocks/frequency_meter.json
 429c21d119cbf465aadb1cd6ee3ec06c0196980e data/electroenergetics/loot_table/blocks/fuse.json
 5da6d74026b8ff84032650b0e24ddd7a250f2063 data/electroenergetics/loot_table/blocks/fuse_holder.json
 eb981fe64fcf287aa26e3c20d0bc8cb6fe5e3498 data/electroenergetics/loot_table/blocks/gray_electric_motor.json
@@ -261,4 +264,4 @@ c986122991a1831f396459d0dd256572aa8c755a data/electroenergetics/loot_table/block
 60d63c45bc3c724b3fea723dd6263d37f4086f78 data/electroenergetics/tags/block/train_electric_motor.json
 f3fdf7ab8ca0a87b6a9f1cd9d21a1c8c7c930d79 data/electroenergetics/tags/block/train_sound_modifier.json
 60d63c45bc3c724b3fea723dd6263d37f4086f78 data/electroenergetics/tags/item/electric_motors.json
-9b041c434b9e46aff592c55c8cc060c1546097f2 data/minecraft/tags/block/mineable/pickaxe.json
+a51071a15abe83c123b2d8dd519bea705464c0e9 data/minecraft/tags/block/mineable/pickaxe.json

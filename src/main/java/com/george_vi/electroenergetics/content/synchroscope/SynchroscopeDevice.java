@@ -59,7 +59,7 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
             else {
                 float v = calculatePhaseOffset(pos, results) % 360;
                 boolean validConnection = (phaseOrderP & 0b1100) == (phaseOrderS & 0b1100);
-                if ((ticks % 10 == 0 && Math.abs(be.phaseOffset - v) > 1) ||
+                if ((ticks % 10 == 0 && Math.abs(be.phaseOffset - v) > 0.1) ||
                         be.validConnection != validConnection) {
                     be.phaseOffset = v;
                     be.validConnection = validConnection;

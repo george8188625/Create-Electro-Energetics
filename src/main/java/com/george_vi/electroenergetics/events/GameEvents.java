@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.commands.CEECommands;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
+import com.george_vi.electroenergetics.content.bundled_wire.BundledWireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.gauges.ClientTrainGaugeData;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
@@ -62,6 +63,7 @@ public class GameEvents {
         if (Minecraft.getInstance().level == null || Minecraft.getInstance().player == null)
             return;
         WireApplyingBehaviour.tick();
+        BundledWireApplyingBehaviour.tick();
         WireInteractionHandler.tick();
         WireEffects.tick();
         ElectricTrainSounds.tick();

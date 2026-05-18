@@ -5,11 +5,13 @@ import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
 import com.george_vi.electroenergetics.simulation.WireType;
+import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
@@ -19,10 +21,7 @@ import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -40,16 +39,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Mixin(StructureTemplate.class)
 public class StructureTemplateMixin {
     @Unique
     List<Pair<InWorldNodeConnection, WireData>> electroEnergetics$allWireConnections = new ArrayList<>();
+
+    @Unique
+    Map<InWorldNode, String> electroEnergetics$nodeLabels = new HashMap<>();
+
+    @Unique
+    List<CatenaryConnection> electroEnergetics$allCatenaryConnections = new ArrayList<>();
 
     @Inject(method = "fillFromWorld(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Vec3i;ZLnet/minecraft/world/level/block/Block;)V", at=@At("HEAD"), remap = false)
     public void fillFromWorld(Level level, BlockPos pos, Vec3i size, boolean withEntities, @Nullable Block toIgnore, CallbackInfo ci) {
@@ -68,7 +70,24 @@ public class StructureTemplateMixin {
                     d.sourcePos().getY() >= pos.getY() && d.sourcePos().getY() < pos.getY() + size.getY() &&
                     d.sourcePos().getZ() >= pos.getZ() && d.sourcePos().getZ() < pos.getZ() + size.getZ()).collect(Collectors.toSet());
             Set<InWorldNodeConnection> visitedConnections = new HashSet<>();
+
+            for (CatenaryConnection connection : sd.getAllCatenaryConnections()) {
+                BlockPos pos1 = connection.pos1();
+                BlockPos pos2 = connection.pos2();
+                if (pos1.getX() >= pos.getX() && pos1.getX() < pos.getX() + size.getX() &&
+                        pos1.getY() >= pos.getY() && pos1.getY() < pos.getY() + size.getY() &&
+                        pos1.getZ() >= pos.getZ() && pos1.getZ() < pos.getZ() + size.getZ() &&
+                        pos2.getX() >= pos.getX() && pos2.getX() < pos.getX() + size.getX() &&
+                        pos2.getY() >= pos.getY() && pos2.getY() < pos.getY() + size.getY() &&
+                        pos2.getZ() >= pos.getZ() && pos2.getZ() < pos.getZ() + size.getZ())
+                    electroEnergetics$allCatenaryConnections.add(new CatenaryConnection(pos1.subtract(pos), pos2.subtract(pos)));
+            }
+
             for (InWorldNode node : allNodes) {
+                InWorldNodeData nodeData = sd.getNodeData(node);
+                if (nodeData != null && nodeData.label != null)
+                    electroEnergetics$nodeLabels.put(new InWorldNode(node.id(), node.sourcePos().subtract(pos)), nodeData.label);
+
                 for (InWorldNodeConnection connection : sd.getConnections(node)) {
                     if (visitedConnections.contains(connection) || !allNodes.contains(connection.node2()))
                         continue;
@@ -83,7 +102,29 @@ public class StructureTemplateMixin {
 
         } else {
             Set<InWorldNodeConnection> visitedConnections = new HashSet<>();
-            Set<BlockPos> devicePositions = new HashSet<>();
+
+            for (CatenaryConnection connection : WireRenderer.CATENARY) {
+                BlockPos pos1 = connection.pos1();
+                BlockPos pos2 = connection.pos2();
+                if (pos1.getX() >= pos.getX() && pos1.getX() < pos.getX() + size.getX() &&
+                        pos1.getY() >= pos.getY() && pos1.getY() < pos.getY() + size.getY() &&
+                        pos1.getZ() >= pos.getZ() && pos1.getZ() < pos.getZ() + size.getZ() &&
+                        pos2.getX() >= pos.getX() && pos2.getX() < pos.getX() + size.getX() &&
+                        pos2.getY() >= pos.getY() && pos2.getY() < pos.getY() + size.getY() &&
+                        pos2.getZ() >= pos.getZ() && pos2.getZ() < pos.getZ() + size.getZ())
+                    electroEnergetics$allCatenaryConnections.add(new CatenaryConnection(pos1.subtract(pos), pos2.subtract(pos)));
+            }
+
+            for (Map.Entry<InWorldNode, String> e : WireRenderer.getNodeLabels().entrySet()) {
+                InWorldNode node = e.getKey();
+                String label = e.getValue();
+                BlockPos nodePos = node.sourcePos();
+                if (nodePos.getX() >= pos.getX() && nodePos.getX() < pos.getX() + size.getX() &&
+                        nodePos.getY() >= pos.getY() && nodePos.getY() < pos.getY() + size.getY() &&
+                        nodePos.getZ() >= pos.getZ() && nodePos.getZ() < pos.getZ() + size.getZ())
+                    electroEnergetics$nodeLabels.put(new InWorldNode(node.id(), node.sourcePos().subtract(pos)), label);
+            }
+
             for (Pair<InWorldNodeConnection, WireData> wireDataPair : WireRenderer.getAllConnections()) {
                 InWorldNodeConnection connection = wireDataPair.getFirst();
                 WireData wireData = wireDataPair.getSecond();
@@ -99,8 +140,6 @@ public class StructureTemplateMixin {
                         node2.sourcePos().getX() >= pos.getX() && node2.sourcePos().getX() < pos.getX() + size.getX() &&
                         node2.sourcePos().getY() >= pos.getY() && node2.sourcePos().getY() < pos.getY() + size.getY() &&
                         node2.sourcePos().getZ() >= pos.getZ() && node2.sourcePos().getZ() < pos.getZ() + size.getZ()) {
-                    devicePositions.add(node1.sourcePos());
-                    devicePositions.add(node2.sourcePos());
 
                     electroEnergetics$allWireConnections.add(Pair.of(new InWorldNodeConnection(new InWorldNode(node1.id(), node1.sourcePos().subtract(pos)),
                             new InWorldNode(node2.id(), node2.sourcePos().subtract(pos))), wireData));
@@ -112,6 +151,27 @@ public class StructureTemplateMixin {
     @Inject(method = "save", at=@At("HEAD"), remap = false)
     public void save(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
         CompoundTag ceeTag = new CompoundTag();
+
+        ListTag catenaryList = new ListTag();
+        for (CatenaryConnection connection : electroEnergetics$allCatenaryConnections) {
+            CompoundTag catenaryTag = new CompoundTag();
+
+            catenaryTag.put("Pos1", NbtUtils.writeBlockPos(connection.pos1()));
+            catenaryTag.put("Pos2", NbtUtils.writeBlockPos(connection.pos2()));
+
+            catenaryList.add(catenaryTag);
+        }
+
+        ListTag nodeList = new ListTag();
+
+        for (Map.Entry<InWorldNode, String> e : electroEnergetics$nodeLabels.entrySet()) {
+            CompoundTag nodeTag = new CompoundTag();
+            InWorldNode node = e.getKey();
+            String label = e.getValue();
+            nodeTag.put("Node", InWorldNode.CODEC.encodeStart(NbtOps.INSTANCE, node).getOrThrow());
+            nodeTag.putString("Label", label);
+            nodeList.add(nodeTag);
+        }
 
         ListTag connectionList = new ListTag();
         for (Pair<InWorldNodeConnection, WireData> wireDataPair : electroEnergetics$allWireConnections) {
@@ -137,9 +197,15 @@ public class StructureTemplateMixin {
 
             connectionList.add(connectionTag);
         }
-        ceeTag.put("Connections", connectionList);
+        if (!connectionList.isEmpty())
+            ceeTag.put("Connections", connectionList);
+        if (!catenaryList.isEmpty())
+            ceeTag.put("Catenary", catenaryList);
+        if (!nodeList.isEmpty())
+            ceeTag.put("Nodes", nodeList);
 
-        tag.put("electroenergetics_data", ceeTag);
+        if (!ceeTag.isEmpty())
+            tag.put("electroenergetics_data", ceeTag);
     }
 
     @Inject(method = "load", at=@At("HEAD"), remap = false)
@@ -147,6 +213,20 @@ public class StructureTemplateMixin {
         if (!CEEConfigs.server().saveInfrastructureInSchematics.get())
             return;
         CompoundTag ceeTag = tag.getCompound("electroenergetics_data");
+
+        NBTHelper.iterateCompoundList(ceeTag.getList("Catenary", Tag.TAG_COMPOUND), connectionTag -> {
+            BlockPos pos1 = NBTHelper.readBlockPos(connectionTag, "Pos1");
+            BlockPos pos2 = NBTHelper.readBlockPos(connectionTag, "Pos2");
+
+            electroEnergetics$allCatenaryConnections.add(new CatenaryConnection(pos1, pos2));
+        });
+
+        NBTHelper.iterateCompoundList(ceeTag.getList("Nodes", Tag.TAG_COMPOUND), nodeTag -> {
+            InWorldNode node = InWorldNode.CODEC.decode(NbtOps.INSTANCE, nodeTag.get("Node")).getOrThrow().getFirst();
+            String label = nodeTag.getString("Label");
+
+            electroEnergetics$nodeLabels.put(node, label);
+        });
 
         NBTHelper.iterateCompoundList(ceeTag.getList("Connections", Tag.TAG_COMPOUND), connectionTag -> {
             InWorldNode node1 = InWorldNode.CODEC.decode(NbtOps.INSTANCE, connectionTag.get("Node1")).getOrThrow().getFirst();
@@ -190,6 +270,19 @@ public class StructureTemplateMixin {
                     WireData wireData = wireDataPair.getSecond();
                     slm.getWireConnections().put(new InWorldNodeConnection(node1, node2), wireData);
                 }
+
+                for (CatenaryConnection connection : electroEnergetics$allCatenaryConnections) {
+                    BlockPos pos1 = StructureTemplate.calculateRelativePosition(settings, connection.pos1()).offset(offset);
+                    BlockPos pos2 = StructureTemplate.calculateRelativePosition(settings, connection.pos2()).offset(offset);
+                    slm.getCatenaryConnections().add(new CatenaryConnection(pos1, pos2));
+                }
+
+                for (Map.Entry<InWorldNode, String> e : electroEnergetics$nodeLabels.entrySet()) {
+                    InWorldNode node = e.getKey();
+                    slm.getNodeLabels().put(new InWorldNode(node.id(), StructureTemplate.calculateRelativePosition(settings, node.sourcePos()).offset(offset)), e.getValue());
+                }
+
+
             }
             return;
         } else
@@ -216,6 +309,26 @@ public class StructureTemplateMixin {
 
             WireData wireData = wireDataPair.getSecond();
             sd.setConnectionData(sd.connect(node1, node2, wireData.wireType()), wireData);
+        }
+
+
+        for (CatenaryConnection connection : electroEnergetics$allCatenaryConnections) {
+            BlockPos pos1 = StructureTemplate.calculateRelativePosition(settings, connection.pos1()).offset(offset);
+            BlockPos pos2 = StructureTemplate.calculateRelativePosition(settings, connection.pos2()).offset(offset);
+
+            sd.connectCatenary(pos1, pos2);
+        }
+
+        for (Map.Entry<InWorldNode, String> e : electroEnergetics$nodeLabels.entrySet()) {
+            InWorldNode node = e.getKey();
+            String label = e.getValue();
+
+            InWorldNodeData nodeData = sd.getNodeData(node);
+            if (nodeData == null)
+                nodeData = sd.createNode(node);
+
+            nodeData.label = label;
+            sd.wireSync.handleNodeLabelRename(nodeData);
         }
 
     }

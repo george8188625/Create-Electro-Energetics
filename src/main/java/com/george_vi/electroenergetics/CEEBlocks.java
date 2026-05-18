@@ -22,6 +22,7 @@ import com.george_vi.electroenergetics.content.electronic_components.resistor.Re
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlock;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterItem;
 import com.george_vi.electroenergetics.content.energy_meter.TriPolarEnergyMeterBlock;
+import com.george_vi.electroenergetics.content.frequency_meter.FrequencyMeterBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlock;
@@ -794,7 +795,22 @@ public class CEEBlocks {
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
                     ConfiguredModel.builder()
                             .modelFile(AssetLookup.partialBaseModel(c, p))
-                            .rotationY((int) state.getValue(EnergyMeterBlock.FACING).getOpposite().toYRot())
+                            .rotationY((int) state.getValue(SynchroscopeBlock.FACING).getOpposite().toYRot())
+                            .build()
+            )))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .build()
+            .register();
+
+    public static final BlockEntry<FrequencyMeterBlock> FREQUENCY_METER = REGISTRATE.block("frequency_meter", FrequencyMeterBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
+                    ConfiguredModel.builder()
+                            .modelFile(AssetLookup.partialBaseModel(c, p))
+                            .rotationY((int) state.getValue(FrequencyMeterBlock.FACING).getOpposite().toYRot())
                             .build()
             )))
             .transform(pickaxeOnly())

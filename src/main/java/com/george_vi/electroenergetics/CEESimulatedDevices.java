@@ -19,6 +19,7 @@ import com.george_vi.electroenergetics.content.electronic_components.inductor.In
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorDevice;
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterDevice;
 import com.george_vi.electroenergetics.content.energy_meter.TriPolarEnergyMeterDevice;
+import com.george_vi.electroenergetics.content.frequency_meter.FrequencyMeterDevice;
 import com.george_vi.electroenergetics.content.fuse.FuseDevice;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderDevice;
 import com.george_vi.electroenergetics.content.gauge.GaugeDevice;
@@ -215,6 +216,10 @@ public class CEESimulatedDevices {
     public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<SynchroscopeDevice>> SYNCHROSCOPE = DEVICES.register("synchroscope",
             () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("synchroscope"),
                     ((type, level, pos, sd) -> new SynchroscopeDevice(level, pos, sd, type))));
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<FrequencyMeterDevice>> FREQUENCY_METER = DEVICES.register("frequency_meter",
+            () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("frequency_meter"),
+                    ((type, level, pos, sd) -> new FrequencyMeterDevice(level, pos, sd, type))));
 
     public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<InductorDevice>> INDUCTOR = DEVICES.register("inductor",
             () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("inductor"),

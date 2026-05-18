@@ -42,8 +42,13 @@ public class WireType {
     final float sag;
     final IntSupplier maxLength;
     final float thickness;
+    final boolean isDecorative;
+    final boolean isInvulnerable;
 
-    private WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage, Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag, IntSupplier maxLength, float thickness) {
+    private WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem,
+                     Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage,
+                     Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag,
+                     IntSupplier maxLength, float thickness, boolean isDecorative, boolean isInvulnerable) {
         this.resistance = resistance;
         this.model = model;
         this.droppedItem = droppedItem;
@@ -55,6 +60,8 @@ public class WireType {
         this.sag = sag;
         this.maxLength = maxLength;
         this.thickness = thickness;
+        this.isDecorative = isDecorative;
+        this.isInvulnerable = isInvulnerable;
     }
 
     public Item getDrops() {
@@ -105,6 +112,15 @@ public class WireType {
         return thickness;
     }
 
+    public boolean isInvulnerable() {
+        return isInvulnerable;
+    }
+
+    public boolean isDecorative() {
+        return isDecorative;
+    }
+
+
     public static class Builder {
 
         DoubleSupplier resistance = () -> CEEConfigs.server().resistanceValues.wireResistance.get();
@@ -121,13 +137,15 @@ public class WireType {
 
         Function<DyeColor, WireType> dyeTypeFunction;
         DyeColor dyeColor;
+        boolean decorative = false;
+        boolean invulnerable = false;
 
         public WireType build() {
             if (dyeTypeFunction != null)
                 return new Dyeable(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
                         overheatedReplacement, maxTemperature, sag, maxLength, thickness, dyeTypeFunction, dyeColor);
             return new WireType(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
-                    overheatedReplacement, maxTemperature, sag, maxLength, thickness);
+                    overheatedReplacement, maxTemperature, sag, maxLength, thickness, decorative, invulnerable);
         }
 
         public Builder(PartialModel model) {
@@ -203,6 +221,16 @@ public class WireType {
             dyeColor = color;
             return dyeable(allDyes);
         }
+
+        public Builder invulnerable() {
+            invulnerable = true;
+            return this;
+        }
+
+        public Builder decorative() {
+            decorative = true;
+            return this;
+        }
     }
 
     public static class Dyeable extends WireType {
@@ -214,7 +242,7 @@ public class WireType {
                 Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag,
                 IntSupplier maxLength, float thickness, Function<DyeColor, WireType> typeFunction,
                 @Nullable DyeColor dyeColor) {
-            super(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage, overheatedReplacement, maxTemperature, sag, maxLength, thickness);
+            super(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage, overheatedReplacement, maxTemperature, sag, maxLength, thickness, false, false);
             this.typeFunction = typeFunction;
             this.dyeColor = dyeColor;
         }
