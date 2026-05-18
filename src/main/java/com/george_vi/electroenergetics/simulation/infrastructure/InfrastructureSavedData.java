@@ -665,7 +665,16 @@ public class InfrastructureSavedData extends SavedData {
     public boolean isConnected(InWorldNode node1, InWorldNode node2) {
         InWorldNodeData node1Data = getNodeData(node1);
         InWorldNodeData node2Data = getNodeData(node2);
-        return node1Data != null && node2Data != null && node1Data.adjacency.containsKey(node2Data.id);
+
+        if (node1Data != null && node2Data != null && node1Data.adjacency.containsKey(node2Data.id))
+            return true;
+
+        // Catenary connections are handled separately
+        if (node1.id() == 0 && node2.id() == 0 && CATENARY_ADJACENCY
+                .getOrDefault(node1.sourcePos(), Collections.emptyList()).contains(node2.sourcePos()))
+            return true;
+
+        return false;
     }
 
     public WireData getConnectionData(InWorldNodeConnection connection) {
