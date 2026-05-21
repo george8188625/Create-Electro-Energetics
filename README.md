@@ -1,17 +1,32 @@
 <div align="center">
 <img width="256" height="256" alt="rsz_cee-icon" src="https://github.com/user-attachments/assets/270cddf1-07b0-40b7-9ad0-d918386c4bdd" />
-<h1>Create: Electro - Energetics</h1>
+<h1>Create: Electro Energetics</h1>
 </div>
 
 <h3>Overview:</h3>
 <p>Most implementations of electricity in Minecraft mods are really basic, like a one-way fluid simulation.</p>
 <p>This implementation is different, it <b>realistically simulates</b> current flow. Sources now induce voltage instead of generating an abstract unit called 'fe', devices don't consume these units, instead they allow <b>current flow</b> and use that current flow to do work. This allows for short-circuits, voltage drops, energy losses etc.</p>
 
+The name comes from polish "elektroenergetyka", which means electrical engineering, in the context of T&D.
+
 <h3>Usage:</h3>
 <p>Electricity provides a nice and elegant way of <b>moving energy</b>. Additionally, electricity can be used directly with electrical components like pumps, heaters etc. Recipes requiring electricity, Forge Energy powered blocks, through a converter, and electrified railways. Yes, real working electrified railways.</p>
 <p>Since this implementation has nothing to do with FE, there is a special block to convert electricity - FE.</p>
 
-<h3>Technical:</h3>
+## Overall direction of the mod:
+The primary focus is to provide an elegant way to move energy. The other stuff too.
+
+This mod aims to:
+- Make electricity easy to use and forgiving enough, for people without any electrical background to be able to use the mod.
+- Provide an elegant and polished implementation of electricity.
+  
+Complexity:
+- Instead of teaching formulas, this mod will teach how things behave.
+- While there is work done on AC, this mod will stay DC by default. Not because of technical challanges, but to make it easy to use.
+- When the mod comes out, a separate addon for this mod will be made, which will add AC content and configure the simulation for it automatically.
+- Other than that, the behavior of electricity will be realistic.
+
+## Technical:
 <p><b>Electricity stays functional on unloaded chunks</b>. Most electric components work on unloaded chunks, which may be really useful when making long transmission lines and on <b>multiplayer</b>.</p>
 <p>The electrical simulation also runs on a separate thread.</p>
 
@@ -33,15 +48,9 @@ Download from [here](https://github.com/george8188625/Create-Electro-Energetics/
 
 **If you really need a stable version:**
 <br>
-Latest stable version: [Build 84](https://github.com/george8188625/Create-Electro-Energetics/releases/tag/autobuild-84)
+Latest stable version: [Build 92](https://github.com/george8188625/Create-Electro-Energetics/releases/tag/autobuild-92)
 
-The mod will **release** after the latest version is confirmed to be stable, and the following features are implemented:
-- All ponders
-- Alternator rework
-- Multiblock electric motors
-- SF6 breakers
-
-Then, after the first release, all remaining features from the [checklist](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/checklist.md) are gonna be added.
+Check out the [checklist](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/checklist.md).
 
 **Join the discord server:**
 <br>
