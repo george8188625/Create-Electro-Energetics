@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.foundation.base;
 
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.foundation.ProperOilAndWaterloggedBlock;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.tterrag.registrate.providers.DataGenContext;
@@ -18,25 +19,26 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-public abstract class DirectionalRolledDeviceBlock<T extends SimulatedDevice> extends SimpleElectricalDeviceBlock<T> implements ProperWaterloggedBlock {
+public abstract class DirectionalRolledDeviceBlock<T extends SimulatedDevice> extends SimpleElectricalDeviceBlock<T> implements ProperOilAndWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ROLL = BooleanProperty.create("roll");
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final EnumProperty<ProperOilAndWaterloggedBlock.LoggedState> LOGGED_STATE = ProperOilAndWaterloggedBlock.LOGGED_STATE;
 
     public DirectionalRolledDeviceBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false).setValue(ROLL, false));
+        registerDefaultState(defaultBlockState().setValue(LOGGED_STATE, LoggedState.DRY).setValue(ROLL, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, ROLL, WATERLOGGED);
+        builder.add(FACING, ROLL, LOGGED_STATE);
     }
 
     @Override

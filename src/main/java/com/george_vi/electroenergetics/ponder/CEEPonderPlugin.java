@@ -45,6 +45,9 @@ public class CEEPonderPlugin implements PonderPlugin {
                 .addStoryBoard("transformer", TransformerScenes::transformer)
                 .addStoryBoard("transformer_losses", TransformerScenes::losses);
 
+        helper.forComponents(CEEBlocks.CURRENT_TRANSFORMER.getId())
+                .addStoryBoard("current_transformer", TransformerScenes::currentTransformer);
+
         helper.forComponents(CEEBlocks.TRANSFORMER_CORE.getId())
                 .addStoryBoard("transformer_core", TransformerScenes::turns)
                 .addStoryBoard("transformer_core_multiblock", TransformerScenes::transformerCore);

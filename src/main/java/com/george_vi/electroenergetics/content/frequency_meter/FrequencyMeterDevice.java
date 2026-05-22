@@ -52,6 +52,9 @@ public class FrequencyMeterDevice extends SimpleElectricalDevice {
 
     double[] p;
     double[] s;
+    double maxVoltageLastPeriod;
+    double maxVoltageThisPeriod;
+
     private float calculateFrequency(BlockPos pos, SimulationResults results) {
         p = results.getVoltages(new InWorldNode(0, pos), p);
         s = results.getVoltages(new InWorldNode(1, pos), s);
@@ -62,14 +65,21 @@ public class FrequencyMeterDevice extends SimpleElectricalDevice {
             if (Math.abs(v) < 1e-6d)
                 v = 0;
 
+            maxVoltageThisPeriod = Math.max(maxVoltageThisPeriod, Math.abs(v));
+
             if (v > 0 && this.prevV <= 0) {
                 double interpolated = this.ticks + (-this.prevV / (v - this.prevV));
                 this.prevPeriod = interpolated - this.prevCross;
                 this.prevCross = interpolated;
+                maxVoltageLastPeriod = maxVoltageThisPeriod;
+                maxVoltageThisPeriod = 0;
             }
 
             this.prevV = v;
         }
+
+        if (maxVoltageLastPeriod < 8)
+            return 0;
 
         double actualPeriod = Math.max(prevPeriod, ticks - prevCross);
 
@@ -85,6 +95,8 @@ public class FrequencyMeterDevice extends SimpleElectricalDevice {
         prevCross = tag.getDouble("PrevCross");
         prevV = tag.getDouble("PrevVoltage");
         ticks = tag.getInt("Ticks");
+        maxVoltageLastPeriod = tag.getDouble("MaxVoltageLastPeriod");
+        maxVoltageThisPeriod = tag.getDouble("MaxVoltageThisPeriod");
     }
 
     @Override
@@ -92,6 +104,8 @@ public class FrequencyMeterDevice extends SimpleElectricalDevice {
         tag.putDouble("PrevPeriod", prevPeriod);
         tag.putDouble("PrevCross", prevCross);
         tag.putDouble("PrevVoltage", prevV);
+        tag.putDouble("MaxVoltageLastPeriod", maxVoltageLastPeriod);
+        tag.putDouble("MaxVoltageThisPeriod", maxVoltageThisPeriod);
         tag.putInt("Ticks", ticks);
     }
 }

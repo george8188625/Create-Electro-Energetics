@@ -149,6 +149,7 @@ public class DevicesSavedData extends SavedData {
             DEVICES_BY_FEATURE_TYPE[featureType.id].add(device);
         }
         setDirty();
+        device.update();
         return device;
     }
 

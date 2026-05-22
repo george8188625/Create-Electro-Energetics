@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.ProperOilAndWaterloggedBlock;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
@@ -28,6 +29,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
@@ -38,18 +40,18 @@ import net.minecraft.world.ticks.LevelTickAccess;
 import java.util.List;
 import java.util.Map;
 
-public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<PotentiometerBlockEntity>, ElectricalDeviceBlock<PotentiometerDevice>, ProperWaterloggedBlock {
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<PotentiometerBlockEntity>, ElectricalDeviceBlock<PotentiometerDevice>, ProperOilAndWaterloggedBlock {
+    public static final EnumProperty<LoggedState> LOGGED_STATE = ProperOilAndWaterloggedBlock.LOGGED_STATE;
 
     public PotentiometerBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+        registerDefaultState(defaultBlockState().setValue(LOGGED_STATE, LoggedState.DRY));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(WATERLOGGED);
+        builder.add(LOGGED_STATE);
     }
 
     @Override
@@ -93,18 +95,16 @@ public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<Po
     }
 
     @Override
-    protected BlockState updateShape(
-            BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        if (state.getValue(WATERLOGGED))
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+                                     LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        updateWater(level, state, pos);
 
-
-        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+        return state;
     }
 
     @Override
     protected FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+        return fluidState(state);
     }
 
     @Override

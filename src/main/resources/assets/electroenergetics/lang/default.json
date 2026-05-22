@@ -177,6 +177,8 @@
   "electroenergetics.display_source.voltage": "Voltage",
   "electroenergetics.display_source.amperage": "Amperage",
 
+  "effect.electroenergetics.dielectric": "Dielectric",
+
   "electroenergetics.electric_train_sound.modern": "Modern",
   "electroenergetics.electric_train_sound.dc": "Old DC",
   "electroenergetics.subtitle.train_relay": "Train Relay"

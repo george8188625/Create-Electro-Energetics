@@ -1,313 +1,469 @@
 {
   "variants": {
-    "facing=down,roll=false,side=0,waterlogged=false": {
+    "facing=down,logged_state=dry,roll=false,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0",
       "x": 180
     },
-    "facing=down,roll=false,side=0,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_0",
-      "x": 180
-    },
-    "facing=down,roll=false,side=1,waterlogged=false": {
+    "facing=down,logged_state=dry,roll=false,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1",
       "x": 180
     },
-    "facing=down,roll=false,side=1,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_1",
-      "x": 180
-    },
-    "facing=down,roll=false,side=2,waterlogged=false": {
+    "facing=down,logged_state=dry,roll=false,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2",
       "x": 180
     },
-    "facing=down,roll=false,side=2,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_2",
-      "x": 180
-    },
-    "facing=down,roll=true,side=0,waterlogged=false": {
+    "facing=down,logged_state=dry,roll=true,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0_roll",
       "x": 180
     },
-    "facing=down,roll=true,side=0,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
-      "x": 180
-    },
-    "facing=down,roll=true,side=1,waterlogged=false": {
+    "facing=down,logged_state=dry,roll=true,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1_roll",
       "x": 180
     },
-    "facing=down,roll=true,side=1,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
-      "x": 180
-    },
-    "facing=down,roll=true,side=2,waterlogged=false": {
+    "facing=down,logged_state=dry,roll=true,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2_roll",
       "x": 180
     },
-    "facing=down,roll=true,side=2,waterlogged=true": {
+    "facing=down,logged_state=oillogged,roll=false,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0",
+      "x": 180
+    },
+    "facing=down,logged_state=oillogged,roll=false,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1",
+      "x": 180
+    },
+    "facing=down,logged_state=oillogged,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 180
+    },
+    "facing=down,logged_state=oillogged,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 180
+    },
+    "facing=down,logged_state=oillogged,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 180
+    },
+    "facing=down,logged_state=oillogged,roll=true,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2_roll",
       "x": 180
     },
-    "facing=east,roll=false,side=0,waterlogged=false": {
+    "facing=down,logged_state=waterlogged,roll=false,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0",
-      "x": 270,
-      "y": 270
+      "x": 180
     },
-    "facing=east,roll=false,side=0,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_0",
-      "x": 270,
-      "y": 270
-    },
-    "facing=east,roll=false,side=1,waterlogged=false": {
+    "facing=down,logged_state=waterlogged,roll=false,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1",
-      "x": 270,
-      "y": 270
+      "x": 180
     },
-    "facing=east,roll=false,side=1,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_1",
-      "x": 270,
-      "y": 270
-    },
-    "facing=east,roll=false,side=2,waterlogged=false": {
+    "facing=down,logged_state=waterlogged,roll=false,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2",
-      "x": 270,
-      "y": 270
+      "x": 180
     },
-    "facing=east,roll=false,side=2,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_2",
-      "x": 270,
-      "y": 270
-    },
-    "facing=east,roll=true,side=0,waterlogged=false": {
+    "facing=down,logged_state=waterlogged,roll=true,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0_roll",
-      "x": 270,
-      "y": 270
+      "x": 180
     },
-    "facing=east,roll=true,side=0,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
-      "x": 270,
-      "y": 270
-    },
-    "facing=east,roll=true,side=1,waterlogged=false": {
+    "facing=down,logged_state=waterlogged,roll=true,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1_roll",
-      "x": 270,
-      "y": 270
+      "x": 180
     },
-    "facing=east,roll=true,side=1,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
-      "x": 270,
-      "y": 270
-    },
-    "facing=east,roll=true,side=2,waterlogged=false": {
+    "facing=down,logged_state=waterlogged,roll=true,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2_roll",
+      "x": 180
+    },
+    "facing=east,logged_state=dry,roll=false,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0",
       "x": 270,
       "y": 270
     },
-    "facing=east,roll=true,side=2,waterlogged=true": {
+    "facing=east,logged_state=dry,roll=false,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=dry,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=dry,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=dry,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=dry,roll=true,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2_roll",
       "x": 270,
       "y": 270
     },
-    "facing=north,roll=false,side=0,waterlogged=false": {
+    "facing=east,logged_state=oillogged,roll=false,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=oillogged,roll=false,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=oillogged,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=oillogged,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=oillogged,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=oillogged,roll=true,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=waterlogged,roll=false,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=waterlogged,roll=false,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=waterlogged,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=waterlogged,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=waterlogged,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=waterlogged,roll=true,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=north,logged_state=dry,roll=false,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=false,side=0,waterlogged=true": {
+    "facing=north,logged_state=dry,roll=false,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=dry,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=dry,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=dry,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=dry,roll=true,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=oillogged,roll=false,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=false,side=1,waterlogged=false": {
+    "facing=north,logged_state=oillogged,roll=false,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=false,side=1,waterlogged=true": {
+    "facing=north,logged_state=oillogged,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=oillogged,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=oillogged,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=oillogged,roll=true,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=waterlogged,roll=false,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=waterlogged,roll=false,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=false,side=2,waterlogged=false": {
+    "facing=north,logged_state=waterlogged,roll=false,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=false,side=2,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_2",
-      "x": 270,
-      "y": 180
-    },
-    "facing=north,roll=true,side=0,waterlogged=false": {
+    "facing=north,logged_state=waterlogged,roll=true,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=true,side=0,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
-      "x": 270,
-      "y": 180
-    },
-    "facing=north,roll=true,side=1,waterlogged=false": {
+    "facing=north,logged_state=waterlogged,roll=true,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=true,side=1,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
-      "x": 270,
-      "y": 180
-    },
-    "facing=north,roll=true,side=2,waterlogged=false": {
+    "facing=north,logged_state=waterlogged,roll=true,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=true,side=2,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_2_roll",
-      "x": 270,
-      "y": 180
-    },
-    "facing=south,roll=false,side=0,waterlogged=false": {
+    "facing=south,logged_state=dry,roll=false,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0",
       "x": 270
     },
-    "facing=south,roll=false,side=0,waterlogged=true": {
+    "facing=south,logged_state=dry,roll=false,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1",
+      "x": 270
+    },
+    "facing=south,logged_state=dry,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 270
+    },
+    "facing=south,logged_state=dry,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=dry,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=dry,roll=true,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=oillogged,roll=false,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0",
       "x": 270
     },
-    "facing=south,roll=false,side=1,waterlogged=false": {
+    "facing=south,logged_state=oillogged,roll=false,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1",
       "x": 270
     },
-    "facing=south,roll=false,side=1,waterlogged=true": {
+    "facing=south,logged_state=oillogged,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 270
+    },
+    "facing=south,logged_state=oillogged,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=oillogged,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=oillogged,roll=true,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=waterlogged,roll=false,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0",
+      "x": 270
+    },
+    "facing=south,logged_state=waterlogged,roll=false,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1",
       "x": 270
     },
-    "facing=south,roll=false,side=2,waterlogged=false": {
+    "facing=south,logged_state=waterlogged,roll=false,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2",
       "x": 270
     },
-    "facing=south,roll=false,side=2,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_2",
-      "x": 270
-    },
-    "facing=south,roll=true,side=0,waterlogged=false": {
+    "facing=south,logged_state=waterlogged,roll=true,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0_roll",
       "x": 270
     },
-    "facing=south,roll=true,side=0,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
-      "x": 270
-    },
-    "facing=south,roll=true,side=1,waterlogged=false": {
+    "facing=south,logged_state=waterlogged,roll=true,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1_roll",
       "x": 270
     },
-    "facing=south,roll=true,side=1,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
-      "x": 270
-    },
-    "facing=south,roll=true,side=2,waterlogged=false": {
+    "facing=south,logged_state=waterlogged,roll=true,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2_roll",
       "x": 270
     },
-    "facing=south,roll=true,side=2,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_2_roll",
-      "x": 270
-    },
-    "facing=up,roll=false,side=0,waterlogged=false": {
+    "facing=up,logged_state=dry,roll=false,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0"
     },
-    "facing=up,roll=false,side=0,waterlogged=true": {
+    "facing=up,logged_state=dry,roll=false,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1"
+    },
+    "facing=up,logged_state=dry,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2"
+    },
+    "facing=up,logged_state=dry,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll"
+    },
+    "facing=up,logged_state=dry,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll"
+    },
+    "facing=up,logged_state=dry,roll=true,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2_roll"
+    },
+    "facing=up,logged_state=oillogged,roll=false,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0"
     },
-    "facing=up,roll=false,side=1,waterlogged=false": {
+    "facing=up,logged_state=oillogged,roll=false,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1"
     },
-    "facing=up,roll=false,side=1,waterlogged=true": {
+    "facing=up,logged_state=oillogged,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2"
+    },
+    "facing=up,logged_state=oillogged,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll"
+    },
+    "facing=up,logged_state=oillogged,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll"
+    },
+    "facing=up,logged_state=oillogged,roll=true,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2_roll"
+    },
+    "facing=up,logged_state=waterlogged,roll=false,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0"
+    },
+    "facing=up,logged_state=waterlogged,roll=false,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1"
     },
-    "facing=up,roll=false,side=2,waterlogged=false": {
+    "facing=up,logged_state=waterlogged,roll=false,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2"
     },
-    "facing=up,roll=false,side=2,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_2"
-    },
-    "facing=up,roll=true,side=0,waterlogged=false": {
+    "facing=up,logged_state=waterlogged,roll=true,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0_roll"
     },
-    "facing=up,roll=true,side=0,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_0_roll"
-    },
-    "facing=up,roll=true,side=1,waterlogged=false": {
+    "facing=up,logged_state=waterlogged,roll=true,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1_roll"
     },
-    "facing=up,roll=true,side=1,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_1_roll"
-    },
-    "facing=up,roll=true,side=2,waterlogged=false": {
+    "facing=up,logged_state=waterlogged,roll=true,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2_roll"
     },
-    "facing=up,roll=true,side=2,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_2_roll"
-    },
-    "facing=west,roll=false,side=0,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=false,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=false,side=0,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_0",
-      "x": 270,
-      "y": 90
-    },
-    "facing=west,roll=false,side=1,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=false,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=false,side=1,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_1",
-      "x": 270,
-      "y": 90
-    },
-    "facing=west,roll=false,side=2,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=false,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=false,side=2,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_2",
-      "x": 270,
-      "y": 90
-    },
-    "facing=west,roll=true,side=0,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=true,side=0": {
       "model": "electroenergetics:block/indicator_bulb/block_0_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=true,side=0,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
-      "x": 270,
-      "y": 90
-    },
-    "facing=west,roll=true,side=1,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=true,side=1": {
       "model": "electroenergetics:block/indicator_bulb/block_1_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=true,side=1,waterlogged=true": {
-      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
-      "x": 270,
-      "y": 90
-    },
-    "facing=west,roll=true,side=2,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=true,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=true,side=2,waterlogged=true": {
+    "facing=west,logged_state=oillogged,roll=false,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=oillogged,roll=false,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=oillogged,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=oillogged,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=oillogged,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=oillogged,roll=true,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=false,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=false,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=false,side=2": {
+      "model": "electroenergetics:block/indicator_bulb/block_2",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=true,side=0": {
+      "model": "electroenergetics:block/indicator_bulb/block_0_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=true,side=1": {
+      "model": "electroenergetics:block/indicator_bulb/block_1_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=true,side=2": {
       "model": "electroenergetics:block/indicator_bulb/block_2_roll",
       "x": 270,
       "y": 90

@@ -3,11 +3,13 @@ package com.george_vi.electroenergetics.ponder;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
+import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.scene.SceneBuilder;
+import net.createmod.ponder.api.scene.Selection;
 import net.createmod.ponder.foundation.instruction.FadeIntoSceneInstruction;
 import net.createmod.ponder.foundation.instruction.FadeOutOfSceneInstruction;
 import net.minecraft.core.BlockPos;
@@ -88,6 +90,10 @@ public class WireConnectionInstructions {
     public void setBulbState(BlockPos bulbPos, float state) {
         builder.world().modifyBlock(bulbPos, s -> s.setValue(BulbBlock.LIGHT, Mth.clamp(Mth.floor(state * 15), 0, 15)), false);
         builder.world().modifyBlockEntity(bulbPos, BulbBlockEntity.class, be -> be.setLight(state));
+    }
+
+    public void setGaugeState(Selection selection, float state) {
+        builder.world().modifyBlockEntityNBT(selection, ElectricGaugeBlockEntity.class, nbt -> nbt.putFloat("Value", state));
     }
 
     public static class CreateWireConnectionInstruction extends FadeIntoSceneInstruction<WirePonderElement> {

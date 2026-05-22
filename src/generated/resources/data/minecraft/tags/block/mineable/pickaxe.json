@@ -54,6 +54,7 @@
     "electroenergetics:electric_shock_sign",
     "electroenergetics:grounding_sign",
     "electroenergetics:potentiometer",
+    "electroenergetics:duplex_wire_termination",
     "electroenergetics:resistive_heater",
     "electroenergetics:synchroscope",
     "electroenergetics:frequency_meter",

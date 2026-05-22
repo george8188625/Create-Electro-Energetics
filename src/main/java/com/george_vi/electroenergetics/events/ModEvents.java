@@ -1,12 +1,15 @@
 package com.george_vi.electroenergetics.events;
 
+import com.george_vi.electroenergetics.CEEFluids;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
+import com.george_vi.electroenergetics.events.datagen.CEECompactingRecipeGen;
 import com.george_vi.electroenergetics.events.datagen.CEEGeneratedEntriesProvider;
+import com.george_vi.electroenergetics.events.datagen.CEEMixingRecipeGen;
 import com.george_vi.electroenergetics.events.datagen.CEERecipeGen;
 import com.george_vi.electroenergetics.ponder.CEEPonderPlugin;
 import com.google.gson.JsonElement;
@@ -15,6 +18,8 @@ import com.simibubi.create.content.contraptions.wrench.RadialWrenchMenu;
 import com.simibubi.create.foundation.utility.FilesHelper;
 import com.tterrag.registrate.providers.ProviderType;
 import net.createmod.ponder.foundation.PonderIndex;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -81,13 +86,18 @@ public class ModEvents {
         CEEGeneratedEntriesProvider generatedEntriesProvider = new CEEGeneratedEntriesProvider(packOutput, lookupProvider);
         generator.addProvider(event.includeServer(), generatedEntriesProvider);
         generator.addProvider(event.includeServer(), new CEERecipeGen(packOutput, lookupProvider));
+        generator.addProvider(event.includeServer(), new CEEMixingRecipeGen(packOutput, lookupProvider));
+        generator.addProvider(event.includeServer(), new CEECompactingRecipeGen(packOutput, lookupProvider));
     }
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void clientInit(FMLClientSetupEvent event) {
         PonderIndex.addPlugin(new CEEPonderPlugin());
-
+        ItemBlockRenderTypes.setRenderLayer(CEEFluids.TRANSFORMER_OIL.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(CEEFluids.TRANSFORMER_OIL.getSource(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(CEEFluids.PLANT_OIL.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(CEEFluids.PLANT_OIL.getSource(), RenderType.translucent());
         RadialWrenchMenu.registerRotationProperty(DoubleConnectorBlock.ROLL, "Roll");
         RadialWrenchMenu.registerRotationProperty(DoubleConnectorBlock.STYLE, "Style");
         RadialWrenchMenu.registerRotationProperty(ConnectorBlock.STYLE, "Style");

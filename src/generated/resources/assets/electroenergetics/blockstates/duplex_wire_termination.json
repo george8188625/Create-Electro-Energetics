@@ -1,0 +1,316 @@
+{
+  "variants": {
+    "facing=down,flip=false,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 180
+    },
+    "facing=down,flip=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 180
+    },
+    "facing=down,flip=false,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 180
+    },
+    "facing=down,flip=false,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 180
+    },
+    "facing=down,flip=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 180
+    },
+    "facing=down,flip=false,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 180
+    },
+    "facing=down,flip=true,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 180
+    },
+    "facing=down,flip=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 180
+    },
+    "facing=down,flip=true,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 180
+    },
+    "facing=down,flip=true,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 180
+    },
+    "facing=down,flip=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 180
+    },
+    "facing=down,flip=true,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 180
+    },
+    "facing=east,flip=false,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=false,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=false,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=false,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=north,flip=false,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=false,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=false,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=false,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=south,flip=false,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270
+    },
+    "facing=south,flip=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270
+    },
+    "facing=south,flip=false,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270
+    },
+    "facing=south,flip=false,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270
+    },
+    "facing=south,flip=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270
+    },
+    "facing=south,flip=false,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270
+    },
+    "facing=south,flip=true,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270
+    },
+    "facing=south,flip=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270
+    },
+    "facing=south,flip=true,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270
+    },
+    "facing=south,flip=true,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270
+    },
+    "facing=south,flip=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270
+    },
+    "facing=south,flip=true,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270
+    },
+    "facing=up,flip=false,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block"
+    },
+    "facing=up,flip=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll"
+    },
+    "facing=up,flip=false,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block"
+    },
+    "facing=up,flip=false,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll"
+    },
+    "facing=up,flip=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block"
+    },
+    "facing=up,flip=false,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll"
+    },
+    "facing=up,flip=true,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip"
+    },
+    "facing=up,flip=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll"
+    },
+    "facing=up,flip=true,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip"
+    },
+    "facing=up,flip=true,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll"
+    },
+    "facing=up,flip=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip"
+    },
+    "facing=up,flip=true,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll"
+    },
+    "facing=west,flip=false,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=false,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=false,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=false,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,logged_state=dry,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,logged_state=waterlogged,roll=true": {
+      "model": "electroenergetics:block/duplex_wire_termination/block_flip_roll",
+      "x": 270,
+      "y": 90
+    }
+  }
+}

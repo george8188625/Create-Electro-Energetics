@@ -20,6 +20,7 @@
     "CarriageMixin",
     "FluidPropagatorMixin",
     "LevelChunkMixin",
+    "LivingEntityMixin",
     "MinecraftServerMixin",
     "SchematicLevelMixin",
     "SchematicPrinterMixin",

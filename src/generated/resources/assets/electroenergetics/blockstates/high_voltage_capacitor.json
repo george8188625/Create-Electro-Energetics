@@ -1,209 +1,313 @@
 {
   "variants": {
-    "facing=down,roll=false,sliced=false,waterlogged=false": {
+    "facing=down,logged_state=dry,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block",
       "x": 180
     },
-    "facing=down,roll=false,sliced=false,waterlogged=true": {
+    "facing=down,logged_state=dry,roll=false,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
+      "x": 180
+    },
+    "facing=down,logged_state=dry,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 180
+    },
+    "facing=down,logged_state=dry,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
+      "x": 180
+    },
+    "facing=down,logged_state=oillogged,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block",
       "x": 180
     },
-    "facing=down,roll=false,sliced=true,waterlogged=false": {
+    "facing=down,logged_state=oillogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
       "x": 180
     },
-    "facing=down,roll=false,sliced=true,waterlogged=true": {
+    "facing=down,logged_state=oillogged,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 180
+    },
+    "facing=down,logged_state=oillogged,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
+      "x": 180
+    },
+    "facing=down,logged_state=waterlogged,roll=false,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block",
+      "x": 180
+    },
+    "facing=down,logged_state=waterlogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
       "x": 180
     },
-    "facing=down,roll=true,sliced=false,waterlogged=false": {
+    "facing=down,logged_state=waterlogged,roll=true,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
       "x": 180
     },
-    "facing=down,roll=true,sliced=false,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
-      "x": 180
-    },
-    "facing=down,roll=true,sliced=true,waterlogged=false": {
+    "facing=down,logged_state=waterlogged,roll=true,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
       "x": 180
     },
-    "facing=down,roll=true,sliced=true,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
-      "x": 180
-    },
-    "facing=east,roll=false,sliced=false,waterlogged=false": {
+    "facing=east,logged_state=dry,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block",
       "x": 270,
       "y": 270
     },
-    "facing=east,roll=false,sliced=false,waterlogged=true": {
+    "facing=east,logged_state=dry,roll=false,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=dry,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=dry,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=oillogged,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block",
       "x": 270,
       "y": 270
     },
-    "facing=east,roll=false,sliced=true,waterlogged=false": {
+    "facing=east,logged_state=oillogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
       "x": 270,
       "y": 270
     },
-    "facing=east,roll=false,sliced=true,waterlogged=true": {
+    "facing=east,logged_state=oillogged,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=oillogged,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=waterlogged,roll=false,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,logged_state=waterlogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
       "x": 270,
       "y": 270
     },
-    "facing=east,roll=true,sliced=false,waterlogged=false": {
+    "facing=east,logged_state=waterlogged,roll=true,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
       "x": 270,
       "y": 270
     },
-    "facing=east,roll=true,sliced=false,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
-      "x": 270,
-      "y": 270
-    },
-    "facing=east,roll=true,sliced=true,waterlogged=false": {
+    "facing=east,logged_state=waterlogged,roll=true,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
       "x": 270,
       "y": 270
     },
-    "facing=east,roll=true,sliced=true,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
-      "x": 270,
-      "y": 270
-    },
-    "facing=north,roll=false,sliced=false,waterlogged=false": {
+    "facing=north,logged_state=dry,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=false,sliced=false,waterlogged=true": {
+    "facing=north,logged_state=dry,roll=false,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=dry,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=dry,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=oillogged,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=false,sliced=true,waterlogged=false": {
+    "facing=north,logged_state=oillogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=false,sliced=true,waterlogged=true": {
+    "facing=north,logged_state=oillogged,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=oillogged,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=waterlogged,roll=false,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,logged_state=waterlogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=true,sliced=false,waterlogged=false": {
+    "facing=north,logged_state=waterlogged,roll=true,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=true,sliced=false,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
-      "x": 270,
-      "y": 180
-    },
-    "facing=north,roll=true,sliced=true,waterlogged=false": {
+    "facing=north,logged_state=waterlogged,roll=true,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,roll=true,sliced=true,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
-      "x": 270,
-      "y": 180
-    },
-    "facing=south,roll=false,sliced=false,waterlogged=false": {
+    "facing=south,logged_state=dry,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block",
       "x": 270
     },
-    "facing=south,roll=false,sliced=false,waterlogged=true": {
+    "facing=south,logged_state=dry,roll=false,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
+      "x": 270
+    },
+    "facing=south,logged_state=dry,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=dry,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=oillogged,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block",
       "x": 270
     },
-    "facing=south,roll=false,sliced=true,waterlogged=false": {
+    "facing=south,logged_state=oillogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
       "x": 270
     },
-    "facing=south,roll=false,sliced=true,waterlogged=true": {
+    "facing=south,logged_state=oillogged,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=oillogged,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
+      "x": 270
+    },
+    "facing=south,logged_state=waterlogged,roll=false,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block",
+      "x": 270
+    },
+    "facing=south,logged_state=waterlogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
       "x": 270
     },
-    "facing=south,roll=true,sliced=false,waterlogged=false": {
+    "facing=south,logged_state=waterlogged,roll=true,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
       "x": 270
     },
-    "facing=south,roll=true,sliced=false,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
-      "x": 270
-    },
-    "facing=south,roll=true,sliced=true,waterlogged=false": {
+    "facing=south,logged_state=waterlogged,roll=true,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
       "x": 270
     },
-    "facing=south,roll=true,sliced=true,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
-      "x": 270
-    },
-    "facing=up,roll=false,sliced=false,waterlogged=false": {
+    "facing=up,logged_state=dry,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block"
     },
-    "facing=up,roll=false,sliced=false,waterlogged=true": {
+    "facing=up,logged_state=dry,roll=false,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced"
+    },
+    "facing=up,logged_state=dry,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll"
+    },
+    "facing=up,logged_state=dry,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll"
+    },
+    "facing=up,logged_state=oillogged,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block"
     },
-    "facing=up,roll=false,sliced=true,waterlogged=false": {
+    "facing=up,logged_state=oillogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced"
     },
-    "facing=up,roll=false,sliced=true,waterlogged=true": {
+    "facing=up,logged_state=oillogged,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll"
+    },
+    "facing=up,logged_state=oillogged,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll"
+    },
+    "facing=up,logged_state=waterlogged,roll=false,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block"
+    },
+    "facing=up,logged_state=waterlogged,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced"
     },
-    "facing=up,roll=true,sliced=false,waterlogged=false": {
+    "facing=up,logged_state=waterlogged,roll=true,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_roll"
     },
-    "facing=up,roll=true,sliced=false,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_roll"
-    },
-    "facing=up,roll=true,sliced=true,waterlogged=false": {
+    "facing=up,logged_state=waterlogged,roll=true,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll"
     },
-    "facing=up,roll=true,sliced=true,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll"
-    },
-    "facing=west,roll=false,sliced=false,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=false,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=false,sliced=false,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block",
-      "x": 270,
-      "y": 90
-    },
-    "facing=west,roll=false,sliced=true,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=false,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=false,sliced=true,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
-      "x": 270,
-      "y": 90
-    },
-    "facing=west,roll=true,sliced=false,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=true,sliced=false": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=true,sliced=false,waterlogged=true": {
-      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
-      "x": 270,
-      "y": 90
-    },
-    "facing=west,roll=true,sliced=true,waterlogged=false": {
+    "facing=west,logged_state=dry,roll=true,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,roll=true,sliced=true,waterlogged=true": {
+    "facing=west,logged_state=oillogged,roll=false,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=oillogged,roll=false,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=oillogged,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=oillogged,roll=true,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=false,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=false,sliced=true": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_sliced",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=true,sliced=false": {
+      "model": "electroenergetics:block/high_voltage_capacitor/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,logged_state=waterlogged,roll=true,sliced=true": {
       "model": "electroenergetics:block/high_voltage_capacitor/block_sliced_roll",
       "x": 270,
       "y": 90

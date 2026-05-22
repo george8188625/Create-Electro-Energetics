@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.transmission_distribution.transformer;
 
 import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEEFluids;
 import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
@@ -27,11 +28,13 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -109,10 +112,10 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
             dissipationFactor += 1d / Math.sqrt(pos.getCenter().distanceTo(worldPosition.getCenter().relative(facing, 0.5)));
         }
 
-        if (level.getFluidState(worldPosition).isEmpty())
-            dissipationFactor *= 0.9;
-        if (level.getFluidState(worldPosition.relative(getBlockState().getValue(TransformerCoreBlock.FACING))).isEmpty())
-            dissipationFactor *= 0.9;
+        if (!level.getFluidState(worldPosition).is(CEEFluids.TRANSFORMER_OIL.get().getSource()))
+            dissipationFactor *= 0.7;
+        if (!level.getFluidState(worldPosition.relative(getBlockState().getValue(TransformerCoreBlock.FACING))).is(CEEFluids.TRANSFORMER_OIL.get().getSource()))
+            dissipationFactor *= 0.7;
         dissipationFactor = dissipationFactor * 60000;
 
         device.heatDissipation = heatDissipationFactor = dissipationFactor;
@@ -120,7 +123,9 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
     }
 
     private void heatDissipatorsDFS(Set<BlockPos> visited, BlockPos currentPos) {
-        boolean waterlogged = !level.getFluidState(currentPos).isEmpty();
+        boolean waterlogged = level.getFluidState(currentPos).is(FluidTags.WATER) ||
+                level.getFluidState(currentPos).is(CEEFluids.TRANSFORMER_OIL.get().getSource());
+
         for (Direction direction : Iterate.directions) {
             BlockPos nextPos = currentPos.relative(direction);
             if (nextPos.distSqr(worldPosition) > 4)
@@ -133,9 +138,6 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
                     heatDissipatorsDFS(visited, nextPos);
         }
     }
-
-
-
 
     @OnlyIn(Dist.CLIENT)
     protected void tickAudio() {

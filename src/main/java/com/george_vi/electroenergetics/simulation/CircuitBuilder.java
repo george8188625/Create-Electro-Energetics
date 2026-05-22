@@ -9,6 +9,7 @@ import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTic
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -184,8 +185,8 @@ public class CircuitBuilder {
             WrappedIndexedNode node = allIndexedNodes.get(i);
             List<WrappedIndexedNode> networkNodes = new ArrayList<>();
             networkNodes.add(node);
-            dfsInner(node, visited, networkNodes, false);
-            allNetworks.add(networkNodes);
+            if (dfsInner(node, visited, networkNodes, false))
+                allNetworks.add(networkNodes);
         }
 
         NetworksLoop:
@@ -219,20 +220,29 @@ public class CircuitBuilder {
             WrappedIndexedNode node = allIndexedNodes.get(i);
             List<WrappedIndexedNode> networkNodes = new ArrayList<>();
             networkNodes.add(node);
-            dfsInner(node, visited, networkNodes, true);
-            allNetworks.add(networkNodes);
+            if (dfsInner(node, visited, networkNodes, true))
+                allNetworks.add(networkNodes);
         }
         this.allNetworks = allNetworks;
         return allNetworks;
     }
 
-    private void dfsInner(WrappedIndexedNode startNode, boolean[] visited, List<WrappedIndexedNode> networkNodes, boolean invis) {
+    /**
+     * @return false if it only consists of resistors, otherwise true.
+     */
+    private boolean dfsInner(WrappedIndexedNode startNode, boolean[] visited, List<WrappedIndexedNode> networkNodes, boolean invis) {
         dequeStack.clear();
         dequeStack.push(startNode);
+        boolean hasSource = false;
         while (!dequeStack.isEmpty()) {
             WrappedIndexedNode node = dequeStack.pop();
-            for (IntIterator it = node.adjacency.keySet().iterator(); it.hasNext(); ) {
-                int i = it.nextInt();
+            if (!node.invisibleAdjacency.isEmpty())
+                hasSource = true;
+
+            for (Int2ObjectMap.Entry<ElectricalProperties> e : node.adjacency.int2ObjectEntrySet()) {
+                int i = e.getIntKey();
+                if (!hasSource && !e.getValue().isSimpleResistor())
+                    hasSource = true;
                 if (visited[i])
                     continue;
                 visited[i] = true;
@@ -251,6 +261,8 @@ public class CircuitBuilder {
                     dequeStack.push(adjacentNode);
                 }
         }
+
+        return hasSource;
     }
 
     private void checkOutOfBounds(int id) {

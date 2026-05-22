@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class DiodeBlock extends DirectionalRolledDeviceBlock<DiodeDevice> implements IWrenchable, ProperWaterloggedBlock {
+public class DiodeBlock extends DirectionalRolledDeviceBlock<DiodeDevice> implements IWrenchable {
     public static final BooleanProperty FLIP = BooleanProperty.create("flip");
 
     public DiodeBlock(Properties properties) {

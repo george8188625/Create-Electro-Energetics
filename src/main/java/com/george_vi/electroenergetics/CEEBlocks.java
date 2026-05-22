@@ -6,6 +6,8 @@ import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockItem;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorStack;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
+import com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminationBlock;
+import com.george_vi.electroenergetics.content.bundled_wire.BundledWireType;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerBlock;
 import com.george_vi.electroenergetics.content.connector.*;
 import com.george_vi.electroenergetics.content.converter.ConverterBlock;
@@ -183,6 +185,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<HVCapacitorBlock> HV_CAPACITOR = REGISTRATE.block("high_voltage_capacitor", HVCapacitorBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) ->
@@ -219,6 +222,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<CreativeBatteryBlock> CREATIVE_BATTERY = REGISTRATE.block("creative_battery", CreativeBatteryBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_PURPLE)
                     .forceSolidOn())
@@ -354,6 +358,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<HVSwitchBlock> HV_SWITCH = REGISTRATE.block("high_voltage_switch", HVSwitchBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
@@ -364,6 +369,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<AccumulatorBlock> ACCUMULATOR = REGISTRATE.block("accumulator", AccumulatorBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) ->
@@ -393,6 +399,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<ElectricGaugeBlock> AMMETER = REGISTRATE.block("ammeter", ElectricGaugeBlock::ammeter)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
             .blockstate(new GaugeGenerator()::generate)
@@ -406,6 +413,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<ElectricGaugeBlock> VOLTMETER = REGISTRATE.block("voltmeter", ElectricGaugeBlock::voltmeter)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
             .blockstate(new GaugeGenerator()::generate)
@@ -420,6 +428,7 @@ public class CEEBlocks {
 
 
     public static final BlockEntry<ElectricPumpBlock> ELECTRIC_PUMP = REGISTRATE.block("electric_pump", ElectricPumpBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::copperMetal)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.directionalBlock(c.get(), bs ->
@@ -432,6 +441,7 @@ public class CEEBlocks {
 
 
     public static final BlockEntry<TransformerBlock> TRANSFORMER = REGISTRATE.block("transformer", TransformerBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(BlockStateGen.horizontalBlockProvider(false))
@@ -444,6 +454,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<TransformerCoreBlock> TRANSFORMER_CORE = REGISTRATE.block("transformer_core", TransformerCoreBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(BlockStateGen.horizontalBlockProvider(true))
@@ -484,6 +495,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<VoltageRegulatorBlock> VOLTAGE_REGULATOR = REGISTRATE.block("voltage_regulator", VoltageRegulatorBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
@@ -502,6 +514,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<CurrentTransformerBlock> CURRENT_TRANSFORMER = REGISTRATE.block("current_transformer", CurrentTransformerBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
@@ -565,6 +578,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<ConverterBlock> CONVERTER = REGISTRATE.block("converter", ConverterBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(ConverterBlock.SOURCE) ? p.modLoc("block/converter/block_source") : p.modLoc("block/converter/block")))
@@ -585,6 +599,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<PantographBlock> PANTOGRAPH = REGISTRATE.block("pantograph", PantographBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::netheriteMetal)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.get(), bs -> bs.getValue(PantographBlock.DOUBLE) ? AssetLookup.partialBaseModel(c, p, "double") : AssetLookup.partialBaseModel(c, p)))
@@ -597,6 +612,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<RailContactShoe> RAIL_CONTACT_SHOE = REGISTRATE.block("rail_contact_shoe", RailContactShoe::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::netheriteMetal)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.get(), AssetLookup.partialBaseModel(c, p)))
@@ -622,6 +638,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<ResistorBlock> RESISTOR = REGISTRATE.block("resistor", properties -> new ResistorBlock(properties, false))
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/resistor")))
@@ -634,6 +651,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<ResistorBlock> CREATIVE_RESISTOR = REGISTRATE.block("creative_resistor", properties -> new ResistorBlock(properties, true))
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_PURPLE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/creative_resistor")))
@@ -655,6 +673,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<BuzzerBlock> BUZZER = REGISTRATE.block("buzzer", BuzzerBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
@@ -678,6 +697,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<CapacitorBlock> CAPACITOR = REGISTRATE.block("capacitor", CapacitorBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/capacitor")))
@@ -690,6 +710,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<InductorBlock> INDUCTOR = REGISTRATE.block("inductor", InductorBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/electronics/inductor")))
@@ -722,6 +743,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<IndicatorBulbBlock> INDICATOR_BULB = REGISTRATE.block("indicator_bulb", IndicatorBulbBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc("block/indicator_bulb/block_" + bs.getValue(IndicatorBulbBlock.SIDE))))
@@ -763,6 +785,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<PotentiometerBlock> POTENTIOMETER = REGISTRATE.block("potentiometer", PotentiometerBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
@@ -772,6 +795,16 @@ public class CEEBlocks {
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addMaxPower(() -> 1300)))
             .build()
+            .register();
+
+    public static final BlockEntry<BundledWireTerminationBlock> DUPLEX_WIRE_TERMINATION = REGISTRATE.block("duplex_wire_termination", p -> new BundledWireTerminationBlock(p, BundledWireType.DUPLEX))
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) ->
+                    DirectionalRolledDeviceBlock.generateBlockState(c, p,
+                            bs -> bs.getValue(BundledWireTerminationBlock.FLIP) ? p.modLoc("block/duplex_wire_termination/block_flip") :
+                                    p.modLoc("block/duplex_wire_termination/block")))
+            .transform(pickaxeOnly())
             .register();
 
     public static final BlockEntry<ResistiveHeaterBlock> RESISTIVE_HEATER = REGISTRATE.block("resistive_heater", ResistiveHeaterBlock::new)
@@ -825,6 +858,7 @@ public class CEEBlocks {
     static {
         for (DyeColor color : DyeColor.values()) {
             ELECTRIC_MOTORS[color.ordinal()] = REGISTRATE.block(color.getSerializedName() + "_electric_motor", ElectricMotorBlock::new)
+                    .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
                     .tag(CEETags.TRAIN_ELECTRIC_MOTOR)
                     .initialProperties(SharedProperties::stone)
                     .properties(p -> p.mapColor(color))

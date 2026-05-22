@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.ponder;
 
+import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
@@ -472,5 +473,162 @@ public class TransformerScenes {
                 .attachKeyFrame()
                 .placeNearTarget();
         scene.idle(80);
+    }
+
+    public static void currentTransformer(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+        scene.title("current_transformer", "Using current transformers");
+        scene.configureBasePlate(0, 0, 9);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+
+        Selection poleMountCT = util.select().fromTo(4, 1, 3, 4, 4, 3);
+
+        Selection ammeter = util.select().position(4, 1, 1);
+        Selection poles = util.select().fromTo(8, 1, 3, 8, 4, 5)
+                .add(util.select().fromTo(0, 1, 3, 0, 4, 5));
+
+        scene.world().showSection(poles, Direction.DOWN);
+
+        scene.idle(20);
+        ElementLink<WirePonderElement> connection1 = connections.createConnection(new InWorldNode(0, 8, 4, 3), new InWorldNode(0, 0, 4, 3), CEEWireTypes.IRON_BUS.get());
+        ElementLink<WirePonderElement> connection2 = connections.createConnection(new InWorldNode(0, 8, 4, 5), new InWorldNode(0, 0, 4, 5), CEEWireTypes.IRON_BUS.get());
+        scene.idle(20);
+        ElementLink<CurrentVisualizationPonderElement> visualization1 = connections.createCurrentVisualization(new InWorldNode(0, 8, 4, 3), new InWorldNode(0, 0, 4, 3), 0, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization2 = connections.createCurrentVisualization(new InWorldNode(0, 8, 4, 5), new InWorldNode(0, 0, 4, 5), 0, -1, true);
+        scene.idle(40);
+
+        scene.overlay().showText(60)
+                .text("Sometimes, it may be difficult to measure the amperage of a circuit")
+                .pointAt(util.vector().topOf(4, 4, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        scene.overlay().showText(80)
+                .text("An ammeter here would be inaccessible")
+                .pointAt(util.vector().topOf(4, 4, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(120);
+
+        connections.removeConnection(connection1);
+        connections.removeCurrentVisualization(visualization1);
+        connections.removeCurrentVisualization(visualization2);
+        scene.world().showSection(poleMountCT, Direction.DOWN);
+
+        scene.idle(40);
+
+        scene.overlay().showText(60)
+                .text("A current transformer can 'relay' current")
+                .pointAt(util.vector().topOf(4, 4, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
+
+        scene.world().showSection(ammeter, Direction.DOWN);
+
+        scene.idle(40);
+
+        connections.createConnection(new InWorldNode(2, 4, 3, 3), new InWorldNode(0, 4, 1, 1));
+        connections.createConnection(new InWorldNode(3, 4, 3, 3), new InWorldNode(1, 4, 1, 1));
+        scene.idle(40);
+
+        scene.overlay().showText(60)
+                .text("Connect an ammeter to the bottom connectors")
+                .pointAt(util.vector().topOf(4, 1, 1))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
+
+        scene.overlay().showText(60)
+                .text("Connect the top part in series to the measured wire")
+                .pointAt(util.vector().topOf(4, 4, 3))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
+
+        ElementLink<CurrentVisualizationPonderElement> visualization3 = connections.createCurrentVisualization(new InWorldNode(2, 4, 3, 3), new InWorldNode(0, 4, 1, 1), 0, 1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization4 = connections.createCurrentVisualization(new InWorldNode(3, 4, 3, 3), new InWorldNode(1, 4, 1, 1), 0, -1, true);
+        ElementLink<CurrentVisualizationPonderElement> visualization5 = connections.createCurrentVisualization(new InWorldNode(0, 4, 1, 1), new InWorldNode(1, 4, 1, 1), 0, 1, true);
+        connection1 = connections.createConnection(new InWorldNode(0, 8, 4, 3), new InWorldNode(0, 0, 4, 3), CEEWireTypes.IRON_BUS.get());
+        visualization1 = connections.createCurrentVisualization(new InWorldNode(0, 8, 4, 3), new InWorldNode(0, 0, 4, 3), 0, 1, true);
+        visualization2 = connections.createCurrentVisualization(new InWorldNode(0, 8, 4, 5), new InWorldNode(0, 0, 4, 5), 0, -1, true);
+        connections.setGaugeState(ammeter, 1f);
+
+        scene.idle(40);
+
+        scene.overlay().showText(60)
+                .text("The ammeter will display the measured current")
+                .pointAt(util.vector().topOf(4, 1, 1))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
+
+        scene.rotateCameraY(35);
+        scene.idle(100);
+
+        scene.overlay().showText(60)
+                .text("The current from the top of the current transformer ...")
+                .pointAt(util.vector().topOf(4, 4, 3))
+                .colored(PonderPalette.BLUE)
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
+
+        scene.overlay().showText(60)
+                .text("... will be mirrored on the bottom side")
+                .pointAt(util.vector().topOf(4, 2, 3))
+                .colored(PonderPalette.BLUE)
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
+
+        scene.overlay().showText(60)
+                .text("100A")
+                .pointAt(util.vector().blockSurface(util.grid().at(4, 1, 1), Direction.NORTH))
+                .colored(PonderPalette.BLUE)
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(80);
+
+        scene.overlay().showText(100)
+                .text("Never open-circuit a current transformer!")
+                .pointAt(util.vector().centerOf(4, 3, 3))
+                .colored(PonderPalette.RED)
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(120);
+
+        scene.world().hideSection(ammeter, Direction.UP);
+
+        connections.removeCurrentVisualization(visualization1);
+        connections.removeCurrentVisualization(visualization2);
+        connections.removeCurrentVisualization(visualization3);
+        connections.removeCurrentVisualization(visualization4);
+        connections.removeCurrentVisualization(visualization5);
+
+        visualization3 = connections.createCurrentVisualization(new InWorldNode(2, 4, 3, 3), new InWorldNode(0, 4, 1, 1), 0, 0.1f, false);
+        visualization4 = connections.createCurrentVisualization(new InWorldNode(3, 4, 3, 3), new InWorldNode(1, 4, 1, 1), 0, -0.1f, false);
+        visualization1 = connections.createCurrentVisualization(new InWorldNode(0, 8, 4, 3), new InWorldNode(0, 0, 4, 3), 0, 0.1f, false);
+        visualization2 = connections.createCurrentVisualization(new InWorldNode(0, 8, 4, 5), new InWorldNode(0, 0, 4, 5), 0, -0.1f, false);
+
+        scene.idle(40);
+
+        scene.overlay().showText(200)
+                .text("The current transformer tries to replicate the current from the top to the bottom, but it can't, because the bottom circuit is not complete!")
+                .pointAt(util.vector().centerOf(4, 4, 3))
+                .colored(PonderPalette.RED)
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(240);
+
+        scene.overlay().showText(200)
+                .text("As a result, almost no current flows, and the bottom voltage rises to extremely high values!")
+                .pointAt(util.vector().centerOf(4, 3, 3))
+                .colored(PonderPalette.RED)
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(240);
     }
 }

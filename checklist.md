@@ -110,6 +110,6 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] MV Switch
 - [ ] Lineman's Pole
 - [ ] All the ponders
-- [ ] Transformer oil
+- [x] Transformer oil
 - [ ] Changeable fuse amperage
 - [ ] Birds on wires

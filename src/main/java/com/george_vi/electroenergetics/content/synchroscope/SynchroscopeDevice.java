@@ -26,7 +26,6 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
     public double prevP2 = 0;
     public double prevS2 = 0;
     public double prevDiff = 0;
-    public double unwrappedPhase = 0;
     public int ticks = 0;
 
     public boolean isFirstPhaseP;
@@ -157,12 +156,9 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
         while (delta > Mth.PI) delta -= Mth.TWO_PI;
         while (delta < -Mth.PI) delta += Mth.TWO_PI;
 
-        this.unwrappedPhase += delta;
         this.prevDiff = diff;
-        if (Double.isNaN(this.unwrappedPhase))
-            this.unwrappedPhase = delta;
 
-        return (float) Math.toDegrees(this.unwrappedPhase);
+        return (float) Math.toDegrees(diff);
     }
 
     @Override
@@ -178,7 +174,6 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
         prevP2 = tag.getDouble("PrevP2");
         prevS2 = tag.getDouble("PrevS2");
         prevDiff = tag.getDouble("PrevDiff");
-        unwrappedPhase = tag.getDouble("UnwrappedPhase");
         ticks = tag.getInt("Ticks");
         isFirstPhaseP = tag.getBoolean("IsFirstPhaseP");
         isFirstPhaseS = tag.getBoolean("IsFirstPhaseS");
@@ -195,7 +190,6 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
         tag.putDouble("PrevP", prevP);
         tag.putDouble("PrevS", prevS);
         tag.putDouble("PrevDiff", prevDiff);
-        tag.putDouble("UnwrappedPhase", unwrappedPhase);
         tag.putInt("Ticks", ticks);
         tag.putDouble("PrevP1", prevP1);
         tag.putDouble("PrevS1", prevS1);

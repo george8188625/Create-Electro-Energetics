@@ -37,15 +37,17 @@ public class CreateElectroEnergetics
 
         CEEItems.register();
         CEEBlocks.register();
+        CEEFluids.register();
         CEEPackets.register();
         CEEPartialModels.register();
         CEEDisplaySources.register();
         CEEBlockEntityTypes.register();
         CEEWireTypes.register(modEventBus);
-        CEEPantographTypes.register(modEventBus);
+        CEEMobEffects.register(modEventBus);
         CEESoundEvents.register(modEventBus);
         CEECreativeTab.register(modEventBus);
         CEEDataComponents.register(modEventBus);
+        CEEPantographTypes.register(modEventBus);
         CEEWireAttachments.register(modEventBus);
         CEESimulatedDevices.register(modEventBus);
         CEEElectricTrainSoundTypes.register(modEventBus);

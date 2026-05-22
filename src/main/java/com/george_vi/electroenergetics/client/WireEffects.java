@@ -133,7 +133,7 @@ public class WireEffects {
         Minecraft.getInstance()
                 .getSoundManager()
                 .play(instance);
-        instance.setVolume(1f);
+        instance.setVolume(0.6f);
     }
 
     @OnlyIn(Dist.CLIENT)

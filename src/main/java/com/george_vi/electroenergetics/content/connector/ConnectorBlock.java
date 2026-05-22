@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.transmission_distribution.hv_switch.HVSwitchBlock;
+import com.george_vi.electroenergetics.foundation.ProperOilAndWaterloggedBlock;
 import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
@@ -41,14 +42,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class ConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDevice> implements IWrenchable, ProperWaterloggedBlock {
+public class ConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDevice> implements IWrenchable, ProperOilAndWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final EnumProperty<ProperOilAndWaterloggedBlock.LoggedState> LOGGED_STATE = ProperOilAndWaterloggedBlock.LOGGED_STATE;
     public static final EnumProperty<Style> STYLE = EnumProperty.create("style", Style.class);
 
     public ConnectorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false).setValue(STYLE, Style.SHORT));
+        registerDefaultState(defaultBlockState().setValue(LOGGED_STATE, LoggedState.DRY));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class ConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDevice>
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED, STYLE);
+        builder.add(FACING, LOGGED_STATE, STYLE);
     }
 
     @Nullable

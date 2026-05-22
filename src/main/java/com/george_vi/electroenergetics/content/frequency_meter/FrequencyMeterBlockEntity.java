@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.frequency_meter;
 
 import com.george_vi.electroenergetics.foundation.CEELang;
+import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.api.equipment.goggles.IHaveHoveringInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -18,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
-public class FrequencyMeterBlockEntity extends SmartBlockEntity implements IHaveHoveringInformation {
+public class FrequencyMeterBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
     float frequency = 0;
     float prevFrequency = 0;
     int tickLength = 0;
@@ -69,12 +70,12 @@ public class FrequencyMeterBlockEntity extends SmartBlockEntity implements IHave
     }
 
     @Override
-    public boolean addToTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+    public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         CreateLang.translate("gui.gauge.info_header")
                 .forGoggles(tooltip);
 
         CEELang.builder()
-                .translate("generic.frequency")
+                .translate("gui.goggles.frequency")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 

@@ -1,209 +1,313 @@
 {
   "variants": {
-    "facing=down,inverted=false,roll=false,waterlogged=false": {
+    "facing=down,inverted=false,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 180
     },
-    "facing=down,inverted=false,roll=false,waterlogged=true": {
+    "facing=down,inverted=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_roll",
+      "x": 180
+    },
+    "facing=down,inverted=false,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 180
     },
-    "facing=down,inverted=false,roll=true,waterlogged=false": {
+    "facing=down,inverted=false,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 180
     },
-    "facing=down,inverted=false,roll=true,waterlogged=true": {
+    "facing=down,inverted=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block",
+      "x": 180
+    },
+    "facing=down,inverted=false,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 180
     },
-    "facing=down,inverted=true,roll=false,waterlogged=false": {
+    "facing=down,inverted=true,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted",
       "x": 180
     },
-    "facing=down,inverted=true,roll=false,waterlogged=true": {
+    "facing=down,inverted=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_inverted_roll",
+      "x": 180
+    },
+    "facing=down,inverted=true,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted",
       "x": 180
     },
-    "facing=down,inverted=true,roll=true,waterlogged=false": {
+    "facing=down,inverted=true,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 180
     },
-    "facing=down,inverted=true,roll=true,waterlogged=true": {
+    "facing=down,inverted=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block_inverted",
+      "x": 180
+    },
+    "facing=down,inverted=true,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 180
     },
-    "facing=east,inverted=false,roll=false,waterlogged=false": {
+    "facing=east,inverted=false,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 270,
       "y": 270
     },
-    "facing=east,inverted=false,roll=false,waterlogged=true": {
+    "facing=east,inverted=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=false,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 270,
       "y": 270
     },
-    "facing=east,inverted=false,roll=true,waterlogged=false": {
+    "facing=east,inverted=false,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 270,
       "y": 270
     },
-    "facing=east,inverted=false,roll=true,waterlogged=true": {
+    "facing=east,inverted=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=false,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 270,
       "y": 270
     },
-    "facing=east,inverted=true,roll=false,waterlogged=false": {
+    "facing=east,inverted=true,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted",
       "x": 270,
       "y": 270
     },
-    "facing=east,inverted=true,roll=false,waterlogged=true": {
+    "facing=east,inverted=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_inverted_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=true,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted",
       "x": 270,
       "y": 270
     },
-    "facing=east,inverted=true,roll=true,waterlogged=false": {
+    "facing=east,inverted=true,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 270,
       "y": 270
     },
-    "facing=east,inverted=true,roll=true,waterlogged=true": {
+    "facing=east,inverted=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block_inverted",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,inverted=true,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 270,
       "y": 270
     },
-    "facing=north,inverted=false,roll=false,waterlogged=false": {
+    "facing=north,inverted=false,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 270,
       "y": 180
     },
-    "facing=north,inverted=false,roll=false,waterlogged=true": {
+    "facing=north,inverted=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=false,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 270,
       "y": 180
     },
-    "facing=north,inverted=false,roll=true,waterlogged=false": {
+    "facing=north,inverted=false,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,inverted=false,roll=true,waterlogged=true": {
+    "facing=north,inverted=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=false,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,inverted=true,roll=false,waterlogged=false": {
+    "facing=north,inverted=true,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted",
       "x": 270,
       "y": 180
     },
-    "facing=north,inverted=true,roll=false,waterlogged=true": {
+    "facing=north,inverted=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_inverted_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=true,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted",
       "x": 270,
       "y": 180
     },
-    "facing=north,inverted=true,roll=true,waterlogged=false": {
+    "facing=north,inverted=true,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 270,
       "y": 180
     },
-    "facing=north,inverted=true,roll=true,waterlogged=true": {
+    "facing=north,inverted=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block_inverted",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,inverted=true,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 270,
       "y": 180
     },
-    "facing=south,inverted=false,roll=false,waterlogged=false": {
+    "facing=south,inverted=false,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 270
     },
-    "facing=south,inverted=false,roll=false,waterlogged=true": {
+    "facing=south,inverted=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_roll",
+      "x": 270
+    },
+    "facing=south,inverted=false,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 270
     },
-    "facing=south,inverted=false,roll=true,waterlogged=false": {
+    "facing=south,inverted=false,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 270
     },
-    "facing=south,inverted=false,roll=true,waterlogged=true": {
+    "facing=south,inverted=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block",
+      "x": 270
+    },
+    "facing=south,inverted=false,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 270
     },
-    "facing=south,inverted=true,roll=false,waterlogged=false": {
+    "facing=south,inverted=true,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted",
       "x": 270
     },
-    "facing=south,inverted=true,roll=false,waterlogged=true": {
+    "facing=south,inverted=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_inverted_roll",
+      "x": 270
+    },
+    "facing=south,inverted=true,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted",
       "x": 270
     },
-    "facing=south,inverted=true,roll=true,waterlogged=false": {
+    "facing=south,inverted=true,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 270
     },
-    "facing=south,inverted=true,roll=true,waterlogged=true": {
+    "facing=south,inverted=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block_inverted",
+      "x": 270
+    },
+    "facing=south,inverted=true,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 270
     },
-    "facing=up,inverted=false,roll=false,waterlogged=false": {
+    "facing=up,inverted=false,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block"
     },
-    "facing=up,inverted=false,roll=false,waterlogged=true": {
+    "facing=up,inverted=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_roll"
+    },
+    "facing=up,inverted=false,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block"
     },
-    "facing=up,inverted=false,roll=true,waterlogged=false": {
+    "facing=up,inverted=false,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll"
     },
-    "facing=up,inverted=false,roll=true,waterlogged=true": {
+    "facing=up,inverted=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block"
+    },
+    "facing=up,inverted=false,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll"
     },
-    "facing=up,inverted=true,roll=false,waterlogged=false": {
+    "facing=up,inverted=true,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted"
     },
-    "facing=up,inverted=true,roll=false,waterlogged=true": {
+    "facing=up,inverted=true,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_inverted_roll"
+    },
+    "facing=up,inverted=true,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted"
     },
-    "facing=up,inverted=true,roll=true,waterlogged=false": {
+    "facing=up,inverted=true,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll"
     },
-    "facing=up,inverted=true,roll=true,waterlogged=true": {
+    "facing=up,inverted=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block_inverted"
+    },
+    "facing=up,inverted=true,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll"
     },
-    "facing=west,inverted=false,roll=false,waterlogged=false": {
+    "facing=west,inverted=false,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 270,
       "y": 90
     },
-    "facing=west,inverted=false,roll=false,waterlogged=true": {
+    "facing=west,inverted=false,logged_state=dry,roll=true": {
+      "model": "electroenergetics:block/relay/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=false,logged_state=oillogged,roll=false": {
       "model": "electroenergetics:block/relay/block",
       "x": 270,
       "y": 90
     },
-    "facing=west,inverted=false,roll=true,waterlogged=false": {
+    "facing=west,inverted=false,logged_state=oillogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,inverted=false,roll=true,waterlogged=true": {
+    "facing=west,inverted=false,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=false,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,inverted=true,roll=false,waterlogged=false": {
+    "facing=west,inverted=true,logged_state=dry,roll=false": {
       "model": "electroenergetics:block/relay/block_inverted",
       "x": 270,
       "y": 90
     },
-    "facing=west,inverted=true,roll=false,waterlogged=true": {
-      "model": "electroenergetics:block/relay/block_inverted",
-      "x": 270,
-      "y": 90
-    },
-    "facing=west,inverted=true,roll=true,waterlogged=false": {
+    "facing=west,inverted=true,logged_state=dry,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 270,
       "y": 90
     },
-    "facing=west,inverted=true,roll=true,waterlogged=true": {
+    "facing=west,inverted=true,logged_state=oillogged,roll=false": {
+      "model": "electroenergetics:block/relay/block_inverted",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,logged_state=oillogged,roll=true": {
+      "model": "electroenergetics:block/relay/block_inverted_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,logged_state=waterlogged,roll=false": {
+      "model": "electroenergetics:block/relay/block_inverted",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,inverted=true,logged_state=waterlogged,roll=true": {
       "model": "electroenergetics:block/relay/block_inverted_roll",
       "x": 270,
       "y": 90

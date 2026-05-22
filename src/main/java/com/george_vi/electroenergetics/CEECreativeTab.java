@@ -72,6 +72,8 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.TRANSFORMER.asStack());
                         output.accept(CEEBlocks.VOLTAGE_REGULATOR.asStack());
                         output.accept(CEEBlocks.CURRENT_TRANSFORMER.asStack());
+                        output.accept(CEEFluids.TRANSFORMER_OIL.getBucket().orElseThrow());
+                        output.accept(CEEFluids.PLANT_OIL.getBucket().orElseThrow());
                         for (BlockEntry<ElectricMotorBlock> e : CEEBlocks.ELECTRIC_MOTORS)
                             output.accept(e.asStack(), e == CEEBlocks.ELECTRIC_MOTORS[DyeColor.RED.ordinal()] ?
                                     CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS :

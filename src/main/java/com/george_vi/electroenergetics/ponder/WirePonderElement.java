@@ -38,11 +38,9 @@ public class WirePonderElement extends AnimatedSceneElementBase {
     @Override
     protected void renderLast(PonderLevel world, MultiBufferSource buffer, GuiGraphics graphics, float fade, float pt) {
 
-        Vec3 pos1 = node1.getPosition(world);
-        Vec3 pos2 = node2.getPosition(world);
         if (catenary) {
-            pos1 = node1.sourcePos().getBottomCenter();
-            pos2 = node2.sourcePos().getBottomCenter();
+            Vec3 pos1 = node1.sourcePos().getBottomCenter();
+            Vec3 pos2 = node2.sourcePos().getBottomCenter();
             List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(pos1, pos2, 0, 10);
 
             for (int i = 0; i < lowerWirePoints.size(); i++) {
@@ -109,6 +107,14 @@ public class WirePonderElement extends AnimatedSceneElementBase {
             }
             return;
         }
+
+        Vec3 pos1 = node1.getPosition(world);
+        Vec3 pos2 = node2.getPosition(world);
+
+        if (pos1 == null)
+            pos1 = node1.sourcePos().getCenter();
+        if (pos2 == null)
+            pos2 = node2.sourcePos().getCenter();
 
         List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag());
         for (int i = 0; i < points.size(); i++) {

@@ -1,17 +1,16 @@
 package com.george_vi.electroenergetics.simulation.infrastructure;
 
 import com.george_vi.electroenergetics.CEEDamageTypes;
+import com.george_vi.electroenergetics.CEEMobEffects;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.SendQuadraticParticlesPacket;
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNode;
 import com.george_vi.electroenergetics.foundation.nodes.AttachedNodeGenerator;
-import com.george_vi.electroenergetics.foundation.nodes.DirectionalNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
-import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.Registry;
@@ -24,6 +23,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
@@ -61,6 +61,8 @@ public class WireElectrocutionModule {
             if (!(entity instanceof Mob || entity instanceof ServerPlayer))
                 continue;
             if (entity instanceof ServerPlayer p && (p.gameMode.getGameModeForPlayer() == GameType.CREATIVE || p.gameMode.getGameModeForPlayer() == GameType.SPECTATOR))
+                continue;
+            if (((LivingEntity) entity).hasEffect(CEEMobEffects.DIELECTRIC))
                 continue;
             computeElectrocutionFor(entity, builder);
         }

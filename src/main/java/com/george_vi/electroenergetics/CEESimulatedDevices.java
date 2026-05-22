@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorDevice;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
+import com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminationDevice;
 import com.george_vi.electroenergetics.content.buzzer.BuzzerDevice;
 import com.george_vi.electroenergetics.content.connector.ConnectorDevice;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorDevice;
@@ -232,6 +233,11 @@ public class CEESimulatedDevices {
     public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<SF6BreakerDevice>> SF6_BREAKER = DEVICES.register("sulfur_hexafluoride_breaker",
             () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("sulfur_hexafluoride_breaker"),
                     ((type, level, pos, sd) -> new SF6BreakerDevice(level, pos, sd, type))));
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<BundledWireTerminationDevice>> BUNDLED_WIRE_TERMINATION = DEVICES.register("bundled_wire_termination",
+            () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("bundled_wire_termination"),
+                    ((type, level, pos, sd) -> new BundledWireTerminationDevice(level, pos, sd, type))));
+
 
     public static void register(IEventBus bus) {
         DEVICES.register(bus);

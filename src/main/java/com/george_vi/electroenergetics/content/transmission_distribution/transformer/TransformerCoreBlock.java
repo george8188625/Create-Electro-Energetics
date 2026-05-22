@@ -1,11 +1,11 @@
 package com.george_vi.electroenergetics.content.transmission_distribution.transformer;
 
 import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.foundation.ProperOilAndWaterloggedBlock;
 import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
-import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -26,8 +26,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
@@ -39,9 +39,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class TransformerCoreBlock extends SimpleElectricalDeviceBlock<TransformerCoreDevice> implements ProperWaterloggedBlock, IBE<TransformerCoreBlockEntity> {
+public class TransformerCoreBlock extends SimpleElectricalDeviceBlock<TransformerCoreDevice> implements ProperOilAndWaterloggedBlock, IBE<TransformerCoreBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final EnumProperty<LoggedState> LOGGED_STATE = ProperOilAndWaterloggedBlock.LOGGED_STATE;
 
     public TransformerCoreBlock(Properties properties) {
         super(properties);
@@ -49,7 +49,7 @@ public class TransformerCoreBlock extends SimpleElectricalDeviceBlock<Transforme
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED);
+        builder.add(FACING, LOGGED_STATE);
     }
 
     @Nullable
@@ -80,7 +80,13 @@ public class TransformerCoreBlock extends SimpleElectricalDeviceBlock<Transforme
         super.setPlacedBy(level, pos, state, placer, stack);
 
         Direction facing = state.getValue(FACING);
-        level.setBlockAndUpdate(pos.relative(facing), defaultBlockState().setValue(FACING, facing.getOpposite()).setValue(WATERLOGGED, level.getFluidState(pos.relative(facing)).is(Tags.Fluids.WATER)));
+        FluidState fluidState = level.getFluidState(pos.relative(facing));
+        level.setBlockAndUpdate(pos.relative(facing), defaultBlockState().setValue(FACING, facing.getOpposite())
+                .setValue(LOGGED_STATE,
+                        fluidState.getType() == Fluids.WATER ? LoggedState.WATERLOGGED :
+                        fluidState.getType() == CEEFluids.TRANSFORMER_OIL.getSource() ? LoggedState.OILLOGGED :
+                        LoggedState.DRY
+                ));
     }
 
     @Override
@@ -103,7 +109,10 @@ public class TransformerCoreBlock extends SimpleElectricalDeviceBlock<Transforme
             BlockPos otherPos = pos.relative(facing);
             BlockState otherState = level.getBlockState(otherPos);
             if (otherState.is(state.getBlock()) && otherState.getValue(FACING) == facing.getOpposite()) {
-                BlockState newState = otherState.getFluidState().is(Fluids.WATER) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState();
+                BlockState newState =
+                        otherState.getFluidState().is(Fluids.WATER) ? Blocks.WATER.defaultBlockState() :
+                        otherState.getFluidState().is(CEEFluids.TRANSFORMER_OIL.get().getSource()) ? otherState.getFluidState().createLegacyBlock() :
+                                Blocks.AIR.defaultBlockState();
                 level.setBlock(otherPos, newState, 35);
                 level.levelEvent(player, 2001, otherPos, Block.getId(otherState));
             }
