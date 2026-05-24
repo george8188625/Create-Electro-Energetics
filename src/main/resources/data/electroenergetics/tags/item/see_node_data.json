@@ -1,5 +1,6 @@
 {
   "values": [
-    "#electroenergetics:node_rename_item"
+    "#electroenergetics:node_rename_item",
+    "electroenergetics:linemans_stick"
   ]
 }

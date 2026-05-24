@@ -17,7 +17,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> COPPER = WIRE_TYPES.register("copper", () -> new WireType.Builder(CEEPartialModels.COPPER_WIRE_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
-            .droppedItem(() -> CEETags.itemFromTag(CEETags.COPPER_WIRE))
+            .droppedTag(CEETags.COPPER_WIRE)
             .spoolItem(CEEItems.COPPER_WIRE_SPOOL::get)
             .maxTemperature(() -> 5000)
             .maxLength(CEEConfigs.server().maxWireLength::get)
@@ -85,7 +85,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> IRON_BUS = WIRE_TYPES.register("iron_bus", () -> new WireType.Builder(CEEPartialModels.IRON_BUS_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.ironWireResistance::get)
-            .droppedItem(() -> CEETags.itemFromTag(CEETags.IRON_BUS_COMPONENT))
+            .droppedTag(CEETags.IRON_BUS_COMPONENT)
             .spoolItem(CEEItems.IRON_BUS_SPOOL::get)
             .maxTemperature(() -> 10000)
             .maxLength(CEEConfigs.server().maxBusWireLength::get)
@@ -95,7 +95,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> IRON_RAIL = WIRE_TYPES.register("iron_rail", () -> new WireType.Builder(CEEPartialModels.IRON_RAIL_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.ironRailResistance::get)
-            .droppedItem(() -> CEETags.itemFromTag(CEETags.IRON_RAIL_COMPONENT))
+            .droppedTag(CEETags.IRON_RAIL_COMPONENT)
             .spoolItem(CEEItems.IRON_RAIL_SPOOL::get)
             .maxTemperature(() -> 15000)
             .maxLength(CEEConfigs.server().maxBusWireLength::get)
@@ -105,7 +105,7 @@ public class CEEWireTypes {
 
     public static final DeferredHolder<WireType, WireType> ELECTRUM = WIRE_TYPES.register("electrum", () -> new WireType.Builder(CEEPartialModels.ELECTRUM_WIRE_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.electrumWireResistance::get)
-            .droppedItem(() -> CEETags.itemFromTag(CEETags.ELECTRUM_WIRE))
+            .droppedTag(CEETags.ELECTRUM_WIRE)
             .spoolItem(CEEItems.ELECTRUM_WIRE_SPOOL::get)
             .maxTemperature(() -> 3540)
             .maxLength(CEEConfigs.server().maxWireLength::get)

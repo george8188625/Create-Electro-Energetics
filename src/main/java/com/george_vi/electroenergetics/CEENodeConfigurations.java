@@ -14,6 +14,11 @@ public class CEENodeConfigurations {
             .add(new Vec3(0.5f, 5/16f, 0.5f))
             .simple();
 
+    public static final NodeConfigurator ELECTRIC_MOTOR = new NodeConfigurator.Builder()
+            .add(2, 13, 8)
+            .add(14, 13, 8)
+            .simple();
+
     public static final NodeConfigurator DOUBLE_CONNECTOR = new NodeConfigurator.Builder()
             .add(new Vec3(3/16f, 5/16f, 0.5f))
             .add(new Vec3(13/16f, 5/16f, 0.5f))

@@ -92,7 +92,7 @@ public class SchematicRendererMixin {
 
             List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
-            WireRenderer.renderWire(points, pos1, pos2, ms, buffers, wireData.wireType(), schematic);
+            WireRenderer.forceRenderWire(points, pos1, pos2, ms, buffers, wireData.wireType(), schematic);
 
             if (points.size() >= 10) {
                 if (isBlock1Outer) {

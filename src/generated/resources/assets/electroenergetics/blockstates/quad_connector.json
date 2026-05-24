@@ -1,53 +1,79 @@
 {
   "variants": {
-    "facing=down,waterlogged=false": {
+    "facing=down,logged_state=dry": {
       "model": "electroenergetics:block/quad_connector",
       "x": 180
     },
-    "facing=down,waterlogged=true": {
+    "facing=down,logged_state=oillogged": {
       "model": "electroenergetics:block/quad_connector",
       "x": 180
     },
-    "facing=east,waterlogged=false": {
+    "facing=down,logged_state=waterlogged": {
+      "model": "electroenergetics:block/quad_connector",
+      "x": 180
+    },
+    "facing=east,logged_state=dry": {
       "model": "electroenergetics:block/quad_connector",
       "x": 90,
       "y": 90
     },
-    "facing=east,waterlogged=true": {
+    "facing=east,logged_state=oillogged": {
       "model": "electroenergetics:block/quad_connector",
       "x": 90,
       "y": 90
     },
-    "facing=north,waterlogged=false": {
+    "facing=east,logged_state=waterlogged": {
+      "model": "electroenergetics:block/quad_connector",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,logged_state=dry": {
       "model": "electroenergetics:block/quad_connector",
       "x": 90
     },
-    "facing=north,waterlogged=true": {
+    "facing=north,logged_state=oillogged": {
       "model": "electroenergetics:block/quad_connector",
       "x": 90
     },
-    "facing=south,waterlogged=false": {
+    "facing=north,logged_state=waterlogged": {
+      "model": "electroenergetics:block/quad_connector",
+      "x": 90
+    },
+    "facing=south,logged_state=dry": {
       "model": "electroenergetics:block/quad_connector",
       "x": 90,
       "y": 180
     },
-    "facing=south,waterlogged=true": {
+    "facing=south,logged_state=oillogged": {
       "model": "electroenergetics:block/quad_connector",
       "x": 90,
       "y": 180
     },
-    "facing=up,waterlogged=false": {
+    "facing=south,logged_state=waterlogged": {
+      "model": "electroenergetics:block/quad_connector",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,logged_state=dry": {
       "model": "electroenergetics:block/quad_connector"
     },
-    "facing=up,waterlogged=true": {
+    "facing=up,logged_state=oillogged": {
       "model": "electroenergetics:block/quad_connector"
     },
-    "facing=west,waterlogged=false": {
+    "facing=up,logged_state=waterlogged": {
+      "model": "electroenergetics:block/quad_connector"
+    },
+    "facing=west,logged_state=dry": {
       "model": "electroenergetics:block/quad_connector",
       "x": 90,
       "y": 270
     },
-    "facing=west,waterlogged=true": {
+    "facing=west,logged_state=oillogged": {
+      "model": "electroenergetics:block/quad_connector",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,logged_state=waterlogged": {
       "model": "electroenergetics:block/quad_connector",
       "x": 90,
       "y": 270

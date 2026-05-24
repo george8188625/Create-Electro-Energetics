@@ -2,7 +2,8 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"1": "electroenergetics:block/bundled_wire_termination"
+		"1": "electroenergetics:block/bundled_wire_termination",
+		"particle": "electroenergetics:block/bundled_wire_termination"
 	},
 	"elements": [
 		{

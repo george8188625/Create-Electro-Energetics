@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.connector;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.foundation.ProperOilAndWaterloggedBlock;
 import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
@@ -32,13 +34,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class QuadConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDevice> implements IWrenchable, SimpleWaterloggedBlock {
+public class QuadConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDevice> implements IWrenchable, ProperOilAndWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final EnumProperty<ProperOilAndWaterloggedBlock.LoggedState> LOGGED_STATE = ProperOilAndWaterloggedBlock.LOGGED_STATE;
 
     public QuadConnectorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+        registerDefaultState(defaultBlockState().setValue(LOGGED_STATE, ProperOilAndWaterloggedBlock.LoggedState.DRY));
     }
 
     @Override
@@ -48,13 +50,13 @@ public class QuadConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDev
 
     @Override
     public void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED);
+        builder.add(FACING, LOGGED_STATE);
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return super.getStateForPlacement(context).setValue(FACING, context.getClickedFace());
+        return withWater(super.getStateForPlacement(context).setValue(FACING, context.getClickedFace()), context);
     }
 
     @Override
@@ -65,16 +67,13 @@ public class QuadConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDev
     @Override
     protected BlockState updateShape(
             BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-        }
-
+        updateWater(level, state, pos);
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
     @Override
     protected FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+        return fluidState(state);
     }
 
     @Override

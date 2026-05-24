@@ -3,15 +3,23 @@ package com.george_vi.electroenergetics.content.wire_spool;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.simibubi.create.foundation.item.TooltipHelper;
 import net.createmod.catnip.math.VecHelper;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -30,13 +38,39 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
         if (connectionData == null)
             return;
 
-        if (connectionData.wireType().getDrops() != stack.getItem())
+        TagKey<Item> droppedTag = connectionData.wireType().getDroppedTag();
+        if (droppedTag == null && connectionData.wireType().getDrops() != stack.getItem())
+           return;
+        if (droppedTag != null && !stack.is(droppedTag))
             return;
-            
-        if (player.isShiftKeyDown())
+
+        Vec3 pos1 = connection.node1().getPosition(level);
+        Vec3 pos2 = connection.node2().getPosition(level);
+
+        if (pos1 == null)
+            pos1 = connection.node1().sableSourcePos(level).getCenter();
+
+        if (pos2 == null)
+            pos2 = connection.node1().sableSourcePos(level).getCenter();
+
+        double distance = pos1.distanceTo(pos2);
+
+        if (player.isShiftKeyDown()) {
+            if (distance - connectionData.length > 1) {
+                ((ServerPlayer)player).connection.send(new ClientboundSetActionBarTextPacket(
+                        CEELang.translateDirect("action_bar.wire_too_short").withStyle(ChatFormatting.RED)));
+                return;
+            }
             connectionData.length -= 0.25f;
-        else
+        } else {
+            if (connectionData.length >= connectionData.wireType().getMaxLength()) {
+                ((ServerPlayer)player).connection.send(new ClientboundSetActionBarTextPacket(
+                        CEELang.translateDirect("action_bar.wire_too_long").withStyle(ChatFormatting.RED)));
+                return;
+            }
             connectionData.length += 0.25f;
+        }
+
         if (sd.wireSimulationState.relocateConnection(connection, connectionData)) {
             Vec3 pos = VecHelper.lerp(0.5f, connection.node1().sableSourcePos(level).getCenter(), connection.node2().sableSourcePos(level).getCenter());
             Containers.dropItemStack(level, pos.x, pos.y, pos.z, new ItemStack(sd.removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
@@ -49,8 +83,14 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
         if (stack.isEmpty())
             return false;
         for (WireType wireType : CEERegistries.WIRE_TYPE)
-            if (wireType.getSag() != 0 && wireType.getDrops() == stack.getItem())
+            if (wireType.getSag() != 0) {
+                TagKey<Item> droppedTag = wireType.getDroppedTag();
+                if (droppedTag == null && wireType.getDrops() != stack.getItem())
+                    continue;
+                if (droppedTag != null && !stack.is(droppedTag))
+                    continue;
                 return true;
+            }
         return false;
     }
 

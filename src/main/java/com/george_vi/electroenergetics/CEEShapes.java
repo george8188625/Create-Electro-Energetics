@@ -125,6 +125,12 @@ public class CEEShapes {
     public static final VoxelShaper ACCUMULATOR_OUTLINE_RF = shape(8, 0, 0, 16, 11, 16).forDirectional();
     public static final VoxelShaper ACCUMULATOR_OUTLINE_R = shape(0, 0, 0, 8, 11, 16).forDirectional();
 
+    public static final VoxelShaper DUPLEX_WIRE_TERMINATION = shape(3, 0, 4, 13, 5, 12)
+            .forDirectional();
+
+    public static final VoxelShaper DUPLEX_WIRE_TERMINATION_ROLL = shape(4, 0, 3, 12, 5, 13)
+            .forDirectional();
+
 
     private static VoxelShape cuboid(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Block.box(x1, y1, z1, x2, y2, z2);

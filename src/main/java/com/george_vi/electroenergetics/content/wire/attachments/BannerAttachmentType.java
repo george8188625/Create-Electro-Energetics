@@ -44,6 +44,9 @@ public class BannerAttachmentType extends WireAttachmentType {
     @Override
     public void render(PoseStack pose, MultiBufferSource buffer, WireAttachment attachment, Vec3 pos, int light, float pitch) {
         Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null)
+            return;
+
         BannerPatternLayers pattern = null;
         if (attachment.data.contains("Pattern"))
             pattern = BannerPatternLayers.CODEC

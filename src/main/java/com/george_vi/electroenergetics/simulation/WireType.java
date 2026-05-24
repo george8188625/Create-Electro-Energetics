@@ -1,7 +1,10 @@
 package com.george_vi.electroenergetics.simulation;
 
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.mojang.datafixers.util.Either;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -22,6 +25,7 @@ public class WireType {
     final double insulationResistance;
     final DoubleSupplier maxInsulationVoltage;
     final Supplier<WireType> overheatedReplacement;
+    final TagKey<Item> droppedTag;
 
     /**
      * This is the temperature at which the wire burns. It is in abstract units.
@@ -47,8 +51,11 @@ public class WireType {
 
     private WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem,
                      Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage,
-                     Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag,
-                     IntSupplier maxLength, float thickness, boolean isDecorative, boolean isInvulnerable) {
+                     Supplier<WireType> overheatedReplacement, TagKey<Item> droppedTag, DoubleSupplier maxTemperature,
+                     float sag, IntSupplier maxLength, float thickness, boolean isDecorative, boolean isInvulnerable) {
+        if (droppedItem == null && droppedTag == null)
+            droppedItem = () -> Items.AIR;
+
         this.resistance = resistance;
         this.model = model;
         this.droppedItem = droppedItem;
@@ -56,6 +63,7 @@ public class WireType {
         this.insulationResistance = insulationResistance;
         this.maxInsulationVoltage = maxInsulationVoltage;
         this.overheatedReplacement = overheatedReplacement;
+        this.droppedTag = droppedTag;
         this.maxTemperature = maxTemperature;
         this.sag = sag;
         this.maxLength = maxLength;
@@ -65,7 +73,11 @@ public class WireType {
     }
 
     public Item getDrops() {
-        return droppedItem.get();
+        return droppedItem == null ? CEETags.itemFromTag(droppedTag) : droppedItem.get();
+    }
+
+    public @Nullable TagKey<Item> getDroppedTag() {
+        return droppedTag;
     }
 
     public Item getSpooledItem() {
@@ -125,7 +137,7 @@ public class WireType {
 
         DoubleSupplier resistance = () -> CEEConfigs.server().resistanceValues.wireResistance.get();
         PartialModel model;
-        Supplier<Item> droppedItem = () -> Items.AIR;
+        Supplier<Item> droppedItem = null;
         Supplier<Item> spoolItem = () -> Items.AIR;
         double insulationResistance = 0;
         DoubleSupplier maxInsulationVoltage = () -> 0;
@@ -139,13 +151,14 @@ public class WireType {
         DyeColor dyeColor;
         boolean decorative = false;
         boolean invulnerable = false;
+        TagKey<Item> droppedTag = null;
 
         public WireType build() {
             if (dyeTypeFunction != null)
                 return new Dyeable(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
-                        overheatedReplacement, maxTemperature, sag, maxLength, thickness, dyeTypeFunction, dyeColor);
+                                        overheatedReplacement, droppedTag, maxTemperature, sag, maxLength, thickness, dyeTypeFunction, dyeColor);
             return new WireType(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
-                    overheatedReplacement, maxTemperature, sag, maxLength, thickness, decorative, invulnerable);
+                    overheatedReplacement, droppedTag, maxTemperature, sag, maxLength, thickness, decorative, invulnerable);
         }
 
         public Builder(PartialModel model) {
@@ -159,6 +172,11 @@ public class WireType {
 
         public Builder droppedItem(Supplier<Item> v) {
             droppedItem = v;
+            return this;
+        }
+
+        public Builder droppedTag(TagKey<Item> v) {
+            droppedTag = v;
             return this;
         }
 
@@ -237,12 +255,15 @@ public class WireType {
         private final Function<DyeColor, WireType> typeFunction;
         private final DyeColor dyeColor;
 
-        private Dyeable(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem, Supplier<Item> spoolItem,
-                double insulationResistance, DoubleSupplier maxInsulationVoltage,
-                Supplier<WireType> overheatedReplacement, DoubleSupplier maxTemperature, float sag,
-                IntSupplier maxLength, float thickness, Function<DyeColor, WireType> typeFunction,
-                @Nullable DyeColor dyeColor) {
-            super(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage, overheatedReplacement, maxTemperature, sag, maxLength, thickness, false, false);
+        private Dyeable(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem,
+                        Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage,
+                        Supplier<WireType> overheatedReplacement, TagKey<Item> droppedTag,
+                        DoubleSupplier maxTemperature, float sag, IntSupplier maxLength, float thickness,
+                        Function<DyeColor, WireType> typeFunction, @Nullable DyeColor dyeColor) {
+            super(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
+                    overheatedReplacement, droppedTag, maxTemperature, sag, maxLength, thickness, false,
+                    false);
+
             this.typeFunction = typeFunction;
             this.dyeColor = dyeColor;
         }

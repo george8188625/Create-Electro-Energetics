@@ -3,12 +3,12 @@ package com.george_vi.electroenergetics.content.electronic_components.diode;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
-import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
-import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
-import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import it.unimi.dsi.fastutil.booleans.BooleanBooleanPair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.MutableComponent;
@@ -20,9 +20,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -47,10 +45,15 @@ public class DiodeBlock extends DirectionalRolledDeviceBlock<DiodeDevice> implem
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockState state = super.getStateForPlacement(context);
-        if (state != null && context.getHorizontalDirection().getAxisDirection() == Direction.AxisDirection.POSITIVE)
-            state = state.cycle(FLIP);
-        return state;
+        Vec3 position = context.getClickLocation().subtract(Vec3.atLowerCornerOf(context.getClickedPos()));
+        Direction clickedFace = context.getClickedFace();
+        BooleanBooleanPair desirableState = AccumulatorBlock.desirableState(position, clickedFace);
+
+        boolean roll = desirableState.firstBoolean();
+        boolean flip = desirableState.secondBoolean();
+
+        return withWater(defaultBlockState().setValue(ROLL, roll).setValue(FLIP, flip)
+                .setValue(FACING, clickedFace), context);
     }
 
     @Override

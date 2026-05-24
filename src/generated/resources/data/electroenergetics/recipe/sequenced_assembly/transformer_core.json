@@ -1,7 +1,7 @@
 {
   "type": "create:sequenced_assembly",
   "ingredient": {
-    "tag": "c:plates/iron"
+    "item": "electroenergetics:transformer_core_lamination"
   },
   "results": [
     {
@@ -16,7 +16,7 @@
           "item": "electroenergetics:incomplete_transformer_core"
         },
         {
-          "tag": "c:plates/iron"
+          "item": "electroenergetics:transformer_core_lamination"
         }
       ],
       "results": [
@@ -32,7 +32,7 @@
           "item": "electroenergetics:incomplete_transformer_core"
         },
         {
-          "tag": "c:plates/iron"
+          "item": "electroenergetics:transformer_core_lamination"
         }
       ],
       "results": [
@@ -48,7 +48,7 @@
           "item": "electroenergetics:incomplete_transformer_core"
         },
         {
-          "tag": "c:plates/iron"
+          "item": "electroenergetics:transformer_core_lamination"
         }
       ],
       "results": [
@@ -77,7 +77,7 @@
           "item": "electroenergetics:incomplete_transformer_core"
         },
         {
-          "item": "electroenergetics:wire_spool"
+          "item": "electroenergetics:copper_wire_spool"
         }
       ],
       "results": [
@@ -93,7 +93,7 @@
           "item": "electroenergetics:incomplete_transformer_core"
         },
         {
-          "item": "electroenergetics:wire_spool"
+          "item": "electroenergetics:copper_wire_spool"
         }
       ],
       "results": [

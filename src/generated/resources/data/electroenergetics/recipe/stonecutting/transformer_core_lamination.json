@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "tag": "c:plates/iron"
+  },
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:transformer_core_lamination"
+  }
+}

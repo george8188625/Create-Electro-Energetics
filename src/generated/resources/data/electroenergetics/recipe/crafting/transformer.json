@@ -8,6 +8,9 @@
     "C": {
       "item": "electroenergetics:double_connector"
     },
+    "O": {
+      "item": "electroenergetics:transformer_oil_bucket"
+    },
     "T": {
       "item": "electroenergetics:transformer_core"
     }
@@ -15,7 +18,7 @@
   "pattern": [
     "C C",
     "ATA",
-    "AAA"
+    "AOA"
   ],
   "result": {
     "count": 1,

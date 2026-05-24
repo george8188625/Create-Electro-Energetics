@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
+import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickClientHandler;
 import com.george_vi.electroenergetics.content.railway_electrification.gauges.ClientTrainGaugeData;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.content.wire.WireSync;
@@ -15,10 +16,10 @@ import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionB
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.WireSparkEffectTicker;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.simibubi.create.AllSoundEvents;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import net.minecraft.client.Minecraft;
@@ -68,6 +69,7 @@ public class GameEvents {
         WireEffects.tick();
         ElectricTrainSounds.tick();
         ClientTrainGaugeData.tick();
+        LinemansStickClientHandler.tick();
     }
 
     @OnlyIn(Dist.CLIENT)

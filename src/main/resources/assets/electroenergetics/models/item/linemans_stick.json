@@ -1,0 +1,59 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "electroenergetics:item/linemans_stick",
+		"particle": "electroenergetics:item/linemans_stick"
+	},
+	"elements": [
+		{
+			"from": [6.8, -16, 6.8],
+			"to": [9.2, 12, 9.2],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, -16, 7]},
+			"faces": {
+				"north": {"uv": [8.5, 0, 9.5, 14], "texture": "#0"},
+				"east": {"uv": [9.5, 0, 8.5, 14], "texture": "#0"},
+				"south": {"uv": [8.5, 0, 9.5, 14], "texture": "#0"},
+				"west": {"uv": [9.5, 0, 8.5, 14], "texture": "#0"},
+				"up": {"uv": [13.5, 15, 14.5, 16], "texture": "#0"},
+				"down": {"uv": [12.5, 16, 13.5, 15], "texture": "#0"}
+			}
+		}
+	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [-0.3, 18, 2]
+		},
+		"thirdperson_lefthand": {
+			"translation": [-0.3, 18, 0.5]
+		},
+		"firstperson_righthand": {
+			"scale": [0.68, 0.68, 0.68]
+		},
+		"firstperson_lefthand": {
+			"scale": [0.68, 0.68, 0.68]
+		},
+		"ground": {
+			"translation": [0, 10, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [163.31, -50.28, 119.48],
+			"translation": [-1.75, 3.25, 0],
+			"scale": [0.625, 0.625, 0.625]
+		},
+		"head": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 13, 7]
+		},
+		"fixed": {
+			"translation": [0, 3.75, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"on_shelf": {
+			"rotation": [0, -180, 0]
+		}
+	}
+}

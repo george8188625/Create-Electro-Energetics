@@ -66,8 +66,12 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
             BlockPos pos = BlockPos.containing(clickedPos).offset(offset);
             BlockState state = level.getBlockState(pos);
             if (state.getBlock() instanceof ElectricalDeviceBlock<?> db)
-                for (Map.Entry<Integer, Vec3> e : db.getNodePositions(level, pos, state).entrySet())
-                    nodes.add(Pair.of(e.getValue(), new InWorldNode(e.getKey(), pos)));
+                for (Map.Entry<Integer, Vec3> e : db.getNodePositions(level, pos, state).entrySet()) {
+                    int id = e.getKey();
+                    Vec3 nodePos = e.getValue();
+                    if (db.isNodeAccessible(level, pos, state, id))
+                        nodes.add(Pair.of(nodePos, new InWorldNode(id, pos)));
+                }
         }
 
         return nodes.stream()
@@ -82,8 +86,12 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         List<Pair<Vec3, InWorldNode>> nodes = new ArrayList<>();
 
         if (state.getBlock() instanceof ElectricalDeviceBlock<?> db)
-            for (Map.Entry<Integer, Vec3> e : db.getNodePositions(level, pos, state).entrySet())
-                nodes.add(Pair.of(e.getValue(), new InWorldNode(e.getKey(), pos)));
+            for (Map.Entry<Integer, Vec3> e : db.getNodePositions(level, pos, state).entrySet()) {
+                int id = e.getKey();
+                Vec3 nodePos = e.getValue();
+                if (db.isNodeAccessible(level, pos, state, id))
+                    nodes.add(Pair.of(nodePos, new InWorldNode(id, pos)));
+            }
 
 
         return nodes.stream()

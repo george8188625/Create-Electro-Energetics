@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.electric_pump;
 import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ElectricPumpBlock extends PumpBlock implements ElectricalDeviceBlock<ElectricPumpDevice> {
-    public static final BooleanProperty ROLL = BooleanProperty.create("roll");
+    public static final BooleanProperty ROLL = DirectionalRolledDeviceBlock.ROLL;
 
     public ElectricPumpBlock(Properties properties) {
         super(properties);

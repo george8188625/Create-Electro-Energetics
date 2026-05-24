@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
@@ -68,6 +69,8 @@ public class WireRenderer {
             return;
 
         MultiBufferSource buffer = acc.electroEnergetics$getRenderBuffers().bufferSource();
+
+        LinemansStickRenderer.renderSticks(levelRenderer, level, pose, buffer, camera);
 
         Map<InWorldNode, List<Vec3>> outerInsulatorJumpers = new HashMap<>();
 
@@ -334,6 +337,32 @@ public class WireRenderer {
 
             if (point.distanceTo(mc.gameRenderer.getMainCamera().getPosition()) > CEEConfigs.client().wireRenderDistance.get())
                 continue;
+            Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
+            BlockPos pointBlockPos = BlockPos.containing(point);
+            BlockPos nextPointBlockPos = BlockPos.containing(nextPoint);
+            CachedBuffers.partial(wireType.getModel(), Blocks.ANDESITE.defaultBlockState())
+                    .translate(point)
+                    .rotateY((float) Mth.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                    .rotateX(-(float) Mth.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                    .scaleZ((float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                    .light(pointBlockPos.equals(nextPointBlockPos) ?
+                            LevelRenderer.getLightColor(level,
+                                    BlockPos.containing(point.add(nextPoint).scale(0.5))) :
+                            maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
+                                    LevelRenderer.getLightColor(level, nextPointBlockPos)))
+                    .renderInto(pose, buffer.getBuffer(RenderType.solid()));
+        }
+    }
+
+    public static void forceRenderWire(List<Vec3> points, Vec3 pos1, Vec3 pos2, PoseStack pose, MultiBufferSource buffer, WireType wireType, BlockAndTintGetter level) {
+
+        double miny = pos1.y;
+        for (Vec3 point : points)
+            miny = Math.min(miny, point.y());
+
+        for (int i = 0; i < points.size(); i++) {
+            Vec3 point = points.get(i);
+
             Vec3 nextPoint = i == points.size() - 1 ? pos2 : points.get(i + 1);
             BlockPos pointBlockPos = BlockPos.containing(point);
             BlockPos nextPointBlockPos = BlockPos.containing(nextPoint);

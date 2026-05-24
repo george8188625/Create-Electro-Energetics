@@ -11,7 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:air"
+          "name": "electroenergetics:duplex_wire_termination"
         }
       ],
       "rolls": 1.0

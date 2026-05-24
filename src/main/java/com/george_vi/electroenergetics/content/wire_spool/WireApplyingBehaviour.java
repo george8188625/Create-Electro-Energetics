@@ -93,9 +93,10 @@ public class WireApplyingBehaviour {
             for (Map.Entry<Integer, Vec3> n : db.getNodePositions(level, pos, hoveredBlockState).entrySet()) {
                 int nodeId = n.getKey();
                 Vec3 nodePos = n.getValue();
-                Outliner.getInstance().showAABB("electroenergetics_node_" + nodeId, AABB.ofSize(nodePos.add(pos.getX(), pos.getY(), pos.getZ()), 4/16f, 4/16f, 4/16f), 3)
-                        .colored(FontHelper.Palette.STANDARD_CREATE.primary().getColor().getValue())
-                        .withFaceTexture(AllSpecialTextures.SELECTION);
+                if (db.isNodeAccessible(level, pos, hoveredBlockState, nodeId))
+                    Outliner.getInstance().showAABB("electroenergetics_node_" + nodeId, AABB.ofSize(nodePos.add(pos.getX(), pos.getY(), pos.getZ()), 4/16f, 4/16f, 4/16f), 3)
+                            .colored(FontHelper.Palette.STANDARD_CREATE.primary().getColor().getValue())
+                            .withFaceTexture(AllSpecialTextures.SELECTION);
             }
 
             if (hoveredNode != null) {

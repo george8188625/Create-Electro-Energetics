@@ -1,7 +1,9 @@
 package com.george_vi.electroenergetics.content.bundled_wire;
 
+import com.simibubi.create.AllSpecialTextures;
 import it.unimi.dsi.fastutil.booleans.BooleanBooleanPair;
 import net.createmod.catnip.outliner.Outliner;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -14,6 +16,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+
+import java.util.Map;
 
 public class BundledWireApplyingBehaviour {
 
@@ -34,33 +38,32 @@ public class BundledWireApplyingBehaviour {
             return;
 
 
-//        Direction clickedFace = result.getDirection();
-//
-//        BooleanBooleanPair placement = BundledWireItem.desirableState(result.getLocation().subtract(Vec3.atLowerCornerOf(pos)), clickedFace);
-//
-//        boolean roll = placement.firstBoolean();
-//        boolean flip = placement.secondBoolean();
-//
-//        int nX = clickedFace.getNormal().getX();
-//        int nY = clickedFace.getNormal().getY();
-//        int nZ = clickedFace.getNormal().getZ();
-//
-//        Vec3 lowerCorner1 = new Vec3(
-//                pos.getX() + 0.5 + nX / 2f - (nX == 0 ? 0.25 : 0),
-//                pos.getY() + 0.5 + nY / 2f - (nY == 0 ? 0.25 : 0),
-//                pos.getZ() + 0.5 + nZ / 2f - (nZ == 0 ? 0.25 : 0));
-//
-//        AABB bb1 = new AABB(
-//                lowerCorner1.x,
-//                lowerCorner1.y,
-//                lowerCorner1.z,
-//                lowerCorner1.x + (nX == 0 ? 0.5 : 0),
-//                lowerCorner1.y + (nY == 0 ? 0.5 : 0),
-//                lowerCorner1.z + (nZ == 0 ? 0.5 : 0)
-//        );
-//
-//
-//        Outliner.getInstance().showAABB("cee_bundled_wire_placement_outline", bb1, 2);
+        Direction clickedFace = result.getDirection();
+
+        BooleanBooleanPair placement = BundledWireItem.desirableState(result.getLocation().subtract(Vec3.atLowerCornerOf(pos)), clickedFace);
+
+        BlockState hoveredBlockState = level.getBlockState(pos);
+
+        if (hoveredBlockState.getBlock() instanceof BundledWireTerminationBlock db) {
+
+            for (Map.Entry<Integer, Vec3> n : db.getNodePositions(level, pos, hoveredBlockState).entrySet()) {
+                int nodeId = n.getKey();
+                Vec3 nodePos = n.getValue();
+                if (db.isNodeAccessible(level, pos, hoveredBlockState, nodeId))
+                    continue;
+                Outliner.getInstance().showAABB("electroenergetics_cnode_" + nodeId,
+                                AABB.ofSize(nodePos.add(pos.getX(), pos.getY(), pos.getZ()), 1/32f, 1/32f, 1/32f), 3)
+                        .colored(new Color(.3f, .9f, .5f, 1f))
+                        .lineWidth(1.5f / 32f)
+                        .withFaceTexture(AllSpecialTextures.SELECTION);
+
+                Outliner.getInstance().showAABB("electroenergetics_node_" + nodeId,
+                                AABB.ofSize(nodePos.add(pos.getX(), pos.getY(), pos.getZ()), 5/16f, 5/16f, 5/16f), 3)
+                        .colored(new Color(.3f, .9f, .5f, 1f))
+                        .lineWidth(1 / 32f)
+                        .withFaceTexture(AllSpecialTextures.SELECTION);
+            }
+        }
 
     }
 }

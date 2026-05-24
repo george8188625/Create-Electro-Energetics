@@ -30,12 +30,25 @@ public class NodeConfigurator {
         return nodes.get(id);
     }
 
+    public Vec3 getNodePos(Direction direction, boolean roll, int id) {
+        Int2ObjectMap<Vec3> nodes = rotate(origin, direction, roll);
+        return nodes.get(id);
+    }
+
     public Map<Integer, Vec3> getNodes(Direction direction) {
         return rotate(origin, direction);
     }
 
+    public Map<Integer, Vec3> getNodes(Direction direction, boolean roll) {
+        return rotate(origin, direction, roll);
+    }
+
     protected Int2ObjectMap<Vec3> rotate(Direction origin, Direction direction) {
         return getRotatedNodes(rotationValues(origin).reverse().add(rotationValues(direction)));
+    }
+
+    protected Int2ObjectMap<Vec3> rotate(Direction origin, Direction direction, boolean roll) {
+        return rotate(new Vec3(0, roll ? 90 : 0, 0)).getRotatedNodes(rotationValues(origin).reverse().add(rotationValues(direction)));
     }
 
     protected Int2ObjectMap<Vec3> getRotatedNodes(Vec3 vec) {
@@ -71,6 +84,13 @@ public class NodeConfigurator {
 
         public Builder add(float x, float y, float z) {
             nodes.put(id++, new Vec3(x / 16f, y / 16f, z / 16f));
+            return this;
+        }
+
+        public Builder add(int id, float x, float y, float z) {
+            nodes.put(id, new Vec3(x / 16f, y / 16f, z / 16f));
+            if (this.id == id)
+                this.id++;
             return this;
         }
 

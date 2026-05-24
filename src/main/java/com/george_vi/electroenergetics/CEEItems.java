@@ -4,10 +4,12 @@ import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireItem;
 import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterItem;
+import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickItem;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem;
+import com.simibubi.create.foundation.data.AssetLookup;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
@@ -70,10 +72,18 @@ public class CEEItems {
             .tag(CEETags.IRON_WIRE)
             .register();
 
+    public static final ItemEntry<Item> TRANSFORMER_CORE_LAMINATION = REGISTRATE.item("transformer_core_lamination", Item::new)
+            .register();
+
     public static final ItemEntry<Item> IRON_WIRE_STRAND = REGISTRATE.item("iron_wire_strand", Item::new)
             .register();
 
     public static final ItemEntry<ClampMeterItem> CLAMP_METER = REGISTRATE.item("clamp_meter", ClampMeterItem::new)
+            .register();
+
+    public static final ItemEntry<LinemansStickItem> LINEMANS_STICK = REGISTRATE.item("linemans_stick", LinemansStickItem::new)
+            .lang("Lineman's Stick")
+            .model(AssetLookup.existingItemModel())
             .register();
 
     public static final ItemEntry<SequencedAssemblyItem> INCOMPLETE_TRANSFORMER_CORE = REGISTRATE.item("incomplete_transformer_core", SequencedAssemblyItem::new)

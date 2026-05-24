@@ -1,0 +1,6 @@
+{
+  "parent": "electroenergetics:block/electric_motor/block_roll",
+  "textures": {
+    "casing": "electroenergetics:block/electric_motor/blue"
+  }
+}

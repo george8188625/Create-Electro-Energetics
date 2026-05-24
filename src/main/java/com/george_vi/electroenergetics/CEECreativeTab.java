@@ -48,6 +48,7 @@ public class CEECreativeTab {
                         output.accept(CEEItems.IRON_WIRE.asStack());
                         output.accept(CEEItems.IRON_WIRE_STRAND.asStack());
                         output.accept(CEEItems.CLAMP_METER.asStack());
+                        output.accept(CEEItems.LINEMANS_STICK.asStack());
                         output.accept(CEEBlocks.CREATIVE_BATTERY.asStack());
                         output.accept(CEEBlocks.BULB.asStack());
                         output.accept(CEEBlocks.INDICATOR_BULB.asStack());
@@ -105,6 +106,7 @@ public class CEECreativeTab {
                             output.accept(CEEBlocks.SYNCHROSCOPE.asStack());
                             output.accept(CEEBlocks.FREQUENCY_METER.asStack());
                         }
+                        output.accept(CEEItems.TRANSFORMER_CORE_LAMINATION.asStack());
                         output.accept(CEEBlocks.HIGH_VOLTAGE_SIGN.asStack());
                         output.accept(CEEBlocks.ELECTRIC_SHOCK_SIGN.asStack());
                         output.accept(CEEBlocks.GROUNDING_SIGN.asStack());

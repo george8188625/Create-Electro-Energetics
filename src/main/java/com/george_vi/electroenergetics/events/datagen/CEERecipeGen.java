@@ -1,15 +1,11 @@
 package com.george_vi.electroenergetics.events.datagen;
 
-import com.george_vi.electroenergetics.CEEBlocks;
-import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.CEETags;
-import com.george_vi.electroenergetics.CreateElectroEnergetics;
+import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
 import com.simibubi.create.content.kinetics.press.PressingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipeBuilder;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.core.HolderLookup;
@@ -402,21 +398,22 @@ public class CEERecipeGen extends RecipeProvider {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.TRANSFORMER)
                 .pattern("C C")
                 .pattern("ATA")
-                .pattern("AAA")
+                .pattern("AOA")
                 .define('T', CEEBlocks.TRANSFORMER_CORE)
                 .define('C', CEEBlocks.DOUBLE_CONNECTOR)
                 .define('A', AllItems.ANDESITE_ALLOY)
+                .define('O', CEEFluids.TRANSFORMER_OIL.getBucket().orElseThrow())
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/transformer"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.VOLTAGE_REGULATOR)
-                .pattern(" S ")
-                .pattern("WPW")
-                .pattern(" T ")
-                .define('W', CEEItems.WIRE_SPOOL)
-                .define('S', AllBlocks.SHAFT)
+                .pattern(" P ")
+                .pattern("WTW")
+                .pattern(" O ")
+                .define('W', CEEItems.COPPER_WIRE_SPOOL)
                 .define('T', CEEBlocks.TRANSFORMER_CORE)
                 .define('P', AllItems.PRECISION_MECHANISM)
+                .define('O', CEEFluids.TRANSFORMER_OIL.getBucket().orElseThrow())
                 .unlockedBy("has_transformer", has(CEEBlocks.TRANSFORMER))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/voltage_regulator"));
 
@@ -628,25 +625,29 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))
                 .save(recipeOutput, CreateElectroEnergetics.rl("stonecutting/electric_shock_sign"));
 
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEItems.TRANSFORMER_CORE_LAMINATION, 1)
+                .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))
+                .save(recipeOutput, CreateElectroEnergetics.rl("stonecutting/transformer_core_lamination"));
+
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEBlocks.GROUNDING_SIGN, 2)
                 .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))
                 .save(recipeOutput, CreateElectroEnergetics.rl("stonecutting/grounding_sign"));
 
-        sequencedAssembly("transformer_core", b -> b.require(CEETags.IRON_PLATE)
+        sequencedAssembly("transformer_core", b -> b.require(CEEItems.TRANSFORMER_CORE_LAMINATION)
                         .transitionTo(CEEItems.INCOMPLETE_TRANSFORMER_CORE)
                         .addOutput(CEEBlocks.TRANSFORMER_CORE.asStack(), 1)
                         .loops(1)
                         .addStep(DeployerApplicationRecipe::new,
-                                rb -> rb.require(Ingredient.of(CEETags.IRON_PLATE)))
+                                rb -> rb.require(Ingredient.of(CEEItems.TRANSFORMER_CORE_LAMINATION)))
                         .addStep(DeployerApplicationRecipe::new,
-                                rb -> rb.require(Ingredient.of(CEETags.IRON_PLATE)))
+                                rb -> rb.require(Ingredient.of(CEEItems.TRANSFORMER_CORE_LAMINATION)))
                         .addStep(DeployerApplicationRecipe::new,
-                                rb -> rb.require(Ingredient.of(CEETags.IRON_PLATE)))
+                                rb -> rb.require(Ingredient.of(CEEItems.TRANSFORMER_CORE_LAMINATION)))
                         .addStep(PressingRecipe::new, rb -> rb)
                         .addStep(DeployerApplicationRecipe::new,
-                                rb -> rb.require(Ingredient.of(CEEItems.WIRE_SPOOL)))
+                                rb -> rb.require(Ingredient.of(CEEItems.COPPER_WIRE_SPOOL)))
                         .addStep(DeployerApplicationRecipe::new,
-                                rb -> rb.require(Ingredient.of(CEEItems.WIRE_SPOOL)))
+                                rb -> rb.require(Ingredient.of(CEEItems.COPPER_WIRE_SPOOL)))
                 , recipeOutput);
 
 

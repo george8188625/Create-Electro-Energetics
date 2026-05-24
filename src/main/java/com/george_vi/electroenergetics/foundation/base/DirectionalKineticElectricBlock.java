@@ -11,6 +11,7 @@ import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.kinetics.base.DirectionalAxisKineticBlock;
+import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -26,7 +27,7 @@ import net.minecraft.world.ticks.LevelTickAccess;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DirectionalKineticElectricBlock<T extends SimulatedDevice> extends DirectionalAxisKineticBlock implements ElectricalDeviceBlock<T>, IWrenchable {
+public abstract class DirectionalKineticElectricBlock<T extends SimulatedDevice> extends DirectionalKineticBlock implements ElectricalDeviceBlock<T>, IWrenchable {
 
     public DirectionalKineticElectricBlock(Properties properties) {
         super(properties);

@@ -7,6 +7,9 @@
 
   "electroenergetics.clamp_meter.current": "Current:",
 
+  "electroenergetics.action_bar.wire_too_long": "Wire too long!",
+  "electroenergetics.action_bar.wire_too_short": "Wire too short!",
+
   "electroenergetics.gui.energy_meter": "Energy Meter",
   "electroenergetics.gui.energy_meter.disconnected": "Power Disconnected",
   "electroenergetics.gui.energy_meter.connected": "Power Connected",
@@ -166,6 +169,11 @@
   "block.electroenergetics.indicator_bulb.tooltip.summary": "While not useful for lighting, but can be used as an _Indicator_ or _Signal_.",
   "block.electroenergetics.indicator_bulb.tooltip.condition1": "When R-Clicked with a Dye",
   "block.electroenergetics.indicator_bulb.tooltip.behaviour1": "Dyes the _Bulb_.",
+  "item.electroenergetics.linemans_stick.tooltip.summary": "Provides _electrical isolation_ and helps you manage wires",
+  "item.electroenergetics.linemans_stick.tooltip.condition1": "When R-Clicked while holding a wire attachment in the off-hand",
+  "item.electroenergetics.linemans_stick.tooltip.behaviour1": "Installs the _wire attachment_",
+  "item.electroenergetics.linemans_stick.tooltip.condition2": "When R-Clicked while holding shift",
+  "item.electroenergetics.linemans_stick.tooltip.behaviour2": "Removes the targeted _wire attachment_",
 
   "death.attack.electroenergetics.electrocution": "%1$s was electrocuted",
   "death.attack.electroenergetics.electrocution.player": "%1$s was electrocuted by %2$s",

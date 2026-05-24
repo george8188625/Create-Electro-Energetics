@@ -61,7 +61,7 @@ public interface ElectricalDeviceBlock<T extends SimulatedDevice> extends Device
 
     /**
      * @param id ID of the node (block-local)
-     * @return Whether the node can be accessed by the player, or is internal.
+     * @return Whether the node can be accessed by the player, or is handled internally.
      */
     default boolean isNodeAccessible(Level level, BlockPos pos, BlockState state, int id) {
         return true;

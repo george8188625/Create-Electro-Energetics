@@ -1,0 +1,23 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "electroenergetics:item/linemans_stick",
+		"particle": "electroenergetics:item/linemans_stick"
+	},
+	"elements": [
+		{
+			"from": [6.9, -16, 6.9],
+			"to": [9.1, 14, 9.1],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, -16, 7]},
+			"faces": {
+				"north": {"uv": [15, 0, 16, 15], "texture": "#0"},
+				"east": {"uv": [16, 0, 15, 15], "texture": "#0"},
+				"south": {"uv": [15, 0, 16, 15], "texture": "#0"},
+				"west": {"uv": [16, 0, 15, 15], "texture": "#0"},
+				"up": {"uv": [13.5, 15, 14.5, 16], "texture": "#0"}
+			}
+		}
+	]
+}

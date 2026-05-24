@@ -8,6 +8,8 @@
   "plugin": "com.george_vi.electroenergetics.CEEMixinPlugin",
   "client": [
     "CarriageSoundsMixin",
+    "HumanoidModelMixin",
+    "ItemInHandRendererMixin",
     "LevelRendererAccessor",
     "SchematicRendererMixin"
   ],

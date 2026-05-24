@@ -1,53 +1,27 @@
 {
   "variants": {
-    "axis_along_first=false,facing=down": {
+    "facing=down": {
       "model": "electroenergetics:block/alternator_brushes/block",
       "x": 180
     },
-    "axis_along_first=false,facing=east": {
+    "facing=east": {
       "model": "electroenergetics:block/alternator_brushes/block",
       "x": 90,
       "y": 90
     },
-    "axis_along_first=false,facing=north": {
+    "facing=north": {
       "model": "electroenergetics:block/alternator_brushes/block",
       "x": 90
     },
-    "axis_along_first=false,facing=south": {
+    "facing=south": {
       "model": "electroenergetics:block/alternator_brushes/block",
       "x": 90,
       "y": 180
     },
-    "axis_along_first=false,facing=up": {
+    "facing=up": {
       "model": "electroenergetics:block/alternator_brushes/block"
     },
-    "axis_along_first=false,facing=west": {
-      "model": "electroenergetics:block/alternator_brushes/block",
-      "x": 90,
-      "y": 270
-    },
-    "axis_along_first=true,facing=down": {
-      "model": "electroenergetics:block/alternator_brushes/block",
-      "x": 180
-    },
-    "axis_along_first=true,facing=east": {
-      "model": "electroenergetics:block/alternator_brushes/block",
-      "x": 90,
-      "y": 90
-    },
-    "axis_along_first=true,facing=north": {
-      "model": "electroenergetics:block/alternator_brushes/block",
-      "x": 90
-    },
-    "axis_along_first=true,facing=south": {
-      "model": "electroenergetics:block/alternator_brushes/block",
-      "x": 90,
-      "y": 180
-    },
-    "axis_along_first=true,facing=up": {
-      "model": "electroenergetics:block/alternator_brushes/block"
-    },
-    "axis_along_first=true,facing=west": {
+    "facing=west": {
       "model": "electroenergetics:block/alternator_brushes/block",
       "x": 90,
       "y": 270

@@ -805,6 +805,9 @@ public class CEEBlocks {
                             bs -> bs.getValue(BundledWireTerminationBlock.FLIP) ? p.modLoc("block/duplex_wire_termination/block_flip") :
                                     p.modLoc("block/duplex_wire_termination/block")))
             .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/block"))
+            .build()
             .register();
 
     public static final BlockEntry<ResistiveHeaterBlock> RESISTIVE_HEATER = REGISTRATE.block("resistive_heater", ResistiveHeaterBlock::new)
@@ -863,7 +866,8 @@ public class CEEBlocks {
                     .initialProperties(SharedProperties::stone)
                     .properties(p -> p.mapColor(color))
                     .blockstate((c, p) ->
-                            p.directionalBlock(c.get(), p.models().withExistingParent(c.getName(), p.modLoc("block/electric_motor/block"))
+                            p.directionalBlock(c.get(), bs -> p.models()
+                                    .withExistingParent(c.getName() + (bs.getValue(ElectricMotorBlock.ROLL) ? "_roll" : ""), p.modLoc(bs.getValue(ElectricMotorBlock.ROLL) ? "block/electric_motor/block_roll" : "block/electric_motor/block"))
                                             .texture("casing", p.modLoc("block/electric_motor/" + color.getSerializedName()))))
                     .transform(pickaxeOnly())
                     .item()
