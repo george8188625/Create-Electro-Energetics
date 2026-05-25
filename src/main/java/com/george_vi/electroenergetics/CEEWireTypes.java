@@ -7,9 +7,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class CEEWireTypes {
 
     private static final DeferredRegister<WireType> WIRE_TYPES =
@@ -39,14 +36,19 @@ public class CEEWireTypes {
             .build());
 
     public static final DeferredHolder<WireType, WireType> DUPLEX = WIRE_TYPES.register("duplex", () -> new WireType.Builder(CEEPartialModels.DUPLEX_WIRE_SEGMENT)
+            .resistance(() -> 1e+11d)
+            .maxLength(CEEConfigs.server().maxBundledWireLength::get)
+            .decorative()
+            .build());
+
+    public static final DeferredHolder<WireType, WireType> BUNDLE_CONDUCTOR = WIRE_TYPES.register("bundle_conductor", () -> new WireType.Builder(CEEPartialModels.DUPLEX_WIRE_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
             .droppedItem(CEEItems.INSULATED_WIRE)
             .spoolItem(CEEItems.DUPLEX_WIRE_SPOOL::get)
             .maxInsulationVoltage(CEEConfigs.server().voltageValues.wireMaxVoltage::get)
-            .maxTemperature(() -> 3540)
-            .insulationResistance(330_000)
-            .maxLength(CEEConfigs.server().maxWireLength::get)
-            .decorative()
+            .maxTemperature(() -> Double.MAX_VALUE)
+            .maxLength(() -> Integer.MAX_VALUE)
+            .invulnerable()
             .build());
 
     @SuppressWarnings("unchecked")

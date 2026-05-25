@@ -79,6 +79,8 @@ public class WireRenderer {
 
         float baseCatenaryWidth = 0.66f;
         boolean renderImmediately = !VisualizationManager.supportsVisualization(level);
+        if (CEEConfigs.client().disableFlywheelWireRendering.get())
+            renderImmediately = true;
         Vec3 cameraPosition = mc.gameRenderer.getMainCamera().getPosition();
         if (renderImmediately)
             for (CatenaryConnection connection : List.copyOf(CATENARY)) {
@@ -407,6 +409,9 @@ public class WireRenderer {
             }
         }
         WIRE_CONNECTIONS.add(Pair.of(newConnection, data));
+        if (CEEConfigs.client().disableFlywheelWireRendering.get())
+            return;
+
         WireEffect we = new WireEffect(Minecraft.getInstance().level, newConnection, data.wireType(), data);
         WireEffect owe = WIRE_EFFECTS.put(newConnection, we);
         if (owe != null)
@@ -426,6 +431,8 @@ public class WireRenderer {
         if (!CATENARY.contains(connection.swap())) {
             if (!CATENARY.contains(connection)) {
                 CATENARY.add(connection);
+                if (CEEConfigs.client().disableFlywheelWireRendering.get())
+                    return;
                 WireEffect we = new WireEffect(Minecraft.getInstance().level, connection, CEEWireTypes.STANDARD.get(),
                         new WireData(CEEWireTypes.STANDARD.get(), 0, Collections.emptyList(), 0));
                 VisualizationHelper.queueAdd(we);
@@ -464,6 +471,9 @@ public class WireRenderer {
             VisualizationHelper.queueRemove(we);
         CATENARY_EFFECTS.clear();
         WIRE_EFFECTS.clear();
+        if (CEEConfigs.client().disableFlywheelWireRendering.get())
+            return;
+
         for (CatenaryConnection connection : CATENARY) {
             WireEffect we = new WireEffect(Minecraft.getInstance().level, connection, CEEWireTypes.STANDARD.get(),
                     new WireData(CEEWireTypes.STANDARD.get(), 0, Collections.emptyList(), 0));

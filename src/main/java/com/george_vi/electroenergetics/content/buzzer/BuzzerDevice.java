@@ -1,20 +1,14 @@
 package com.george_vi.electroenergetics.content.buzzer;
 
-import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
-import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
-import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 
 public class BuzzerDevice extends SimpleElectricalDevice {
     public float temp;
@@ -46,8 +40,8 @@ public class BuzzerDevice extends SimpleElectricalDevice {
         }
 
         float loss = (float) results.getHeatLoss(pos, 0, 1);
-        this.temp = updateTemp(this.temp, Math.min(loss, 10000));
-        handleTemp(level, pos, deviceSD, temp, 400, 550);
+        this.temp = ElectricalDevice.updateTemp(this.temp, Math.min(loss, 10000));
+        ElectricalDevice.handleTemp(level, pos, deviceSD, temp, 400, 550);
     }
 
     @Override

@@ -25,7 +25,7 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Variac
 - [ ] Realistic surge protection
 - [ ] Electromagnets - can be used in alternators as exciters or to attract items
-- [ ] Fuses have changeable max amperage
+- [x] Fuses have changeable max amperage
 - [ ] Interdimensional transformer - a transformer placed in a nether portal that allows for getting power to the nether.
 - [x] SF6 Breakers
 - [ ] Normal automatic breakers (MCBs)

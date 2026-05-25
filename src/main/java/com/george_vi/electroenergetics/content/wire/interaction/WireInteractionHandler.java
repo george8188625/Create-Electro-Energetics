@@ -29,6 +29,7 @@ import java.util.Optional;
 public class WireInteractionHandler {
 
     public static NodeConnectionPoint targetedPoint = null;
+    public static Vec3 targetedPos = Vec3.ZERO;
 
     @OnlyIn(Dist.CLIENT)
     public static void tick() {
@@ -133,6 +134,7 @@ public class WireInteractionHandler {
             return;
 
         bestPosition = QuadraticWireHelper.posAt(pos1, pos2, targetedPoint.point(), bestWireData.getSag(bestWirePointDistance));
+        targetedPos = bestPosition;
         WireInteractionBehaviour.DisplayType displayType = behaviour.getWireDisplayType(targetedPoint, mc.level, mc.player, stackInHand);
         if (displayType == WireInteractionBehaviour.DisplayType.DOT) {
             Outliner.getInstance().chaseAABB("cee_wire_interaction_point", AABB.ofSize(bestPosition, 0.01, 0.01, 0.01))

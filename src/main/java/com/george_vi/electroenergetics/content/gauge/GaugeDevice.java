@@ -1,20 +1,16 @@
 package com.george_vi.electroenergetics.content.gauge;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.RMSHolder;
-import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
-import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 
 public class GaugeDevice extends SimpleElectricalDevice {
     public final boolean voltmeter;
@@ -59,14 +55,14 @@ public class GaugeDevice extends SimpleElectricalDevice {
 
         float loss = (float) ((vd * vd) / (voltmeter ? 1_000_000 : 0.01)) / factor;
 
-        this.temp = updateTemp(this.temp, loss);
+        this.temp = ElectricalDevice.updateTemp(this.temp, loss);
         double maxVoltmeterVoltage = CEEConfigs.server().voltageValues.maxVoltmeterVoltage.get();
         double maxAmmeterCurrent = CEEConfigs.server().voltageValues.maxAmmeterCurrent.get();
 
-        float finalTemp = finalTempAt((float) (voltmeter ?
+        float finalTemp = ElectricalDevice.finalTempAt((float) (voltmeter ?
                         maxVoltmeterVoltage * maxVoltmeterVoltage / 1_000_000 :
                         maxAmmeterCurrent * maxAmmeterCurrent * 0.01d)) * factor;
-        handleTemp(level, pos, deviceSD, temp, finalTemp * 0.9f, finalTemp);
+        ElectricalDevice.handleTemp(level, pos, deviceSD, temp, finalTemp * 0.9f, finalTemp);
     }
 
     @Override

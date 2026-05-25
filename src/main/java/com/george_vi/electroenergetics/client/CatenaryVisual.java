@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.client;
 
 import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
@@ -42,7 +43,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
         this.wireType = wireType;
 
         float wireWidth = 0.55f;
-        float messengerWidth = 0.35f;
+        float messengerThickness = 0.35f;
 
         ClientLevel level = Minecraft.getInstance().level;
         Vec3 start = Vec3.atBottomCenterOf(connection.pos1().subtract(visualizationContext.renderOrigin()));
@@ -112,7 +113,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                     closest = start;
                 else {
                     double t = ap.dot(ab) / denom;
-                    t = Math.max(0, Math.min(1, t));
+                    t = Mth.clamp(t, 0, 1);
                     closest = start.add(ab.scale(t));
                 }
 
@@ -123,7 +124,7 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
                 messengerInstance.translate(point)
                         .rotateY((float) Mth.atan2(closest.x() - point.x(), closest.z() - point.z()))
                         .rotateX(-(float) Mth.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
-                        .scale(messengerWidth, messengerWidth, (float) (point.distanceTo(closest) * 2) + 0.02f)
+                        .scale(messengerThickness, messengerThickness, (float) (point.distanceTo(closest) * 2) + 0.02f)
                         .light(pointBlockPos.equals(closestBlockPos) ? LevelRenderer.getLightColor(level, closestMiddleBlockPos) :
                                 WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                         LevelRenderer.getLightColor(level, closestBlockPos)));
@@ -251,6 +252,8 @@ public class CatenaryVisual implements EffectVisual<WireEffect>, LightUpdatedVis
 
         // Check if chunks are loaded on the client
         boolean chunksLoaded = level.isLoaded(connection.pos1()) && level.isLoaded(connection.pos2());
+        if (CEEConfigs.client().renderWiresOnUnloadedChunks.get())
+            chunksLoaded = true;
 
         // Clear instances if not loaded
         if (!chunksLoaded) {

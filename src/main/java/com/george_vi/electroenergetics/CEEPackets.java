@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.energy_meter.ChangeEnergyMeterStatePacket;
+import com.george_vi.electroenergetics.content.fuse.ConfigureFusePacket;
 import com.george_vi.electroenergetics.content.railway_electrification.gauges.SyncTrainGaugeDataPacket;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.ClearCatenaryPacket;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.SendCatenaryPacket;
@@ -37,6 +38,7 @@ public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     SEND_QUADRATIC_PARTICLES(SendQuadraticParticlesPacket.class, SendQuadraticParticlesPacket.STREAM_CODEC),
     REQUEST_VOLTAGE_DATA(RequestVoltageDataPacket.class, RequestVoltageDataPacket.STREAM_CODEC),
     SYNC_TRAIN_GAUGE_DATA(SyncTrainGaugeDataPacket.class, SyncTrainGaugeDataPacket.STREAM_CODEC),
+    CONFIGURE_FUSE(ConfigureFusePacket.class, ConfigureFusePacket.STREAM_CODEC),
     ;
 
     private final CatnipPacketRegistry.PacketType<?> type;

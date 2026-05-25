@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
+import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterItem;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModel;
@@ -139,15 +140,15 @@ public class LinemansStickRenderer extends CustomRenderedItemModelRenderer {
                 .translate(-0.5, Mth.clamp((poleLength - 1.3f) / 4, poleLength - 4.6f, poleLength - 1.3f), -0.5)
                 .renderInto(pose, buffer.getBuffer(RenderType.solid()));
 
-        if (!offHandItem.isEmpty()) {
+        if (offHandItem.is(CEETags.HIDE_ON_LINEMANS_STICK)) {
             BakedModel bakedmodel = itemRenderer.getModel(offHandItem, level, player, 0);
             pose.pushPose();
-
 
             PoseTransformStack msr = TransformStack.of(pose)
                     .translate(diff);
 
-            if (WireInteractionHandler.targetedPoint == null)
+            if (WireInteractionHandler.targetedPoint == null ||
+                    offHandItem.getItem() instanceof ClampMeterItem)
                 msr.rotateY(Mth.PI + (float) Mth.atan2(diff.x(), diff.z()));
             else {
                 Vec3 pos1 = WireInteractionHandler.targetedPoint.node1().getPosition(level);
@@ -161,6 +162,12 @@ public class LinemansStickRenderer extends CustomRenderedItemModelRenderer {
                 msr.translate(0.5, 0.5, 0.5);
             } else if (offHandItem.getItem() instanceof BannerItem) {
                 msr.translate(0, -1.5f, 0);
+            } else if (offHandItem.getItem() instanceof ClampMeterItem) {
+                msr
+                        .rotateYDegrees(179) // 179 to prevent Z-fighting
+                        .rotateX(-(float) Mth.atan2(diff.y(), hypot) + Mth.HALF_PI)
+                        .translate(0, -4/16f, 0);
+
             }
 
             itemRenderer.render(offHandItem, ItemDisplayContext.NONE, false, pose, buffer, light, OverlayTexture.NO_OVERLAY, bakedmodel);

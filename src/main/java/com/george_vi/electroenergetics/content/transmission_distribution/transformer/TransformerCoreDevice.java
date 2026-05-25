@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.transmission_distribution.transf
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -82,7 +83,7 @@ public class TransformerCoreDevice extends SimpleElectricalDevice {
 
         double loadFactor = Math.abs(power) / (dissipationFactor == 0 ? 0.001 : dissipationFactor);
         loadFactor = Math.min(2.5, loadFactor);
-        temp = updateTemp(temp, (float) loadFactor * 1000);
+        temp = ElectricalDevice.updateTemp(temp, (float) loadFactor * 1000);
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
@@ -96,8 +97,8 @@ public class TransformerCoreDevice extends SimpleElectricalDevice {
             level.explode(null, Explosion.getDefaultDamageSource(level, null), new TransformerExplosionDamageCalculator(), pos.getX(), pos.getY(), pos.getZ(), 4, true, Level.ExplosionInteraction.BLOCK);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
         } else if (temp > 26_000) {
-            showOverheatingParticles(level, pos);
-            showOverheatingParticles(level, pos.relative(facing));
+            ElectricalDevice.showOverheatingParticles(level, pos);
+            ElectricalDevice.showOverheatingParticles(level, pos.relative(facing));
         }
 
     }

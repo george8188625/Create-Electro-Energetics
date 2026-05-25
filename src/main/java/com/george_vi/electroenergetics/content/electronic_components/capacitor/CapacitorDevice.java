@@ -1,13 +1,14 @@
 package com.george_vi.electroenergetics.content.electronic_components.capacitor;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.electrical_properties.CapacitorProperties;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -49,7 +50,7 @@ public class CapacitorDevice extends SimpleElectricalDevice {
 
         double voltage = results.getVoltageAt(pos, 0, 2);
 
-        temp = updateTemp(temp, (float) ((Math.abs(voltage) * 500) / maxVoltage.getAsDouble()));
+        temp = ElectricalDevice.updateTemp(temp, (float) ((Math.abs(voltage) * 500) / maxVoltage.getAsDouble()));
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
@@ -62,7 +63,7 @@ public class CapacitorDevice extends SimpleElectricalDevice {
             deviceSD.removeDevice(pos);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
         } else if (temp > 14000)
-            showOverheatingParticles(level, pos);
+            ElectricalDevice.showOverheatingParticles(level, pos);
     }
 
     @Override

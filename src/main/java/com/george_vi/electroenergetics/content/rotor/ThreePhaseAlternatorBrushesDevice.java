@@ -47,37 +47,35 @@ public class ThreePhaseAlternatorBrushesDevice extends SimpleElectricalDevice {
 
     @Override
     public void preTick(BridgeCollector bridges) {
-        if (level.isLoaded(pos)) {
-            ThreePhaseAlternatorBrushesDevice device = this.otherBrush == null ? null :
-                    deviceSD.getDevice(this.otherBrush, ThreePhaseAlternatorBrushesDevice.class);
-            ElectricalProperties wire = ElectricalProperties.resistor(0.05);
-            this.phaseA.targetVoltage = this.voltage;
-            this.phaseB.targetVoltage = this.voltage;
-            this.phaseC.targetVoltage = this.voltage;
+        ThreePhaseAlternatorBrushesDevice device = this.otherBrush == null ? null :
+                deviceSD.getDevice(this.otherBrush, ThreePhaseAlternatorBrushesDevice.class);
+        ElectricalProperties wire = ElectricalProperties.resistor(0.05);
+        this.phaseA.targetVoltage = this.voltage;
+        this.phaseB.targetVoltage = this.voltage;
+        this.phaseC.targetVoltage = this.voltage;
 
-            this.workCounter.set(0);
-            this.phaseA.resistance = this.phaseB.resistance = this.phaseC.resistance = 1;
-            this.phaseA.currentSource = this.phaseB.currentSource = this.phaseC.currentSource = 0;
-            this.phaseA.stress = this.phaseB.stress = this.phaseC.stress = this.stress;
-            this.virtualRotor.totalMicroTicks = bridges.microTicks();
-            boolean reversed = this.rpmSpeed < 0;
-            this.virtualRotor.rpm = Math.abs(this.rpmSpeed) +
-                    RandomSource.create(pos.asLong()).nextFloat() * 0.009f +
-                    this.controlModifier;
+        this.workCounter.set(0);
+        this.phaseA.resistance = this.phaseB.resistance = this.phaseC.resistance = 1;
+        this.phaseA.currentSource = this.phaseB.currentSource = this.phaseC.currentSource = 0;
+        this.phaseA.stress = this.phaseB.stress = this.phaseC.stress = this.stress;
+        this.virtualRotor.totalMicroTicks = bridges.microTicks();
+        boolean reversed = this.rpmSpeed < 0;
+        this.virtualRotor.rpm = Math.abs(this.rpmSpeed) +
+                RandomSource.create(pos.asLong()).nextFloat() * 0.009f +
+                this.controlModifier;
 
-            this.virtualRotor.stress = this.stress;
-            if (device == null || this.otherBrush.compareTo(pos) > 0) {
-                // Swaps phase A and C if reversed, since speed is passed as an absolute value
-                bridges.builder(pos)
-                        .connect(1, 0, reversed ? this.phaseC : this.phaseA)
-                        .connect(2, 0, this.phaseB)
-                        .connect(3, 0, reversed ? this.phaseA : this.phaseC);
-            } else {
-                bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, this.otherBrush), wire);
-                bridges.bridge(new InWorldNode(1, pos), new InWorldNode(1, this.otherBrush), wire);
-                bridges.bridge(new InWorldNode(2, pos), new InWorldNode(2, this.otherBrush), wire);
-                bridges.bridge(new InWorldNode(3, pos), new InWorldNode(3, this.otherBrush), wire);
-            }
+        this.virtualRotor.stress = this.stress;
+        if (device == null || this.otherBrush.compareTo(pos) > 0) {
+            // Swaps phase A and C if reversed, since speed is passed as an absolute value
+            bridges.builder(pos)
+                    .connect(1, 0, reversed ? this.phaseC : this.phaseA)
+                    .connect(2, 0, this.phaseB)
+                    .connect(3, 0, reversed ? this.phaseA : this.phaseC);
+        } else {
+            bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, this.otherBrush), wire);
+            bridges.bridge(new InWorldNode(1, pos), new InWorldNode(1, this.otherBrush), wire);
+            bridges.bridge(new InWorldNode(2, pos), new InWorldNode(2, this.otherBrush), wire);
+            bridges.bridge(new InWorldNode(3, pos), new InWorldNode(3, this.otherBrush), wire);
         }
 
         if (this.slow == this.fast) {

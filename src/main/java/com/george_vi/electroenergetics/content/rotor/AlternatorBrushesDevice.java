@@ -25,17 +25,14 @@ public class AlternatorBrushesDevice extends GeneratingDevice {
 
     @Override
     public void preTick(BridgeCollector bridges) {
-        if (level.isLoaded(pos)) {
-
-            AlternatorBrushesDevice device = this.otherBrush == null ? null : deviceSD.getDevice(this.otherBrush, AlternatorBrushesDevice.class);
-            if (device == null)
+        AlternatorBrushesDevice device = this.otherBrush == null ? null : deviceSD.getDevice(this.otherBrush, AlternatorBrushesDevice.class);
+        if (device == null)
+            super.preTick(bridges);
+        else {
+            bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, this.otherBrush), ElectricalProperties.resistor(0.05));
+            bridges.bridge(new InWorldNode(1, pos), new InWorldNode(1, this.otherBrush), ElectricalProperties.resistor(0.05));
+            if (this.otherBrush.compareTo(pos) > 0)
                 super.preTick(bridges);
-            else {
-                bridges.bridge(new InWorldNode(0, pos), new InWorldNode(0, this.otherBrush), ElectricalProperties.resistor(0.05));
-                bridges.bridge(new InWorldNode(1, pos), new InWorldNode(1, this.otherBrush), ElectricalProperties.resistor(0.05));
-                if (this.otherBrush.compareTo(pos) > 0)
-                    super.preTick(bridges);
-            }
         }
     }
 

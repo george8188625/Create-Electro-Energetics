@@ -16,7 +16,7 @@ The name comes from polish "elektroenergetyka", which means electrical power eng
 ## Overall direction of the mod:
 The primary focus is to provide an elegant way to move energy through electricity.
 
-In fancy words this mod focuses on generation, transmission, distribution and utilization of electric **power**.
+In fancy words this mod focuses on the generation, transmission, distribution and utilization of electric power.
 
 This mod aims to:
 - Make electricity easy to use and forgiving enough, for people without any electrical background to be able to use the mod.

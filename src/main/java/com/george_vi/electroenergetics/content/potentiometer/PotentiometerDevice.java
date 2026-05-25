@@ -1,20 +1,15 @@
 package com.george_vi.electroenergetics.content.potentiometer;
 
 import com.george_vi.electroenergetics.CEEFluids;
-import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
-import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 
 public class PotentiometerDevice extends SimpleElectricalDevice {
     public double resistance;
@@ -40,11 +35,11 @@ public class PotentiometerDevice extends SimpleElectricalDevice {
         float loss = (float) results.getHeatLoss(pos, 0, 1);
         loss += (float) results.getHeatLoss(pos, 1, 2);
 
-        temp = updateTemp(temp, Math.min(loss, 10000));
+        temp = ElectricalDevice.updateTemp(temp, Math.min(loss, 10000));
         if (oilLogged)
-            handleTemp(level, pos, deviceSD, temp, 60_000, 80_000);
+            ElectricalDevice.handleTemp(level, pos, deviceSD, temp, 60_000, 80_000);
         else
-            handleTemp(level, pos, deviceSD, temp, 30_000, 40_000);
+            ElectricalDevice.handleTemp(level, pos, deviceSD, temp, 30_000, 40_000);
     }
 
     @Override

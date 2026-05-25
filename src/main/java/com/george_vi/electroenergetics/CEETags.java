@@ -24,6 +24,7 @@ public class CEETags {
     public static final TagKey<Item> ELECTRIC_MOTORS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("electric_motors"));
     public static final TagKey<Fluid> PLANT_OIL = TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath("c", "plantoil"));
     public static final TagKey<Item> WIRE_ATTACHMENT = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("wire_attachment"));
+    public static final TagKey<Item> HIDE_ON_LINEMANS_STICK = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("hide_on_linemans_stick"));
 
     // This tag defines items that can remove attachments from wires
     public static final TagKey<Item> ATTACHMENT_REMOVAL_ITEM = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("attachment_removal_item"));
@@ -69,6 +70,9 @@ public class CEETags {
     // This tag is used to make items 'inspect' nodes.
     public static final TagKey<Item> SEE_NODE_DATA = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("see_node_data"));
 
+    // Tags for sable compatibility:
+    public static final TagKey<Block> SUPER_LIGHT = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("sable", "super_light"));
+    public static final TagKey<Block> LIGHT = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("sable", "light"));
 
     public static @NotNull Item itemFromTag(TagKey<Item> tag) {
         var it = BuiltInRegistries.ITEM.getTagOrEmpty(tag).iterator();

@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.transmission_distribution.hv_cap
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorDevice;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.electrical_properties.CapacitorProperties;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
@@ -52,7 +53,7 @@ public class HVCapacitorDevice extends SimpleElectricalDevice {
 
         double voltage = results.getVoltageAt(pos, 0, 2);
 
-        temp = updateTemp(temp, (float) ((Math.abs(voltage) * 500) / maxVoltage.getAsDouble()));
+        temp = ElectricalDevice.updateTemp(temp, (float) ((Math.abs(voltage) * 500) / maxVoltage.getAsDouble()));
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
@@ -65,7 +66,7 @@ public class HVCapacitorDevice extends SimpleElectricalDevice {
             deviceSD.removeDevice(pos);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
         } else if (temp > 14000)
-            showOverheatingParticles(level, pos);
+            ElectricalDevice.showOverheatingParticles(level, pos);
     }
 
     @Override

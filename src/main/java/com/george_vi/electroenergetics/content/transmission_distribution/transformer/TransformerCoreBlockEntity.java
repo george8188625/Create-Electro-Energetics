@@ -128,7 +128,7 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
 
         for (Direction direction : Iterate.directions) {
             BlockPos nextPos = currentPos.relative(direction);
-            if (nextPos.distSqr(worldPosition) > 4)
+            if (nextPos.distSqr(worldPosition) > 16)
                 continue;
             BlockState state = level.getBlockState(nextPos);
             if ((waterlogged && !level.getFluidState(currentPos).isEmpty()) ||

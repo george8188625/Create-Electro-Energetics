@@ -16,7 +16,7 @@ public interface ElectricalDevice {
     /**
      * Shows smoking particles around the specified pos.
      */
-    default void showOverheatingParticles(Level level, BlockPos pos) {
+    static void showOverheatingParticles(Level level, BlockPos pos) {
         if (!level.isLoaded(pos))
             return;
         Vec3 pPos = pos.getCenter();
@@ -28,7 +28,7 @@ public interface ElectricalDevice {
     /**
      * Handles device explosion and smoking.
      */
-    default void handleTemp(Level level, BlockPos pos, DevicesSavedData deviceSD,
+    static void handleTemp(Level level, BlockPos pos, DevicesSavedData deviceSD,
                             float temp, float smokeThreshold, float breakThreshold) {
         if (!CEEConfigs.server().componentDamage.get())
             return;
@@ -44,7 +44,7 @@ public interface ElectricalDevice {
             deviceSD.removeDevice(pos);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
         } else if (temp > smokeThreshold)
-            showOverheatingParticles(level, pos);
+            ElectricalDevice.showOverheatingParticles(level, pos);
     }
 
     /**
@@ -58,7 +58,7 @@ public interface ElectricalDevice {
      * @param heat heat (energy loss) in Watts
      * @return new temp value in abstract units
      */
-    default float updateTemp(float temp, float heat) {
+    static float updateTemp(float temp, float heat) {
         if (Float.isNaN(temp))
             temp = 0;
 
@@ -72,7 +72,7 @@ public interface ElectricalDevice {
     /**
      * @return the final temp value this heat will converge to in abstract units.
      */
-    default float finalTempAt(float heat) {
+    static float finalTempAt(float heat) {
         return (float) Math.max(0, 30 * (heat - 3.3));
     }
 }

@@ -556,7 +556,7 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     /**
-     * Removes the specified connection.
+     * Removes the specified connection, and drops wire attachments.
      * @return The previous {@link WireData} if the connection existed. Otherwise, null.
      */
     public WireData removeConnection(InWorldNodeConnection connection) {
@@ -690,9 +690,14 @@ public class InfrastructureSavedData extends SavedData {
     }
 
     public void setConnectionData(InWorldNodeConnection connection, WireData data) {
-        int node1 = getNodeDataOrThrow(connection.node1()).id;
-        int node2 = getNodeDataOrThrow(connection.node2()).id;
-        CONNECTION_DATA.put(DataPacker.packAndCanonicalize(node1, node2), data);
+        InWorldNodeData node1Data = getNodeDataOrThrow(connection.node1());
+        int node1Id = node1Data.id;
+        InWorldNodeData node2Data = getNodeDataOrThrow(connection.node2());
+        int node2Id = node2Data.id;
+        CONNECTION_DATA.put(DataPacker.packAndCanonicalize(node1Id, node2Id), data);
+        node1Data.adjacency.put(node2Id, data);
+        node2Data.adjacency.put(node1Id, data);
+
         wireSync.handleWireAdded(connection, data);
         wireSimulationState.removeConnection(connection);
         wireSimulationState.addConnection(connection, data, false);

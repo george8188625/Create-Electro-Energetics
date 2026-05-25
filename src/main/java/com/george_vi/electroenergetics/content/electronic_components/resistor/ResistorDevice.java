@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.electronic_components.resistor;
 import com.george_vi.electroenergetics.CEEFluids;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -35,11 +36,11 @@ public class ResistorDevice extends SimpleElectricalDevice {
             return;
 
         float loss = (float) results.getHeatLoss(pos, 0, 1);
-        this.temp = updateTemp(this.temp, Math.min(loss, 10000));
+        this.temp = ElectricalDevice.updateTemp(this.temp, Math.min(loss, 10000));
         if (oilLogged)
-            handleTemp(level, pos, deviceSD, temp, 60_000, 80_000);
+            ElectricalDevice.handleTemp(level, pos, deviceSD, temp, 60_000, 80_000);
         else
-            handleTemp(level, pos, deviceSD, temp, 30_000, 40_000);
+            ElectricalDevice.handleTemp(level, pos, deviceSD, temp, 30_000, 40_000);
     }
 
     @Override

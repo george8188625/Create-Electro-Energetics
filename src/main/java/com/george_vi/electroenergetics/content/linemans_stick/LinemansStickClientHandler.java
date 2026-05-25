@@ -84,7 +84,7 @@ public class LinemansStickClientHandler {
             InWorldNode node2 = WireInteractionHandler.targetedPoint.node2();
             Vec3 pos1 = node1.getPosition(level);
             Vec3 pos2 = node2.getPosition(level);
-            Vec3 target = WireInteractionHandler.targetedPoint.posAt(pos1, pos2);
+            Vec3 target = WireInteractionHandler.targetedPos;
             prevLinemansStickTarget = linemansStickTarget;
             linemansStickTarget = target;
             return;

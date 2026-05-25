@@ -1,12 +1,11 @@
 package com.george_vi.electroenergetics.content.fuse.fuse_held;
 
-import com.george_vi.electroenergetics.CEEBlocks;
-import com.george_vi.electroenergetics.CEEPartialModels;
-import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -39,15 +38,13 @@ public class FuseHeldFuse extends FuseHoldable {
     public void postTick(CompoundTag data, int id1, int id2, SimulationResults results, Level level, BlockPos pos) {
         SwitchingBehaviour behaviour = new SwitchingBehaviour(data.getCompound("Behaviour"));
         boolean isBroken = data.getBoolean("Broken");
+        float setAmperage = (float) data.getDouble("SetAmperage");
 
         double voltage = Math.abs(results.getVoltageAt(pos, id1, id2));
         double current = voltage / behaviour.resistance();
 
         float temp = data.getFloat("Temp");
-        float newTemp = (float) (Math.min(current, 500));
-        newTemp *= Math.min(temp < 0 ? 0 : 1 / (1 + (temp / 1000)), 1);
-        newTemp = Math.max(temp - 33.3f + newTemp, 0);
-        temp = newTemp;
+        temp = ElectricalDevice.updateTemp(temp, (float) current);
 
         behaviour.isClosed = !isBroken;
         behaviour.postTick(voltage / 2, pos.getCenter(), level);
@@ -56,7 +53,7 @@ public class FuseHeldFuse extends FuseHoldable {
             temp = 0;
         data.putFloat("Temp", temp);
 
-        if (temp > CEEWireTypes.STANDARD.get().getMaxTemperature() * 2 / 3) {
+        if (temp > ElectricalDevice.finalTempAt(setAmperage)) {
             if (!isBroken) {
                 if (level.isLoaded(pos)) {
                     BlockState state = level.getBlockState(pos);
@@ -78,7 +75,11 @@ public class FuseHeldFuse extends FuseHoldable {
 
     @Override
     public NonNullList<ItemStack> getDrops(CompoundTag data) {
-        return NonNullList.of(Items.AIR.getDefaultInstance(), data.getBoolean("Broken") ? CEEBlocks.BROKEN_FUSE.asStack() : CEEBlocks.FUSE.asStack());
+        ItemStack stack = data.getBoolean("Broken") ? CEEBlocks.BROKEN_FUSE.asStack() : CEEBlocks.FUSE.asStack();
+        int setAmperage = (int) data.getDouble("SetAmperage");
+        if (setAmperage != 100)
+            stack.set(CEEDataComponents.FUSE_AMPERAGE, setAmperage);
+        return NonNullList.of(Items.AIR.getDefaultInstance(), stack);
     }
 
     @Override
@@ -97,5 +98,8 @@ public class FuseHeldFuse extends FuseHoldable {
     public void onPlace(CompoundTag data, ItemStack stack, Level level, BlockPos pos) {
         if (CEEBlocks.BROKEN_FUSE.isIn(stack))
             data.putBoolean("Broken", true);
+        int currentAmperage = stack.getOrDefault(CEEDataComponents.FUSE_AMPERAGE, 100);
+
+        data.putDouble("SetAmperage", currentAmperage);
     }
 }

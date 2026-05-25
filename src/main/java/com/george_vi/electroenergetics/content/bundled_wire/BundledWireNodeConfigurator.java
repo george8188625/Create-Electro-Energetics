@@ -1,8 +1,10 @@
 package com.george_vi.electroenergetics.content.bundled_wire;
 
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConfigurator;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
@@ -47,5 +49,17 @@ public class BundledWireNodeConfigurator {
 
     public static boolean isAccessible(int id) {
         return (id & 15) != 0;
+    }
+
+    public static InWorldNode getCableNodeFor(BlockPos pos, boolean roll, boolean flip) {
+        return getWireNodeFor(pos, roll, flip, 0);
+    }
+
+    public static InWorldNode getWireNodeFor(BlockPos pos, boolean roll, boolean flip, int conductor) {
+        int side = 0;
+        if (flip) side = 2;
+        if (roll) side++;
+
+        return new InWorldNode(side << 4 + (conductor & 15), pos);
     }
 }

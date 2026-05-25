@@ -1,33 +1,94 @@
 package com.george_vi.electroenergetics.content.bundled_wire;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
+import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.simulation.WireType;
+import com.simibubi.create.AllSoundEvents;
 import it.unimi.dsi.fastutil.booleans.BooleanBooleanPair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 public class BundledWireItem extends Item {
-    public BundledWireItem(Properties properties) {
+    public final BundledWireType wireType;
+
+    public BundledWireItem(Properties properties, BundledWireType wireType) {
         super(properties);
+        this.wireType = wireType;
     }
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        return stack.has(CEEDataComponents.SELECTED_FREE_POS);
+        return stack.has(CEEDataComponents.SELECTED_WIRE_TERMINATION);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public @NotNull InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Direction face = context.getClickedFace().getOpposite();
+        BlockState state = level.getBlockState(pos);
+        ItemStack heldItemStack = context.getItemInHand();
+        Player player = context.getPlayer();
+        if (player == null)
+            return InteractionResult.PASS;
 
-        return super.useOn(context);
+        if (player.isShiftKeyDown()) {
+            if (heldItemStack.getComponents().has(CEEDataComponents.SELECTED_WIRE_TERMINATION)) {
+                heldItemStack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
+                if (level.isClientSide)
+                    player.displayClientMessage(CEELang.translateDirect("wire_spool.cancelled_connection"), true);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        BundledWireType selectedType = null;
+
+        boolean selectedRoll;
+        boolean selectedFlip;
+        if (state.getBlock() instanceof BundledWireTerminationBlock block) {
+            selectedRoll = state.getValue(BundledWireTerminationBlock.ROLL);
+            selectedFlip = state.getValue(BundledWireTerminationBlock.FLIP);
+            selectedType = block.wireType;
+        } else
+            return InteractionResult.PASS;
+
+        if (selectedType != null && selectedType != wireType) {
+            player.displayClientMessage(CEELang.translateDirect("bundled_wire_spool.incompatible_types"), true);
+            AllSoundEvents.DENY.playOnServer(level, pos);
+            return InteractionResult.FAIL;
+        }
+
+        BundledWireTerminationState selectedTermination = heldItemStack.get(CEEDataComponents.SELECTED_WIRE_TERMINATION);
+
+        if (selectedTermination == null) {
+            heldItemStack.set(CEEDataComponents.SELECTED_WIRE_TERMINATION,
+                    new BundledWireTerminationState(pos, face, selectedRoll, selectedFlip));
+            AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
+            return InteractionResult.SUCCESS;
+        }
+
+
+        InWorldNode selectedNode = BundledWireNodeConfigurator.getCableNodeFor(selectedTermination.pos(), selectedTermination.roll(), selectedTermination.flip());
+        InWorldNode hoveredNode = BundledWireNodeConfigurator.getCableNodeFor(pos, selectedRoll, selectedFlip);
+
+        WireType decorativeWireType = CEEWireTypes.DUPLEX.get();
+        WireType conductorWireType = CEEWireTypes.BUNDLE_CONDUCTOR.get();
+
+
+
+        return InteractionResult.SUCCESS;
     }
 
 

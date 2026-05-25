@@ -74,7 +74,7 @@ public class AccumulatorDevice extends SimpleElectricalDevice {
 //            deviceSD.removeDevice(pos);
 //            level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
 //        } else if (this.temp > 120000)
-//            showOverheatingParticles(level, pos);
+//            ElectricalDevice.showOverheatingParticles(level, pos);
     }
 
     @Override

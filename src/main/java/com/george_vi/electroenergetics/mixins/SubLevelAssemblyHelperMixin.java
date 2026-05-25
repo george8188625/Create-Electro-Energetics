@@ -51,7 +51,7 @@ public class SubLevelAssemblyHelperMixin {
 
                 for (InWorldNodeConnection connection : sd.getConnections(originalNodeData)) {
                     // Remove and place a connection and defer the update to the next tick.
-                    WireData data = sd.removeConnection(connection);
+                    WireData data = sd.removeConnectionNoDrops(connection);
                     if (data == null)
                         continue;
 

@@ -26,6 +26,7 @@ import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterItem;
 import com.george_vi.electroenergetics.content.energy_meter.TriPolarEnergyMeterBlock;
 import com.george_vi.electroenergetics.content.frequency_meter.FrequencyMeterBlock;
 import com.george_vi.electroenergetics.content.fuse.FuseBlock;
+import com.george_vi.electroenergetics.content.fuse.FuseBlockItem;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeMovementBehaviour;
@@ -248,7 +249,7 @@ public class CEEBlocks {
             .properties(BlockBehaviour.Properties::noOcclusion)
             .blockstate(BlockStateGen.directionalBlockProvider(false))
             .transform(pickaxeOnly())
-            .item()
+            .item(FuseBlockItem::standard)
             .model((c, p) -> p.blockItem(c::getEntry))
             .build()
             .register();
@@ -259,7 +260,7 @@ public class CEEBlocks {
             .properties(BlockBehaviour.Properties::noOcclusion)
             .blockstate(BlockStateGen.directionalBlockProvider(false))
             .transform(pickaxeOnly())
-            .item()
+            .item(FuseBlockItem::blown)
             .model((c, p) -> p.blockItem(c::getEntry))
             .build()
             .register();

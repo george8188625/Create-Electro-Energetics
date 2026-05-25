@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireItem;
+import com.george_vi.electroenergetics.content.bundled_wire.BundledWireType;
 import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterItem;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickItem;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
@@ -48,7 +49,8 @@ public class CEEItems {
                     .addResistancePerMeter(() -> 0.00001d)))
             .register();
 
-    public static final ItemEntry<BundledWireItem> DUPLEX_WIRE_SPOOL = REGISTRATE.item("duplex_wire_spool", properties -> new BundledWireItem(properties))
+    public static final ItemEntry<BundledWireItem> DUPLEX_WIRE_SPOOL = REGISTRATE.item("duplex_wire_spool",
+                    properties -> new BundledWireItem(properties, BundledWireType.DUPLEX))
             .register();
 
     public static final ItemEntry<EmptySpoolItem> EMPTY_SPOOL = REGISTRATE.item("empty_spool", EmptySpoolItem::new)
@@ -79,6 +81,7 @@ public class CEEItems {
             .register();
 
     public static final ItemEntry<ClampMeterItem> CLAMP_METER = REGISTRATE.item("clamp_meter", ClampMeterItem::new)
+            .model(AssetLookup.existingItemModel())
             .register();
 
     public static final ItemEntry<LinemansStickItem> LINEMANS_STICK = REGISTRATE.item("linemans_stick", LinemansStickItem::new)

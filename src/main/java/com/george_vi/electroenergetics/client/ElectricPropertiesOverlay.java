@@ -1,11 +1,12 @@
 package com.george_vi.electroenergetics.client;
 
-import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
-import net.createmod.catnip.lang.Lang;
+import com.mojang.blaze3d.platform.Window;
+import com.simibubi.create.AllKeys;
+import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
@@ -25,26 +27,52 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
     OverlayMode mode;
     public boolean invalidConnection;
     public boolean connectionTooLong;
+    public int ticks = 0;
 
     public void setHoveredNode(NodeVoltageHolder.VoltageEntry voltage, InWorldNode node) {
         this.voltage = voltage;
         this.node = node;
-        this.mode = OverlayMode.HOVER_NODE;
+        if (mode != OverlayMode.HOVER_NODE) {
+            mode = OverlayMode.HOVER_NODE;
+            ticks = 0;
+        }
     }
 
     public void setAmmeter(float amperage) {
         this.amperage = amperage;
-        this.mode = OverlayMode.AMMETER;
+        if (mode != OverlayMode.AMMETER) {
+            mode = OverlayMode.AMMETER;
+            ticks = 0;
+        }
+    }
+
+    public void setAmperageSetting(int currentAmperage) {
+        amperage = currentAmperage;
+        if (mode != OverlayMode.AMPERAGE_CONFIGURATION) {
+            mode = OverlayMode.AMPERAGE_CONFIGURATION;
+            ticks = 0;
+        }
     }
 
     public void removeHoveredNode() {
-        if (mode == OverlayMode.HOVER_NODE)
+        if (mode == OverlayMode.HOVER_NODE) {
             mode = OverlayMode.NONE;
+            ticks = 0;
+        }
     }
 
     public void removeMeter() {
-        if (mode == OverlayMode.AMMETER)
+        if (mode == OverlayMode.AMMETER) {
             mode = OverlayMode.NONE;
+            ticks = 0;
+        }
+    }
+
+    public void removeAmperageSetting() {
+        if (mode == OverlayMode.AMPERAGE_CONFIGURATION) {
+            mode = OverlayMode.NONE;
+            ticks = 0;
+        }
     }
 
     @Override
@@ -96,10 +124,31 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
             y += 12;
             MutableComponent formattedAmperage = CEELang.formatAmperage(amperage).component();
             graphics.drawString(mc.font, formattedAmperage, x - mc.font.width(formattedAmperage) / 2, y, color.getRGB());
+        } else if (mode == OverlayMode.AMPERAGE_CONFIGURATION) {
+
+            Window window = mc.getWindow();
+            y = window.getGuiScaledHeight() - 61 - 12;
+            MutableComponent nodeLabel = CEELang.builder()
+                    .translate("fuse.set_amperage")
+                    .space()
+                    .add(CEELang.formatAmperage(amperage).color(0xFFFFFF))
+                    .component();
+            graphics.drawString(mc.font, nodeLabel, x - mc.font.width(nodeLabel) / 2, y, titleColor.getRGB());
+
+            if (AllKeys.altDown()) {
+                ticks = 0;
+                return;
+            }
+
+            y += 12;
+
+            MutableComponent text = CEELang.translateDirect("fuse.hold_to_configure");
+
+            graphics.drawString(mc.font, text, x - mc.font.width(text) / 2, y, color.setAlpha(Mth.clamp(ticks - 10, 1, 10) / 10f).getRGB(), false);
         }
     }
 
     enum OverlayMode {
-        NONE, HOVER_NODE, AMMETER;
+        NONE, HOVER_NODE, AMMETER, AMPERAGE_CONFIGURATION;
     }
 }

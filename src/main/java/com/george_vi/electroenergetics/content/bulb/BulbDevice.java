@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.bulb;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -76,7 +77,7 @@ public class BulbDevice extends SimpleElectricalDevice {
             }
         }
         float loss = (float) (vd * vd / CEEConfigs.server().resistanceValues.bulbResistance.get());
-        temp = updateTemp(temp, loss);
+        temp = ElectricalDevice.updateTemp(temp, loss);
 
         if (!CEEConfigs.server().componentDamage.get())
             return;

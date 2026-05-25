@@ -4,8 +4,6 @@ import com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminati
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.mojang.serialization.Codec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -44,10 +42,15 @@ public class CEEDataComponents {
                     .persistent(InWorldNodeConnection.CODEC)
                     .networkSynchronized(InWorldNodeConnection.STREAM_CODEC));
 
-    public static final DataComponentType<BundledWireTerminationState> SELECTED_FREE_POS = register("selected_free_pos",
+    public static final DataComponentType<BundledWireTerminationState> SELECTED_WIRE_TERMINATION = register("selected_wire_termination",
             builder -> builder
                     .persistent(BundledWireTerminationState.CODEC)
                     .networkSynchronized(BundledWireTerminationState.STREAM_CODEC));
+
+    public static final DataComponentType<Integer> FUSE_AMPERAGE = register("fuse_amperage",
+            builder -> builder
+                    .persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT));
 
     public static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> builder) {
         DataComponentType<T> type = builder.apply(DataComponentType.builder()).build();

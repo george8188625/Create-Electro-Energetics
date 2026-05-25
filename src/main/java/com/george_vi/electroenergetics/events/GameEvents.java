@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.events;
 
 import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.WireEffects;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.commands.CEECommands;
@@ -8,6 +9,7 @@ import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
+import com.george_vi.electroenergetics.content.fuse.FuseBlockItem;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickClientHandler;
 import com.george_vi.electroenergetics.content.railway_electrification.gauges.ClientTrainGaugeData;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
@@ -43,6 +45,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -70,6 +73,16 @@ public class GameEvents {
         ElectricTrainSounds.tick();
         ClientTrainGaugeData.tick();
         LinemansStickClientHandler.tick();
+        FuseBlockItem.tickClient();
+
+        ElectricPropertiesOverlay.INSTANCE.ticks++;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void mouseScrolled(InputEvent.MouseScrollingEvent event) {
+        double delta = event.getScrollDeltaY();
+        event.setCanceled(FuseBlockItem.mouseScrolled(delta));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -80,6 +93,10 @@ public class GameEvents {
         Level level = mc.level;
         if (level == null)
             return;
+
+        if (WireInteractionHandler.targetedPoint != null) {
+            event.setCanceled(true);
+        }
 
         BlockState state = level.getBlockState(pos);
         if (CEEBlocks.ACCUMULATOR.has(state))

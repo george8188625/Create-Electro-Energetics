@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.client;
 
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
@@ -101,7 +102,8 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
         // Check if chunks are loaded on the client
         boolean chunksLoaded = level.isLoaded(BlockPos.containing(pos1)) && level.isLoaded(BlockPos.containing(pos2));
-
+        if (CEEConfigs.client().renderWiresOnUnloadedChunks.get())
+            chunksLoaded = true;
         // Clear instances if not loaded
         if (!isFullyLoaded || !chunksLoaded) {
             if (!instances.isEmpty()) {
@@ -115,8 +117,8 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
         pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
 
-//        if (pos1.equals(prevPos1) && pos2.equals(prevPos2) && prevLength == wireData.length)
-//            return;
+        if (pos1.equals(prevPos1) && pos2.equals(prevPos2) && prevLength == wireData.length)
+            return;
 
         prevPos1 = pos1;
         prevPos2 = pos2;

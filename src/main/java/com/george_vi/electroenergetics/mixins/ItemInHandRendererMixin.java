@@ -24,7 +24,7 @@ public class ItemInHandRendererMixin {
 
         if (entity instanceof Player player)
             if (player.getMainHandItem().getItem() == CEEItems.LINEMANS_STICK.get() &&
-                    player.getOffhandItem().is(CEETags.WIRE_ATTACHMENT))
+                    (player.getOffhandItem().is(CEETags.HIDE_ON_LINEMANS_STICK)))
                 ci.cancel();
     }
 }

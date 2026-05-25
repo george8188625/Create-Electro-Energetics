@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.transmission_distribution.transf
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -38,7 +39,7 @@ public class TransformerDevice extends SimpleElectricalDevice {
     public void postTick(SimulationResults results) {
         double power = TransformerBehaviour.postTick(TransformerBehaviour.setupStandardNodes(pos), results, this.transformerData);
 
-        this.temp = updateTemp(this.temp, (float) Math.min(70_000, Math.abs(power)) / 10);
+        this.temp = ElectricalDevice.updateTemp(this.temp, (float) Math.min(70_000, Math.abs(power)) / 10);
 
         if (this.be == null && level.isLoaded(pos) && level.getBlockEntity(pos) instanceof TransformerBlockEntity be)
                 this.be = be;
@@ -64,7 +65,7 @@ public class TransformerDevice extends SimpleElectricalDevice {
             deviceSD.removeDevice(pos);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
         } else if (this.temp > 62000) {
-            showOverheatingParticles(level, pos);
+            ElectricalDevice.showOverheatingParticles(level, pos);
         }
     }
 

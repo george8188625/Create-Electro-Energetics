@@ -1,4 +1,4 @@
-// 1.21.1	2026-05-24T23:14:14.405816221	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-05-25T23:09:38.354898354	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 efaff624fae8f426c8927b933899a261b68f7685 assets/electroenergetics/blockstates/accumulator.json
 5790a8573fee6f5eece11a1ccf0c76d891f97edd assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -75,8 +75,8 @@ a92bfd6311161a261beaea0e82673049f09158a3 assets/electroenergetics/blockstates/tr
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
 f407a37a266195fcfc499e4b24ffdb23655d6ed6 assets/electroenergetics/blockstates/white_electric_motor.json
 08773c07f26e18921d02a6d72d8e5009381faebe assets/electroenergetics/blockstates/yellow_electric_motor.json
-375e282efc2bb9146be4b5ed826b017b19561acd assets/electroenergetics/lang/en_ud.json
-24d1c33913f012d6a943635dd1f81941c94e24aa assets/electroenergetics/lang/en_us.json
+5c3eb7996b44501015f03a27e025bed50de2e9fe assets/electroenergetics/lang/en_ud.json
+3f7a3b43b1bcd161b83c71b0cb148655da671e5e assets/electroenergetics/lang/en_us.json
 706ea17778dccc4e51f059c39b5c730336b598c6 assets/electroenergetics/models/block/black_electric_motor.json
 c4d97346cc2c5227ea79460ab456d978989a4917 assets/electroenergetics/models/block/black_electric_motor_roll.json
 4cb846021d3aba319f8bb6025abc8817d830996a assets/electroenergetics/models/block/blue_electric_motor.json
@@ -127,7 +127,6 @@ d3131de26b0c74ca904c559cc9baeb136d38f8ba assets/electroenergetics/models/item/bu
 332873cb8663a1eaccd9e99535e8de2c5a62fbb3 assets/electroenergetics/models/item/buzzer.json
 122c2c734ce48ddd823a576edf36a276decf4294 assets/electroenergetics/models/item/capacitor.json
 6d5ab3bd75c6a69e4392525fb2dd10d2eb095c3a assets/electroenergetics/models/item/catenary_holder.json
-c7d07f24bab67c649ff40b57d6501614ef6cbcee assets/electroenergetics/models/item/clamp_meter.json
 6b76807e00bbbf80767038a7db1f42ce6445a146 assets/electroenergetics/models/item/concrete_pole.json
 4130933f938c9ba17c93b7684fcc71827d9b76c1 assets/electroenergetics/models/item/connector.json
 460c2df014cdeb92c6cca3cc2bb20640e1d2a9d7 assets/electroenergetics/models/item/converter.json

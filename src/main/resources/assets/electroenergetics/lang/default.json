@@ -4,8 +4,11 @@
   "electroenergetics.wire_spool.too_far_away": "Too far away!",
   "electroenergetics.wire_spool.cancelled_connection": "Selection Cleared",
   "electroenergetics.wire_spool.invalid_connection": "Invalid connection!",
+  "electroenergetics.bundled_wire_spool.incompatible_types": "Incompatiblye wire conductor number!",
 
   "electroenergetics.clamp_meter.current": "Current:",
+  "electroenergetics.fuse.set_amperage": "Fuse Amperage:",
+  "electroenergetics.fuse.hold_to_configure": "Hold Left Alt and Scroll to configure",
 
   "electroenergetics.action_bar.wire_too_long": "Wire too long!",
   "electroenergetics.action_bar.wire_too_short": "Wire too short!",
@@ -40,6 +43,7 @@
 
   "electroenergetics.tooltip.energy_meter.owner": "Owner: %1$s",
   "electroenergetics.tooltip.energy_meter.energy": "Total Energy: %1$s",
+  "electroenergetics.tooltip.fuse.set_amperage": "Set Amperage: %1$s",
   "electroenergetics.tooltip.voltage": "Voltage:",
   "electroenergetics.tooltip.max_voltage": "Max Voltage:",
   "electroenergetics.tooltip.max_current": "Max Current:",
@@ -174,6 +178,13 @@
   "item.electroenergetics.linemans_stick.tooltip.behaviour1": "Installs the _wire attachment_",
   "item.electroenergetics.linemans_stick.tooltip.condition2": "When R-Clicked while holding shift",
   "item.electroenergetics.linemans_stick.tooltip.behaviour2": "Removes the targeted _wire attachment_",
+  "item.electroenergetics.fuse.tooltip.summary": "_Protects_ electrical circuits, by breaking when exposed to too much current",
+  "item.electroenergetics.fuse.tooltip.condition1": "Configuring",
+  "item.electroenergetics.fuse.tooltip.behaviour1": "Ctrl-Scroll to adjust the max _amperage_",
+  "item.electroenergetics.broken_fuse.tooltip.summary": "_Protects_ electrical circuits, by breaking when exposed to too much current",
+  "item.electroenergetics.broken_fuse.tooltip.condition1": "Configuring",
+  "item.electroenergetics.broken_fuse.tooltip.behaviour1": "Ctrl-Scroll to adjust the max _amperage_",
+
 
   "death.attack.electroenergetics.electrocution": "%1$s was electrocuted",
   "death.attack.electroenergetics.electrocution.player": "%1$s was electrocuted by %2$s",

@@ -2,12 +2,13 @@ package com.george_vi.electroenergetics.content.relay;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -15,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
@@ -58,7 +60,7 @@ public class RelayDevice extends SimpleElectricalDevice {
 
         float loss = (float) ((voltage * voltage) / 1000);
 
-        temp = updateTemp(temp, (float) Math.min(Math.max(loss, lossAtArc * 1e-4d), 10000));
+        temp = ElectricalDevice.updateTemp(temp, (float) Mth.clamp(lossAtArc * 1e-4d, loss, 10000));
 
         if (!CEEConfigs.server().componentDamage.get())
             return;
@@ -71,7 +73,7 @@ public class RelayDevice extends SimpleElectricalDevice {
             deviceSD.removeDevice(pos);
             level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
         } else if (temp > 400)
-            showOverheatingParticles(level, pos);
+            ElectricalDevice.showOverheatingParticles(level, pos);
     }
 
     @Override

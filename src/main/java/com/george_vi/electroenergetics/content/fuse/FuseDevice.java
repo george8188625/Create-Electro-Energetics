@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
+import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -21,6 +22,7 @@ public class FuseDevice extends SimpleElectricalDevice {
     public SwitchingBehaviour behaviour;
     public boolean isBroken;
     public float temp;
+    public double setAmperage;
 
     public FuseDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
         super(level, pos, deviceSD, type);
@@ -38,10 +40,7 @@ public class FuseDevice extends SimpleElectricalDevice {
         double voltage = Math.abs(results.getVoltageAt(pos, 0, 1));
         double current = voltage / behaviour.resistance();
 
-        float newTemp = (float) (Math.min(current, 500));
-        newTemp *= Math.min(this.temp < 0 ? 0 : 1 / (1 + (this.temp / 1000)), 1);
-        newTemp = Math.max(this.temp - 33.3f + newTemp, 0);
-        this.temp = newTemp;
+        temp = ElectricalDevice.updateTemp(temp, (float) current);
 
         behaviour.isClosed = !isBroken;
         behaviour.postTick(voltage / 2, pos.getCenter(), level);
@@ -49,8 +48,7 @@ public class FuseDevice extends SimpleElectricalDevice {
         if (current < 1 || this.isBroken)
             this.temp = 0;
 
-
-        if (this.temp > CEEWireTypes.STANDARD.get().getMaxTemperature() * 2/3) {
+        if (temp > ElectricalDevice.finalTempAt((float) setAmperage)) {
             this.isBroken = true;
 
             if (level.isLoaded(pos)) {
@@ -62,11 +60,14 @@ public class FuseDevice extends SimpleElectricalDevice {
             }
         }
 
-
         if (level.isLoaded(pos)) {
             BlockState state = level.getBlockState(pos);
-            if (state.getBlock() instanceof FuseBlock fb && fb.broken != this.isBroken)
+            if (state.getBlock() instanceof FuseBlock fb && fb.broken != this.isBroken) {
                 level.setBlockAndUpdate(pos, (fb.broken ? CEEBlocks.FUSE.get() : CEEBlocks.BROKEN_FUSE.get()).withPropertiesOf(state));
+                if (level.getBlockEntity(pos) instanceof FuseBlockEntity be) {
+                    be.setAmperage = setAmperage;
+                }
+            }
         }
     }
 
@@ -75,6 +76,7 @@ public class FuseDevice extends SimpleElectricalDevice {
         isBroken = tag.getBoolean("Broken");
         temp = tag.getFloat("Temp");
         behaviour = new SwitchingBehaviour(tag.getCompound("Behaviour"));
+        setAmperage = tag.getDouble("SetAmperage");
     }
 
     @Override
@@ -82,6 +84,7 @@ public class FuseDevice extends SimpleElectricalDevice {
         tag.putBoolean("Broken", this.isBroken);
         tag.putFloat("Temp", this.temp);
         tag.put("Behaviour", behaviour.write());
+        tag.putDouble("SetAmperage", setAmperage);
     }
 
     @Override

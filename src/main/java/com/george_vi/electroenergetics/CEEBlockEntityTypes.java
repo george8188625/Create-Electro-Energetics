@@ -16,6 +16,7 @@ import com.george_vi.electroenergetics.content.electronic_components.resistor.Re
 import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlockEntity;
 import com.george_vi.electroenergetics.content.frequency_meter.FrequencyMeterBlockEntity;
 import com.george_vi.electroenergetics.content.frequency_meter.FrequencyMeterRenderer;
+import com.george_vi.electroenergetics.content.fuse.FuseBlockEntity;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlockEntity;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderRenderer;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
@@ -78,6 +79,10 @@ public class CEEBlockEntityTypes {
     public static final BlockEntityEntry<BulbBlockEntity> BULB = REGISTRATE.blockEntity("bulb", BulbBlockEntity::new)
             .validBlocks(CEEBlocks.BULB::get, CEEBlocks.BROKEN_BULB::get)
             .renderer(() -> BulbBlockEntityRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<FuseBlockEntity> FUSE = REGISTRATE.blockEntity("fuse", FuseBlockEntity::new)
+            .validBlocks(CEEBlocks.FUSE::get, CEEBlocks.BROKEN_FUSE::get)
             .register();
 
     public static final BlockEntityEntry<CreativeBatteryBlockEntity> CREATIVE_BATTERY = REGISTRATE.blockEntity("creative_battery", CreativeBatteryBlockEntity::new)
