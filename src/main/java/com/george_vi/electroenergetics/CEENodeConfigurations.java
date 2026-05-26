@@ -19,6 +19,11 @@ public class CEENodeConfigurations {
             .add(14, 13, 8)
             .simple();
 
+    public static final NodeConfigurator ALTERNATOR_BRUSHES = new NodeConfigurator.Builder()
+            .add(2, 9, 8)
+            .add(14, 9, 8)
+            .simple();
+
     public static final NodeConfigurator DOUBLE_CONNECTOR = new NodeConfigurator.Builder()
             .add(new Vec3(3/16f, 5/16f, 0.5f))
             .add(new Vec3(13/16f, 5/16f, 0.5f))
@@ -242,10 +247,10 @@ public class CEENodeConfigurations {
             .simple(Direction.NORTH);
 
     public static final NodeConfigurator THREE_PHASE_BRUSH = new NodeConfigurator.Builder()
-            .add(new Vec3(8/16f, 8/16f, 2/16f))
-            .add(new Vec3(11/16f, 8/16f, 14/16f))
-            .add(new Vec3(8/16f, 8/16f, 14/16f))
-            .add(new Vec3(5/16f, 8/16f, 14/16f))
+            .add(8, 7, 2)
+            .add(13, 7, 13)
+            .add(8, 7, 14)
+            .add(3, 7, 13)
             .simple();
 
     public static final NodeConfigurator CURRENT_TRANSFORMER_BOTH = new NodeConfigurator.Builder()

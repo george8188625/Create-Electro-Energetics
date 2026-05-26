@@ -54,8 +54,14 @@ public class LinemansStickRenderer extends CustomRenderedItemModelRenderer {
                 transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)
             extensionState = 0.25f;
 
-        if (transformType.firstPerson())
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null)
             return;
+
+        if ((transformType == ItemDisplayContext.FIRST_PERSON_LEFT_HAND && player.getMainArm() == HumanoidArm.LEFT) ||
+                (transformType == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND && player.getMainArm() == HumanoidArm.RIGHT))
+            return;
+
 
         renderer.render(model.getOriginalModel(), light);
 

@@ -2,12 +2,14 @@ package com.george_vi.electroenergetics.simulation;
 
 import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import com.mojang.datafixers.util.Either;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
@@ -48,11 +50,13 @@ public class WireType {
     final float thickness;
     final boolean isDecorative;
     final boolean isInvulnerable;
+    final WireRenderType renderType;
 
     private WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem,
                      Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage,
                      Supplier<WireType> overheatedReplacement, TagKey<Item> droppedTag, DoubleSupplier maxTemperature,
-                     float sag, IntSupplier maxLength, float thickness, boolean isDecorative, boolean isInvulnerable) {
+                     float sag, IntSupplier maxLength, float thickness, boolean isDecorative, boolean isInvulnerable, WireRenderType renderType) {
+        this.renderType = renderType;
         if (droppedItem == null && droppedTag == null)
             droppedItem = () -> Items.AIR;
 
@@ -132,6 +136,15 @@ public class WireType {
         return isDecorative;
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public RenderType renderType() {
+        return switch (renderType) {
+            case SOLID -> RenderType.solid();
+            case CUTOUT -> RenderType.cutout();
+            case TRANSLUCENT -> RenderType.translucent();
+        };
+    }
+
 
     public static class Builder {
 
@@ -153,12 +166,16 @@ public class WireType {
         boolean invulnerable = false;
         TagKey<Item> droppedTag = null;
 
+        WireRenderType renderType = WireRenderType.SOLID;
+
         public WireType build() {
             if (dyeTypeFunction != null)
-                return new Dyeable(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
-                                        overheatedReplacement, droppedTag, maxTemperature, sag, maxLength, thickness, dyeTypeFunction, dyeColor);
+                return new Dyeable(resistance, model, droppedItem, spoolItem, insulationResistance,
+                        maxInsulationVoltage, overheatedReplacement, droppedTag, maxTemperature, sag, maxLength,
+                        thickness, dyeTypeFunction, dyeColor, renderType);
             return new WireType(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
-                    overheatedReplacement, droppedTag, maxTemperature, sag, maxLength, thickness, decorative, invulnerable);
+                    overheatedReplacement, droppedTag, maxTemperature, sag, maxLength, thickness, decorative,
+                    invulnerable, renderType);
         }
 
         public Builder(PartialModel model) {
@@ -249,6 +266,11 @@ public class WireType {
             decorative = true;
             return this;
         }
+
+        public Builder renderType(WireRenderType renderType) {
+            this.renderType = renderType;
+            return this;
+        }
     }
 
     public static class Dyeable extends WireType {
@@ -259,10 +281,11 @@ public class WireType {
                         Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage,
                         Supplier<WireType> overheatedReplacement, TagKey<Item> droppedTag,
                         DoubleSupplier maxTemperature, float sag, IntSupplier maxLength, float thickness,
-                        Function<DyeColor, WireType> typeFunction, @Nullable DyeColor dyeColor) {
+                        Function<DyeColor, WireType> typeFunction, @Nullable DyeColor dyeColor,
+                        WireRenderType renderType) {
             super(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
                     overheatedReplacement, droppedTag, maxTemperature, sag, maxLength, thickness, false,
-                    false);
+                    false, renderType);
 
             this.typeFunction = typeFunction;
             this.dyeColor = dyeColor;
@@ -280,5 +303,12 @@ public class WireType {
             return dyeColor != null;
         }
 
+    }
+
+    /**
+     * This is used instead of {@link RenderType} to not cause issues with dedicated servers
+     */
+    public enum WireRenderType {
+        SOLID, CUTOUT, TRANSLUCENT
     }
 }

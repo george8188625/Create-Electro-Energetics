@@ -10,6 +10,7 @@ public class CClient extends ConfigBase {
     public final ConfigInt wireRenderDistance = i(512, "wireRenderDistance", "Maximum distance for wire rendering without flywheel.");
     public final ConfigBool debugPantographRange = b(false, "debugPantographRange", "Show the pantograph range box.");
     public final ConfigBool debugNodeID = b(false, "debugNodeID", "Display nodeID when hovering.");
+    public final ConfigBool showBirdsOnWires = b(true, "showBirdsOnWires", "Display birds on wires.");
 
     @Override
     public String getName() {

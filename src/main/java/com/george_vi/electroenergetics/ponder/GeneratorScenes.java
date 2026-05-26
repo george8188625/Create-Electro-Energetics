@@ -57,7 +57,7 @@ public class GeneratorScenes {
                 .placeNearTarget();
 
         scene.idle(100);
-        scene.world().setKineticSpeed(util.select().fromTo(7, 3, 6, 9, 1, 6), 16);
+        scene.world().setKineticSpeed(util.select().fromTo(6, 3, 6, 9, 1, 6), 16);
         scene.world().setKineticSpeed(util.select().fromTo(9, 2, 5, 9, 0, 5), -8);
         scene.idle(20);
         scene.overlay().showText(70)

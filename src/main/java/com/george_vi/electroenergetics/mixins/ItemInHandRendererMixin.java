@@ -23,7 +23,9 @@ public class ItemInHandRendererMixin {
                                              MultiBufferSource buffer, int seed, CallbackInfo ci) {
 
         if (entity instanceof Player player)
-            if (player.getMainHandItem().getItem() == CEEItems.LINEMANS_STICK.get() &&
+            if (
+                    player.getMainHandItem().getItem() == CEEItems.LINEMANS_STICK.get() &&
+                    CEEItems.LINEMANS_STICK.get() != itemStack.getItem() &&
                     (player.getOffhandItem().is(CEETags.HIDE_ON_LINEMANS_STICK)))
                 ci.cancel();
     }

@@ -15,6 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.simibubi.create.content.contraptions.wrench.RadialWrenchMenu;
 import com.simibubi.create.content.equipment.wrench.WrenchItemRenderer;
+import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 import com.simibubi.create.foundation.utility.FilesHelper;
 import com.tterrag.registrate.providers.ProviderType;
@@ -23,6 +24,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -66,6 +68,8 @@ public class ModEvents {
                 provider.add(entry.getKey(), entry.getValue().getAsString());
             PonderIndex.addPlugin(new CEEPonderPlugin());
             PonderIndex.getLangAccess().provideLang(CreateElectroEnergetics.ID, provider::add);
+            CEEAdvancements.provideLang(provider::add);
+
         });
     }
 
@@ -91,6 +95,7 @@ public class ModEvents {
         generator.addProvider(event.includeServer(), new CEEMixingRecipeGen(packOutput, lookupProvider));
         generator.addProvider(event.includeServer(), new CEECompactingRecipeGen(packOutput, lookupProvider));
         generator.addProvider(event.includeServer(), new CEEMechanicalCraftingRecipeGen(packOutput, lookupProvider));
+        generator.addProvider(event.includeServer(), new CEEAdvancements(packOutput, lookupProvider));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -127,6 +132,13 @@ public class ModEvents {
         event.register(CEERegistries.PANTOGRAPH_TYPE);
         event.register(CEERegistries.SIMULATED_DEVICE_FEATURE_TYPE);
         event.register(CEERegistries.SIMULATED_DEVICE_TYPE);
+    }
+
+    @SubscribeEvent
+    public static void onRegister(RegisterEvent event) {
+        if (event.getRegistry() == BuiltInRegistries.TRIGGER_TYPES) {
+            CEEAdvancements.registerTrigger();
+        }
     }
 
     @SubscribeEvent

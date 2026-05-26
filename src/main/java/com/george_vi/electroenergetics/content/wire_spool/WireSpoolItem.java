@@ -5,6 +5,8 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
+import com.george_vi.electroenergetics.events.datagen.CEEAdvancement;
+import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
@@ -120,6 +122,7 @@ public class WireSpoolItem extends Item {
                     return InteractionResult.FAIL;
                 }
 
+                CEEAdvancements.CONNECT_WIRES.awardTo(player);
                 sd.connectCatenary(hoveredPos, originalPos);
                 WireSparkEffectTicker.placedConnections.computeIfAbsent(level, l -> new Stack<>()).add(Pair.of(new InWorldNodeConnection(originalNode, hoveredNode), Pair.of(hoveredNode.getPosition(level), player)));
             } else {
@@ -128,6 +131,8 @@ public class WireSpoolItem extends Item {
                     sd.connect(originalNode, hoveredNode, newWiretype);
                 } else
                     sd.connect(originalNode, hoveredNode, wireType.get());
+
+                CEEAdvancements.CONNECT_WIRES.awardTo(player);
                 if (!level.isClientSide)
                     WireSparkEffectTicker.placedConnections.computeIfAbsent(level, l -> new Stack<>()).add(Pair.of(new InWorldNodeConnection(originalNode, hoveredNode), Pair.of(hoveredNode.getPosition(level), player)));
             }

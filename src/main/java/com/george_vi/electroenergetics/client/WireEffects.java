@@ -2,31 +2,45 @@ package com.george_vi.electroenergetics.client;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEESoundEvents;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.foundation.WirePoints;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import it.unimi.dsi.fastutil.floats.FloatList;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WireEffects {
+
+    public static Map<InWorldNodeConnection, IntSet> birds = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.isPaused())
+        if (mc.isPaused() || mc.level == null)
             return;
 
         for (Pair<InWorldNodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
@@ -41,16 +55,46 @@ public class WireEffects {
             }
 
             double distance = pos1.distanceTo(pos2);
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wire.getSecond().getSag(distance));
+            WirePoints points = QuadraticWireHelper.wirePoints(pos1, pos2, wire.getSecond().getSag(distance));
 
             spawnDrippingWater(points);
+
+            if (!CEEConfigs.client().showBirdsOnWires.get())
+                continue;
+
+            // Wires aren't gonna spawn at a level lower than 70
+            if (points.getMinY() < 70)
+                continue;
+
+            if (mc.level.random.nextFloat() > 0.9996) {
+                int birdPos = spawnBirds(points);
+                if (birdPos != -1) {
+                    birds.computeIfAbsent(connection, c -> new IntArraySet()).add(birdPos);
+                }
+            }
+
+            if (mc.level.random.nextFloat() > 0.996) {
+                IntSet positions = birds.get(connection);
+                if (positions == null)
+                    continue;
+
+                for (IntIterator iterator = positions.iterator(); iterator.hasNext(); ) {
+                    int pos = iterator.next();
+
+                    if (pos >= points.size())
+                        iterator.remove();
+
+                    if (mc.level.random.nextFloat() > 0.9)
+                        iterator.remove();
+                }
+            }
         }
 
         for (CatenaryConnection connection : WireRenderer.CATENARY) {
             Vec3 pos1 = connection.pos1().getBottomCenter();
             Vec3 pos2 = connection.pos2().getBottomCenter();
 
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, 0);
+            WirePoints points = QuadraticWireHelper.wirePoints(pos1, pos2, 0);
 
             spawnDrippingWater(points);
 
@@ -67,14 +111,14 @@ public class WireEffects {
 
             float distance = (float) topPos1.distanceTo(topPos2);
 
-            List<Vec3> topPoints = QuadraticWireHelper.cablePoints(topPos1, topPos2, 350f * (0.05f / distance), 4);
+            WirePoints topPoints = QuadraticWireHelper.wirePoints(topPos1, topPos2, 350f * (0.05f / distance), 4);
 
             spawnDrippingWater(topPoints);
         }
     }
 
     @OnlyIn(Dist.CLIENT)
-    private static void spawnDrippingWater(List<Vec3> points) {
+    private static void spawnDrippingWater(WirePoints points) {
         Minecraft mc = Minecraft.getInstance();
 
         for (int i = 0; i < points.size() - 1; i++) {
@@ -98,6 +142,41 @@ public class WireEffects {
                     mc.level.addParticle(ParticleTypes.DRIPPING_WATER, pos.x(), pos.y() - 0.1, pos.z(), 0, 0, 0);
             }
         }
+    }
+
+
+    /**
+     * @return -1 for no bird. otherwise point index.
+     */
+    @OnlyIn(Dist.CLIENT)
+    private static int spawnBirds(WirePoints points) {
+        Minecraft mc = Minecraft.getInstance();
+
+        if (mc.level == null || mc.player == null || points.size() < 3)
+            return -1;
+
+        int target = mc.level.random.nextInt(1, points.size() - 1);
+
+        Vec3 pos = points.get(target);
+        double py = points.getY(target - 1);
+        double ny = points.getY(target + 1);
+        if (Math.abs(py - ny) > 0.25)
+            return -1;
+
+        BlockPos targetPos = BlockPos.containing(pos);
+
+        if (!mc.level.isEmptyBlock(targetPos) ||
+                !mc.level.canSeeSky(targetPos))
+            return -1;
+
+        for (int x = -4; x < 4; x++) {
+            for (int z = -4; z < 4; z++) {
+                if (!mc.level.canSeeSky(targetPos.offset(x, -4, z)))
+                    return -1;
+            }
+        }
+
+        return target;
     }
 
     @OnlyIn(Dist.CLIENT)

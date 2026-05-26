@@ -3,9 +3,6 @@ package com.george_vi.electroenergetics;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.minecraft.world.item.DyeColor;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class CEEPartialModels {
     public static final PartialModel WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/wire_segment"));
     public static final PartialModel DUPLEX_WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/duplkex_wire_segment"));
@@ -70,6 +67,8 @@ public class CEEPartialModels {
     public static final PartialModel RESISTIVE_HEATER_HEATING_ELEMENT_GLOW = PartialModel.of(CreateElectroEnergetics.rl("block/resistive_heater/heating_element_glow"));
     public static final PartialModel SYNCHROSCOPE_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/synchroscope/dial"));
     public static final PartialModel ELECTRIC_MOTOR_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/electric_motor/shaft"));
+    public static final PartialModel ALTERNATOR_BRUSHES_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/alternator_brushes/shaft"));
+    public static final PartialModel BIRB = PartialModel.of(CreateElectroEnergetics.rl("block/birb"));
 
     public static final PartialModel[] COLORED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];
     public static final PartialModel[] COLORED_HEAVILY_INSULATED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];

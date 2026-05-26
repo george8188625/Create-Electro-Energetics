@@ -10,6 +10,7 @@ import com.george_vi.electroenergetics.content.railway_electrification.catenary.
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.foundation.WirePoints;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
@@ -21,6 +22,7 @@ import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import dev.engine_room.flywheel.lib.visualization.VisualizationHelper;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.render.CachedBuffers;
@@ -207,13 +209,26 @@ public class WireRenderer {
                     db.isOuterInsulator(level, connection.node1().sourcePos(), state1, connection.node1().id());
             boolean isBlock2Outer = state2.getBlock() instanceof ElectricalDeviceBlock<?> db &&
                     db.isOuterInsulator(level, connection.node2().sourcePos(), state2, connection.node2().id());
+            double distance = pos1.distanceTo(pos2);
+
+            mc.getProfiler().popPush("renderBirds");
+            IntSet birdPositions = WireEffects.birds.get(connection);
+            if (birdPositions != null) {
+                WirePoints wirePoints = QuadraticWireHelper.wirePoints(pos1, pos2, wire.getSecond().getSag(distance));
+                for (int birdPos : birdPositions) {
+                    if (birdPos >= wirePoints.size())
+                        continue;
+
+                    renderBird(wirePoints.get(birdPos), pos1, pos2, pose, buffer);
+                }
+            }
 
             mc.getProfiler().popPush("renderWireAttachments");
             for (Pair<Float, WireAttachment> attachment : wireData.attachments()) {
                 WireAttachment attachmentType = attachment.getSecond();
                 float positionOnWire = attachment.getFirst();
                 mc.getProfiler().push(CEERegistries.WIRE_ATTACHMENT_TYPE.getKey(attachmentType.type).toString());
-                double distance = pos1.distanceTo(pos2);
+
                 Vec3 offset = QuadraticWireHelper.posAt(pos1, pos2, positionOnWire, wireData.getSag(distance));
                 float elevation = QuadraticWireHelper.pointElevationInDegrees(pos1, pos2, positionOnWire, wireData.getSag(distance));
 
@@ -236,7 +251,6 @@ public class WireRenderer {
             if (isBlock1Outer || isBlock2Outer || renderImmediately) {
                 if (!connection.isFullyLoaded(level))
                     continue;
-                double distance = pos1.distanceTo(pos2);
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
                 List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ?
                         QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), cameraPosition) :
@@ -352,7 +366,7 @@ public class WireRenderer {
                                     BlockPos.containing(point.add(nextPoint).scale(0.5))) :
                             maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                     LevelRenderer.getLightColor(level, nextPointBlockPos)))
-                    .renderInto(pose, buffer.getBuffer(RenderType.solid()));
+                    .renderInto(pose, buffer.getBuffer(wireType.renderType()));
         }
     }
 
@@ -378,12 +392,22 @@ public class WireRenderer {
                                     BlockPos.containing(point.add(nextPoint).scale(0.5))) :
                             maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                     LevelRenderer.getLightColor(level, nextPointBlockPos)))
-                    .renderInto(pose, buffer.getBuffer(RenderType.solid()));
+                    .renderInto(pose, buffer.getBuffer(wireType.renderType()));
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void renderBird(Vec3 pos, Vec3 wirePos1, Vec3 wirePos2, PoseStack pose, MultiBufferSource buffer) {
+        CachedBuffers.partial(CEEPartialModels.BIRB, Blocks.ANDESITE.defaultBlockState())
+                .translate(pos)
+                .rotateY((float) Mth.atan2(wirePos2.x() - wirePos1.x(), wirePos2.z() - wirePos1.z()))
+                .light(LevelRenderer.getLightColor(Minecraft.getInstance().level, BlockPos.containing(pos)))
+                .renderInto(pose, buffer.getBuffer(RenderType.cutout()));
     }
 
     public static void removeConnections(InWorldNodeConnection toRemove) {
         WIRE_CONNECTIONS.removeIf(w -> w.getFirst().equals(toRemove));
+        WireEffects.birds.remove(toRemove);
         WireEffect we = WIRE_EFFECTS.remove(toRemove);
         if (we != null)
             VisualizationHelper.queueRemove(we);
@@ -421,7 +445,9 @@ public class WireRenderer {
     }
 
     public static void clearAllWireConnections() {
-        WIRE_CONNECTIONS = new ArrayList<>();
+        WIRE_CONNECTIONS.clear();
+        WireEffects.birds.clear();
+
         for (WireEffect we : WIRE_EFFECTS.values())
             VisualizationHelper.queueRemove(we);
         WIRE_EFFECTS.clear();

@@ -1,0 +1,6 @@
+// 1.21.1	2026-05-26T19:56:14.134467161	CEE's Advancements
+c98e15853112fd567ac958b7a5be3defb1533f93 data/electroenergetics/advancement/connect_wires.json
+b46dbae97866c2204ce4c2b0705472c94ec49aa3 data/electroenergetics/advancement/fuse_bypass.json
+459c4e30d5ab4fdc9db0e2beaefa5d3b3d4cfe83 data/electroenergetics/advancement/root.json
+18e399c16df3ce32028b64dd13e74d3f727b157d data/electroenergetics/advancement/short_circuit.json
+092567d2c2bd74cc4ec7240f6debf84c0f12a92a data/electroenergetics/advancement/transformer.json

@@ -1,0 +1,29 @@
+{
+  "parent": "electroenergetics:connect_wires",
+  "criteria": {
+    "0": {
+      "trigger": "electroenergetics:fuse_bypass_builtin"
+    }
+  },
+  "display": {
+    "description": {
+      "color": "#DBA213",
+      "translate": "advancement.electroenergetics.fuse_bypass.desc"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "minecraft:copper_ingot"
+    },
+    "title": {
+      "translate": "advancement.electroenergetics.fuse_bypass"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

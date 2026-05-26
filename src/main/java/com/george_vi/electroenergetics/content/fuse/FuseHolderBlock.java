@@ -3,6 +3,8 @@ package com.george_vi.electroenergetics.content.fuse;
 import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.content.fuse.fuse_held.FuseHoldable;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
+import com.george_vi.electroenergetics.events.datagen.CEEAdvancement;
+import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.AllSoundEvents;
@@ -96,6 +98,8 @@ public class FuseHolderBlock extends DirectionalRolledDeviceBlock<FuseHolderDevi
                         be.firstFuse = Pair.of(type, tag);
                     else
                         be.secondFuse = Pair.of(type, tag);
+                    if (type instanceof FuseHoldable.CopperConductor)
+                        CEEAdvancements.FUSE_BYPASS.awardTo(player);
                     type.onPlace(tag, stack, level, pos);
                     be.updateFuses();
                     stack.shrink(1);

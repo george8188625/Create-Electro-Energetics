@@ -34,6 +34,7 @@ import com.george_vi.electroenergetics.content.railway_electrification.third_rai
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterBlockEntity;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterRenderer;
 import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesBlockEntity;
+import com.george_vi.electroenergetics.content.rotor.AlternatorBrushesRenderer;
 import com.george_vi.electroenergetics.content.rotor.AlternatorRotorBlockEntity;
 import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeBlockEntity;
 import com.george_vi.electroenergetics.content.synchroscope.SynchroscopeRenderer;
@@ -46,7 +47,6 @@ import com.george_vi.electroenergetics.content.transmission_distribution.transfo
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorBlockEntity;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.content.kinetics.base.OrientedRotatingVisual;
-import com.simibubi.create.content.kinetics.base.ShaftRenderer;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
@@ -118,9 +118,9 @@ public class CEEBlockEntityTypes {
             .register();
 
     public static final BlockEntityEntry<AlternatorBrushesBlockEntity> ALTERNATOR_BRUSHES = REGISTRATE.blockEntity("alternator_brushes", AlternatorBrushesBlockEntity::new)
-            .visual(() -> SingleAxisRotatingVisual::shaft, false)
+            .visual(() -> OrientedRotatingVisual.of(CEEPartialModels.ALTERNATOR_BRUSHES_SHAFT), false)
             .validBlocks(CEEBlocks.ALTERNATOR_BRUSHES, CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES)
-            .renderer(() -> ShaftRenderer::new)
+            .renderer(() -> AlternatorBrushesRenderer::new)
             .register();
 
     public static final BlockEntityEntry<ConverterBlockEntity> CONVERTER = REGISTRATE.blockEntity("converter", ConverterBlockEntity::new)

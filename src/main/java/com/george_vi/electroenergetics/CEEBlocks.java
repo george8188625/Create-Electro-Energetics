@@ -548,7 +548,7 @@ public class CEEBlocks {
             .tag(CEETags.TRAIN_SOUND_MODIFIER)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate(BlockStateGen.directionalBlockProvider(true))
+            .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))

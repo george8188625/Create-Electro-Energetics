@@ -1,0 +1,29 @@
+{
+  "parent": "electroenergetics:connect_wires",
+  "criteria": {
+    "0": {
+      "trigger": "electroenergetics:short_circuit_builtin"
+    }
+  },
+  "display": {
+    "description": {
+      "color": "#DBA213",
+      "translate": "advancement.electroenergetics.short_circuit.desc"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "electroenergetics:copper_wire"
+    },
+    "title": {
+      "translate": "advancement.electroenergetics.short_circuit"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

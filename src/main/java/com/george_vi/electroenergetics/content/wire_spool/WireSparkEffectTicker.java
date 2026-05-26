@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics.content.wire_spool;
 
+import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -38,9 +39,10 @@ public class WireSparkEffectTicker {
             Player player = e.getSecond().getSecond();
             Vec3 pos = e.getSecond().getFirst();
             double current = Math.abs(results.getCurrentThrough(connection.node1(), connection.node2()));
-            if (current > 900)
+            if (current > 900) {
+                CEEAdvancements.SHORT_CIRCUIT.awardTo(player);
                 CatnipServices.NETWORK.sendToClientsAround(level, pos, 40, new SendSparkPacket(pos, SendSparkPacket.SparkSize.LARGE));
-            else  if (current > 35)
+            } else  if (current > 35)
                 CatnipServices.NETWORK.sendToClientsAround(level, pos, 40, new SendSparkPacket(pos, SendSparkPacket.SparkSize.MEDIUM));
 
         }

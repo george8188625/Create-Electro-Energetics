@@ -47,7 +47,6 @@ public class FuseBlockItem extends BlockItem {
                 .style(ChatFormatting.GRAY).addTo(tooltipComponents);
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static boolean playScroll = false;
 
     @OnlyIn(Dist.CLIENT)

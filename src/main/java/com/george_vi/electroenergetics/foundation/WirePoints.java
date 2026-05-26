@@ -6,6 +6,21 @@ public class WirePoints {
     private double[] values;
     private int size;
 
+    private double minX = Double.MAX_VALUE;
+    private double minY = Double.MAX_VALUE;
+    private double minZ = Double.MAX_VALUE;
+    private double maxX = Double.MIN_VALUE;
+    private double maxY = Double.MIN_VALUE;
+    private double maxZ = Double.MIN_VALUE;
+
+    public WirePoints() {
+        values = new double[32 * 3];
+    }
+
+    public WirePoints(int size) {
+        values = new double[size * 3];
+    }
+
     public Vec3 get(int index) {
         if (index >= size || index < 0)
             throw new ArrayIndexOutOfBoundsException(index);
@@ -54,6 +69,13 @@ public class WirePoints {
         values[i + 1] = y;
         values[i + 2] = z;
         size++;
+
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        minZ = Math.min(minZ, z);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+        maxZ = Math.max(maxZ, z);
     }
 
     public void set(int index, double x, double y, double z) {
@@ -65,6 +87,18 @@ public class WirePoints {
         values[i + 1] = y;
         values[i + 2] = z;
         size++;
+
+        minX = minY = minZ = Double.MAX_VALUE;
+        maxX = maxY = maxZ = Double.MIN_VALUE;
+
+        for (int j = 0; j < size(); j++) {
+            minX = Math.min(minX, values[(j * 3)]);
+            minY = Math.min(minY, values[(j * 3) + 1]);
+            minZ = Math.min(minZ, values[(j * 3) + 2]);
+            maxX = Math.max(maxX, values[(j * 3)]);
+            maxY = Math.max(maxY, values[(j * 3) + 1]);
+            maxZ = Math.max(maxZ, values[(j * 3) + 2]);
+        }
     }
 
     private void grow() {
@@ -81,8 +115,31 @@ public class WirePoints {
         System.arraycopy(values, i, toFill, toFillPos, positions * 3);
     }
 
+    public double getMinX() {
+        return minX;
+    }
+
+    public double getMinY() {
+        return minY;
+    }
+
+    public double getMinZ() {
+        return minZ;
+    }
+
+    public double getMaxX() {
+        return maxX;
+    }
+
+    public double getMaxY() {
+        return maxY;
+    }
+
+    public double getMaxZ() {
+        return maxZ;
+    }
+
     public int size() {
         return size;
     }
-
 }
