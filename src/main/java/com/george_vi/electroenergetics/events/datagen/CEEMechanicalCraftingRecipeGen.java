@@ -1,8 +1,6 @@
 package com.george_vi.electroenergetics.events.datagen;
 
-import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.CEETags;
-import com.george_vi.electroenergetics.CreateElectroEnergetics;
+import com.george_vi.electroenergetics.*;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.api.data.recipe.MechanicalCraftingRecipeGen;
 import net.minecraft.core.HolderLookup;
@@ -14,7 +12,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class CEEMechanicalCraftingRecipeGen extends MechanicalCraftingRecipeGen {
 
-    GeneratedRecipe LINEMANS_STICK = create(CEEItems.LINEMANS_STICK::get).returns(1)
+    GeneratedRecipe
+
+    LINEMANS_STICK = create(CEEItems.LINEMANS_STICK::get)
             .recipe(b -> b
                     .key('N', CEETags.IRON_NUGGET)
                     .key('R', AllItems.PRECISION_MECHANISM.get())
@@ -26,6 +26,20 @@ public class CEEMechanicalCraftingRecipeGen extends MechanicalCraftingRecipeGen 
                     .patternLine(" S ")
                     .patternLine(" S ")
                     .patternLine(" D ")
+                    .disallowMirrored()),
+
+    SF6_BREAKER = create(CEEBlocks.SF6_BREAKER::get)
+            .recipe(b -> b
+                    .key('C', CEEBlocks.CONNECTOR)
+                    .key('P', AllItems.PRECISION_MECHANISM.get())
+                    .key('S', CEEFluids.TRANSFORMER_OIL.getBucket().orElseThrow())
+                    .key('s', CEETags.IRON_PLATE)
+                    .key('I', CEEBlocks.INSULATOR)
+                    .patternLine("sCs")
+                    .patternLine(" I ")
+                    .patternLine(" S ")
+                    .patternLine(" P ")
+                    .patternLine("sCs")
                     .disallowMirrored());
 
     public CEEMechanicalCraftingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {

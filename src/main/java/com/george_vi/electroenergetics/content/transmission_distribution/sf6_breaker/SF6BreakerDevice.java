@@ -66,7 +66,7 @@ public class SF6BreakerDevice extends SimpleElectricalDevice implements VirtualR
             else
                 closed = false;
             if (prevClosed != closed) {
-                cooldown = 80;
+                cooldown = 20;
                 Vec3 pPos = Vec3.atCenterOf(pos);
                 level.playSound(null, pPos.x, pPos.y, pPos.z, CEESoundEvents.SF6_TRIP.get(), SoundSource.BLOCKS, 1, 1f);
             }

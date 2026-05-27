@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.energy_meter;
 
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
+import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -9,8 +10,11 @@ import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Objects;
 
 public class EnergyMeterDevice extends SimpleElectricalDevice {
     public SwitchingBehaviour behaviour1;
@@ -77,7 +81,6 @@ public class EnergyMeterDevice extends SimpleElectricalDevice {
         if (!loaded)
             return;
 
-
         if (this.be == null)
             if (level.getBlockEntity(pos) instanceof EnergyMeterBlockEntity be)
                 this.be = be;
@@ -88,6 +91,12 @@ public class EnergyMeterDevice extends SimpleElectricalDevice {
             else {
                 this.be.setTotalEnergy((float) this.totalEnergy);
                 this.be.activePower = this.isClosed ? power : 0;
+                if (be.owner != null && totalEnergy > 10_000) {
+                    Player player = Objects.requireNonNull(level.getServer()).getPlayerList().getPlayer(be.owner);
+
+                    if (player != null)
+                        CEEAdvancements.ENERGY_METER_TOTAL.awardTo(player);
+                }
             }
         }
     }

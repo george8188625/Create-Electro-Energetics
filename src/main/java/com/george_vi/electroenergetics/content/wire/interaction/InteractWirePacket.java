@@ -20,7 +20,7 @@ public record InteractWirePacket(NodeConnectionPoint point) implements Serverbou
         ItemStack stackInHand = player.getMainHandItem();
 
         WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
-                .filter(h -> h.isActiveFor(stackInHand))
+                .filter(h -> h.isActiveFor(stackInHand, player))
                 .findFirst().orElse(null);
 
         if (behaviour != null)

@@ -80,12 +80,17 @@ public class CEEItems {
     public static final ItemEntry<Item> IRON_WIRE_STRAND = REGISTRATE.item("iron_wire_strand", Item::new)
             .register();
 
+    public static final ItemEntry<Item> WIRE_DAMPER = REGISTRATE.item("wire_damper", Item::new)
+            .tag(CEETags.WIRE_DAMPER_ITEM)
+            .register();
+
     public static final ItemEntry<ClampMeterItem> CLAMP_METER = REGISTRATE.item("clamp_meter", ClampMeterItem::new)
             .model(AssetLookup.existingItemModel())
             .register();
 
     public static final ItemEntry<LinemansStickItem> LINEMANS_STICK = REGISTRATE.item("linemans_stick", LinemansStickItem::new)
             .lang("Lineman's Stick")
+            .properties(p -> p.stacksTo(1))
             .model(AssetLookup.existingItemModel())
             .register();
 

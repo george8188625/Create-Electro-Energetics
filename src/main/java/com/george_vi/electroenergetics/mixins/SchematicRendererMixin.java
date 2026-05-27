@@ -1,7 +1,11 @@
 package com.george_vi.electroenergetics.mixins;
 
+import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.client.WireRenderer;
+import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
+import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
@@ -20,8 +24,10 @@ import net.createmod.catnip.render.SuperRenderTypeBuffer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -122,6 +128,90 @@ public class SchematicRendererMixin {
                         outerInsulatorJumpers.put(connection.node2(), new ArrayList<>());
                     outerInsulatorJumpers.get(connection.node2()).add(nextPoint);
                 }
+            }
+        }
+
+        for (CatenaryConnection connection : infrastructure.getCatenaryConnections()) {
+            BlockPos pos1 = connection.pos1();
+            BlockPos pos2 = connection.pos2();
+
+            BlockState startingState = schematic.getBlockState(pos1);
+            BlockState endingState = schematic.getBlockState(pos2);
+            AABB bb = AABB.encapsulatingFullBlocks(pos1, pos2);
+
+            Vec3 start = Vec3.atCenterOf(pos1).add(0, -0.5, 0);
+            Vec3 end = Vec3.atCenterOf(pos2).add(0, -0.5, 0);
+
+            List<Vec3> lowerWirePoints = QuadraticWireHelper.cablePoints(start, end, 0, 10);
+
+            for (int i = 0; i < lowerWirePoints.size(); i++) {
+                Vec3 point = lowerWirePoints.get(i);
+
+                Vec3 nextPoint = i == lowerWirePoints.size() - 1 ? end : lowerWirePoints.get(i + 1);
+
+                float catenaryThickness = 0.75f;
+
+                CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
+                        .translate(point)
+                        .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                        .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                        .scale(catenaryThickness, catenaryThickness, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                        .light(createElectroEnergetics$getLightColor(BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))))
+                        .renderInto(ms, buffers.getBuffer(RenderType.solid()));
+            }
+            boolean isStartingLow = CEEBlocks.CATENARY_HOLDER.has(startingState) && startingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+            boolean isEndingLow = CEEBlocks.CATENARY_HOLDER.has(endingState) && endingState.getValue(CatenaryHolderBlock.STYLE).isLow();
+            if (isStartingLow || isEndingLow)
+                continue;
+
+            Vec3 topStart = start.add(0, 1.5, 0);
+            Vec3 topEnd = end.add(0, 1.5, 0);
+
+            float distance = (float) topStart.distanceTo(topEnd);
+
+
+            List<Vec3> upperWirePoints = QuadraticWireHelper.cablePoints(topStart, topEnd, 350f * (0.05f / distance), 4);
+
+            for (int i = 0; i < upperWirePoints.size(); i++) {
+                Vec3 point = upperWirePoints.get(i);
+
+
+                Vec3 nextPoint = i == upperWirePoints.size() - 1 ? topEnd : upperWirePoints.get(i + 1);
+
+                float catenaryThickness = 0.75f;
+
+                CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
+                        .translate(point)
+                        .rotateY((float) Math.atan2(nextPoint.x() - point.x(), nextPoint.z() - point.z()))
+                        .rotateX(-(float) Math.atan2(nextPoint.y - point.y, Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z)))
+                        .scale(catenaryThickness, catenaryThickness, (float) (point.distanceTo(nextPoint) * 2) + 0.02f)
+                        .light(createElectroEnergetics$getLightColor(BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))))
+                        .renderInto(ms, buffers.getBuffer(RenderType.solid()));
+                if (i == 0)
+                    continue;
+                if (i == upperWirePoints.size() - 1)
+                    if (point.distanceToSqr(topEnd) < 1.3)
+                        continue;
+                Vec3 closest;
+                Vec3 ab = end.subtract(start);
+                Vec3 ap = point.subtract(start);
+                double denom = ab.lengthSqr();
+                if (denom == 0)
+                    closest = start;
+                else {
+                    double t = ap.dot(ab) / denom;
+                    t = Mth.clamp(t, 0, 1);
+                    closest = start.add(ab.scale(t));
+                }
+
+                CachedBuffers.partial(CEEPartialModels.WIRE_SEGMENT, Blocks.ANDESITE.defaultBlockState())
+                        .translate(point)
+                        .rotateY((float) Math.atan2(closest.x() - point.x(), closest.z() - point.z()))
+                        .rotateX(-(float) Math.atan2(closest.y - point.y, Math.hypot(closest.x - point.x, closest.z - point.z)))
+                        .scale(catenaryThickness * 0.66f, catenaryThickness * 0.66f, (float) (point.distanceTo(closest) * 2) + 0.02f)
+                        .light(createElectroEnergetics$getLightColor(BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5))))
+                        .rotateZDegrees(45)
+                        .renderInto(ms, buffers.getBuffer(RenderType.solid()));
             }
         }
     }

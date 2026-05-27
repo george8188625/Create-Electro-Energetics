@@ -71,7 +71,8 @@ public abstract class SchematicPrinterMixin {
                 InWorldNode node2 = connection.node2();
 
                 if (!sd.isConnected(node1, node2)) {
-                    currentPos = BlockPos.containing(QuadraticWireHelper.posAt(node1.sourcePos().getCenter(), node2.sourcePos().getCenter(), 0.5f));
+                    currentPos = BlockPos.containing(QuadraticWireHelper.posAt(node1.sourcePos().getCenter(), node2.sourcePos().getCenter(), 0.5f))
+                            .subtract(schematicAnchor);
                     cir.setReturnValue(true);
                     return;
                 }
@@ -82,7 +83,8 @@ public abstract class SchematicPrinterMixin {
                 BlockPos pos2 = e.pos2();
 
                 if (!sd.isConnected(new InWorldNode(0, pos1), new InWorldNode(1, pos2))) {
-                    currentPos = BlockPos.containing(QuadraticWireHelper.posAt(pos1.getCenter(), pos2.getCenter(), 0.5f));
+                    currentPos = BlockPos.containing(QuadraticWireHelper.posAt(pos1.getCenter(), pos2.getCenter(), 0.5f))
+                            .subtract(schematicAnchor);
                     cir.setReturnValue(true);
                     return;
                 }
@@ -120,7 +122,6 @@ public abstract class SchematicPrinterMixin {
                 BlockPos pos2 = e.pos2();
 
                 if (!sd.isConnected(new InWorldNode(0, pos1), new InWorldNode(1, pos2))) {
-                    currentPos = BlockPos.containing(QuadraticWireHelper.posAt(pos1.getCenter(), pos2.getCenter(), 0.5f));
                     cir.setReturnValue(new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, List.of(new ItemStack(CEEWireTypes.COPPER.get().getDrops(), CEEConfigs.server().wiresPerSpool.get()))));
                     return;
                 }
@@ -154,7 +155,6 @@ public abstract class SchematicPrinterMixin {
                 BlockPos pos2 = e.pos2();
 
                 if (!sd.isConnected(new InWorldNode(0, pos1), new InWorldNode(1, pos2))) {
-                    currentPos = BlockPos.containing(QuadraticWireHelper.posAt(pos1.getCenter(), pos2.getCenter(), 0.5f));
                     checklist.require(new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, new ItemStack(CEEWireTypes.COPPER.get().getDrops(), CEEConfigs.server().wiresPerSpool.get())));
                 }
             }
@@ -206,7 +206,6 @@ public abstract class SchematicPrinterMixin {
                 if (!sd.getConnections(node1).contains(connection)) {
                     sd.setConnectionData(sd.connect(node1, node2, wireData.wireType()), wireData);
                     sl.getWireConnections().remove(connection);
-                    currentPos = BlockPos.containing(QuadraticWireHelper.posAt(node1.sourcePos().getCenter(), node2.sourcePos().getCenter(), 0.5f));
                     ci.cancel();
                     return;
                 }
@@ -221,7 +220,6 @@ public abstract class SchematicPrinterMixin {
                 if (!sd.isConnected(new InWorldNode(0, pos1), new InWorldNode(1, pos2))) {
                     sd.connectCatenary(pos1, pos2);
                     iterator.remove();
-                    currentPos = BlockPos.containing(QuadraticWireHelper.posAt(pos1.getCenter(), pos2.getCenter(), 0.5f));
                     ci.cancel();
                     return;
                 }

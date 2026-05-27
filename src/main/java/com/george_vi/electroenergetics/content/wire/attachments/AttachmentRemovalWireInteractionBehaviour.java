@@ -57,7 +57,7 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
     }
 
     @Override
-    public boolean isActiveFor(ItemStack stack) {
+    public boolean isActiveFor(ItemStack stack, Player player) {
         return stack.is(CEETags.ATTACHMENT_REMOVAL_ITEM);
     }
 

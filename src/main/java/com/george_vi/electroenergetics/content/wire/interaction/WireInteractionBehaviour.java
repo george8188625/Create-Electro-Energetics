@@ -25,7 +25,7 @@ import java.util.List;
 public abstract class WireInteractionBehaviour {
     public abstract void interactWire(NodeConnectionPoint point, Level level, Player player, ItemStack stack);
 
-    public abstract boolean isActiveFor(ItemStack stack);
+    public abstract boolean isActiveFor(ItemStack stack, Player player);
 
     @OnlyIn(Dist.CLIENT)
     public DisplayType getWireDisplayType(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
@@ -96,7 +96,7 @@ public abstract class WireInteractionBehaviour {
         }
 
         @Override
-        public boolean isActiveFor(ItemStack stack) {
+        public boolean isActiveFor(ItemStack stack, Player player) {
             return false;
         }
     }

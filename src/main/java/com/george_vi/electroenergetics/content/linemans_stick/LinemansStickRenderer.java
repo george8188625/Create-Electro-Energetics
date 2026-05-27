@@ -85,8 +85,7 @@ public class LinemansStickRenderer extends CustomRenderedItemModelRenderer {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static void renderSticks(LevelRenderer levelRenderer, ClientLevel level, PoseStack pose,
-                                    MultiBufferSource buffer, Camera camera) {
+    public static void renderFirstPerson(ClientLevel level, PoseStack pose, MultiBufferSource buffer, Camera camera) {
 
         Minecraft mc = Minecraft.getInstance();
         if (camera.isDetached() || mc.player == null)

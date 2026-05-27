@@ -3,10 +3,8 @@ package com.george_vi.electroenergetics.content.wire.interaction;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
-import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
@@ -16,7 +14,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -35,13 +32,18 @@ public class WireInteractionHandler {
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
 
+        if (mc.player == null)
+            return;
+
         ItemStack stackInHand = mc.player.getMainHandItem();
 
         WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
-                .filter(h -> h.isActiveFor(stackInHand))
+                .filter(h -> h.isActiveFor(stackInHand, mc.player))
                 .findFirst().orElse(null);
-        if (behaviour == null)
+        if (behaviour == null) {
+            targetedPoint = null;
             return;
+        }
 
         mc.getProfiler().push("rayCastWire");
         double range = mc.player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE) + 1;

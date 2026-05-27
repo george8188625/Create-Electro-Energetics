@@ -5,9 +5,10 @@ import com.george_vi.electroenergetics.CEENodeConfigurations;
 import com.george_vi.electroenergetics.CEEShapes;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
-import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
+import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.core.BlockPos;
@@ -72,6 +73,10 @@ public class EmergencyStopBlock extends DirectionalRolledDeviceBlock<CutOffSwitc
             CutOffSwitchDevice device = DevicesSavedData.load(serverLevel).getDevice(pos, CutOffSwitchDevice.class);
             if (device != null)
                 device.isClosed = !activate;
+
+            if (activate) {
+                CEEAdvancements.ESTOP.awardTo(player);
+            }
         }
 
         if (state.getValue(ACTIVATED) != activate) {

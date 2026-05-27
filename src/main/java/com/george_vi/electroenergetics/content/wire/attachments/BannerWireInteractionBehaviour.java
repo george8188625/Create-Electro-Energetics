@@ -26,7 +26,7 @@ public class BannerWireInteractionBehaviour extends WireInteractionBehaviour {
     }
 
     @Override
-    public boolean isActiveFor(ItemStack stack) {
+    public boolean isActiveFor(ItemStack stack, Player player) {
         return stack.getItem() instanceof BannerItem;
     }
 

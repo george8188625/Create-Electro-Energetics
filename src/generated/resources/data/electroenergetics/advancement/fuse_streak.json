@@ -2,22 +2,22 @@
   "parent": "electroenergetics:blown_fuse",
   "criteria": {
     "0": {
-      "trigger": "electroenergetics:fuse_bypass_builtin"
+      "trigger": "electroenergetics:fuse_streak_builtin"
     }
   },
   "display": {
     "description": {
       "color": "#DBA213",
-      "translate": "advancement.electroenergetics.fuse_bypass.desc"
+      "translate": "advancement.electroenergetics.fuse_streak.desc"
     },
     "frame": "goal",
     "hidden": true,
     "icon": {
       "count": 1,
-      "id": "minecraft:copper_ingot"
+      "id": "electroenergetics:broken_fuse"
     },
     "title": {
-      "translate": "advancement.electroenergetics.fuse_bypass"
+      "translate": "advancement.electroenergetics.fuse_streak"
     }
   },
   "requirements": [

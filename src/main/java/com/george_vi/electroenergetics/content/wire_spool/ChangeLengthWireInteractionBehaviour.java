@@ -9,10 +9,8 @@ import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
-import com.simibubi.create.foundation.item.TooltipHelper;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -79,7 +77,7 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
     }
 
     @Override
-    public boolean isActiveFor(ItemStack stack) {
+    public boolean isActiveFor(ItemStack stack, Player player) {
         if (stack.isEmpty())
             return false;
         for (WireType wireType : CEERegistries.WIRE_TYPE)

@@ -1,19 +1,20 @@
 package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.CEEBlocks;
-import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
+import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -64,6 +65,11 @@ public class FuseDevice extends SimpleElectricalDevice {
             BlockState state = level.getBlockState(pos);
             if (state.getBlock() instanceof FuseBlock fb && fb.broken != this.isBroken) {
                 level.setBlockAndUpdate(pos, (fb.broken ? CEEBlocks.FUSE.get() : CEEBlocks.BROKEN_FUSE.get()).withPropertiesOf(state));
+
+                Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 30, false);
+                if (player != null)
+                    BlownFuseTracker.onFuseBlow(player, pos);
+
                 if (level.getBlockEntity(pos) instanceof FuseBlockEntity be) {
                     be.setAmperage = setAmperage;
                 }

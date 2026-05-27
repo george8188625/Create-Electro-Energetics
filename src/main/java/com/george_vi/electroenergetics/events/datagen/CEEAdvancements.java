@@ -50,17 +50,40 @@ public class CEEAdvancements implements DataProvider {
             .after(CONNECT_WIRES)
             .special(SECRET)),
 
+    BLOWN_FUSE = create("blown_fuse", b -> b.icon(CEEBlocks.BROKEN_FUSE)
+            .title("Don't Blow a Fuse!")
+            .description("Cause a fuse to blow")
+            .after(CONNECT_WIRES)
+            .special(NOISY)),
+
+    ESTOP = create("estop", b -> b.icon(CEEBlocks.EMERGENCY_STOP_BUTTON)
+            .title("Oh Snap!")
+            .description("Activate an Emergency Stop Button")
+            .after(CONNECT_WIRES)),
+
     FUSE_BYPASS = create("fuse_bypass", b -> b.icon(Items.COPPER_INGOT)
             .title("When did his house burn down?")
             .description("Use a fuse bypass")
-            .after(CONNECT_WIRES)
+            .after(BLOWN_FUSE)
+            .special(SECRET)),
+
+    FUSE_STREAK = create("fuse_streak", b -> b.icon(CEEBlocks.BROKEN_FUSE)
+            .title("Persistence Test")
+            .description("Keep replacing fuses one after another after it blows out.")
+            .after(BLOWN_FUSE)
             .special(SECRET)),
 
     TRANSFORMER = create("transformer", b -> b.icon(CEEBlocks.TRANSFORMER_CORE)
             .title("Step up, Step down")
-            .description("Create a transformer")
+            .description("Create a transformer core")
             .whenItemCollected(CEEBlocks.TRANSFORMER_CORE)
-            .after(CONNECT_WIRES));
+            .after(CONNECT_WIRES)),
+
+    ENERGY_METER_TOTAL = create("energy_meter_total", b -> b.icon(CEEBlocks.ENERGY_METER)
+            .title("Power Hungry")
+            .description("Count 10MWh on an energy meter")
+            .after(CONNECT_WIRES)
+            .special(EXPERT));
 
     private static CEEAdvancement create(String id, UnaryOperator<CEEAdvancement.Builder> b) {
         CEEAdvancement advancement = new CEEAdvancement(id, b);

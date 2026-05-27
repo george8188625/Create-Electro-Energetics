@@ -184,6 +184,7 @@
   "item.electroenergetics.broken_fuse.tooltip.summary": "_Protects_ electrical circuits, by breaking when exposed to too much current",
   "item.electroenergetics.broken_fuse.tooltip.condition1": "Configuring",
   "item.electroenergetics.broken_fuse.tooltip.behaviour1": "Ctrl-Scroll to adjust the max _amperage_",
+  "item.electroenergetics.wire_damper.tooltip.summary": "Just a decorative _wire attachment_",
 
 
   "death.attack.electroenergetics.electrocution": "%1$s was electrocuted",

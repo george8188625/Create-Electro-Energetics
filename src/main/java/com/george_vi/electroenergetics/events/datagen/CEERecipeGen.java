@@ -21,6 +21,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
+import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.UnaryOperator;
@@ -397,11 +398,11 @@ public class CEERecipeGen extends RecipeProvider {
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.TRANSFORMER)
                 .pattern("C C")
-                .pattern("ATA")
-                .pattern("AOA")
-                .define('T', CEEBlocks.TRANSFORMER_CORE)
+                .pattern("WOW")
+                .pattern("T T")
+                .define('W', CEEItems.COPPER_WIRE_SPOOL)
                 .define('C', CEEBlocks.DOUBLE_CONNECTOR)
-                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('T', CEEItems.TRANSFORMER_CORE_LAMINATION)
                 .define('O', CEEFluids.TRANSFORMER_OIL.getBucket().orElseThrow())
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/transformer"));
@@ -632,6 +633,16 @@ public class CEERecipeGen extends RecipeProvider {
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEBlocks.GROUNDING_SIGN, 2)
                 .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))
                 .save(recipeOutput, CreateElectroEnergetics.rl("stonecutting/grounding_sign"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.WIRE_DAMPER)
+                .pattern(" S ")
+                .pattern(" C ")
+                .pattern("A A")
+                .define('C', Tags.Items.CHAINS)
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('S', CEETags.IRON_PLATE)
+                .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/wire_damper"));
 
         sequencedAssembly("transformer_core", b -> b.require(CEEItems.TRANSFORMER_CORE_LAMINATION)
                         .transitionTo(CEEItems.INCOMPLETE_TRANSFORMER_CORE)

@@ -46,7 +46,7 @@ public class EmptySpoolWireInteractionBehaviour extends WireInteractionBehaviour
     }
 
     @Override
-    public boolean isActiveFor(ItemStack stack) {
+    public boolean isActiveFor(ItemStack stack, Player player) {
         return CEEItems.EMPTY_SPOOL.isIn(stack);
     }
 }

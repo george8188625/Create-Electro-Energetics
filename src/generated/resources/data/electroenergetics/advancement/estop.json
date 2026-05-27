@@ -1,0 +1,28 @@
+{
+  "parent": "electroenergetics:connect_wires",
+  "criteria": {
+    "0": {
+      "trigger": "electroenergetics:estop_builtin"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "color": "#DBA213",
+      "translate": "advancement.electroenergetics.estop.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "electroenergetics:emergency_stop_button"
+    },
+    "title": {
+      "translate": "advancement.electroenergetics.estop"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

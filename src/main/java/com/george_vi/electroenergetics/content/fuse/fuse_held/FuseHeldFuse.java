@@ -1,7 +1,10 @@
 package com.george_vi.electroenergetics.content.fuse.fuse_held;
 
-import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEEDataComponents;
+import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
+import com.george_vi.electroenergetics.content.fuse.BlownFuseTracker;
 import com.george_vi.electroenergetics.content.fuse.FuseHolderBlock;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
@@ -17,6 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -55,6 +59,10 @@ public class FuseHeldFuse extends FuseHoldable {
 
         if (temp > ElectricalDevice.finalTempAt(setAmperage)) {
             if (!isBroken) {
+                Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 30, false);
+                if (player != null)
+                    BlownFuseTracker.onFuseBlow(player, pos);
+
                 if (level.isLoaded(pos)) {
                     BlockState state = level.getBlockState(pos);
                     if (state.getBlock() instanceof FuseHolderBlock block) {

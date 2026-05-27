@@ -7,6 +7,7 @@ import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
+import com.george_vi.electroenergetics.foundation.BoundingBoxUtils;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixin_interfaces.ISchematicInfrastructureList;
@@ -66,20 +67,14 @@ public class StructureTemplateMixin {
 
         if (level instanceof ServerLevel sl) {
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            Set<InWorldNode> allNodes = sd.getNodes().stream().filter(d -> d.sourcePos().getX() >= pos.getX() && d.sourcePos().getX() < pos.getX() + size.getX() &&
-                    d.sourcePos().getY() >= pos.getY() && d.sourcePos().getY() < pos.getY() + size.getY() &&
-                    d.sourcePos().getZ() >= pos.getZ() && d.sourcePos().getZ() < pos.getZ() + size.getZ()).collect(Collectors.toSet());
-            Set<InWorldNodeConnection> visitedConnections = new HashSet<>();
+            Set<InWorldNode> allNodes = sd.getNodes().stream()
+                    .filter(d -> BoundingBoxUtils.isIn(d.sourcePos(), pos, size))
+                    .collect(Collectors.toSet());
 
             for (CatenaryConnection connection : sd.getAllCatenaryConnections()) {
                 BlockPos pos1 = connection.pos1();
                 BlockPos pos2 = connection.pos2();
-                if (pos1.getX() >= pos.getX() && pos1.getX() < pos.getX() + size.getX() &&
-                        pos1.getY() >= pos.getY() && pos1.getY() < pos.getY() + size.getY() &&
-                        pos1.getZ() >= pos.getZ() && pos1.getZ() < pos.getZ() + size.getZ() &&
-                        pos2.getX() >= pos.getX() && pos2.getX() < pos.getX() + size.getX() &&
-                        pos2.getY() >= pos.getY() && pos2.getY() < pos.getY() + size.getY() &&
-                        pos2.getZ() >= pos.getZ() && pos2.getZ() < pos.getZ() + size.getZ())
+                if (BoundingBoxUtils.isIn(pos1, pos, size) && BoundingBoxUtils.isIn(pos2, pos, size))
                     electroEnergetics$allCatenaryConnections.add(new CatenaryConnection(pos1.subtract(pos), pos2.subtract(pos)));
             }
 
@@ -89,14 +84,22 @@ public class StructureTemplateMixin {
                     electroEnergetics$nodeLabels.put(new InWorldNode(node.id(), node.sourcePos().subtract(pos)), nodeData.label);
 
                 for (InWorldNodeConnection connection : sd.getConnections(node)) {
-                    if (visitedConnections.contains(connection) || !allNodes.contains(connection.node2()))
+                    // Only runs for the connection in one direction, since nodes in IWNC are canonicalized.
+                    if (node == connection.node1())
                         continue;
-                    visitedConnections.add(connection);
+
+                    if (!BoundingBoxUtils.isIn(connection.node1().sourcePos(), pos, size))
+                        continue;
+
                     WireData connectionData = sd.getConnectionData(connection);
                     if (connectionData == null)
                         continue;
-                    electroEnergetics$allWireConnections.add(Pair.of(new InWorldNodeConnection(new InWorldNode(connection.node1().id(), connection.node1().sourcePos().subtract(pos)),
-                            new InWorldNode(connection.node2().id(), connection.node2().sourcePos().subtract(pos))), connectionData));
+                    electroEnergetics$allWireConnections.add(Pair.of(
+                            new InWorldNodeConnection(
+                                    new InWorldNode(connection.node1().id(), connection.node1().sourcePos().subtract(pos)),
+                                    new InWorldNode(connection.node2().id(), connection.node2().sourcePos().subtract(pos))
+                            ),
+                            connectionData));
                 }
             }
 
@@ -106,12 +109,7 @@ public class StructureTemplateMixin {
             for (CatenaryConnection connection : WireRenderer.CATENARY) {
                 BlockPos pos1 = connection.pos1();
                 BlockPos pos2 = connection.pos2();
-                if (pos1.getX() >= pos.getX() && pos1.getX() < pos.getX() + size.getX() &&
-                        pos1.getY() >= pos.getY() && pos1.getY() < pos.getY() + size.getY() &&
-                        pos1.getZ() >= pos.getZ() && pos1.getZ() < pos.getZ() + size.getZ() &&
-                        pos2.getX() >= pos.getX() && pos2.getX() < pos.getX() + size.getX() &&
-                        pos2.getY() >= pos.getY() && pos2.getY() < pos.getY() + size.getY() &&
-                        pos2.getZ() >= pos.getZ() && pos2.getZ() < pos.getZ() + size.getZ())
+                if (BoundingBoxUtils.isIn(pos1, pos, size) && BoundingBoxUtils.isIn(pos2, pos, size))
                     electroEnergetics$allCatenaryConnections.add(new CatenaryConnection(pos1.subtract(pos), pos2.subtract(pos)));
             }
 
@@ -119,10 +117,10 @@ public class StructureTemplateMixin {
                 InWorldNode node = e.getKey();
                 String label = e.getValue();
                 BlockPos nodePos = node.sourcePos();
-                if (nodePos.getX() >= pos.getX() && nodePos.getX() < pos.getX() + size.getX() &&
-                        nodePos.getY() >= pos.getY() && nodePos.getY() < pos.getY() + size.getY() &&
-                        nodePos.getZ() >= pos.getZ() && nodePos.getZ() < pos.getZ() + size.getZ())
-                    electroEnergetics$nodeLabels.put(new InWorldNode(node.id(), node.sourcePos().subtract(pos)), label);
+                if (!BoundingBoxUtils.isIn(nodePos, pos, size))
+                    continue;
+
+                electroEnergetics$nodeLabels.put(new InWorldNode(node.id(), node.sourcePos().subtract(pos)), label);
             }
 
             for (Pair<InWorldNodeConnection, WireData> wireDataPair : WireRenderer.getAllConnections()) {
@@ -134,12 +132,8 @@ public class StructureTemplateMixin {
                 InWorldNode node1 = connection.node1();
                 InWorldNode node2 = connection.node2();
 
-                if (node1.sourcePos().getX() >= pos.getX() && node1.sourcePos().getX() < pos.getX() + size.getX() &&
-                        node1.sourcePos().getY() >= pos.getY() && node1.sourcePos().getY() < pos.getY() + size.getY() &&
-                        node1.sourcePos().getZ() >= pos.getZ() && node1.sourcePos().getZ() < pos.getZ() + size.getZ() &&
-                        node2.sourcePos().getX() >= pos.getX() && node2.sourcePos().getX() < pos.getX() + size.getX() &&
-                        node2.sourcePos().getY() >= pos.getY() && node2.sourcePos().getY() < pos.getY() + size.getY() &&
-                        node2.sourcePos().getZ() >= pos.getZ() && node2.sourcePos().getZ() < pos.getZ() + size.getZ()) {
+                if (BoundingBoxUtils.isIn(node1.sourcePos(), pos, size) &&
+                        BoundingBoxUtils.isIn(node2.sourcePos(), pos, size)) {
 
                     electroEnergetics$allWireConnections.add(Pair.of(new InWorldNodeConnection(new InWorldNode(node1.id(), node1.sourcePos().subtract(pos)),
                             new InWorldNode(node2.id(), node2.sourcePos().subtract(pos))), wireData));

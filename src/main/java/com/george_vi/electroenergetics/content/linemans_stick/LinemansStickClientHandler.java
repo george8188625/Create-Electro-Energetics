@@ -6,11 +6,15 @@ import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterItem;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import dev.ryanhcode.sable.companion.SableCompanion;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -30,41 +34,60 @@ public class LinemansStickClientHandler {
     @OnlyIn(Dist.CLIENT)
     public static LinemansStickMode currentMode = LinemansStickMode.NONE;
 
+    public static int ticksSinceChange = 0;
+
     @OnlyIn(Dist.CLIENT)
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null || mc.hitResult == null)
             return;
 
+        ticksSinceChange++;
+
         LocalPlayer player = mc.player;
         ClientLevel level = mc.level;
 
         ItemStack heldItemStack = player.getMainHandItem();
-        if (heldItemStack.getItem() != CEEItems.LINEMANS_STICK.get())
+        boolean isItselfClampMeter = heldItemStack.getItem() instanceof ClampMeterItem &&
+                mc.player.getUseItem() == heldItemStack;
+        if (heldItemStack.getItem() != CEEItems.LINEMANS_STICK.get() &&
+                !isItselfClampMeter) {
+            ticksSinceChange = 0;
+            currentMode = LinemansStickMode.NONE;
             return;
+        }
 
         ItemStack offHandItemStack = player.getOffhandItem();
 
         boolean isShiftKeyDown = player.isShiftKeyDown();
 
         if (currentMode == LinemansStickMode.NONE) {
-            if (offHandItemStack.getItem() instanceof ClampMeterItem)
+            if (offHandItemStack.getItem() instanceof ClampMeterItem || isItselfClampMeter) {
                 currentMode = LinemansStickMode.CLAMP_METER;
-            else if (isShiftKeyDown && offHandItemStack.isEmpty())
+                ticksSinceChange = 0;
+            } else if (isShiftKeyDown && offHandItemStack.isEmpty()) {
                 currentMode = LinemansStickMode.ATTACHMENT_REMOVAL;
-            else if (!isShiftKeyDown && offHandItemStack.is(CEETags.WIRE_ATTACHMENT))
+                ticksSinceChange = 0;
+            } else if (!isShiftKeyDown && offHandItemStack.is(CEETags.WIRE_ATTACHMENT)) {
                 currentMode = LinemansStickMode.ATTACHMENT_INSTALLATION;
+                ticksSinceChange = 0;
+            }
         }
 
         else if (currentMode == LinemansStickMode.CLAMP_METER &&
-                !(offHandItemStack.getItem() instanceof ClampMeterItem))
+                !(offHandItemStack.getItem() instanceof ClampMeterItem) &&
+                !isItselfClampMeter) {
             currentMode = LinemansStickMode.NONE;
-        else if (currentMode == LinemansStickMode.ATTACHMENT_REMOVAL &&
-                !(isShiftKeyDown && offHandItemStack.isEmpty()))
+            ticksSinceChange = 0;
+        } else if (currentMode == LinemansStickMode.ATTACHMENT_REMOVAL &&
+                !(isShiftKeyDown && offHandItemStack.isEmpty())) {
             currentMode = LinemansStickMode.NONE;
-        else if (currentMode == LinemansStickMode.ATTACHMENT_INSTALLATION &&
-                (isShiftKeyDown || !offHandItemStack.is(CEETags.WIRE_ATTACHMENT)))
+            ticksSinceChange = 0;
+        } else if (currentMode == LinemansStickMode.ATTACHMENT_INSTALLATION &&
+                (isShiftKeyDown || !offHandItemStack.is(CEETags.WIRE_ATTACHMENT))) {
             currentMode = LinemansStickMode.NONE;
+            ticksSinceChange = 0;
+        }
 
         if (mc.hitResult instanceof BlockHitResult result) {
 
@@ -73,7 +96,7 @@ public class LinemansStickClientHandler {
 
             InWorldNode node = InWorldNode.closestNode(level, pos, state, 0.4f, result.getLocation());
 
-            if (currentMode == LinemansStickMode.NONE && node != null) {
+            if (currentMode == LinemansStickMode.NONE && node != null && !isItselfClampMeter) {
                 Vec3 nodeLocation = node.getPosition(level);
                 if (nodeLocation != null) {
                     prevLinemansStickTarget = linemansStickTarget;
@@ -83,22 +106,14 @@ public class LinemansStickClientHandler {
             }
 
             if (WireInteractionHandler.targetedPoint != null) {
-                InWorldNode node1 = WireInteractionHandler.targetedPoint.node1();
-                InWorldNode node2 = WireInteractionHandler.targetedPoint.node2();
-                Vec3 pos1 = node1.getPosition(level);
-                Vec3 pos2 = node2.getPosition(level);
                 Vec3 target = WireInteractionHandler.targetedPos;
                 prevLinemansStickTarget = linemansStickTarget;
                 linemansStickTarget = target;
                 return;
             }
-        } else if (mc.hitResult instanceof EntityHitResult result) {
+        } else if (mc.hitResult instanceof EntityHitResult) {
 
             if (WireInteractionHandler.targetedPoint != null) {
-                InWorldNode node1 = WireInteractionHandler.targetedPoint.node1();
-                InWorldNode node2 = WireInteractionHandler.targetedPoint.node2();
-                Vec3 pos1 = node1.getPosition(level);
-                Vec3 pos2 = node2.getPosition(level);
                 Vec3 target = WireInteractionHandler.targetedPos;
                 prevLinemansStickTarget = linemansStickTarget;
                 linemansStickTarget = target;
@@ -108,6 +123,5 @@ public class LinemansStickClientHandler {
 
         prevLinemansStickTarget = linemansStickTarget;
         linemansStickTarget = SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)mc.hitResult.getLocation());
-
     }
 }

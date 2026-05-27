@@ -51,7 +51,7 @@ public class LinemansStickWireInteractionBehaviour extends WireInteractionBehavi
             // Search for the wire interaction behavior responsible for the item
 
             WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
-                    .filter(h -> h.isActiveFor(offHandItemStack))
+                    .filter(h -> h.isActiveFor(offHandItemStack, player))
                     .findFirst().orElse(null);
 
             if (behaviour == null)
@@ -83,7 +83,7 @@ public class LinemansStickWireInteractionBehaviour extends WireInteractionBehavi
     }
 
     @Override
-    public boolean isActiveFor(ItemStack stack) {
+    public boolean isActiveFor(ItemStack stack, Player player) {
         return stack.getItem() == CEEItems.LINEMANS_STICK.get();
     }
 

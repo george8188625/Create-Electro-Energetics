@@ -17,7 +17,7 @@ public class DamperWireInteractionBehaviour extends WireInteractionBehaviour {
     }
 
     @Override
-    public boolean isActiveFor(ItemStack stack) {
+    public boolean isActiveFor(ItemStack stack, Player player) {
         return stack.is(CEETags.WIRE_DAMPER_ITEM);
     }
 

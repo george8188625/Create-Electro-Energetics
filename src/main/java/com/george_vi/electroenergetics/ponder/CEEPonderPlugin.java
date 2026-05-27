@@ -24,6 +24,7 @@ public class CEEPonderPlugin implements PonderPlugin {
                         CEEItems.WIRE_SPOOL.getId(), CEEItems.COPPER_WIRE_SPOOL.getId(), CEEItems.IRON_WIRE_SPOOL.getId(), CEEItems.IRON_BUS_SPOOL.getId(),
                         CEEItems.CREATIVE_WIRE_SPOOL.getId(), CEEItems.HEAVILY_INSULATED_WIRE_SPOOL.getId())
                 .addStoryBoard("basics", ElectricityBasicsScenes::theBasics)
+                .addStoryBoard("voltage_introduction", ElectricityBasicsScenes::voltageIntroduction)
                 .addStoryBoard("connectors", ConnectorScenes::connectors)
                 .addStoryBoard("connectors_chunks", ConnectorScenes::chunks)
                 .addStoryBoard("wire_attachments", ConnectorScenes::wireAttachments);

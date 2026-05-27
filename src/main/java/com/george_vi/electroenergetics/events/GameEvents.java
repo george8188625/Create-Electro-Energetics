@@ -9,6 +9,7 @@ import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
+import com.george_vi.electroenergetics.content.fuse.BlownFuseTracker;
 import com.george_vi.electroenergetics.content.fuse.FuseBlockItem;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickClientHandler;
 import com.george_vi.electroenergetics.content.railway_electrification.gauges.ClientTrainGaugeData;
@@ -135,6 +136,8 @@ public class GameEvents {
                 sd.wireSync.handlePlayerEnterNewSection(player,
                         ChunkPos.asLong(Mth.floor(pos.x) >> 4, Mth.floor(pos.z) >> 4));
             }
+
+            BlownFuseTracker.tick();
         }
     }
 
@@ -173,7 +176,7 @@ public class GameEvents {
 
         // Wire interactions:
         WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
-                .filter(h -> h.isActiveFor(event.getItemStack()))
+                .filter(h -> h.isActiveFor(stack, event.getEntity()))
                 .findFirst().orElse(null);
         if (behaviour == null)
             return;
@@ -231,7 +234,7 @@ public class GameEvents {
 
         // Wire interactions:
         WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
-                .filter(h -> h.isActiveFor(stack))
+                .filter(h -> h.isActiveFor(stack, event.getEntity()))
                 .findFirst().orElse(null);
         if (behaviour == null)
             return;

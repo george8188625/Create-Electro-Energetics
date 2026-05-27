@@ -50,11 +50,6 @@ public class ClampMeterItem extends Item {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.SPEAR;
-    }
-
-    @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 9999;
     }

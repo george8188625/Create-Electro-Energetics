@@ -2,9 +2,6 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": {
-      "item": "create:andesite_alloy"
-    },
     "C": {
       "item": "electroenergetics:double_connector"
     },
@@ -12,13 +9,16 @@
       "item": "electroenergetics:transformer_oil_bucket"
     },
     "T": {
-      "item": "electroenergetics:transformer_core"
+      "item": "electroenergetics:transformer_core_lamination"
+    },
+    "W": {
+      "item": "electroenergetics:copper_wire_spool"
     }
   },
   "pattern": [
     "C C",
-    "ATA",
-    "AOA"
+    "WOW",
+    "T T"
   ],
   "result": {
     "count": 1,

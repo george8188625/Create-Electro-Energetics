@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
+import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterRenderer;
 import com.george_vi.electroenergetics.content.connector.ConnectorBlock;
 import com.george_vi.electroenergetics.content.connector.DoubleConnectorBlock;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
@@ -115,6 +116,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
         event.registerItem(SimpleCustomRenderer.create(CEEItems.LINEMANS_STICK.get(), new LinemansStickRenderer()), CEEItems.LINEMANS_STICK);
+        event.registerItem(SimpleCustomRenderer.create(CEEItems.CLAMP_METER.get(), new ClampMeterRenderer()), CEEItems.CLAMP_METER);
     }
 
     @OnlyIn(Dist.CLIENT)

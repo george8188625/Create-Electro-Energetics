@@ -5,6 +5,8 @@ import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterItem;
+import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterRenderer;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
@@ -49,7 +51,7 @@ import java.util.*;
 public class WireRenderer {
     public static List<Pair<InWorldNodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
 
-    private static Map<InWorldNode, String> NODE_LABELS = new HashMap<>();
+    private static final Map<InWorldNode, String> NODE_LABELS = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     protected static Map<InWorldNodeConnection, WireEffect> WIRE_EFFECTS = new HashMap<>();
@@ -72,7 +74,8 @@ public class WireRenderer {
 
         MultiBufferSource buffer = acc.electroEnergetics$getRenderBuffers().bufferSource();
 
-        LinemansStickRenderer.renderSticks(levelRenderer, level, pose, buffer, camera);
+        LinemansStickRenderer.renderFirstPerson(level, pose, buffer, camera);
+        ClampMeterRenderer.renderFirstPerson(level, pose, buffer, camera);
 
         Map<InWorldNode, List<Vec3>> outerInsulatorJumpers = new HashMap<>();
 
@@ -85,7 +88,7 @@ public class WireRenderer {
             renderImmediately = true;
         Vec3 cameraPosition = mc.gameRenderer.getMainCamera().getPosition();
         if (renderImmediately)
-            for (CatenaryConnection connection : List.copyOf(CATENARY)) {
+            for (CatenaryConnection connection : CATENARY) {
                 BlockPos pos1 = connection.pos1();
                 BlockPos pos2 = connection.pos2();
 
@@ -398,10 +401,14 @@ public class WireRenderer {
 
     @OnlyIn(Dist.CLIENT)
     public static void renderBird(Vec3 pos, Vec3 wirePos1, Vec3 wirePos2, PoseStack pose, MultiBufferSource buffer) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null)
+            return;
+
         CachedBuffers.partial(CEEPartialModels.BIRB, Blocks.ANDESITE.defaultBlockState())
                 .translate(pos)
                 .rotateY((float) Mth.atan2(wirePos2.x() - wirePos1.x(), wirePos2.z() - wirePos1.z()))
-                .light(LevelRenderer.getLightColor(Minecraft.getInstance().level, BlockPos.containing(pos)))
+                .light(LevelRenderer.getLightColor(mc.level, BlockPos.containing(pos)))
                 .renderInto(pose, buffer.getBuffer(RenderType.cutout()));
     }
 

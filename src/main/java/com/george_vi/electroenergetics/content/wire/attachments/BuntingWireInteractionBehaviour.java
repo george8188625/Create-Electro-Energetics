@@ -24,7 +24,7 @@ public class BuntingWireInteractionBehaviour extends WireInteractionBehaviour {
     }
 
     @Override
-    public boolean isActiveFor(ItemStack stack) {
+    public boolean isActiveFor(ItemStack stack, Player player) {
         if (!ModList.get().isLoaded("supplementaries"))
             return false;
         return stack.getItem() instanceof BuntingItem;

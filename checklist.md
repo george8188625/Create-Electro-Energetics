@@ -2,6 +2,8 @@
 
 These are potential and planned features. Feel free to contribute by implementing some of them.
 
+This is a lot of content if you didn't notice. This is years of work if done *properly*. Don't expect all these to be done, but they are being considered.
+
 ### Train & railway electrification
 - [ ] Electric train lights
 - [ ] Energy meters work on trains
@@ -15,7 +17,7 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Growing bulb - increases crop growth
 ### Electrical Engineering
 - [ ] Small alternators
-- [ ] Alternating Current (using Micro-Ticking)
+- [ ] Alternating Current (using Micro-Ticking) `Note: Will be moved to a separate addon`
 - - [x] Micro-ticked accumulators
 - - [ ] AC content
 - - - [x] Frequency gauge
@@ -58,11 +60,6 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Bundled cables
 - [ ] Bell (like buzzer)
 - [ ] L1, L2, L3, N ... signs
-- [ ] Fuse Holder held:
-- - [ ] Ammeter / Voltmeter
-- - [ ] Voltmeter
-- - [ ] Accumulators
-- [ ] Electrical panel casing - used to make electrical panels
 - [ ] Traction motors - motors catered towards powering vehicles with a more dynamic sound 
 ### Big, cool, heavy and complex machinery
 - [ ] Electric Arc Furnace - an actually large and realistic(-ish) one
@@ -76,15 +73,16 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Energy meter peripheral
 - [ ] Accumulator peripheral
 - [ ] Direct TFMG compatibility
+- [ ] Direct(-ish) PG compatibility
 ### UX
 - [ ] Remaining cable counter - displays the length of the wire while placing
 ### Finishing touches
 - [ ] Voltage regulator power limit
 - [ ] Indicator bulb voltage limit
-- [ ] Energy meter voltage limit
+- [x] Energy meter voltage limit
 - [x] Gauge voltage & current limits
 - [ ] SF6 breakers or HV switches can be linked together, which makes them activate as one
-- [ ] SF6 crafting recipe
+- [x] SF6 crafting recipe
 - [ ] More involving recipes
 - [ ] Pump voltage limit
 - [ ] Centered indicator bulbs
@@ -92,24 +90,30 @@ These are potential and planned features. Feel free to contribute by implementin
 - [ ] Indicator bulbs can be controlled by train signals
 - [ ] Normally closed mode for momentary switch
 ### Ponders
-- [x] Resistance
-- [ ] Voltage divider
+- [ ] Voltage Regulators
 - [ ] Capacitor
+- [ ] Inductor
 - [ ] Potentiometer
-- [ ] Faults
-- [ ] Protection (fuses)
-- [x] Switch
-- [x] Relays
-- [x] Energy meters
-- [x] Grounding
-- [x] Transformer core
+- [ ] Transformer core cooling
 
 ### Release - planned for early june
-- [ ] Bundled wires
+- [ ] Bundled wires?
 - [ ] Electrical panels
-- [ ] MV Switch
-- [ ] Lineman's Pole
+- - [ ] Label-able components
+- - [ ] Panel attachable:
+- - - [ ] Energy Meter
+- - - [ ] Gauges
+- - - [ ] Fuse Holders
+- - - [ ] MCBs
+- - - [ ] E stop
+- - - [ ] Clock
+- - - [ ] Switch
+- - - [ ] Double Switch
+- - - [ ] Momentary Switch [dyeable, styles: arrows, square]
+- - - [ ] Indicator Bulb [dyeable, styles: arrows, square]
+- [ ] MV Switch?
+- [x] Lineman's Pole
 - [ ] All the ponders
 - [x] Transformer oil
-- [ ] Changeable fuse amperage
+- [x] Changeable fuse amperage
 - [ ] Birds on wires

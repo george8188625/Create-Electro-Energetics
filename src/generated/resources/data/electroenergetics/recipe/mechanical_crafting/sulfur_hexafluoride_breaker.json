@@ -1,0 +1,34 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "electroenergetics:connector"
+    },
+    "I": {
+      "item": "electroenergetics:insulator"
+    },
+    "P": {
+      "item": "create:precision_mechanism"
+    },
+    "S": {
+      "item": "electroenergetics:transformer_oil_bucket"
+    },
+    "s": {
+      "tag": "c:plates/iron"
+    }
+  },
+  "pattern": [
+    "sCs",
+    " I ",
+    " S ",
+    " P ",
+    "sCs"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:sulfur_hexafluoride_breaker"
+  },
+  "show_notification": false
+}

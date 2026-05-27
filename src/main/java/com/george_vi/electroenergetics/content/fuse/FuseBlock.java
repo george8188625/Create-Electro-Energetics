@@ -39,7 +39,6 @@ public class FuseBlock extends SimpleElectricalDeviceBlock<FuseDevice> implement
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public final boolean broken;
 
-
     public FuseBlock(Properties properties, boolean broken) {
         super(properties);
         this.broken = broken;
