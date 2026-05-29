@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEPackets;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
@@ -21,7 +22,7 @@ public record ConfigureFusePacket(int targetCurrent) implements ServerboundPacke
     public void handle(ServerPlayer player) {
         ItemStack mainHandItem = player.getMainHandItem();
 
-        if (player.isSpectator() || !(mainHandItem.getItem() instanceof FuseBlockItem))
+        if (player.isSpectator() || !mainHandItem.is(CEETags.FUSE_AMPERAGE_SETTING))
             return;
         int targetCurrent = Mth.clamp(targetCurrent(), 1, CEEConfigs.server().maxFuseAmperage.get());
 

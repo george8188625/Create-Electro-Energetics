@@ -1,0 +1,8 @@
+{
+  "values": [
+    "#electroenergetics:see_node_data",
+    "#electroenergetics:electrical_panel_attachment",
+    "#electroenergetics:wire_spools",
+    "electroenergetics:empty_spool"
+  ]
+}

@@ -17,6 +17,24 @@
     ],
     "subtitle": "electroenergetics.subtitle.arcing"
   },
+  "mcb_close": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:mcb_close"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.mcb_close"
+  },
+  "mcb_trip": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:mcb_trip"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.mcb_trip"
+  },
   "arc": {
     "sounds": [
       {

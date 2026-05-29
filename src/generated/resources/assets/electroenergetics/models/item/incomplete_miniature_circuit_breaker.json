@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "electroenergetics:item/incomplete_miniature_circuit_breaker"
+  }
+}

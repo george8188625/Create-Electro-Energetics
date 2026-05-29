@@ -1,0 +1,18 @@
+{
+  "values": [
+    "electroenergetics:ammeter",
+    "electroenergetics:voltmeter",
+    "electroenergetics:energy_meter",
+    "electroenergetics:tri_polar_energy_meter",
+    "electroenergetics:cut_off_switch",
+    "electroenergetics:double_switch",
+    "electroenergetics:emergency_stop_button",
+    "electroenergetics:momentary_switch",
+    "electroenergetics:indicator_bulb",
+    "electroenergetics:miniature_circuit_breaker",
+    "minecraft:clock",
+
+    "electroenergetics:synchroscope",
+    "electroenergetics:frequency_meter"
+  ]
+}

@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.fuse;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.CEELang;
@@ -56,7 +57,7 @@ public class FuseBlockItem extends BlockItem {
             return false;
 
         ItemStack heldItem = mc.player.getMainHandItem();
-        if (!(heldItem.getItem() instanceof FuseBlockItem))
+        if (!heldItem.is(CEETags.FUSE_AMPERAGE_SETTING))
             return false;
 
         if (!AllKeys.altDown())
@@ -99,7 +100,7 @@ public class FuseBlockItem extends BlockItem {
 
         ItemStack heldItem = mc.player.getMainHandItem();
 
-        boolean shouldDisplayAmperage = (heldItem.getItem() instanceof FuseBlockItem);
+        boolean shouldDisplayAmperage = (heldItem.is(CEETags.FUSE_AMPERAGE_SETTING));
 
         if (shouldDisplayAmperage) {
             int currentAmperage = heldItem.getOrDefault(CEEDataComponents.FUSE_AMPERAGE, 100);

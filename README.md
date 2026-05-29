@@ -52,7 +52,7 @@ Download from [here](https://github.com/george8188625/Create-Electro-Energetics/
 
 **If you really need a stable version:**
 <br>
-Latest stable version: [Build 92](https://github.com/george8188625/Create-Electro-Energetics/releases/tag/autobuild-92)
+Latest stable version: [Build 97](https://github.com/george8188625/Create-Electro-Energetics/releases/tag/autobuild-97)
 
 Check out the [checklist](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/checklist.md).
 

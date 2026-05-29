@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "S": {
+      "tag": "c:plates/iron"
+    }
+  },
+  "pattern": [
+    "A A",
+    "ASA",
+    "A A"
+  ],
+  "result": {
+    "count": 2,
+    "id": "electroenergetics:electrical_panel"
+  }
+}

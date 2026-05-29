@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireItem;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireType;
 import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterItem;
+import com.george_vi.electroenergetics.content.electrical_panel.attachments.MCBItem;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickItem;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
@@ -84,7 +85,12 @@ public class CEEItems {
             .tag(CEETags.WIRE_DAMPER_ITEM)
             .register();
 
+    public static final ItemEntry<MCBItem> MINIATURE_CIRCUIT_BREAKER = REGISTRATE.item("miniature_circuit_breaker", MCBItem::new)
+            .tag(CEETags.FUSE_AMPERAGE_SETTING)
+            .register();
+
     public static final ItemEntry<ClampMeterItem> CLAMP_METER = REGISTRATE.item("clamp_meter", ClampMeterItem::new)
+            .properties(p -> p.stacksTo(1))
             .model(AssetLookup.existingItemModel())
             .register();
 
@@ -98,10 +104,13 @@ public class CEEItems {
             .model((c, p) -> p.withExistingParent(c.getName(), p.modLoc("block/transformer_core/incomplete")))
             .register();
 
+    public static final ItemEntry<SequencedAssemblyItem> INCOMPLETE_MINIATURE_CIRCUIT_BREAKER = REGISTRATE.item("incomplete_miniature_circuit_breaker", SequencedAssemblyItem::new)
+            .register();
 
 
     private static @NotNull ItemEntry<WireSpoolItem> simpleWireSpoolItem(String name, DeferredHolder<WireType, WireType> wireType) {
         return REGISTRATE.item(name, properties -> new WireSpoolItem(properties, wireType))
+                .tag(CEETags.WIRE_SPOOLS)
                 .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                         .addResistancePerMeter(() -> wireType.get().getResistance())
                         .addMaxCurrent(() -> wireType.get().getMaxTemperature() / 30 + 33.33)))
@@ -110,6 +119,7 @@ public class CEEItems {
 
     private static @NotNull ItemEntry<WireSpoolItem> insulatedWireSpoolItem(String name, DeferredHolder<WireType, WireType> wireType, DoubleSupplier insulationVoltage) {
         return REGISTRATE.item(name, properties -> new WireSpoolItem(properties, wireType))
+                .tag(CEETags.WIRE_SPOOLS)
                 .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                         .addResistancePerMeter(() -> wireType.get().getResistance())
                         .addMaxVoltage(insulationVoltage)

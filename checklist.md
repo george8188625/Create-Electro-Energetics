@@ -30,7 +30,7 @@ This is a lot of content if you didn't notice. This is years of work if done *pr
 - [x] Fuses have changeable max amperage
 - [ ] Interdimensional transformer - a transformer placed in a nether portal that allows for getting power to the nether.
 - [x] SF6 Breakers
-- [ ] Normal automatic breakers (MCBs)
+- [x] Normal automatic breakers (MCBs)
 - [ ] Solar panels
 - [x] Current & Potential transformers
 - [ ] MV switch
@@ -101,11 +101,11 @@ This is a lot of content if you didn't notice. This is years of work if done *pr
 - [ ] Electrical panels
 - - [ ] Label-able components
 - - [ ] Panel attachable:
-- - - [ ] Energy Meter
-- - - [ ] Gauges
+- - - [x] Energy Meter
+- - - [x] Gauges
 - - - [ ] Fuse Holders
-- - - [ ] MCBs
-- - - [ ] E stop
+- - - [x] MCBs
+- - - [x] E stop
 - - - [ ] Clock
 - - - [ ] Switch
 - - - [ ] Double Switch
@@ -116,4 +116,4 @@ This is a lot of content if you didn't notice. This is years of work if done *pr
 - [ ] All the ponders
 - [x] Transformer oil
 - [x] Changeable fuse amperage
-- [ ] Birds on wires
+- [x] Birds on wires

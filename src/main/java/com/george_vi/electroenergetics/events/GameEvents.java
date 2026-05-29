@@ -9,6 +9,7 @@ import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelClientTicker;
 import com.george_vi.electroenergetics.content.fuse.BlownFuseTracker;
 import com.george_vi.electroenergetics.content.fuse.FuseBlockItem;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickClientHandler;
@@ -75,6 +76,7 @@ public class GameEvents {
         ClientTrainGaugeData.tick();
         LinemansStickClientHandler.tick();
         FuseBlockItem.tickClient();
+        ElectricalPanelClientTicker.tick();
 
         ElectricPropertiesOverlay.INSTANCE.ticks++;
     }
@@ -102,6 +104,8 @@ public class GameEvents {
         BlockState state = level.getBlockState(pos);
         if (CEEBlocks.ACCUMULATOR.has(state))
             AccumulatorBlock.renderHighlightBlock(event, state);
+        else if (CEEBlocks.ELECTRICAL_PANEL.has(state))
+            ElectricalPanelClientTicker.renderHighlightBlock(event, state);
     }
 
     @OnlyIn(Dist.CLIENT)

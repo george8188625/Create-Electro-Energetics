@@ -9,6 +9,8 @@ import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryB
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlockEntity;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorRenderer;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlockEntity;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelRenderer;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.inductor.InductorBlockEntity;
 import com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity;
@@ -202,6 +204,10 @@ public class CEEBlockEntityTypes {
             .validBlock(CEEBlocks.CURRENT_TRANSFORMER::get)
             .register();
 
+    public static final BlockEntityEntry<ElectricalPanelBlockEntity> ELECTRICAL_PANEL = REGISTRATE.blockEntity("electrical_panel", ElectricalPanelBlockEntity::new)
+            .validBlock(CEEBlocks.ELECTRICAL_PANEL)
+            .renderer(() -> ElectricalPanelRenderer::new)
+            .register();
 
     public static void register() {
 

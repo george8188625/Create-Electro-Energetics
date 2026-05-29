@@ -1,0 +1,93 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "tag": "minecraft:terracotta"
+  },
+  "results": [
+    {
+      "id": "electroenergetics:miniature_circuit_breaker"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_miniature_circuit_breaker"
+        },
+        {
+          "item": "create:precision_mechanism"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_miniature_circuit_breaker"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_miniature_circuit_breaker"
+        },
+        {
+          "tag": "c:nuggets/copper"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_miniature_circuit_breaker"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_miniature_circuit_breaker"
+        },
+        {
+          "tag": "c:wires/copper"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_miniature_circuit_breaker"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_miniature_circuit_breaker"
+        },
+        {
+          "item": "electroenergetics:copper_wire_spool"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_miniature_circuit_breaker"
+        }
+      ]
+    },
+    {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "item": "electroenergetics:incomplete_miniature_circuit_breaker"
+        }
+      ],
+      "results": [
+        {
+          "id": "electroenergetics:incomplete_miniature_circuit_breaker"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "electroenergetics:incomplete_miniature_circuit_breaker"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "values": [
+    "electroenergetics:miniature_circuit_breaker",
+    "electroenergetics:fuse",
+    "electroenergetics:broken_fuse"
+  ]
+}

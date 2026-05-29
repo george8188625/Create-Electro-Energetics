@@ -13,6 +13,8 @@ public class QuadraticWireHelper {
     }
 
     public static Vec3 posAt(Vec3 pos1, Vec3 pos2, float point, float dip) {
+        if (pos1.equals(pos2))
+            return pos1;
         float distance = (float) pos1.distanceTo(pos2);
         float resolution = (2 * distance);
         float x = point * resolution;

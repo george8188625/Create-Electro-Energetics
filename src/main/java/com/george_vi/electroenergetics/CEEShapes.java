@@ -8,6 +8,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class CEEShapes {
     public static final VoxelShaper CONNECTOR = shape(6,0, 6,10,10,10).forDirectional();
+    public static final VoxelShaper CASING_5PX = shape(0,0, 0,16,5,16).forDirectional();
 
     public static final VoxelShaper CURRENT_TRANSFORMER_TOP = shape(3, 0, 3, 13, 18, 13).forAxis();
     public static final VoxelShaper CONNECTOR_SHORT = shape(6,0, 6,10,7,10).forDirectional();

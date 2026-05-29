@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics;
 import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
 import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.electrical_panel.attachments.CEEPanelAttachmentTypes;
 import com.george_vi.electroenergetics.content.fuse.FuseHoldables;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -50,6 +51,7 @@ public class CreateElectroEnergetics
         CEEPantographTypes.register(modEventBus);
         CEEWireAttachments.register(modEventBus);
         CEESimulatedDevices.register(modEventBus);
+        CEEPanelAttachmentTypes.register(modEventBus);
         CEEElectricTrainSoundTypes.register(modEventBus);
         CEEWireInteractionBehaviours.register(modEventBus);
         CEESimulatedDeviceFeatureTypes.register(modEventBus);

@@ -1,0 +1,11 @@
+{
+  "values": [
+    "electroenergetics:wire_spool",
+    "electroenergetics:heavily_insulated_wire_spool",
+    "electroenergetics:copper_wire_spool",
+    "electroenergetics:electrum_wire_spool",
+    "electroenergetics:iron_wire_spool",
+    "electroenergetics:iron_bus_spool",
+    "electroenergetics:iron_rail_spool"
+  ]
+}

@@ -5,7 +5,7 @@ import net.minecraft.world.item.DyeColor;
 
 public class CEEPartialModels {
     public static final PartialModel WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/wire_segment"));
-    public static final PartialModel DUPLEX_WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/duplkex_wire_segment"));
+    public static final PartialModel DUPLEX_WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/duplex_wire_segment"));
     public static final PartialModel COPPER_WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/copper_wire_segment"));
     public static final PartialModel ELECTRUM_WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/electrum_wire_segment"));
     public static final PartialModel CREATIVE_WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/creative_wire_segment"));
@@ -69,6 +69,16 @@ public class CEEPartialModels {
     public static final PartialModel ELECTRIC_MOTOR_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/electric_motor/shaft"));
     public static final PartialModel ALTERNATOR_BRUSHES_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/alternator_brushes/shaft"));
     public static final PartialModel BIRB = PartialModel.of(CreateElectroEnergetics.rl("block/birb"));
+    public static final PartialModel PANEL_COVER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/cover"));
+    public static final PartialModel PANEL_ATTACHMENT_AMMETER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/ammeter"));
+    public static final PartialModel PANEL_ATTACHMENT_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/dial"));
+    public static final PartialModel PANEL_ATTACHMENT_VOLTMETER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/voltmeter"));
+    public static final PartialModel PANEL_ATTACHMENT_ESTOP_CLOSED = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/estop"));
+    public static final PartialModel PANEL_ATTACHMENT_ESTOP_OPEN = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/estop_pressed"));
+    public static final PartialModel PANEL_ATTACHMENT_MCB_CLOSED = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_circuit_breaker"));
+    public static final PartialModel PANEL_ATTACHMENT_MCB_OPEN = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_circuit_breaker_tripped"));
+    public static final PartialModel PANEL_ATTACHMENT_ENERGY_METER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/energy_meter"));
+    public static final PartialModel PANEL_ATTACHMENT_ENERGY_METER_INVERTED = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/energy_meter_inverted"));
 
     public static final PartialModel[] COLORED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];
     public static final PartialModel[] COLORED_HEAVILY_INSULATED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];

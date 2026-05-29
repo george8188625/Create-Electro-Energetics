@@ -11,10 +11,14 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 
 public class SwitchingBehaviour {
-    public SwitchState state;
+    public SwitchState state = SwitchState.OPEN;
     public boolean isArcing;
     public boolean isClosed;
     public int tick;
+
+    public SwitchingBehaviour() {
+
+    }
 
     public SwitchingBehaviour(CompoundTag tag) {
         state = SwitchState.values()[tag.getInt("State")];

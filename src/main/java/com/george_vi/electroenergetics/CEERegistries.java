@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics;
 
+import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachmentType;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographType;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
 import com.george_vi.electroenergetics.content.wire.WireAttachmentType;
@@ -38,6 +39,12 @@ public class CEERegistries {
             .sync(true)
             .defaultKey(CreateElectroEnergetics.rl("standard"))
             .create();
+
+    public static final Registry<PanelAttachmentType> PANEL_ATTACHMENT_TYPE = new RegistryBuilder<PanelAttachmentType>(ResourceKey.createRegistryKey(CreateElectroEnergetics.rl("panel_attachment_type")))
+            .sync(true)
+            .defaultKey(CreateElectroEnergetics.rl("empty"))
+            .create();
+
 
     public static final Registry<SimulatedDeviceType<?>> SIMULATED_DEVICE_TYPE =
             new RegistryBuilder<SimulatedDeviceType<?>>(ResourceKey.createRegistryKey(CreateElectroEnergetics.rl("simulated_device_type")))

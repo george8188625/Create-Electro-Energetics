@@ -21,7 +21,7 @@
   "electroenergetics.gui.energy_meter.disconnect_tip_1": "Click to toggle",
   "electroenergetics.gui.energy_meter.reset": "Reset Meter",
   "electroenergetics.gui.energy_meter.reset_tip_1": "Click to reset",
-  "electroenergetics.gui.goggles.electric_stats": "Electric Stats",
+  "electroenergetics.gui.goggles.electric_stats": "Electric Stats:",
   "electroenergetics.gui.goggles.energy_consumption": "Energy Consumption:",
   "electroenergetics.gui.goggles.energy_generation": "Energy Generation:",
   "electroenergetics.gui.goggles.current_generation": "Current Generation:",
@@ -201,5 +201,7 @@
 
   "electroenergetics.electric_train_sound.modern": "Modern",
   "electroenergetics.electric_train_sound.dc": "Old DC",
-  "electroenergetics.subtitle.train_relay": "Train Relay"
+  "electroenergetics.subtitle.train_relay": "Train Relay",
+  "electroenergetics.subtitle.mcb_close": "Miniature Circuit Breaker Closes",
+  "electroenergetics.subtitle.mcb_trip": "Miniature Circuit Breaker Trips"
 }

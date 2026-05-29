@@ -17,6 +17,7 @@ import com.george_vi.electroenergetics.content.cut_off_switch.EmergencyStopBlock
 import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchBlock;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlock;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpBlock;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorBlock;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeBlock;
 import com.george_vi.electroenergetics.content.electronic_components.inductor.InductorBlock;
@@ -250,6 +251,7 @@ public class CEEBlocks {
             .blockstate(BlockStateGen.directionalBlockProvider(false))
             .transform(pickaxeOnly())
             .item(FuseBlockItem::standard)
+            .tag(CEETags.FUSE_AMPERAGE_SETTING)
             .model((c, p) -> p.blockItem(c::getEntry))
             .build()
             .register();
@@ -261,6 +263,7 @@ public class CEEBlocks {
             .blockstate(BlockStateGen.directionalBlockProvider(false))
             .transform(pickaxeOnly())
             .item(FuseBlockItem::blown)
+            .tag(CEETags.FUSE_AMPERAGE_SETTING)
             .model((c, p) -> p.blockItem(c::getEntry))
             .build()
             .register();
@@ -526,6 +529,24 @@ public class CEEBlocks {
                                     bs.getValue(CurrentTransformerBlock.BOTTOM) ?
                                             AssetLookup.partialBaseModel(c, p, "bottom") :
                                             AssetLookup.partialBaseModel(c, p, "top")
+            ))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .build()
+            .register();
+
+    public static final BlockEntry<ElectricalPanelBlock> ELECTRICAL_PANEL = REGISTRATE.block("electrical_panel", ElectricalPanelBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
+                    !(bs.getValue(ElectricalPanelBlock.BOTTOM) || bs.getValue(ElectricalPanelBlock.TOP)) ?
+                            AssetLookup.partialBaseModel(c, p, "middle") :
+                            bs.getValue(ElectricalPanelBlock.BOTTOM) && bs.getValue(ElectricalPanelBlock.TOP) ?
+                                    AssetLookup.partialBaseModel(c, p) :
+                            bs.getValue(ElectricalPanelBlock.BOTTOM) ?
+                                    AssetLookup.partialBaseModel(c, p, "bottom") :
+                                    AssetLookup.partialBaseModel(c, p, "top")
             ))
             .transform(pickaxeOnly())
             .item()

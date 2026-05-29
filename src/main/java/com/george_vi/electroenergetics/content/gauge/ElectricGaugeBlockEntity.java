@@ -36,7 +36,6 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     public float dialTarget;
     public float dialState;
     public float prevDialState;
-    public int color;
     public final boolean voltmeter;
     public double voltage;
     public AbstractComputerBehaviour computerBehaviour;
@@ -59,7 +58,6 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     @Override
     public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
         compound.putFloat("Value", dialTarget);
-        compound.putInt("Color", color);
         compound.putDouble("Voltage", voltage);
         super.write(compound, registries, clientPacket);
     }
@@ -67,7 +65,6 @@ public class ElectricGaugeBlockEntity extends SmartBlockEntity implements IHaveG
     @Override
     protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
         dialTarget = compound.getFloat("Value");
-        color = compound.getInt("Color");
         voltage = compound.getDouble("Voltage");
         super.read(compound, registries, clientPacket);
     }

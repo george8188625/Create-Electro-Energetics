@@ -1,7 +1,13 @@
 package com.george_vi.electroenergetics;
 
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -23,6 +29,8 @@ public class CEESoundEvents {
     public static final Supplier<SoundEvent> DC_TRAIN = sound("dc_train");
     public static final Supplier<SoundEvent> DC_TRAIN_START = sound("dc_train_start");
     public static final Supplier<SoundEvent> BUZZER = sound("buzzer");
+    public static final Supplier<SoundEvent> MCB_CLOSE = sound("mcb_close");
+    public static final Supplier<SoundEvent> MCB_TRIP = sound("mcb_trip");
 
     public static final Supplier<SoundEvent> TRAIN_WIND_RISE = sound("train/background/wind_rise");
     public static final Supplier<SoundEvent> TRAIN_WIND_STATIC = sound("train/background/wind_static");
@@ -40,6 +48,14 @@ public class CEESoundEvents {
     public static final Supplier<SoundEvent> TRAIN_IGBT_ASYNC_START = sound("train/igbt/async_start");
     public static final Supplier<SoundEvent> TRAIN_IGBT_ASYNC_DECAY = sound("train/igbt/async_decay");
     public static final Supplier<SoundEvent> TRAIN_IGBT_ASYNC_DECAY2 = sound("train/igbt/async_decay2");
+
+    public static void playOnServer(Level level, Vec3 pos, SoundEvent event, float volume, float pitch) {
+        level.playSound(null, pos.x, pos.y, pos.z, event, SoundSource.BLOCKS, volume, pitch);
+    }
+
+    public static void playOnServer(Level level, Vec3i pos, SoundEvent event, float volume, float pitch) {
+        level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, event, SoundSource.BLOCKS, volume, pitch);
+    }
 
     private static @NotNull DeferredHolder<SoundEvent, SoundEvent> sound(String path) {
         return SOUND_EVENTS.register(path, () -> SoundEvent.createVariableRangeEvent(CreateElectroEnergetics.rl(path)));

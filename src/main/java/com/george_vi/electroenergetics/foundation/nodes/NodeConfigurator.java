@@ -82,6 +82,13 @@ public class NodeConfigurator {
             return this;
         }
 
+        public Builder add(int id, Vec3 pos) {
+            nodes.put(id, pos);
+            if (this.id == id)
+                this.id++;
+            return this;
+        }
+
         public Builder add(float x, float y, float z) {
             nodes.put(id++, new Vec3(x / 16f, y / 16f, z / 16f));
             return this;

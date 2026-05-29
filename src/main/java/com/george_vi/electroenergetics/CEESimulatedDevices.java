@@ -14,6 +14,7 @@ import com.george_vi.electroenergetics.content.cut_off_switch.CutOffSwitchDevice
 import com.george_vi.electroenergetics.content.cut_off_switch.MomentarySwitchDevice;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorDevice;
 import com.george_vi.electroenergetics.content.electric_pump.ElectricPumpDevice;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelDevice;
 import com.george_vi.electroenergetics.content.electronic_components.capacitor.CapacitorDevice;
 import com.george_vi.electroenergetics.content.electronic_components.diode.DiodeDevice;
 import com.george_vi.electroenergetics.content.electronic_components.inductor.InductorDevice;
@@ -237,6 +238,11 @@ public class CEESimulatedDevices {
     public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<BundledWireTerminationDevice>> BUNDLED_WIRE_TERMINATION = DEVICES.register("bundled_wire_termination",
             () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("bundled_wire_termination"),
                     ((type, level, pos, sd) -> new BundledWireTerminationDevice(level, pos, sd, type))));
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<ElectricalPanelDevice>> ELECTRICAL_PANEL = DEVICES.register("electrical_panel",
+            () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("electrical_panel"),
+                    ((type, level, pos, sd) -> new ElectricalPanelDevice(level, pos, sd, type))));
+
 
 
     public static void register(IEventBus bus) {

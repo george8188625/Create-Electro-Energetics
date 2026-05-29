@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.wire.interaction;
 
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.client.WireRenderer;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
@@ -10,11 +11,14 @@ import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -32,7 +36,7 @@ public class WireInteractionHandler {
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
 
-        if (mc.player == null)
+        if (mc.player == null || mc.level == null)
             return;
 
         ItemStack stackInHand = mc.player.getMainHandItem();
@@ -55,6 +59,15 @@ public class WireInteractionHandler {
         double bestDist = range;
         if (hit != null)
             bestDist = hit.getLocation().distanceTo(from);
+
+        // So it's easy to interact with wires inside electrical panels
+        if (hit instanceof BlockHitResult blockHit) {
+            BlockPos pos = blockHit.getBlockPos();
+            BlockState state = mc.level.getBlockState(pos);
+            if (state.getBlock() instanceof ElectricalPanelBlock) {
+                bestDist = Double.MAX_VALUE;
+            }
+        }
 
         InWorldNodeConnection bestConnection = null;
         float bestProgress = 0;

@@ -597,6 +597,15 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/fuse_holder"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ELECTRICAL_PANEL, 2)
+                .pattern("A A")
+                .pattern("ASA")
+                .pattern("A A")
+                .define('S', CEETags.IRON_PLATE)
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/electrical_panel"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.RADIATOR_PANEL, 4)
                 .pattern("ASA")
                 .pattern("ASA")
@@ -659,6 +668,21 @@ public class CEERecipeGen extends RecipeProvider {
                                 rb -> rb.require(Ingredient.of(CEEItems.COPPER_WIRE_SPOOL)))
                         .addStep(DeployerApplicationRecipe::new,
                                 rb -> rb.require(Ingredient.of(CEEItems.COPPER_WIRE_SPOOL)))
+                , recipeOutput);
+
+        sequencedAssembly("miniature_circuit_breaker", b -> b.require(ItemTags.TERRACOTTA)
+                        .transitionTo(CEEItems.INCOMPLETE_MINIATURE_CIRCUIT_BREAKER)
+                        .addOutput(CEEItems.MINIATURE_CIRCUIT_BREAKER.asStack(), 1)
+                        .loops(1)
+                        .addStep(DeployerApplicationRecipe::new,
+                                rb -> rb.require(Ingredient.of(AllItems.PRECISION_MECHANISM)))
+                        .addStep(DeployerApplicationRecipe::new,
+                                rb -> rb.require(Ingredient.of(CEETags.COPPER_NUGGET)))
+                        .addStep(DeployerApplicationRecipe::new,
+                                rb -> rb.require(Ingredient.of(CEETags.COPPER_WIRE)))
+                        .addStep(DeployerApplicationRecipe::new,
+                                rb -> rb.require(Ingredient.of(CEEItems.COPPER_WIRE_SPOOL)))
+                        .addStep(PressingRecipe::new, rb -> rb)
                 , recipeOutput);
 
 

@@ -31,6 +31,7 @@
     "electroenergetics:stator",
     "electroenergetics:voltage_regulator",
     "electroenergetics:current_transformer",
+    "electroenergetics:electrical_panel",
     "electroenergetics:alternator_rotor",
     "electroenergetics:alternator_brushes",
     "electroenergetics:three_phase_alternator_brushes",
