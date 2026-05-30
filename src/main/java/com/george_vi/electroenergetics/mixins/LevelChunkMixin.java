@@ -45,6 +45,8 @@ public class LevelChunkMixin {
 //        sd.addDevice(type, pos, new CompoundTag());
     }
 
+    private static final java.util.function.Predicate<BlockState> IS_DEVICE_BLOCK = state -> state.getBlock() instanceof DeviceBlock<?>;
+
     /**
      * This catches device blocks placed during worldgen that weren't registered via setBlockState. It seems
      * like setBlockState isn't usually called during worldgen, so this is necessary for blocks to be registered
@@ -64,7 +66,7 @@ public class LevelChunkMixin {
 
         for (int sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
             LevelChunkSection section = sections[sectionIndex];
-            if (section == null || section.hasOnlyAir())
+            if (section == null || !section.maybeHas(IS_DEVICE_BLOCK))
                 continue;
 
             int sectionY = minY + (sectionIndex * 16);
