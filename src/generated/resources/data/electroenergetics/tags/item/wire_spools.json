@@ -6,6 +6,7 @@
     "electroenergetics:electrum_wire_spool",
     "electroenergetics:iron_wire_spool",
     "electroenergetics:iron_bus_spool",
-    "electroenergetics:iron_rail_spool"
+    "electroenergetics:iron_rail_spool",
+    "electroenergetics:creative_wire_spool"
   ]
 }

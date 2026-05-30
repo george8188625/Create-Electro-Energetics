@@ -10,6 +10,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+@SuppressWarnings("unused")
 public class CEEElectricTrainSoundTypes {
     private static final DeferredRegister<ElectricTrainSoundType> ELECTRIC_TRAIN_SOUND_TYPE =
             DeferredRegister.create(CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE, CreateElectroEnergetics.ID);

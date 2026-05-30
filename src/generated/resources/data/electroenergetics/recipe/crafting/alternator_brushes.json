@@ -3,19 +3,22 @@
   "category": "misc",
   "key": {
     "B": {
-      "item": "create:industrial_iron_block"
+      "item": "minecraft:iron_bars"
     },
     "C": {
       "item": "electroenergetics:connector"
+    },
+    "M": {
+      "item": "electroenergetics:commutator"
     },
     "S": {
       "item": "create:shaft"
     }
   },
   "pattern": [
-    " B ",
-    "CSC",
-    " B "
+    " C ",
+    "SMB",
+    " C "
   ],
   "result": {
     "count": 1,

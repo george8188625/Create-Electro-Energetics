@@ -103,22 +103,23 @@ public class CEERecipeGen extends RecipeProvider {
         wireSpool(recipeOutput, CEEItems.IRON_RAIL_SPOOL, CEETags.IRON_RAIL_COMPONENT);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ALTERNATOR_BRUSHES)
-                .pattern(" B ")
-                .pattern("CSC")
-                .pattern(" B ")
+                .pattern(" C ")
+                .pattern("SMB")
+                .pattern(" C ")
                 .define('C', CEEBlocks.CONNECTOR)
+                .define('M', CEEItems.COMMUTATOR)
                 .define('S', AllBlocks.SHAFT)
-                .define('B', AllBlocks.INDUSTRIAL_IRON_BLOCK)
+                .define('B', Items.IRON_BARS)
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/alternator_brushes"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ALTERNATOR_ROTOR)
-                .pattern("BWB")
-                .pattern("WSW")
-                .pattern("BWB")
+                .pattern("WAW")
+                .pattern("ASA")
+                .pattern("WAW")
                 .define('W', CEEItems.COPPER_WIRE_SPOOL)
                 .define('S', AllBlocks.SHAFT)
-                .define('B', AllBlocks.INDUSTRIAL_IRON_BLOCK)
+                .define('A', AllItems.ANDESITE_ALLOY)
                 .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/alternator_rotor"));
 
@@ -291,15 +292,25 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_industrial_iron_block", has(AllBlocks.INDUSTRIAL_IRON_BLOCK))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/magnet_block"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.COMMUTATOR)
+                .pattern("ASA")
+                .pattern("CSC")
+                .pattern("ASA")
+                .define('S', AllBlocks.SHAFT)
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('C', CEETags.COPPER_PLATE)
+                .unlockedBy("has_industrial_iron_block", has(AllBlocks.INDUSTRIAL_IRON_BLOCK))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/commutator"));
+
         for (DyeColor color : DyeColor.values()) {
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ELECTRIC_MOTORS[color.ordinal()])
-                    .pattern("DIC")
-                    .pattern("MRM")
-                    .pattern("CID")
-                    .define('I', AllBlocks.INDUSTRIAL_IRON_BLOCK)
+                    .pattern("Cc ")
+                    .pattern("RMD")
+                    .pattern("Cc ")
                     .define('C', CEEBlocks.CONNECTOR)
-                    .define('M', CEEBlocks.MAGNET_BLOCK)
-                    .define('R', CEEBlocks.ALTERNATOR_ROTOR)
+                    .define('c', CEEItems.COPPER_WIRE_SPOOL)
+                    .define('M', AllBlocks.ANDESITE_ALLOY_BLOCK)
+                    .define('R', CEEItems.COMMUTATOR)
                     .define('D', DyeItem.byColor(color))
                     .unlockedBy("has_rotor", has(CEEBlocks.ALTERNATOR_ROTOR))
                     .save(recipeOutput, CreateElectroEnergetics.rl("crafting/" + color.getSerializedName() + "_electric_motor"));
@@ -626,6 +637,14 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/resistive_heater"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.MINIATURE_MOMENTARY_SWITCH)
+                .pattern(" ")
+                .pattern("S")
+                .pattern("T")
+                .define('S', CEEBlocks.MOMENTARY_SWITCH)
+                .define('T', ItemTags.TERRACOTTA)
+                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/miniature_momentary_switch"));
 
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEBlocks.HIGH_VOLTAGE_SIGN, 2)
                 .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))

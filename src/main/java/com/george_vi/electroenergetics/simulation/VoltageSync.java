@@ -37,6 +37,11 @@ public class VoltageSync {
 
                 int id1 = results.circuitBuilder.nodeIndexes.getInt(connection.node1()) << results.microTickBits;
                 int id2 = results.circuitBuilder.nodeIndexes.getInt(connection.node2()) << results.microTickBits;
+
+                // Wire was removed.
+                if (id1 < 0 || id2 < 0)
+                    continue;
+                
                 for (int j = 0; j < results.microTicks; j++) {
                     packet.voltages[j] = results.voltages[id1 | j];
                     packet.voltages[results.microTicks + j] = results.voltages[id2 | j];

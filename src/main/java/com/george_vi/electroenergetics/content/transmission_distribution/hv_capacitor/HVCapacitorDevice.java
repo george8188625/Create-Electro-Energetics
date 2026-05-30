@@ -38,6 +38,7 @@ public class HVCapacitorDevice extends SimpleElectricalDevice {
     @Override
     public void preTick(BridgeCollector bridges) {
         properties.capacitance = capacitance;
+        properties.lastVoltage = lastVoltage;
         BlockPos connectorPos = facing == null ? null : pos.relative(facing);
         DoubleConnectorDevice connectorDevice = connectorPos == null ? null : deviceSD.getDevice(connectorPos, DoubleConnectorDevice.class);
 

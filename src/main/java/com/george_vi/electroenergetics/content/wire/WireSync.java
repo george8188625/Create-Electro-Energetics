@@ -316,21 +316,24 @@ public class WireSync {
         @Override
         public @NotNull LongIterator iterator() {
             return new LongIterator() {
-                int x = minX - 1;
+                int x = minX;
                 int z = minZ;
 
                 @Override
                 public long nextLong() {
+                    long chunk = ChunkPos.asLong(x, z);
                     x++;
                     if (x >= maxX) {
                         x = minX;
                         z++;
                     }
-                    return ChunkPos.asLong(x, z);
+                    return chunk;
                 }
 
                 @Override
                 public boolean hasNext() {
+                    if (minX == maxX || minZ == maxZ)
+                        return false;
                     return z < maxZ;
                 }
             };

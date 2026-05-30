@@ -63,7 +63,7 @@ public class WirePoints {
 
     public void add(double x, double y, double z) {
         int i = size * 3;
-        if (values.length >= i)
+        if (i >= values.length)
             grow();
         values[i] = x;
         values[i + 1] = y;

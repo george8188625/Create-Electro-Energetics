@@ -8,20 +8,20 @@
     "D": {
       "item": "minecraft:magenta_dye"
     },
-    "I": {
-      "item": "create:industrial_iron_block"
-    },
     "M": {
-      "item": "electroenergetics:magnet"
+      "item": "create:andesite_alloy_block"
     },
     "R": {
-      "item": "electroenergetics:alternator_rotor"
+      "item": "electroenergetics:commutator"
+    },
+    "c": {
+      "item": "electroenergetics:copper_wire_spool"
     }
   },
   "pattern": [
-    "DIC",
-    "MRM",
-    "CID"
+    "Cc ",
+    "RMD",
+    "Cc "
   ],
   "result": {
     "count": 1,

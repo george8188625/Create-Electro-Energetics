@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "electroenergetics:item/miniature_momentary_switch"
+  }
+}

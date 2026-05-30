@@ -14,6 +14,7 @@ import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.lang.Lang;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -110,7 +111,7 @@ public class ConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDevice>
         if (state.getValue(STYLE) == Style.LONG || state.getValue(STYLE) == Style.LONG_HANGER)
             return CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodes(state.getValue(FACING));
         if (state.getValue(STYLE) == Style.SHORT || state.getValue(STYLE) == Style.HANGER)
-            return Map.of(0, new Vec3(0.5, 0.5, 0.5));
+            return Map.of(0, VecHelper.CENTER_OF_ORIGIN);
         return CEENodeConfigurations.SHORT_CONNECTOR.getNodes(state.getValue(FACING));
     }
 
@@ -119,7 +120,7 @@ public class ConnectorBlock extends SimpleElectricalDeviceBlock<ConnectorDevice>
         if (state.getValue(STYLE) == Style.LONG || state.getValue(STYLE) == Style.LONG_HANGER)
             return CEENodeConfigurations.SINGLE_MIDDLE_TOP.getNodePos(state.getValue(FACING), id);
         if (state.getValue(STYLE) == Style.SHORT || state.getValue(STYLE) == Style.HANGER)
-            return new Vec3(0.5, 0.5, 0.5);
+            return VecHelper.CENTER_OF_ORIGIN;
         return CEENodeConfigurations.SHORT_CONNECTOR.getNodePos(state.getValue(FACING), id);
     }
 

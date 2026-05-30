@@ -1,4 +1,4 @@
-// 1.21.1	2026-05-29T21:38:28.038092316	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-05-30T21:04:21.120759505	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 efaff624fae8f426c8927b933899a261b68f7685 assets/electroenergetics/blockstates/accumulator.json
 bc7e544079464f9fb40950d4499967da027b352f assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -76,8 +76,8 @@ a92bfd6311161a261beaea0e82673049f09158a3 assets/electroenergetics/blockstates/tr
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
 f407a37a266195fcfc499e4b24ffdb23655d6ed6 assets/electroenergetics/blockstates/white_electric_motor.json
 08773c07f26e18921d02a6d72d8e5009381faebe assets/electroenergetics/blockstates/yellow_electric_motor.json
-9c8c727f09285aa5d23185ce48aa3122fefb4f21 assets/electroenergetics/lang/en_ud.json
-82e771bfbcb4b48909f1ef0e0abaab8442fcb7ba assets/electroenergetics/lang/en_us.json
+d0826f2e083e0a2efce782eff589d5aeb71c1278 assets/electroenergetics/lang/en_ud.json
+f9afe3e95a6d86d7e88b94f22ae64dccb716dd9d assets/electroenergetics/lang/en_us.json
 706ea17778dccc4e51f059c39b5c730336b598c6 assets/electroenergetics/models/block/black_electric_motor.json
 c4d97346cc2c5227ea79460ab456d978989a4917 assets/electroenergetics/models/block/black_electric_motor_roll.json
 4cb846021d3aba319f8bb6025abc8817d830996a assets/electroenergetics/models/block/blue_electric_motor.json
@@ -128,6 +128,7 @@ d3131de26b0c74ca904c559cc9baeb136d38f8ba assets/electroenergetics/models/item/bu
 332873cb8663a1eaccd9e99535e8de2c5a62fbb3 assets/electroenergetics/models/item/buzzer.json
 122c2c734ce48ddd823a576edf36a276decf4294 assets/electroenergetics/models/item/capacitor.json
 6d5ab3bd75c6a69e4392525fb2dd10d2eb095c3a assets/electroenergetics/models/item/catenary_holder.json
+892f34ed48bd1f89edba271a65f57a52dc5af449 assets/electroenergetics/models/item/commutator.json
 6b76807e00bbbf80767038a7db1f42ce6445a146 assets/electroenergetics/models/item/concrete_pole.json
 4130933f938c9ba17c93b7684fcc71827d9b76c1 assets/electroenergetics/models/item/connector.json
 460c2df014cdeb92c6cca3cc2bb20640e1d2a9d7 assets/electroenergetics/models/item/converter.json
@@ -181,6 +182,7 @@ d2502fd859635103a2940ee2a20fae3c1b7c50ac assets/electroenergetics/models/item/li
 86ed3dd8f23ac89a34dc2ca386571ba45aa3b44d assets/electroenergetics/models/item/magenta_electric_motor.json
 7b7d4ee81289b2d4ea46d8caeed3c7e778cc92ac assets/electroenergetics/models/item/magnet.json
 ba015e7539031261660c2d04d439c1e3e317ee67 assets/electroenergetics/models/item/miniature_circuit_breaker.json
+e1b90cf475130bf2d3d0cb9b3fa3fbb10706c590 assets/electroenergetics/models/item/miniature_momentary_switch.json
 d5c50b7cca9584f68480854b9c7446fb3c62192d assets/electroenergetics/models/item/momentary_switch.json
 6ad7b53677fd77d4dedf0470c5cd35c4d4c22002 assets/electroenergetics/models/item/orange_electric_motor.json
 8fb55d343b4c674c28fad0fbffa736a97f7afa3e assets/electroenergetics/models/item/pantograph.json
@@ -300,5 +302,5 @@ f3fdf7ab8ca0a87b6a9f1cd9d21a1c8c7c930d79 data/electroenergetics/tags/block/train
 60d63c45bc3c724b3fea723dd6263d37f4086f78 data/electroenergetics/tags/item/electric_motors.json
 1cfd9da2c86fa5281e988b1d46a1f488ff940882 data/electroenergetics/tags/item/fuse_amperage_setting.json
 366eaf64ece2f69005676ad361d9188aaae975f1 data/electroenergetics/tags/item/wire_damper_item.json
-ff9eb6b6e28da0aec59d7d24b976fc64a1eacbaf data/electroenergetics/tags/item/wire_spools.json
+9f1467facc61dc7c35ce97a74ccd5d325d97c1e1 data/electroenergetics/tags/item/wire_spools.json
 eb8a0ead49a3010b3af8238f1c10f8acb17de24d data/minecraft/tags/block/mineable/pickaxe.json

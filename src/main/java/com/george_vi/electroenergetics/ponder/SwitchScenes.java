@@ -330,4 +330,107 @@ public class SwitchScenes {
 
         scene.idle(60);
     }
+
+    public static void sf6Breaker(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+        scene.title("sf6_breaker_introduction", "Using a Sulfur Hexafluoride Breaker");
+        scene.configureBasePlate(0, 0, 5);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+
+        Selection breaker = util.select().fromTo(2, 1, 0, 2, 2, 0);
+
+        Selection connectors = util.select().fromTo(0, 1, 0, 0, 1, 4)
+                .add(util.select().fromTo(4, 1, 0, 4, 1, 4));
+
+        Selection redstone = util.select().fromTo(2, 1, 1, 2, 1, 2);
+
+        BlockPos bulb = util.grid().at(0, 1, 2);
+
+
+        scene.world().showSection(breaker, Direction.DOWN);
+
+        scene.idle(20);
+
+        scene.overlay().showText(120)
+                .text("The sulfur hexafluoride breaker can be used to connect or disconnect high voltage circuits.")
+                .pointAt(breaker.getCenter())
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(140);
+
+        scene.world().showSection(connectors, Direction.DOWN);
+
+        scene.idle(40);
+
+        connections.createConnection(new InWorldNode(1, 4, 1, 2), new InWorldNode(0, 4, 1, 0));
+        connections.createConnection(new InWorldNode(0, 4, 1, 0), new InWorldNode(0, 2, 2, 0));
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Connect the input to the top side of the breaker")
+                .pointAt(breaker.getCenter().add(0, 1, 0))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        connections.createConnection(new InWorldNode(0, 2, 1, 0), new InWorldNode(0, 0, 1, 0));
+        connections.createConnection(new InWorldNode(0, 0, 1, 0), new InWorldNode(1, bulb));
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Connect the output to the bottom side of the breaker")
+                .pointAt(breaker.getCenter().add(0, -1, 0))
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        connections.createConnection(new InWorldNode(0, bulb), new InWorldNode(0, 0, 1, 4));
+        connections.createConnection(new InWorldNode(0, 0, 1, 4), new InWorldNode(0, 4, 1, 4));
+        connections.createConnection(new InWorldNode(0, 4, 1, 4), new InWorldNode(0, 4, 1, 2));
+        connections.setBulbState(bulb, 1);
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("By default, the breaker allows current flow")
+                .pointAt(breaker.getCenter())
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+        var visualization1 = connections.createCurrentVisualization(new InWorldNode(1, 4, 1, 2), new InWorldNode(0, 4, 1, 0), 1, 1, true);
+        var visualization2 = connections.createCurrentVisualization(new InWorldNode(0, 4, 1, 0), new InWorldNode(0, 2, 2, 0), 1, 1, true);
+        var visualization3 = connections.createCurrentVisualization(new InWorldNode(0, 2, 1, 0), new InWorldNode(0, 0, 1, 0), 1, 1, true);
+        var visualization4 = connections.createCurrentVisualization(new InWorldNode(0, 0, 1, 0), new InWorldNode(1, bulb), 1, 1, true);
+        var visualization5 = connections.createCurrentVisualization(new InWorldNode(0, bulb), new InWorldNode(0, 0, 1, 4), 1, 1, true);
+        var visualization6 = connections.createCurrentVisualization(new InWorldNode(0, 0, 1, 4), new InWorldNode(0, 4, 1, 4), 1, 1, true);
+        var visualization7 = connections.createCurrentVisualization(new InWorldNode(0, 4, 1, 4), new InWorldNode(0, 4, 1, 2), 1, 1, true);
+
+        scene.idle(20);
+
+        scene.world().showSection(redstone, Direction.DOWN);
+
+        scene.idle(40);
+
+        scene.world().modifyBlock(util.grid().at(2, 1, 1), bs -> bs.setValue(BlockStateProperties.POWER, 15), false);
+        scene.world().modifyBlock(util.grid().at(2, 1, 2), bs -> bs.setValue(BlockStateProperties.POWERED, true), false);
+
+        connections.removeCurrentVisualization(visualization1);
+        connections.removeCurrentVisualization(visualization2);
+        connections.removeCurrentVisualization(visualization3);
+        connections.removeCurrentVisualization(visualization4);
+        connections.removeCurrentVisualization(visualization5);
+        connections.removeCurrentVisualization(visualization6);
+        connections.removeCurrentVisualization(visualization7);
+        connections.setBulbState(bulb, 0);
+
+        scene.idle(20);
+        scene.overlay().showText(70)
+                .text("Once powered with redstone, it disconnects the circuit and stops current flow")
+                .pointAt(breaker.getCenter())
+                .attachKeyFrame()
+                .placeNearTarget();
+        scene.idle(100);
+
+    }
 }

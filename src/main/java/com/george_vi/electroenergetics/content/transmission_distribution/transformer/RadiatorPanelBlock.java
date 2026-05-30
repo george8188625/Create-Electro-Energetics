@@ -52,9 +52,10 @@ public class RadiatorPanelBlock extends Block implements IWrenchable, ProperOilA
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        if (context.getClickedFace().getAxis().isVertical())
-            return withWater(defaultBlockState().setValue(FACING, context.getClickedFace()).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X), context);
-        return withWater(defaultBlockState().setValue(FACING, context.getClickedFace()), context);
+        Direction facing = context.getNearestLookingDirection().getOpposite();
+        if (facing.getAxis().isVertical())
+            return withWater(defaultBlockState().setValue(FACING, facing).setValue(ROLL, context.getHorizontalDirection().getAxis() == Direction.Axis.X), context);
+        return withWater(defaultBlockState().setValue(FACING, facing), context);
     }
 
     @Override

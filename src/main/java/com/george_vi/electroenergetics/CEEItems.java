@@ -45,6 +45,7 @@ public class CEEItems {
     public static final ItemEntry<WireSpoolItem> IRON_RAIL_SPOOL = simpleWireSpoolItem("iron_rail_spool", CEEWireTypes.IRON_RAIL);
 
     public static final ItemEntry<WireSpoolItem> CREATIVE_WIRE_SPOOL = REGISTRATE.item("creative_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.CREATIVE))
+            .tag(CEETags.WIRE_SPOOLS)
             .properties(p -> p.rarity(Rarity.EPIC))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                     .addResistancePerMeter(() -> 0.00001d)))
@@ -78,6 +79,9 @@ public class CEEItems {
     public static final ItemEntry<Item> TRANSFORMER_CORE_LAMINATION = REGISTRATE.item("transformer_core_lamination", Item::new)
             .register();
 
+    public static final ItemEntry<Item> COMMUTATOR = REGISTRATE.item("commutator", Item::new)
+            .register();
+
     public static final ItemEntry<Item> IRON_WIRE_STRAND = REGISTRATE.item("iron_wire_strand", Item::new)
             .register();
 
@@ -87,6 +91,9 @@ public class CEEItems {
 
     public static final ItemEntry<MCBItem> MINIATURE_CIRCUIT_BREAKER = REGISTRATE.item("miniature_circuit_breaker", MCBItem::new)
             .tag(CEETags.FUSE_AMPERAGE_SETTING)
+            .register();
+
+    public static final ItemEntry<Item> MINIATURE_MOMENTARY_SWITCH = REGISTRATE.item("miniature_momentary_switch", Item::new)
             .register();
 
     public static final ItemEntry<ClampMeterItem> CLAMP_METER = REGISTRATE.item("clamp_meter", ClampMeterItem::new)

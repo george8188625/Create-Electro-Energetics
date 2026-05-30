@@ -150,15 +150,15 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         BlockState state = level.getBlockState(sourcePos);
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
             return null;
-        Vec3 localPos = db.getNodePosition(level, sourcePos, state, id);
-        if (localPos == null)
-            return null;
-        return localPos;
+        return db.getNodePosition(level, sourcePos, state, id);
     }
 
     public Vec3 toGlobalPos(Vec3 pos, Level level) {
-        Position globalPos = pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
-        return SableCompanion.INSTANCE.projectOutOfSubLevel(level, globalPos);
+        Vec3 globalPos = pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
+        SubLevelAccess subLevelAccess = SableCompanion.INSTANCE.getContaining(level, globalPos);
+        if (subLevelAccess == null)
+            return globalPos;
+        return subLevelAccess.logicalPose().transformPosition(globalPos);
     }
 
     public Vec3 toGlobalPosNoSable(Vec3 pos, Level level) {

@@ -203,5 +203,7 @@
   "electroenergetics.electric_train_sound.dc": "Old DC",
   "electroenergetics.subtitle.train_relay": "Train Relay",
   "electroenergetics.subtitle.mcb_close": "Miniature Circuit Breaker Closes",
-  "electroenergetics.subtitle.mcb_trip": "Miniature Circuit Breaker Trips"
+  "electroenergetics.subtitle.mcb_trip": "Miniature Circuit Breaker Trips",
+  "electroenergetics.subtitle.contact_close": "Contact Closes",
+  "electroenergetics.subtitle.contact_open": "Contact Opens"
 }

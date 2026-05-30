@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "create:industrial_iron_block"
+    "A": {
+      "item": "create:andesite_alloy"
     },
     "S": {
       "item": "create:shaft"
@@ -13,9 +13,9 @@
     }
   },
   "pattern": [
-    "BWB",
-    "WSW",
-    "BWB"
+    "WAW",
+    "ASA",
+    "WAW"
   ],
   "result": {
     "count": 1,

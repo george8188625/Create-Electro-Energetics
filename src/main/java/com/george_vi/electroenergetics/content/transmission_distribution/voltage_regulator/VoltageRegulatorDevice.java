@@ -87,11 +87,13 @@ public class VoltageRegulatorDevice extends SimpleElectricalDevice {
         NodeLayout nodes = resolveNodes(pos, this.poleLength, topDevice.sliced);
 
         int prevSteps = this.steps;
+        boolean shouldPlaySound = stepTimeout == 0;
         double ratio = updateStepsAndGetRatio();
         if (prevSteps != this.steps) { // play sounds
             if (this.be != null) {
                 Vec3 pPos = Vec3.atCenterOf(pos);
-                level.playSound(null, pPos.x, pPos.y, pPos.z, CEESoundEvents.VOLTAGE_REGULATOR.get(), SoundSource.BLOCKS, 0.5f, 1f);
+                if (shouldPlaySound)
+                    level.playSound(null, pPos.x, pPos.y, pPos.z, CEESoundEvents.VOLTAGE_REGULATOR.get(), SoundSource.BLOCKS, 0.5f, 1f);
             }
         }
 
@@ -147,9 +149,9 @@ public class VoltageRegulatorDevice extends SimpleElectricalDevice {
     private double updateStepsAndGetRatio() {
         if (this.stepTimeout > 0) {
             this.stepTimeout--;
-            return this.steps * RATIO_PER_STEP;
         }
-        if (Math.abs(this.lastVoltage) < 1)
+
+        if (Math.abs(this.lastVoltage) < 1 || stepTimeout % 2 == 1)
             return this.steps * RATIO_PER_STEP;
         double diff = this.targetVoltage - Math.abs(this.lastVoltage);
         double tol = RATIO_PER_STEP * this.targetVoltage * 0.7;

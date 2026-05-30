@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
+import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
@@ -65,8 +66,9 @@ public class EStopPanelAttachment extends PanelAttachment {
         if (isClosed ^ !player.isShiftKeyDown())
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (!level.isClientSide()) {
-            CEESoundEvents.playOnServer(level, pos, isClosed ? CEESoundEvents.MCB_TRIP.get() : CEESoundEvents.MCB_CLOSE.get(), 1f, 1f);
-
+            CEESoundEvents.playOnServer(level, pos, isClosed ? CEESoundEvents.CONTACT_OPEN.get() : CEESoundEvents.CONTACT_CLOSE.get(), 1f, 1f);
+            if (isClosed)
+                CEEAdvancements.ESTOP.awardTo(player);
             isClosed ^= true;
             sendData();
         }

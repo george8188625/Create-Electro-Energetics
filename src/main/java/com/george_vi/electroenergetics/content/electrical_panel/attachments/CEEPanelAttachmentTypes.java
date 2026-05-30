@@ -9,6 +9,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+@SuppressWarnings("unused")
 public class CEEPanelAttachmentTypes {
     private static final DeferredRegister<PanelAttachmentType> PANEL_ATTACHMENT_TYPE =
             DeferredRegister.create(CEERegistries.PANEL_ATTACHMENT_TYPE, CreateElectroEnergetics.ID);
@@ -21,6 +22,15 @@ public class CEEPanelAttachmentTypes {
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> ESTOP = PANEL_ATTACHMENT_TYPE
             .register("emergency_stop_button", () -> new PanelAttachmentType(EStopPanelAttachment::new, CEEBlocks.EMERGENCY_STOP_BUTTON, PanelAttachmentMode.HALF));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> CUT_OFF_SWITCH = PANEL_ATTACHMENT_TYPE
+            .register("cut_off_switch", () -> new PanelAttachmentType(CutOffSwitchPanelAttachment::normal, CEEBlocks.CUT_OFF_SWITCH, PanelAttachmentMode.HALF));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> MOMENTARY_SWITCH = PANEL_ATTACHMENT_TYPE
+            .register("momentary_switch", () -> new PanelAttachmentType(MomentarySwitchPanelAttachment::normal, CEEBlocks.MOMENTARY_SWITCH, PanelAttachmentMode.HALF));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> MINIATURE_MOMENTARY_SWITCH = PANEL_ATTACHMENT_TYPE
+            .register("miniature_momentary_switch", () -> new PanelAttachmentType(MomentarySwitchPanelAttachment::miniature, CEEItems.MINIATURE_MOMENTARY_SWITCH, PanelAttachmentMode.THIRD));
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> ENERGY_METER = PANEL_ATTACHMENT_TYPE
             .register("energy_meter", () -> new PanelAttachmentType(EnergyMeterAttachment::new, CEEBlocks.ENERGY_METER, PanelAttachmentMode.FULL_DOUBLE));

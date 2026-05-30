@@ -7,6 +7,7 @@ import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
+import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
@@ -139,6 +140,118 @@ public class GeneratorScenes {
         scene.overlay().showText(70)
                 .text("You might want to use a Voltage Regulator to regulate the voltage even further.")
                 .pointAt(transformer.getCenter())
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+    }
+
+
+    public static void voltageRegulator(SceneBuilder builder, SceneBuildingUtil util) {
+        CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+        WireConnectionInstructions connections = new WireConnectionInstructions(builder);
+        scene.title("voltage_regulator", "Regulating voltage using a voltage regulator");
+        scene.configureBasePlate(0, 0, 9);
+        scene.world().showSection(util.select().layer(0), Direction.UP);
+
+        Selection regulator = util.select().fromTo(6, 1, 4, 6, 2, 4);
+        Selection connectors = util.select().fromTo(2, 1, 1, 6, 1, 8)
+                .substract(regulator);
+
+        scene.world().showSection(regulator, Direction.DOWN);
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("A voltage regulator can be used to dynamically regulate voltage")
+                .pointAt(regulator.getCenter())
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+
+        scene.world().showSection(connectors, Direction.DOWN);
+
+        scene.idle(20);
+
+        connections.createConnection(new InWorldNode(1, 4, 1, 1), new InWorldNode(0, 6, 1, 1));
+        connections.createConnection(new InWorldNode(0, 6, 1, 1), new InWorldNode(0, 6, 2, 4));
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Connect the power source to the input terminal on the top")
+                .pointAt(regulator.getCenter().add(0, 1, 0))
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+
+        connections.createConnection(new InWorldNode(1, 6, 1, 4), new InWorldNode(0, 2, 1, 4));
+        connections.createConnection(new InWorldNode(0, 2, 1, 4), new InWorldNode(0, 2, 1, 1));
+        connections.createConnection(new InWorldNode(0, 2, 1, 1), new InWorldNode(0, 4, 1, 1));
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Connect the negative to the ground terminal at the bottom")
+                .pointAt(regulator.getCenter().add(0, -1, 0))
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+
+        connections.createConnection(new InWorldNode(1, 6, 2, 4), new InWorldNode(0, 6, 1, 7));
+        connections.createConnection(new InWorldNode(0, 6, 1, 7), new InWorldNode(0, 4, 1, 8));
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Connect the load to the output terminal")
+                .pointAt(regulator.getCenter().add(0, 1, 0))
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+
+        connections.createConnection(new InWorldNode(1, 4, 1, 8), new InWorldNode(0, 2, 1, 7));
+        connections.createConnection(new InWorldNode(0, 2, 1, 7), new InWorldNode(0, 2, 1, 4));
+
+        scene.world().setKineticSpeed(util.select().position(4, 1, 8), 32);
+
+        scene.idle(20);
+
+        scene.overlay().showText(70)
+                .text("Finally, complete the circuit")
+                .pointAt(util.grid().at(2, 1, 4).getCenter())
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(100);
+        //3,10,8
+        connections.createCurrentVisualization(new InWorldNode(1, 4, 1, 1), new InWorldNode(0, 6, 1, 1), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 6, 1, 1), new InWorldNode(0, 6, 2, 4), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 2, 1, 4), new InWorldNode(0, 2, 1, 1), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 2, 1, 1), new InWorldNode(0, 4, 1, 1), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, 6, 2, 4), new InWorldNode(0, 6, 1, 7), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 6, 1, 7), new InWorldNode(0, 4, 1, 8), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(1, 4, 1, 8), new InWorldNode(0, 2, 1, 7), 1, 1, true);
+        connections.createCurrentVisualization(new InWorldNode(0, 2, 1, 7), new InWorldNode(0, 2, 1, 4), 1, 1, true);
+
+        scene.idle(40);
+
+
+        scene.overlay().showText(30)
+                .sharedText("voltage300")
+                .pointAt(util.vector().of(3/16f, 10/16f, 8/16f).add(6, 2, 4))
+                .attachKeyFrame()
+                .placeNearTarget();
+
+        scene.idle(50);
+
+        scene.overlay().showText(70)
+                .text("The voltage regulator will adjust the output voltage so it's as close as possible to 300V")
+                .colored(PonderPalette.GREEN)
+                .pointAt(util.grid().at(2, 1, 4).getCenter())
                 .attachKeyFrame()
                 .placeNearTarget();
 

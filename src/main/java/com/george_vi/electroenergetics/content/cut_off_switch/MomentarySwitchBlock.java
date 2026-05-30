@@ -1,9 +1,6 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
-import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.CEENodeConfigurations;
-import com.george_vi.electroenergetics.CEEShapes;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
@@ -71,20 +68,21 @@ public class MomentarySwitchBlock extends DirectionalRolledDeviceBlock<Momentary
             MomentarySwitchDevice device = DevicesSavedData.load(serverLevel).getDevice(pos, MomentarySwitchDevice.class);
             if (device != null) {
                 if (device.closedTicks == -1)
-                    level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
+                    CEESoundEvents.playOnServer(level, pos, CEESoundEvents.CONTACT_CLOSE.get(), 1f, 1f);
+
                 device.closedTicks = 5;
-            } else
-                level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
+            }
         }
 
         level.setBlockAndUpdate(pos, state.setValue(CLOSED, true));
-        return ItemInteractionResult.SUCCESS;
+        return state.getValue(CLOSED) ? ItemInteractionResult.CONSUME : ItemInteractionResult.SUCCESS;
     }
 
     protected void openSwitch(BlockState state, ServerLevel level, BlockPos pos) {
         if (!state.getValue(CLOSED))
             return;
 
+        CEESoundEvents.playOnServer(level, pos, CEESoundEvents.CONTACT_OPEN.get(), 1, 1);
         level.setBlockAndUpdate(pos, state.setValue(CLOSED, false));
     }
 

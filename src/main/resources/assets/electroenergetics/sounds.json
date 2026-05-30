@@ -35,6 +35,24 @@
     ],
     "subtitle": "electroenergetics.subtitle.mcb_trip"
   },
+  "contact_close": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:mcb_close"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.contact_close"
+  },
+  "contact_open": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "electroenergetics:mcb_trip"
+      }
+    ],
+    "subtitle": "electroenergetics.subtitle.contact_open"
+  },
   "arc": {
     "sounds": [
       {

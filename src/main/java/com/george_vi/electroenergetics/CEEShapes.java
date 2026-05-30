@@ -67,7 +67,7 @@ public class CEEShapes {
     public static final VoxelShaper ENERGY_METER = shape(2,2, 9,14,14,16).forHorizontal(Direction.NORTH);
 
     public static final VoxelShaper ELECTRIC_MOTOR =
-            shape(1,1, 1,15,10,15)
+            shape(1,1, 1,15,11,15)
             .add(AllShapes.SIX_VOXEL_POLE.get(Direction.Axis.Y))
             .forDirectional();
 

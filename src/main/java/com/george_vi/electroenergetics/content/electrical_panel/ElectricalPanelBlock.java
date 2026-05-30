@@ -6,11 +6,13 @@ import com.george_vi.electroenergetics.content.electrical_panel.attachments.Pane
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.ProperOilAndWaterloggedBlock;
 import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -116,7 +118,8 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (!(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
+        if (hitResult.getDirection() != state.getValue(FACING) ||
+                !(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         Direction facing = state.getValue(FACING);
@@ -184,7 +187,8 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Player player = context.getPlayer();
-        if (!(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
+        if (context.getClickedFace() != state.getValue(FACING) ||
+                !(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
             return super.onSneakWrenched(state, context);
 
         Vec3 localClickPos = context.getClickLocation().subtract(Vec3.atLowerCornerOf(pos));
@@ -257,5 +261,23 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
     @Override
     public BlockEntityType<? extends ElectricalPanelBlockEntity> getBlockEntityType() {
         return CEEBlockEntityTypes.ELECTRICAL_PANEL.get();
+    }
+
+    @Override
+    public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
+        if (!(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
+            return super.getNodeLabel(level, pos, state, id);
+        for (PanelAttachment attachment : be.getAttachments()) {
+            if (attachment == null)
+                continue;
+
+            InWorldNode[] nodes = attachment.nodes;
+            for (int i = 0; i < nodes.length; i++) {
+                InWorldNode node = nodes[i];
+                if (node.id() == id)
+                    return attachment.getNodeLabel(level, pos, state, i);
+            }
+        }
+        return super.getNodeLabel(level, pos, state, id);
     }
 }

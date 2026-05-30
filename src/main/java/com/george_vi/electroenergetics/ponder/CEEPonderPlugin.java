@@ -70,14 +70,17 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.forComponents(CEEBlocks.HV_SWITCH.getId())
                 .addStoryBoard("hv_switch", SwitchScenes::hvSwitch);
 
+        helper.forComponents(CEEBlocks.SF6_BREAKER.getId())
+                .addStoryBoard("sf6_breaker_introduction", SwitchScenes::sf6Breaker);
+
         helper.forComponents(CEEBlocks.RELAY.getId())
                 .addStoryBoard("relay", SwitchScenes::relay);
 
         helper.forComponents(CEEBlocks.CUT_OFF_SWITCH.getId(), CEEBlocks.DOUBLE_SWITCH.getId(), CEEBlocks.MOMENTARY_SWITCH.getId())
                 .addStoryBoard("switch", SwitchScenes::cutOffSwitch);
 
-        helper.forComponents(CEEBlocks.ALTERNATOR_ROTOR.getId(), CEEBlocks.STATOR.getId())
-                .addStoryBoard("alternator", GeneratorScenes::alternator);
+        helper.forComponents(CEEBlocks.VOLTAGE_REGULATOR.getId())
+                .addStoryBoard("voltage_regulator", GeneratorScenes::voltageRegulator);
 
         helper.forComponents(CEEBlocks.ALTERNATOR_BRUSHES.getId())
                 .addStoryBoard("alternator", GeneratorScenes::alternator)

@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelB
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelSlot;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -16,11 +17,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -127,5 +130,9 @@ public abstract class PanelAttachment {
 
     public List<ItemStack> getDrops() {
         return List.of(new ItemStack(type.item.asItem()));
+    }
+
+    public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
+        return CEELang.nodeLabel("node");
     }
 }

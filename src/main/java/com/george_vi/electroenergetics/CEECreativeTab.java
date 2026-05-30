@@ -108,8 +108,10 @@ public class CEECreativeTab {
                             output.accept(CEEBlocks.FREQUENCY_METER.asStack());
                         }
                         output.accept(CEEItems.TRANSFORMER_CORE_LAMINATION.asStack());
+                        output.accept(CEEItems.COMMUTATOR.asStack());
                         output.accept(CEEItems.WIRE_DAMPER.asStack());
                         output.accept(CEEItems.MINIATURE_CIRCUIT_BREAKER.asStack());
+                        output.accept(CEEItems.MINIATURE_MOMENTARY_SWITCH.asStack());
                         output.accept(CEEBlocks.HIGH_VOLTAGE_SIGN.asStack());
                         output.accept(CEEBlocks.ELECTRIC_SHOCK_SIGN.asStack());
                         output.accept(CEEBlocks.GROUNDING_SIGN.asStack());

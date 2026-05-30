@@ -88,7 +88,7 @@ public class QuadraticWireHelper {
         int totalPoints = (int) (resolution / detail);
         int ppp = (int) Math.max(1, (resolution / totalPoints));
 
-        WirePoints wirePoints = new WirePoints(totalPoints);
+        WirePoints wirePoints = new WirePoints(totalPoints + 1);
         float a = (0.05f / distance) * dip;
         for (int x = 0; x < resolution; x++) {
             float particleLevel = (float) (a * x * (x - resolution));

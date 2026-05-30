@@ -54,8 +54,11 @@ public class ElectricalPanelClientTicker {
         BlockState targetState = level.getBlockState(targetPos);
 
         if (!CEEBlocks.ELECTRICAL_PANEL.has(targetState) ||
+                result.getDirection() != targetState.getValue(ElectricalPanelBlock.FACING) ||
                 !(level.getBlockEntity(targetPos) instanceof ElectricalPanelBlockEntity be))
             return;
+
+        Direction facing = targetState.getValue(ElectricalPanelBlock.FACING);
 
         PanelAttachmentType attachmentType = PanelAttachmentType.getForItem(heldItemStack);
         if (attachmentType == null)
@@ -65,7 +68,6 @@ public class ElectricalPanelClientTicker {
 
         PanelAttachmentMode mode = attachmentType.mode;
 
-        Direction facing = targetState.getValue(ElectricalPanelBlock.FACING);
         Vec3 localClickPos = result.getLocation().subtract(Vec3.atLowerCornerOf(targetPos));
         ElectricalPanelSlot slot = null;
         if (be.getAttachments().length == 0)
@@ -114,13 +116,13 @@ public class ElectricalPanelClientTicker {
         PoseStack ms = event.getPoseStack();
         Vec3 localPos = Vec3.atLowerCornerOf(pos);
         Vec3 camPos = event.getCamera().getPosition();
-        if (!(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
+        Direction facing = state.getValue(ElectricalPanelBlock.FACING);
+        if (event.getTarget().getDirection() != facing || !(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
             return;
 
 
         ElectricalPanelLayoutType layout = be.getLayoutType();
 
-        Direction facing = state.getValue(ElectricalPanelBlock.FACING);
         Vec3 localClickPos = event.getTarget().getLocation().subtract(localPos);
 
         ElectricalPanelSlot slot = null;

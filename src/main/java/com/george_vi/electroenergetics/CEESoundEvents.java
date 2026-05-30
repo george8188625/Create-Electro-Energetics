@@ -31,6 +31,8 @@ public class CEESoundEvents {
     public static final Supplier<SoundEvent> BUZZER = sound("buzzer");
     public static final Supplier<SoundEvent> MCB_CLOSE = sound("mcb_close");
     public static final Supplier<SoundEvent> MCB_TRIP = sound("mcb_trip");
+    public static final Supplier<SoundEvent> CONTACT_CLOSE = sound("contact_close");
+    public static final Supplier<SoundEvent> CONTACT_OPEN = sound("contact_open");
 
     public static final Supplier<SoundEvent> TRAIN_WIND_RISE = sound("train/background/wind_rise");
     public static final Supplier<SoundEvent> TRAIN_WIND_STATIC = sound("train/background/wind_static");

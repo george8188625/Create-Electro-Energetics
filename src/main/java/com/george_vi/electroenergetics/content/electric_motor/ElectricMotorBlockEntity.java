@@ -118,7 +118,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     public void updateRotation() {
         if (generatedSpeed.isUnlocked()) {
-            motorSpeed = (float) Mth.clamp(averageVoltage.getSigned() / 2, -256, 256);
+            motorSpeed = Math.round(Mth.clamp(averageVoltage.getSigned() / 2, -256, 256));
             if (Math.abs(motorSpeed - speedBeforeLastChange) > 2) {
                 voltageBeforeLastChange = averageVoltage.getSigned();
                 speedBeforeLastChange = motorSpeed;

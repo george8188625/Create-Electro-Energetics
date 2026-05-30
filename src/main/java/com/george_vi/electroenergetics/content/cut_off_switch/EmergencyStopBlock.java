@@ -1,9 +1,6 @@
 package com.george_vi.electroenergetics.content.cut_off_switch;
 
-import com.george_vi.electroenergetics.CEEItems;
-import com.george_vi.electroenergetics.CEENodeConfigurations;
-import com.george_vi.electroenergetics.CEEShapes;
-import com.george_vi.electroenergetics.CEESimulatedDevices;
+import com.george_vi.electroenergetics.*;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
@@ -71,8 +68,13 @@ public class EmergencyStopBlock extends DirectionalRolledDeviceBlock<CutOffSwitc
 
         if (level instanceof ServerLevel serverLevel) {
             CutOffSwitchDevice device = DevicesSavedData.load(serverLevel).getDevice(pos, CutOffSwitchDevice.class);
-            if (device != null)
+            if (device != null) {
+                if (device.isClosed == activate) {
+                    CEESoundEvents.playOnServer(level, pos, activate ? CEESoundEvents.CONTACT_OPEN.get() : CEESoundEvents.CONTACT_CLOSE.get(), 1f, 1f);
+                }
                 device.isClosed = !activate;
+
+            }
 
             if (activate) {
                 CEEAdvancements.ESTOP.awardTo(player);
@@ -81,7 +83,6 @@ public class EmergencyStopBlock extends DirectionalRolledDeviceBlock<CutOffSwitc
 
         if (state.getValue(ACTIVATED) != activate) {
             level.setBlockAndUpdate(pos, state.setValue(ACTIVATED, activate));
-            AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
             return ItemInteractionResult.SUCCESS;
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

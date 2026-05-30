@@ -20,11 +20,16 @@ import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -79,9 +84,9 @@ public class EnergyMeterAttachment extends PanelAttachment {
             bridges.bridge(nodes[3], nodes[1], ElectricalProperties.resistor(r1));
 
         if (inverted)
-            bridges.bridge(nodes[1], nodes[0], ElectricalProperties.resistor(9999));
-        else
             bridges.bridge(nodes[2], nodes[3], ElectricalProperties.resistor(9999));
+        else
+            bridges.bridge(nodes[0], nodes[1], ElectricalProperties.resistor(9999));
     }
 
     double[] v0s;
@@ -191,6 +196,7 @@ public class EnergyMeterAttachment extends PanelAttachment {
         totalEnergy = tag.getDouble("TotalEnergy");
         activePower = tag.getDouble("ActivePower");
         disconnected = tag.getBoolean("Disconnected");
+        inverted = tag.getBoolean("Inverted");
         behaviour1 = new SwitchingBehaviour(tag.getCompound("Behaviour1"));
         behaviour2 = new SwitchingBehaviour(tag.getCompound("Behaviour2"));
         if (tag.contains("Owner"))
@@ -205,9 +211,21 @@ public class EnergyMeterAttachment extends PanelAttachment {
         tag.putDouble("TotalEnergy", totalEnergy);
         tag.putDouble("ActivePower", activePower);
         tag.putBoolean("Disconnected", disconnected);
+        tag.putBoolean("Inverted", inverted);
         tag.put("Behaviour1", behaviour1.write());
         tag.put("Behaviour2", behaviour2.write());
         if (owner != null)
             tag.putUUID("Owner", owner);
+    }
+
+    @Override
+    public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
+        if (inverted)
+            return id == 2 ? Component.translatable("electroenergetics.nodes.feed") :
+                    id == 0 ? Component.translatable("electroenergetics.nodes.load") :
+                            Component.translatable("electroenergetics.nodes.neutral");
+        return id == 0 ? Component.translatable("electroenergetics.nodes.feed") :
+                id == 2 ? Component.translatable("electroenergetics.nodes.load") :
+                        Component.translatable("electroenergetics.nodes.neutral");
     }
 }

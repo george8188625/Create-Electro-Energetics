@@ -10,6 +10,7 @@
     "electroenergetics:momentary_switch",
     "electroenergetics:indicator_bulb",
     "electroenergetics:miniature_circuit_breaker",
+    "electroenergetics:miniature_momentary_switch",
     "minecraft:clock",
 
     "electroenergetics:synchroscope",
