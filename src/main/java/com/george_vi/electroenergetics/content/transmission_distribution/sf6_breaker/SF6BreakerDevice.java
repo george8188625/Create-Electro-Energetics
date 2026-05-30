@@ -80,7 +80,7 @@ public class SF6BreakerDevice extends SimpleElectricalDevice implements VirtualR
     public void read(CompoundTag tag) {
         this.powered = tag.getBoolean("Closed");
         this.base = tag.getBoolean("Base");
-        byte[] arr = tag.getByteArray("Powered");
+        byte[] arr = tag.getByteArray("Power");
         if (arr.length == this.power.length)
             this.power = arr;
     }
@@ -89,7 +89,7 @@ public class SF6BreakerDevice extends SimpleElectricalDevice implements VirtualR
     public void write(CompoundTag tag) {
         tag.putByteArray("Power", this.power);
         if (this.powered)
-            tag.putBoolean("Powered", true);
+            tag.putBoolean("Closed", true);
         if (this.base)
             tag.putBoolean("Base", true);
     }
