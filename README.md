@@ -44,17 +44,15 @@ Complexity:
 
 ## Download:
 
-This mod is currently in **open beta**, but it's quickly approaching a **release**.
+This mod is currently **released**.
 
-**When testing please use the latest version:**
+**When beta-testing please use the latest build:**
 <br>
 Download from [here](https://github.com/george8188625/Create-Electro-Energetics/releases)
 
-**If you really need a stable version:**
+**If you need a stable version:**
 <br>
-Latest stable version: [Build 97](https://github.com/george8188625/Create-Electro-Energetics/releases/tag/autobuild-97)
-
-Check out the [checklist](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/checklist.md).
+Mod page: [Curseforge](https://www.curseforge.com/minecraft/mc-mods/create-electro-energetics)
 
 **Join the discord server:**
 <br>
