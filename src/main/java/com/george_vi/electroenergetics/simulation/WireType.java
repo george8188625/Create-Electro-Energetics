@@ -51,12 +51,14 @@ public class WireType {
     final boolean isDecorative;
     final boolean isInvulnerable;
     final WireRenderType renderType;
+    final PartialModel endPointModel;
 
     private WireType(DoubleSupplier resistance, PartialModel model, Supplier<Item> droppedItem,
                      Supplier<Item> spoolItem, double insulationResistance, DoubleSupplier maxInsulationVoltage,
                      Supplier<WireType> overheatedReplacement, TagKey<Item> droppedTag, DoubleSupplier maxTemperature,
-                     float sag, IntSupplier maxLength, float thickness, boolean isDecorative, boolean isInvulnerable, WireRenderType renderType) {
+                     float sag, IntSupplier maxLength, float thickness, boolean isDecorative, boolean isInvulnerable, WireRenderType renderType, PartialModel endPointModel) {
         this.renderType = renderType;
+        this.endPointModel = endPointModel;
         if (droppedItem == null && droppedTag == null)
             droppedItem = () -> Items.AIR;
 
@@ -102,14 +104,19 @@ public class WireType {
 
     public double insulationResistance() {
         return insulationResistance;
-    };
+    }
 
     public double maxInsulationVoltage() {
         return maxInsulationVoltage.getAsDouble();
-    };
+    }
 
     public PartialModel getModel() {
         return model;
+    }
+
+    @Nullable
+    public PartialModel getEndPointModel() {
+        return endPointModel;
     }
 
     public float getSag() {
@@ -128,10 +135,12 @@ public class WireType {
         return thickness;
     }
 
+    @SuppressWarnings("unused")
     public boolean isInvulnerable() {
         return isInvulnerable;
     }
 
+    @SuppressWarnings("unused")
     public boolean isDecorative() {
         return isDecorative;
     }
@@ -150,6 +159,7 @@ public class WireType {
 
         DoubleSupplier resistance = () -> CEEConfigs.server().resistanceValues.wireResistance.get();
         PartialModel model;
+        PartialModel endPointModel;
         Supplier<Item> droppedItem = null;
         Supplier<Item> spoolItem = () -> Items.AIR;
         double insulationResistance = 0;
@@ -172,10 +182,10 @@ public class WireType {
             if (dyeTypeFunction != null)
                 return new Dyeable(resistance, model, droppedItem, spoolItem, insulationResistance,
                         maxInsulationVoltage, overheatedReplacement, droppedTag, maxTemperature, sag, maxLength,
-                        thickness, dyeTypeFunction, dyeColor, renderType);
+                        thickness, dyeTypeFunction, dyeColor, renderType, endPointModel);
             return new WireType(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
                     overheatedReplacement, droppedTag, maxTemperature, sag, maxLength, thickness, decorative,
-                    invulnerable, renderType);
+                    invulnerable, renderType, endPointModel);
         }
 
         public Builder(PartialModel model) {
@@ -189,6 +199,12 @@ public class WireType {
 
         public Builder droppedItem(Supplier<Item> v) {
             droppedItem = v;
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public Builder endPointItem(PartialModel model) {
+            endPointModel = model;
             return this;
         }
 
@@ -242,6 +258,7 @@ public class WireType {
             return this;
         }
 
+        @SuppressWarnings("unused")
         public Builder dyeable(Function<DyeColor, WireType> dyeTypeFunction, DyeColor color) {
             this.dyeTypeFunction = dyeTypeFunction;
             dyeColor = color;
@@ -267,6 +284,7 @@ public class WireType {
             return this;
         }
 
+        @SuppressWarnings("unused")
         public Builder renderType(WireRenderType renderType) {
             this.renderType = renderType;
             return this;
@@ -282,10 +300,10 @@ public class WireType {
                         Supplier<WireType> overheatedReplacement, TagKey<Item> droppedTag,
                         DoubleSupplier maxTemperature, float sag, IntSupplier maxLength, float thickness,
                         Function<DyeColor, WireType> typeFunction, @Nullable DyeColor dyeColor,
-                        WireRenderType renderType) {
+                        WireRenderType renderType, PartialModel endpointModel) {
             super(resistance, model, droppedItem, spoolItem, insulationResistance, maxInsulationVoltage,
                     overheatedReplacement, droppedTag, maxTemperature, sag, maxLength, thickness, false,
-                    false, renderType);
+                    false, renderType, endpointModel);
 
             this.typeFunction = typeFunction;
             this.dyeColor = dyeColor;
@@ -299,6 +317,7 @@ public class WireType {
             return dyeColor;
         }
 
+        @SuppressWarnings("unused")
         public boolean isDyed() {
             return dyeColor != null;
         }

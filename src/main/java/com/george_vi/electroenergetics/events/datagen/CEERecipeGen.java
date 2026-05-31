@@ -643,8 +643,48 @@ public class CEERecipeGen extends RecipeProvider {
                 .pattern("T")
                 .define('S', CEEBlocks.MOMENTARY_SWITCH)
                 .define('T', ItemTags.TERRACOTTA)
-                .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
+                .unlockedBy("has_momentary_switch", has(CEEBlocks.MOMENTARY_SWITCH))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/miniature_momentary_switch"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.MINIATURE_AMMETER)
+                .pattern(" ")
+                .pattern("S")
+                .pattern("T")
+                .define('S', CEEBlocks.AMMETER)
+                .define('T', ItemTags.TERRACOTTA)
+                .unlockedBy("has_ammeter", has(CEEBlocks.AMMETER))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/miniature_ammeter"));
+
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.MINIATURE_VOLTMETER)
+                .pattern(" ")
+                .pattern("S")
+                .pattern("T")
+                .define('S', CEEBlocks.VOLTMETER)
+                .define('T', ItemTags.TERRACOTTA)
+                .unlockedBy("has_voltmeter", has(CEEBlocks.VOLTMETER))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/miniature_voltmeter"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.MINIATURE_AMMETER)
+                .pattern("S")
+                .define('S', CEEItems.MINIATURE_VOLTMETER)
+                .unlockedBy("has_voltmeter", has(CEEBlocks.VOLTMETER))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/miniature_ammeter_conversion"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.MINIATURE_VOLTMETER)
+                .pattern("S")
+                .define('S', CEEItems.MINIATURE_AMMETER)
+                .unlockedBy("has_ammeter", has(CEEBlocks.AMMETER))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/miniature_voltmeter_conversion"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.MINIATURE_INDICATOR_BULB)
+                .pattern(" ")
+                .pattern("S")
+                .pattern("T")
+                .define('S', CEEBlocks.INDICATOR_BULB)
+                .define('T', ItemTags.TERRACOTTA)
+                .unlockedBy("has_indicator_bulb", has(CEEBlocks.INDICATOR_BULB))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/miniature_indicator_bulb"));
 
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEBlocks.HIGH_VOLTAGE_SIGN, 2)
                 .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))

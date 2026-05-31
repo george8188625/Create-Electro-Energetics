@@ -1,9 +1,6 @@
 package com.george_vi.electroenergetics.content.electrical_panel.attachments;
 
-import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
-import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
-import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
-import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelSlot;
+import com.george_vi.electroenergetics.content.electrical_panel.*;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -12,9 +9,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.math.VecHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -39,6 +40,7 @@ public abstract class PanelAttachment {
     public ElectricalPanelSlot slot;
     public Direction panelFacing;
     public final PanelAttachmentType type;
+    public String label;
 
     public PanelAttachment(PanelAttachmentType type) {
         this.type = type;
@@ -59,7 +61,7 @@ public abstract class PanelAttachment {
     @OnlyIn(Dist.CLIENT)
     public void transformPose(PoseStack ms, ElectricalPanelBlockEntity be) {
         Direction facing = be.getBlockState().getValue(ElectricalPanelBlock.FACING);
-        PoseTransformStack msr = TransformStack.of(ms)
+        TransformStack.of(ms)
                 .rotateYCenteredDegrees(-facing.toYRot() + 180)
                 .translateY(
                         slot == ElectricalPanelSlot.HALF_LOWER ? -6/16f :
@@ -129,7 +131,44 @@ public abstract class PanelAttachment {
     }
 
     public List<ItemStack> getDrops() {
-        return List.of(new ItemStack(type.item.asItem()));
+        return List.of(defaultDroppedStack());
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void renderLabel(ElectricalPanelBlockEntity be, float partialTicks, PoseStack ms,
+                            MultiBufferSource buffer, int light, int overlay) {
+        Direction facing = be.getBlockState().getValue(ElectricalPanelBlock.FACING);
+        boolean isHorizontal = be.getLayoutType() == ElectricalPanelLayoutType.HALF_HORIZONTAL;
+        int fullWidth = type.mode == PanelAttachmentMode.THIRD ? 14 : be.getLayoutType() == ElectricalPanelLayoutType.FULL ? 48 : 24;
+        if (isHorizontal)
+            fullWidth = 48;
+        float scale = 1 / 128f;
+        float y = be.getLayoutType() == ElectricalPanelLayoutType.FULL ? 2/16f : 4/16f;
+        Minecraft mc = Minecraft.getInstance();
+        int width = mc.font.width(label);
+        float leftOffset = 2 / 16f;
+        if (width > fullWidth * 2) {
+            scale /= 2;
+            leftOffset = 3.2f / 16f;
+        }
+        TransformStack.of(ms)
+                .rotateYCenteredDegrees(-facing.toYRot() + 180)
+                .translate(
+                        (isHorizontal ? 0 : (float) slot.leftOffset) + leftOffset,
+                        (isHorizontal ? -slot.leftOffset + 9/16f : y),
+                        isHorizontal ? 9/16f : 11/16f
+                )
+                .scale(-scale, -scale, -scale);
+
+        mc.font.drawInBatch(label, -fullWidth - width / 2f, 0, 0xffffff, true, ms.last().pose(), buffer,
+                Font.DisplayMode.NORMAL, 0, LightTexture.FULL_BRIGHT);
+    }
+
+    public @NotNull ItemStack defaultDroppedStack() {
+        ItemStack stack = new ItemStack(type.item.asItem());
+        if (label != null)
+            stack.set(DataComponents.CUSTOM_NAME, Component.literal(label));
+        return stack;
     }
 
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {

@@ -1,6 +1,8 @@
 package com.george_vi.electroenergetics.content.linemans_stick;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
+import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.client.WireRenderer;
@@ -11,15 +13,23 @@ import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.outliner.Outliner;
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,10 +41,38 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 public class LinemansStickItem extends Item {
 
     public LinemansStickItem(Properties properties) {
         super(properties);
+    }
+
+    private static final AttributeModifier rangeAttributeModifier =
+            new AttributeModifier(CreateElectroEnergetics.rl("range_attribute_modifier"), 3,
+                    AttributeModifier.Operation.ADD_VALUE);
+
+    private static final Supplier<Multimap<Holder<Attribute>, AttributeModifier>> rangeModifier = Suppliers.memoize(() ->
+            ImmutableMultimap.of(Attributes.BLOCK_INTERACTION_RANGE, rangeAttributeModifier));
+
+    public static void tickPlayerRange(Player player) {
+        CompoundTag persistentData = player.getPersistentData();
+
+        boolean holdingLinemansStick = CEEItems.LINEMANS_STICK.isIn(player.getMainHandItem());
+        boolean wasHoldingLinemansStick = persistentData.contains("CEE_LinemansStick");
+
+        if (holdingLinemansStick != wasHoldingLinemansStick) {
+            if (!holdingLinemansStick) {
+                player.getAttributes()
+                        .removeAttributeModifiers(LinemansStickItem.rangeModifier.get());
+                persistentData.remove("CEE_LinemansStick");
+            } else {
+                player.getAttributes()
+                        .addTransientAttributeModifiers(LinemansStickItem.rangeModifier.get());
+                persistentData.putBoolean("CEE_LinemansStick", true);
+            }
+        }
     }
 
     @Override

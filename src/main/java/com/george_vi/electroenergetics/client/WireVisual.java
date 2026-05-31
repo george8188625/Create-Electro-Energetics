@@ -13,6 +13,7 @@ import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
+import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
 import dev.engine_room.flywheel.lib.visual.SimpleTickableVisual;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -37,7 +38,10 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     private double prevLength;
     private Vec3 prevPos1;
     private Vec3 prevPos2;
-    protected final List<TransformedInstance> instances = new ArrayList<>();
+    private final List<TransformedInstance> instances = new ArrayList<>();
+    private TransformedInstance startInstance;
+    private TransformedInstance endInstance;
+
     final LongSet lightSections;
 
     public WireVisual(VisualizationContext visualizationContext, InWorldNodeConnection connection, WireType wireType, WireData wireData) {
@@ -83,6 +87,45 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
 
         createWire(visualizationContext, wireType, points, pos2, level);
+
+        PartialModel endpointModel = wireType.getEndPointModel();
+        if (endpointModel == null || points.size() < 3)
+            return;
+
+        Vec3 start = points.get(0);
+        BlockPos startBlockPos = BlockPos.containing(start);
+        Vec3 startNext = points.get(1);
+        BlockPos startNextBlockPos = BlockPos.containing(startNext);
+        Vec3 end = pos2;
+        BlockPos endBlockPos = BlockPos.containing(end);
+        Vec3 endNext = points.get(points.size() - 1);
+        BlockPos endNextBlockPos = BlockPos.containing(endNext);
+
+        startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                .createInstance();
+        startInstance.setVisible(true);
+        startInstance.setIdentityTransform()
+                .translate(start)
+                .rotateY((float) Mth.atan2(startNext.x() - start.x(), startNext.z() - start.z()))
+                .rotateX(-(float) Mth.atan2(startNext.y - start.y, Math.hypot(startNext.x - start.x, startNext.z - start.z)))
+                .rotateZ(0.001f)
+                .light(startBlockPos.equals(startNextBlockPos) ? LevelRenderer.getLightColor(level, startNextBlockPos) :
+                        WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, startNextBlockPos),
+                                LevelRenderer.getLightColor(level, startBlockPos)))
+                .setChanged();
+
+        endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                .createInstance();
+        endInstance.setVisible(true);
+        endInstance.setIdentityTransform()
+                .translate(end)
+                .rotateY((float) Mth.atan2(endNext.x() - end.x(), endNext.z() - end.z()))
+                .rotateX(-(float) Mth.atan2(endNext.y - end.y, Math.hypot(endNext.x - end.x, endNext.z - end.z)))
+                .rotateZ(0.001f)
+                .light(endBlockPos.equals(endNextBlockPos) ? LevelRenderer.getLightColor(level, endNextBlockPos) :
+                        WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, endNextBlockPos),
+                                LevelRenderer.getLightColor(level, endBlockPos)))
+                .setChanged();
     }
 
     public void recreateInstances(float partialTick) {
@@ -129,6 +172,38 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
         createWire(visualizationContext, wireType, points, pos2, level);
 
+        if (startInstance == null || endInstance == null || points.size() < 3)
+            return;
+
+        Vec3 start = points.get(0);
+        BlockPos startBlockPos = BlockPos.containing(start);
+        Vec3 startNext = points.get(1);
+        BlockPos startNextBlockPos = BlockPos.containing(startNext);
+        Vec3 end = pos2;
+        BlockPos endBlockPos = BlockPos.containing(end);
+        Vec3 endNext = points.get(points.size() - 1);
+        BlockPos endNextBlockPos = BlockPos.containing(endNext);
+
+        startInstance.setIdentityTransform()
+                .translate(start)
+                .rotateY((float) Mth.atan2(startNext.x() - start.x(), startNext.z() - start.z()))
+                .rotateX(-(float) Mth.atan2(startNext.y - start.y, Math.hypot(startNext.x - start.x, startNext.z - start.z)))
+                .rotateZ(0.001f)
+                .light(startBlockPos.equals(startNextBlockPos) ? LevelRenderer.getLightColor(level, startNextBlockPos) :
+                        WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, startNextBlockPos),
+                                LevelRenderer.getLightColor(level, startBlockPos)))
+                .setChanged();
+
+        endInstance.setIdentityTransform()
+                .translate(end)
+                .rotateY((float) Mth.atan2(endNext.x() - end.x(), endNext.z() - end.z()))
+                .rotateX(-(float) Mth.atan2(endNext.y - end.y, Math.hypot(endNext.x - end.x, endNext.z - end.z)))
+                .rotateZ(0.001f)
+                .light(endBlockPos.equals(endNextBlockPos) ? LevelRenderer.getLightColor(level, endNextBlockPos) :
+                        WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, endNextBlockPos),
+                                LevelRenderer.getLightColor(level, endBlockPos)))
+                .setChanged();
+
     }
 
     @Override
@@ -142,6 +217,10 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             instance.delete();
 
         instances.clear();
+        if (startInstance != null)
+            startInstance.delete();
+        if (endInstance != null)
+            endInstance.delete();
     }
 
     @Override

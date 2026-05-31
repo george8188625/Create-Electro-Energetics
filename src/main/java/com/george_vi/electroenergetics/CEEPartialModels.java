@@ -79,12 +79,20 @@ public class CEEPartialModels {
     public static final PartialModel PANEL_ATTACHMENT_MCB_OPEN = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_circuit_breaker_tripped"));
     public static final PartialModel PANEL_ATTACHMENT_ENERGY_METER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/energy_meter"));
     public static final PartialModel PANEL_ATTACHMENT_ENERGY_METER_INVERTED = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/energy_meter_inverted"));
+    public static final PartialModel PANEL_ATTACHMENT_TRI_ENERGY_METER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/tri_polar_energy_meter"));
+    public static final PartialModel PANEL_ATTACHMENT_TRI_ENERGY_METER_INVERTED = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/tri_polar_energy_meter_inverted"));
     public static final PartialModel PANEL_ATTACHMENT_MOMENTARY_SWITCH = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/momentary_switch"));
     public static final PartialModel PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/momentary_switch_button"));
     public static final PartialModel PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/momentary_switch_button_dyeable"));
     public static final PartialModel PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_momentary_switch"));
     public static final PartialModel PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_momentary_switch_button"));
     public static final PartialModel PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_momentary_switch_button_dyeable"));
+    public static final PartialModel PANEL_ATTACHMENT_SMOL_AMMETER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_ammeter"));
+    public static final PartialModel PANEL_ATTACHMENT_SMOL_VOLTMETER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_voltmeter"));
+    public static final PartialModel PANEL_ATTACHMENT_SMOL_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_dial"));
+
+    public static final PartialModel PANEL_ATTACHMENT_SMOL_INDICATOR_BULB = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_indicator_bulb"));
+    public static final PartialModel PANEL_ATTACHMENT_INDICATOR_BULB = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/indicator_bulb"));
 
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch"));
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH_LEVER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch_lever"));

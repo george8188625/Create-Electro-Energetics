@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_momentary_switch": {
+    "has_ammeter": {
       "conditions": {
         "items": [
           {
-            "items": "electroenergetics:momentary_switch"
+            "items": "electroenergetics:ammeter"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "electroenergetics:crafting/miniature_momentary_switch"
+        "recipe": "electroenergetics:crafting/miniature_voltmeter_conversion"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_momentary_switch"
+      "has_ammeter"
     ]
   ],
   "rewards": {
     "recipes": [
-      "electroenergetics:crafting/miniature_momentary_switch"
+      "electroenergetics:crafting/miniature_voltmeter_conversion"
     ]
   }
 }

@@ -8,7 +8,6 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.lang.Lang;
@@ -28,20 +27,30 @@ public class GaugePanelAttachment extends PanelAttachment {
     public float dialState;
     public float prevDialState;
     public final boolean voltmeter;
+    public final boolean miniature;
     public RMSHolder rmsVoltages;
     public double value;
 
-    private GaugePanelAttachment(PanelAttachmentType type, boolean voltmeter) {
+    private GaugePanelAttachment(PanelAttachmentType type, boolean voltmeter, boolean miniature) {
         super(type);
         this.voltmeter = voltmeter;
+        this.miniature = miniature;
     }
 
     public static PanelAttachment ammeter(PanelAttachmentType type) {
-        return new GaugePanelAttachment(type, false);
+        return new GaugePanelAttachment(type, false, false);
     }
 
     public static PanelAttachment voltmeter(PanelAttachmentType type) {
-        return new GaugePanelAttachment(type, true);
+        return new GaugePanelAttachment(type, true, false);
+    }
+
+    public static PanelAttachment smolAmmeter(PanelAttachmentType type) {
+        return new GaugePanelAttachment(type, false, true);
+    }
+
+    public static PanelAttachment smolVoltmeter(PanelAttachmentType type) {
+        return new GaugePanelAttachment(type, true, true);
     }
 
     @Override
@@ -57,22 +66,34 @@ public class GaugePanelAttachment extends PanelAttachment {
     public void render(ElectricalPanelBlockEntity be, float partialTicks, PoseStack ms,
                        MultiBufferSource buffer, int light, int overlay) {
         transformPose(ms, be);
-
-        CachedBuffers.partial(voltmeter ?
-                        CEEPartialModels.PANEL_ATTACHMENT_VOLTMETER :
-                        CEEPartialModels.PANEL_ATTACHMENT_AMMETER,
-                        be.getBlockState())
-                .light(light)
-                .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
-
-        VertexConsumer vb = buffer.getBuffer(RenderType.solid());
         float progress = Mth.lerp(partialTicks, prevDialState, dialState);
-        CachedBuffers.partial(CEEPartialModels.PANEL_ATTACHMENT_DIAL, be.getBlockState())
-                .translate(3.5/16f, 6.5/16f, 8.75/16f)
-                .rotateZ(Mth.PI / 2 * progress)
-                .translate(0, 0, 0)
-                .light(light)
-                .renderInto(ms, vb);
+
+        if (miniature) {
+            CachedBuffers.partial(voltmeter ?
+                                    CEEPartialModels.PANEL_ATTACHMENT_SMOL_VOLTMETER :
+                                    CEEPartialModels.PANEL_ATTACHMENT_SMOL_AMMETER,
+                            be.getBlockState())
+                    .light(light)
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+
+            CachedBuffers.partial(CEEPartialModels.PANEL_ATTACHMENT_SMOL_DIAL, be.getBlockState())
+                    .translate(0, progress * 0.35f, 0)
+                    .light(light)
+                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+        } else {
+            CachedBuffers.partial(voltmeter ?
+                                    CEEPartialModels.PANEL_ATTACHMENT_VOLTMETER :
+                                    CEEPartialModels.PANEL_ATTACHMENT_AMMETER,
+                            be.getBlockState())
+                    .light(light)
+                    .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+
+            CachedBuffers.partial(CEEPartialModels.PANEL_ATTACHMENT_DIAL, be.getBlockState())
+                    .translate(3.5 / 16f, 6.5 / 16f, 8.75 / 16f)
+                    .rotateZ(Mth.PI / 2 * progress)
+                    .light(light)
+                    .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        }
     }
 
     @Override

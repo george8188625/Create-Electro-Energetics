@@ -112,7 +112,7 @@ public class MCBPanelAttachment extends PanelAttachment {
 
     @Override
     public List<ItemStack> getDrops() {
-        ItemStack stack = new ItemStack(type.item.asItem());
+        ItemStack stack = defaultDroppedStack();
         if (setAmperage != 100)
             stack.set(CEEDataComponents.FUSE_AMPERAGE, setAmperage);
         return List.of(stack);

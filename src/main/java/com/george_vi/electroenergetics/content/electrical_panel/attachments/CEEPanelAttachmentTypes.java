@@ -20,11 +20,23 @@ public class CEEPanelAttachmentTypes {
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> VOLTMETER = PANEL_ATTACHMENT_TYPE
             .register("voltmeter", () -> new PanelAttachmentType(GaugePanelAttachment::voltmeter, CEEBlocks.VOLTMETER, PanelAttachmentMode.HALF));
 
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> MINIATURE_AMMETER = PANEL_ATTACHMENT_TYPE
+            .register("miniature_ammeter", () -> new PanelAttachmentType(GaugePanelAttachment::smolAmmeter, CEEItems.MINIATURE_AMMETER, PanelAttachmentMode.THIRD));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> MINIATURE_VOLTMETER = PANEL_ATTACHMENT_TYPE
+            .register("miniature_voltmeter", () -> new PanelAttachmentType(GaugePanelAttachment::smolVoltmeter, CEEItems.MINIATURE_VOLTMETER, PanelAttachmentMode.THIRD));
+
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> ESTOP = PANEL_ATTACHMENT_TYPE
             .register("emergency_stop_button", () -> new PanelAttachmentType(EStopPanelAttachment::new, CEEBlocks.EMERGENCY_STOP_BUTTON, PanelAttachmentMode.HALF));
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> CUT_OFF_SWITCH = PANEL_ATTACHMENT_TYPE
             .register("cut_off_switch", () -> new PanelAttachmentType(CutOffSwitchPanelAttachment::normal, CEEBlocks.CUT_OFF_SWITCH, PanelAttachmentMode.HALF));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> INDICATOR_BULB = PANEL_ATTACHMENT_TYPE
+            .register("indicator_bulb", () -> new PanelAttachmentType(IndicatorBulbPanelAttachment::normal, CEEBlocks.INDICATOR_BULB, PanelAttachmentMode.HALF));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> MINIATURE_INDICATOR_BULB = PANEL_ATTACHMENT_TYPE
+            .register("miniature_indicator_bulb", () -> new PanelAttachmentType(IndicatorBulbPanelAttachment::miniature, CEEItems.MINIATURE_INDICATOR_BULB, PanelAttachmentMode.THIRD));
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> MOMENTARY_SWITCH = PANEL_ATTACHMENT_TYPE
             .register("momentary_switch", () -> new PanelAttachmentType(MomentarySwitchPanelAttachment::normal, CEEBlocks.MOMENTARY_SWITCH, PanelAttachmentMode.HALF));
@@ -34,6 +46,9 @@ public class CEEPanelAttachmentTypes {
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> ENERGY_METER = PANEL_ATTACHMENT_TYPE
             .register("energy_meter", () -> new PanelAttachmentType(EnergyMeterAttachment::new, CEEBlocks.ENERGY_METER, PanelAttachmentMode.FULL_DOUBLE));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> TRI_POLAR_ENERGY_METER = PANEL_ATTACHMENT_TYPE
+            .register("tri_polar_energy_meter", () -> new PanelAttachmentType(TriPolarEnergyMeterAttachment::new, CEEBlocks.TRI_POLAR_ENERGY_METER, PanelAttachmentMode.FULL_TRIPLE));
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> MINIATURE_CIRCUIT_BREAKER = PANEL_ATTACHMENT_TYPE
             .register("miniature_circuit_breaker", () -> new PanelAttachmentType(MCBPanelAttachment::new, CEEItems.MINIATURE_CIRCUIT_BREAKER, PanelAttachmentMode.THIRD));

@@ -1,4 +1,4 @@
-// 1.21.1	2026-05-30T21:04:21.120759505	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-05-31T14:22:30.369335197	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 efaff624fae8f426c8927b933899a261b68f7685 assets/electroenergetics/blockstates/accumulator.json
 bc7e544079464f9fb40950d4499967da027b352f assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -76,8 +76,8 @@ a92bfd6311161a261beaea0e82673049f09158a3 assets/electroenergetics/blockstates/tr
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
 f407a37a266195fcfc499e4b24ffdb23655d6ed6 assets/electroenergetics/blockstates/white_electric_motor.json
 08773c07f26e18921d02a6d72d8e5009381faebe assets/electroenergetics/blockstates/yellow_electric_motor.json
-d0826f2e083e0a2efce782eff589d5aeb71c1278 assets/electroenergetics/lang/en_ud.json
-f9afe3e95a6d86d7e88b94f22ae64dccb716dd9d assets/electroenergetics/lang/en_us.json
+8a6eedd5e426a41396715f799f6c7284d72f2cd0 assets/electroenergetics/lang/en_ud.json
+dd033c1b043e07f3a67c8ffee19211bffc811aff assets/electroenergetics/lang/en_us.json
 706ea17778dccc4e51f059c39b5c730336b598c6 assets/electroenergetics/models/block/black_electric_motor.json
 c4d97346cc2c5227ea79460ab456d978989a4917 assets/electroenergetics/models/block/black_electric_motor_roll.json
 4cb846021d3aba319f8bb6025abc8817d830996a assets/electroenergetics/models/block/blue_electric_motor.json
@@ -181,8 +181,11 @@ c04ca90d67db93a357c4ee7ccb2bb6225f156747 assets/electroenergetics/models/item/li
 d2502fd859635103a2940ee2a20fae3c1b7c50ac assets/electroenergetics/models/item/lime_electric_motor.json
 86ed3dd8f23ac89a34dc2ca386571ba45aa3b44d assets/electroenergetics/models/item/magenta_electric_motor.json
 7b7d4ee81289b2d4ea46d8caeed3c7e778cc92ac assets/electroenergetics/models/item/magnet.json
+d3fa7a7e004d6521663ba556de251d6e95b03809 assets/electroenergetics/models/item/miniature_ammeter.json
 ba015e7539031261660c2d04d439c1e3e317ee67 assets/electroenergetics/models/item/miniature_circuit_breaker.json
+752fe3d37e7da83cf6164acb39c8bd86ed00fe77 assets/electroenergetics/models/item/miniature_indicator_bulb.json
 e1b90cf475130bf2d3d0cb9b3fa3fbb10706c590 assets/electroenergetics/models/item/miniature_momentary_switch.json
+ac200b1af624d491de632e77217607727173b33f assets/electroenergetics/models/item/miniature_voltmeter.json
 d5c50b7cca9584f68480854b9c7446fb3c62192d assets/electroenergetics/models/item/momentary_switch.json
 6ad7b53677fd77d4dedf0470c5cd35c4d4c22002 assets/electroenergetics/models/item/orange_electric_motor.json
 8fb55d343b4c674c28fad0fbffa736a97f7afa3e assets/electroenergetics/models/item/pantograph.json

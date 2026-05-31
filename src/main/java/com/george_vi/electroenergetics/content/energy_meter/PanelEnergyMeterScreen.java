@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.energy_meter;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEGuiTextures;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
-import com.george_vi.electroenergetics.content.electrical_panel.attachments.EnergyMeterAttachment;
+import com.george_vi.electroenergetics.content.electrical_panel.attachments.BaseEnergyMeterAttachment;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import net.createmod.catnip.gui.AbstractSimiScreen;
@@ -27,8 +27,8 @@ public class PanelEnergyMeterScreen extends AbstractSimiScreen {
     int resetY;
 
 
-    EnergyMeterAttachment be;
-    public PanelEnergyMeterScreen(EnergyMeterAttachment be) {
+    BaseEnergyMeterAttachment be;
+    public PanelEnergyMeterScreen(BaseEnergyMeterAttachment be) {
         super(Component.translatable("electroenergetics.gui.energy_meter"));
         this.be = be;
     }

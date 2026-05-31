@@ -74,6 +74,7 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
             }
 
             attachments[i].read(attachmentTag.getCompound("Data"), false);
+            attachments[i].label = attachmentTag.contains("Label") ? attachmentTag.getString("Label") : null;
         }
     }
 
@@ -115,6 +116,8 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
             CompoundTag dataTag = new CompoundTag();
             attachmentTag.put("Data", dataTag);
             attachments[i].write(dataTag, false);
+            if (attachments[i].label != null)
+                attachmentTag.putString("Label", attachments[i].label);
         }
     }
 }

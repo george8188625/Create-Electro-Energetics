@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbBlockEntity;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
+import com.george_vi.electroenergetics.foundation.ProperOilAndWaterloggedBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.PonderPalette;
@@ -458,17 +459,20 @@ public class TransformerScenes {
                 .substract(secondary);
 
         scene.world().showSection(radiators, Direction.DOWN);
+        scene.world().modifyBlocks(util.select().fromTo(primaryPos, secondaryPos),
+                bs -> bs.setValue(ProperOilAndWaterloggedBlock.LOGGED_STATE, ProperOilAndWaterloggedBlock.LoggedState.OILLOGGED), false);
         scene.idle(20);
 
-        scene.overlay().showText(70)
-                .text("Surrounding transformer core with radiator panels or waterlogging them increases its power rating.")
+        scene.overlay().showText(120)
+                .text("Surround the transformer core with radiator panels and cover it with transformer oil to increase it's power rating")
                 .pointAt(util.vector().topOf(primaryPos).add(0, 0, 0.5))
                 .attachKeyFrame()
                 .placeNearTarget();
-        scene.idle(100);
+        scene.idle(150);
 
         scene.overlay().showText(70)
                 .text("Exceeding the transformer's power rating will cause it to overload.")
+                .colored(PonderPalette.RED)
                 .pointAt(util.vector().topOf(primaryPos).add(0, 0, 0.5))
                 .attachKeyFrame()
                 .placeNearTarget();

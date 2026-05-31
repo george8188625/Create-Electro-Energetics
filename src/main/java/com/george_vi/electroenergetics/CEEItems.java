@@ -96,6 +96,15 @@ public class CEEItems {
     public static final ItemEntry<Item> MINIATURE_MOMENTARY_SWITCH = REGISTRATE.item("miniature_momentary_switch", Item::new)
             .register();
 
+    public static final ItemEntry<Item> MINIATURE_INDICATOR_BULB = REGISTRATE.item("miniature_indicator_bulb", Item::new)
+            .register();
+
+    public static final ItemEntry<Item> MINIATURE_VOLTMETER = REGISTRATE.item("miniature_voltmeter", Item::new)
+            .register();
+
+    public static final ItemEntry<Item> MINIATURE_AMMETER = REGISTRATE.item("miniature_ammeter", Item::new)
+            .register();
+
     public static final ItemEntry<ClampMeterItem> CLAMP_METER = REGISTRATE.item("clamp_meter", ClampMeterItem::new)
             .properties(p -> p.stacksTo(1))
             .model(AssetLookup.existingItemModel())

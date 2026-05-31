@@ -95,6 +95,7 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
             }
 
             attachments[i].read(attachmentTag.getCompound("Data"), clientPacket);
+            attachments[i].label = attachmentTag.contains("Label") ? attachmentTag.getString("Label") : null;
         }
     }
 
@@ -120,6 +121,8 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
             CompoundTag dataTag = new CompoundTag();
             attachmentTag.put("Data", dataTag);
             attachments[i].write(dataTag, clientPacket);
+            if (attachments[i].label != null)
+                attachmentTag.putString("Label", attachments[i].label);
         }
     }
 

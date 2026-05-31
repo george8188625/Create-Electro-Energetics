@@ -18,22 +18,17 @@ This is a lot of content if you didn't notice. This is years of work if done *pr
 ### Electrical Engineering
 - [ ] Small alternators
 - [ ] Alternating Current (using Micro-Ticking) `Note: Will be moved to a separate addon`
-- - [x] Micro-ticked accumulators
 - - [ ] AC content
-- - - [x] Frequency gauge
 - - - [ ] Inverters
 - - - [ ] ...
 - [ ] Realistic grounding
 - [ ] Variac
 - [ ] Realistic surge protection
 - [ ] Electromagnets - can be used in alternators as exciters or to attract items
-- [x] Fuses have changeable max amperage
 - [ ] Interdimensional transformer - a transformer placed in a nether portal that allows for getting power to the nether.
-- [x] SF6 Breakers
-- [x] Normal automatic breakers (MCBs)
 - [ ] Solar panels
-- [x] Current & Potential transformers
 - [ ] MV switch
+- [ ] Nodes placeable on wires
 ### Electronics
 - [ ] Transistors
 - [ ] Variacs
@@ -51,12 +46,9 @@ This is a lot of content if you didn't notice. This is years of work if done *pr
 - [ ] Basin electrodes - allows for new recipe types using electricity
 - [ ] Zipline hook - Like IE skyhook
 - [ ] Electric doors - Buzz in door
-- [x] Resistive heater - Electric blaze burner
 - [ ] A coil-gun-like weapon
 - [ ] Solenoid valves - opens or closes Create's pipes
 - [ ] Diagonal concrete beams
-- [x] Colored heavily insulated wire
-- [x] Multiblock accumulators
 - [ ] Bundled cables
 - [ ] Bell (like buzzer)
 - [ ] L1, L2, L3, N ... signs
@@ -71,7 +63,6 @@ This is a lot of content if you didn't notice. This is years of work if done *pr
 ### Integration
 - [ ] Alternator brushes peripheral
 - [ ] Energy meter peripheral
-- [ ] Accumulator peripheral
 - [ ] Direct TFMG compatibility
 - [ ] Direct(-ish) PG compatibility
 ### UX
@@ -79,41 +70,13 @@ This is a lot of content if you didn't notice. This is years of work if done *pr
 ### Finishing touches
 - [ ] Voltage regulator power limit
 - [ ] Indicator bulb voltage limit
-- [x] Energy meter voltage limit
-- [x] Gauge voltage & current limits
 - [ ] SF6 breakers or HV switches can be linked together, which makes them activate as one
-- [x] SF6 crafting recipe
 - [ ] More involving recipes
 - [ ] Pump voltage limit
 - [ ] Centered indicator bulbs
-- [x] Implement wire assembly/disassembly with Create: Simulated
 - [ ] Indicator bulbs can be controlled by train signals
 - [ ] Normally closed mode for momentary switch
 ### Ponders
-- [ ] Voltage Regulators
 - [ ] Capacitor
 - [ ] Inductor
 - [ ] Potentiometer
-- [ ] Transformer core cooling
-
-### Release - planned for early june
-- [ ] Bundled wires?
-- [ ] Electrical panels
-- - [ ] Label-able components
-- - [ ] Panel attachable:
-- - - [x] Energy Meter
-- - - [x] Gauges
-- - - [ ] Fuse Holders
-- - - [x] MCBs
-- - - [x] E stop
-- - - [ ] Clock
-- - - [ ] Switch
-- - - [ ] Double Switch
-- - - [ ] Momentary Switch [dyeable, styles: arrows, square]
-- - - [ ] Indicator Bulb [dyeable, styles: arrows, square]
-- [ ] MV Switch?
-- [x] Lineman's Pole
-- [ ] All the ponders
-- [x] Transformer oil
-- [x] Changeable fuse amperage
-- [x] Birds on wires

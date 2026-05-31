@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.ponder;
 
 import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEEFluids;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.simibubi.create.infrastructure.ponder.AllCreatePonderTags;
@@ -51,6 +52,9 @@ public class CEEPonderPlugin implements PonderPlugin {
 
         helper.forComponents(CEEBlocks.TRANSFORMER_CORE.getId())
                 .addStoryBoard("transformer_core", TransformerScenes::turns)
+                .addStoryBoard("transformer_core_multiblock", TransformerScenes::transformerCore);
+
+        helper.forComponents(CreateElectroEnergetics.rl("transformer_oil_bucket"))
                 .addStoryBoard("transformer_core_multiblock", TransformerScenes::transformerCore);
 
         helper.forComponents(CEEBlocks.PANTOGRAPH.getId(), CEEBlocks.CATENARY_HOLDER.getId())

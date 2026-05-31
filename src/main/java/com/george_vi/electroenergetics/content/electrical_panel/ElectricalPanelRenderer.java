@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.electrical_panel;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
+import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachment;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
 import net.createmod.catnip.render.CachedBuffers;
@@ -20,12 +21,20 @@ public class ElectricalPanelRenderer extends SmartBlockEntityRenderer<Electrical
                               MultiBufferSource buffer, int light, int overlay) {
         super.renderSafe(blockEntity, partialTicks, ms, buffer, light, overlay);
 
-        for (int i = 0; i < blockEntity.getAttachments().length; i++)
-            if (blockEntity.getAttachments()[i] != null) {
+        PanelAttachment[] attachments = blockEntity.getAttachments();
+        for (PanelAttachment attachment : attachments) {
+            if (attachment == null)
+                continue;
+            ms.pushPose();
+            attachment.render(blockEntity, partialTicks, ms, buffer, light, overlay);
+            ms.popPose();
+            if (attachment.label != null) {
                 ms.pushPose();
-                blockEntity.getAttachments()[i].render(blockEntity, partialTicks, ms, buffer, light, overlay);
+                attachment.renderLabel(blockEntity, partialTicks, ms, buffer, light, overlay);
                 ms.popPose();
             }
+        }
+
 
         float coverAlpha = Mth.lerp(partialTicks, ElectricalPanelClientTicker.prevCoverAlpha, ElectricalPanelClientTicker.coverAlpha);
 

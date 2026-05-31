@@ -12,6 +12,8 @@ import com.simibubi.create.foundation.block.IBE;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -151,16 +153,21 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
         }
 
         int slotIndex = layout.getIndexOfSlot(clickedSlot);
+        PanelAttachment[] attachments = be.getAttachments();
 
-        if (be.getAttachments()[slotIndex] == null) {
+        if (attachments[slotIndex] == null) {
             if (attachmentType == null || !attachmentType.mode.isCompatible(layout))
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             // Insert attachment
-
-            be.getAttachments()[slotIndex] = attachmentType.createNew(pos,
+            attachments[slotIndex] = attachmentType.createNew(pos,
                     attachmentType.mode.getNodesFor(slotIndex, pos, layout), level, layout.slots[slotIndex], facing);
 
-            be.getAttachments()[slotIndex].onInserted(stack, player, hand, hitResult);
+            attachments[slotIndex].onInserted(stack, player, hand, hitResult);
+
+            Component label = stack.get(DataComponents.CUSTOM_NAME);
+            if (label != null)
+                attachments[slotIndex].label = label.getString();
+
             if (!player.isCreative())
                 stack.shrink(1);
             be.attachmentUpdate();
@@ -174,7 +181,7 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
             if (clickedX < 2/16f || clickedX > 14/16f || clickedY < 2/16f || clickedY > 14/16f)
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-            ItemInteractionResult result = be.getAttachments()[slotIndex].onInteract(stack, player, hand, hitResult);
+            ItemInteractionResult result = attachments[slotIndex].onInteract(stack, player, hand, hitResult);
             if (result == null)
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             be.sendData();
