@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -55,6 +56,7 @@ public class ConverterDevice extends SimpleElectricalDevice {
 
             if (this.storedEnergy < getMaxEnergy() && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
+                if (state.getBlock() == Blocks.AIR) return;
                 if (!CEEBlocks.CONVERTER.has(state))
                     return;
                 IEnergyStorage energyStorage = level.getCapability(
@@ -74,6 +76,7 @@ public class ConverterDevice extends SimpleElectricalDevice {
 
             if (this.storedEnergy > 0 && level.isLoaded(pos)) {
                 BlockState state = level.getBlockState(pos);
+                if (state.getBlock() == Blocks.AIR) return;
                 if (!CEEBlocks.CONVERTER.has(state))
                     return;
                 IEnergyStorage energyStorage = level.getCapability(
