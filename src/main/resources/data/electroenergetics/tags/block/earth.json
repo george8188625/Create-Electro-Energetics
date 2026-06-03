@@ -1,14 +1,9 @@
 {
   "values": [
-    "minecraft:mud",
-    "minecraft:dirt",
-    "minecraft:sand",
-    "minecraft:grass_block",
-    "minecraft:stone",
-    "minecraft:gravel",
-    "minecraft:granite",
-    "minecraft:diorite",
-    "minecraft:andesite",
-    "minecraft:coarse_dirt"
+    "#minecraft:stone",
+    "#minecraft:dirt",
+    "#minecraft:sand",
+    "#c:gravels",
+    "#c:stones",
   ]
 }
