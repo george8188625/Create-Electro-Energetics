@@ -148,9 +148,16 @@ public class WireType {
     @OnlyIn(Dist.CLIENT)
     public RenderType renderType() {
         return switch (renderType) {
-            case SOLID -> RenderType.solid();
-            case CUTOUT -> RenderType.cutout();
-            case TRANSLUCENT -> RenderType.translucent();
+            case SOLID, SOLID_NOT_SCALED -> RenderType.solid();
+            case CUTOUT, CUTOUT_NOT_SCALED -> RenderType.cutout();
+            case TRANSLUCENT, TRANSLUCENT_NOT_SCALED -> RenderType.translucent();
+        };
+    }
+
+    public boolean shouldScaleLast() {
+        return switch (renderType) {
+            case SOLID, CUTOUT, TRANSLUCENT -> true;
+            default -> false;
         };
     }
 
@@ -325,9 +332,16 @@ public class WireType {
     }
 
     /**
-     * This is used instead of {@link RenderType} to not cause issues with dedicated servers
+     * For render types, this is used instead of {@link RenderType} to not cause issues with dedicated servers
+     * <br>
+     * For not scaled wire types, the first and last segment aren't rendered
      */
     public enum WireRenderType {
-        SOLID, CUTOUT, TRANSLUCENT
+        SOLID,
+        SOLID_NOT_SCALED,
+        CUTOUT,
+        CUTOUT_NOT_SCALED,
+        TRANSLUCENT,
+        TRANSLUCENT_NOT_SCALED
     }
 }

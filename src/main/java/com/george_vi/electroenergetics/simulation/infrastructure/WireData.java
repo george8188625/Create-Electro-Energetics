@@ -11,6 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,6 +49,14 @@ public class WireData {
         this.temperature = temperature;
         this.attachments = attachments;
         this.length = length;
+    }
+
+    public static WireData ofNoLength(WireType wireType) {
+        return new WireData(wireType, 0, Collections.emptyList(), 0);
+    }
+
+    public static WireData ofLength(WireType wireType, double length) {
+        return new WireData(wireType, 0, Collections.emptyList(), length);
     }
 
     public float getSag() {

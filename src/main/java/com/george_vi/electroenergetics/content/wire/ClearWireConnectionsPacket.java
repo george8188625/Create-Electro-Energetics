@@ -39,6 +39,7 @@ public record ClearWireConnectionsPacket(List<Pair<InWorldNode, InWorldNode>> co
     @Override
     public void handle(LocalPlayer player) {
         if (all) {
+            WireRenderer.clearAllNodeData();
             WireRenderer.clearAllWireConnections();
             return;
         }

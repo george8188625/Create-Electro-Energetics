@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.events;
 
 import com.george_vi.electroenergetics.*;
+import com.george_vi.electroenergetics.client.ClientNodeData;
 import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.WireEffects;
 import com.george_vi.electroenergetics.client.WireRenderer;
@@ -17,6 +18,7 @@ import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickItem;
 import com.george_vi.electroenergetics.content.railway_electrification.gauges.ClientTrainGaugeData;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ElectricTrainSounds;
 import com.george_vi.electroenergetics.content.wire.WireSync;
+import com.george_vi.electroenergetics.content.wire.interaction.InteractDetachedNodePacket;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
@@ -27,6 +29,8 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.simibubi.create.AllSoundEvents;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -82,6 +86,13 @@ public class GameEvents {
         ElectricalPanelClientTicker.tick();
 
         ElectricPropertiesOverlay.INSTANCE.ticks++;
+
+        // Safety?
+        WireInteractionHandler.preventUseOnBlockPacket = false;
+
+        for (ClientNodeData nodeData : WireRenderer.NODE_DATA.values()) {
+            nodeData.tick();
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -188,6 +199,15 @@ public class GameEvents {
 
         ItemStack stack = event.getItemStack();
 
+        // Detached Node Interactions:
+        if (WireApplyingBehaviour.targetingDetachedNode != null) {
+            CatnipServices.NETWORK.sendToServer(new InteractDetachedNodePacket(WireApplyingBehaviour.targetingDetachedNode));
+
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            WireInteractionHandler.preventUseOnBlockPacket = true;
+        }
+
         // Wire interactions:
         WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
                 .filter(h -> h.isActiveFor(stack, event.getEntity()))
@@ -243,7 +263,17 @@ public class GameEvents {
 
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
+            WireInteractionHandler.preventUseOnBlockPacket = true;
             return;
+        }
+
+        // Detached Node Interactions:
+        if (WireApplyingBehaviour.targetingDetachedNode != null) {
+            CatnipServices.NETWORK.sendToServer(new InteractDetachedNodePacket(WireApplyingBehaviour.targetingDetachedNode));
+
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            WireInteractionHandler.preventUseOnBlockPacket = true;
         }
 
         // Wire interactions:
@@ -256,6 +286,7 @@ public class GameEvents {
         if (behaviour.tryUseOnWire(event.getLevel(), event.getEntity(), event.getHand())) {
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
+            WireInteractionHandler.preventUseOnBlockPacket = true;
         }
     }
 

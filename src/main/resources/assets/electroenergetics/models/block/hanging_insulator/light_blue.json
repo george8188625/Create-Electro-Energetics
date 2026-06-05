@@ -1,0 +1,6 @@
+{
+  "parent": "electroenergetics:block/hanging_insulator/base",
+  "textures": {
+	"0": "electroenergetics:block/hanging_insulator/light_blue"
+  }
+}

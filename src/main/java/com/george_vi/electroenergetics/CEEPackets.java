@@ -2,17 +2,18 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.energy_meter.ChangeEnergyMeterStatePacket;
 import com.george_vi.electroenergetics.content.fuse.ConfigureFusePacket;
-import com.george_vi.electroenergetics.content.railway_electrification.gauges.SyncTrainGaugeDataPacket;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.ClearCatenaryPacket;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.SendCatenaryPacket;
+import com.george_vi.electroenergetics.content.railway_electrification.gauges.SyncTrainGaugeDataPacket;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.ChangeTrainSoundTypePacket;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.UpdateElectricTrainSoundPacket;
 import com.george_vi.electroenergetics.content.wire.*;
+import com.george_vi.electroenergetics.content.wire.interaction.InteractDetachedNodePacket;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.RequestVoltageDataPacket;
 import com.george_vi.electroenergetics.simulation.SendVoltageDataPacket;
-import com.george_vi.electroenergetics.simulation.infrastructure.SendNodeLabelPacket;
+import com.george_vi.electroenergetics.simulation.infrastructure.SendNodeDataPacket;
 import net.createmod.catnip.net.base.BasePacketPayload;
 import net.createmod.catnip.net.base.CatnipPacketRegistry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -24,11 +25,12 @@ import java.util.Locale;
 public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     SEND_WIRE_CONNECTIONS(SendWireConnectionsPacket.class, SendWireConnectionsPacket.STREAM_CODEC),
     SEND_VOLTAGE_DATA(SendVoltageDataPacket.class, SendVoltageDataPacket.STREAM_CODEC),
-    SEND_NODE_LABEL(SendNodeLabelPacket.class, SendNodeLabelPacket.STREAM_CODEC),
+    SEND_NODE_DATA(SendNodeDataPacket.class, SendNodeDataPacket.STREAM_CODEC),
     CLEAR_WIRE_CONNECTIONS(ClearWireConnectionsPacket.class, ClearWireConnectionsPacket.STREAM_CODEC),
     SEND_CATENARY(SendCatenaryPacket.class, SendCatenaryPacket.STREAM_CODEC),
     CLEAR_CATENARY(ClearCatenaryPacket.class, ClearCatenaryPacket.STREAM_CODEC),
     INTERACT_WIRE(InteractWirePacket.class, InteractWirePacket.STREAM_CODEC),
+    INTERACT_DETACHED_NODE(InteractDetachedNodePacket.class, InteractDetachedNodePacket.STREAM_CODEC),
     CHANGE_ENERGY_METER_STATE(ChangeEnergyMeterStatePacket.class, ChangeEnergyMeterStatePacket.STREAM_CODEC),
     UPDATE_ELECTRIC_TRAIN_SOUND(UpdateElectricTrainSoundPacket.class, UpdateElectricTrainSoundPacket.STREAM_CODEC),
     CHANGE_TRAIN_SOUND_TYPE(ChangeTrainSoundTypePacket.class, ChangeTrainSoundTypePacket.STREAM_CODEC),

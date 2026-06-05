@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.mixins;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEESimulatedDevices;
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.client.ClientNodeData;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
@@ -113,14 +114,17 @@ public class StructureTemplateMixin {
                     electroEnergetics$allCatenaryConnections.add(new CatenaryConnection(pos1.subtract(pos), pos2.subtract(pos)));
             }
 
-            for (Map.Entry<InWorldNode, String> e : WireRenderer.getNodeLabels().entrySet()) {
+            for (Map.Entry<InWorldNode, ClientNodeData> e : WireRenderer.getNodeData().entrySet()) {
                 InWorldNode node = e.getKey();
-                String label = e.getValue();
+                ClientNodeData nodeData = e.getValue();
+                if (nodeData.label == null)
+                    continue;
+
                 BlockPos nodePos = node.sourcePos();
                 if (!BoundingBoxUtils.isIn(nodePos, pos, size))
                     continue;
 
-                electroEnergetics$nodeLabels.put(new InWorldNode(node.id(), node.sourcePos().subtract(pos)), label);
+                electroEnergetics$nodeLabels.put(new InWorldNode(node.id(), node.sourcePos().subtract(pos)), nodeData.label);
             }
 
             for (Pair<InWorldNodeConnection, WireData> wireDataPair : WireRenderer.getAllConnections()) {

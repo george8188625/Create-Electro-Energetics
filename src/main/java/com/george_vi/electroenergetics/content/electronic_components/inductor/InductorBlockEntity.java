@@ -28,7 +28,7 @@ public class InductorBlockEntity extends SmartBlockEntity {
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        inductance = new InductanceScrollValueBehaviour(CEELang.translate("capacitor.inductance").component(), this, new ValueBox());
+        inductance = new InductanceScrollValueBehaviour(CEELang.translate("inductor.inductance").component(), this, new ValueBox());
         inductance.withCallback(i -> this.updateInductance());
         behaviours.add(inductance);
     }

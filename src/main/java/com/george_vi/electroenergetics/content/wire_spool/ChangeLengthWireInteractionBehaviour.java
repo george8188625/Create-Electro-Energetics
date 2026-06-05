@@ -54,12 +54,18 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
         double distance = pos1.distanceTo(pos2);
 
         if (player.isShiftKeyDown()) {
-            if (distance - connectionData.length > 1) {
+            double newLength = connectionData.length - 0.25;
+            double lengthDiff = distance - newLength;
+            double lengthRatio = newLength == 0 ? 1 : distance / newLength;
+
+            boolean shouldBreakWire = (lengthDiff > 1) && (connectionData.getSag() == 0 ? Math.abs(1 - lengthRatio) > 0.1 : lengthRatio > 1.4f);
+
+            if (shouldBreakWire || newLength < 0.5) {
                 ((ServerPlayer)player).connection.send(new ClientboundSetActionBarTextPacket(
                         CEELang.translateDirect("action_bar.wire_too_short").withStyle(ChatFormatting.RED)));
                 return;
             }
-            connectionData.length -= 0.25f;
+            connectionData.length = newLength;
         } else {
             if (connectionData.length >= connectionData.wireType().getMaxLength()) {
                 ((ServerPlayer)player).connection.send(new ClientboundSetActionBarTextPacket(
@@ -80,15 +86,14 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
     public boolean isActiveFor(ItemStack stack, Player player) {
         if (stack.isEmpty())
             return false;
-        for (WireType wireType : CEERegistries.WIRE_TYPE)
-            if (wireType.getSag() != 0) {
+        for (WireType wireType : CEERegistries.WIRE_TYPE) {
                 TagKey<Item> droppedTag = wireType.getDroppedTag();
-                if (droppedTag == null && wireType.getDrops() != stack.getItem())
-                    continue;
-                if (droppedTag != null && !stack.is(droppedTag))
-                    continue;
-                return true;
-            }
+            if (droppedTag == null && wireType.getDrops() != stack.getItem())
+                continue;
+            if (droppedTag != null && !stack.is(droppedTag))
+                continue;
+            return true;
+        }
         return false;
     }
 

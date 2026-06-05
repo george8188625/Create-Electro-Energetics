@@ -1,0 +1,22 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "electroenergetics:block/wire_tie",
+		"particle": "electroenergetics:block/wire_tie"
+	},
+	"elements": [
+		{
+			"from": [-2, -2, -2],
+			"to": [2, 2, 2],
+			"faces": {
+				"north": {"uv": [4, 9, 8, 13], "texture": "#0"},
+				"east": {"uv": [8, 9, 4, 13], "texture": "#0"},
+				"south": {"uv": [4, 9, 8, 13], "texture": "#0"},
+				"west": {"uv": [8, 9, 4, 13], "texture": "#0"},
+				"up": {"uv": [0, 9, 4, 13], "texture": "#0"},
+				"down": {"uv": [8, 9, 12, 13], "texture": "#0"}
+			}
+		}
+	]
+}

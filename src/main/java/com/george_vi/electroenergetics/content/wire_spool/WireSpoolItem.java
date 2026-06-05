@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
+import com.george_vi.electroenergetics.content.wire.interaction.IInteractDetachedNodes;
 import com.george_vi.electroenergetics.events.datagen.CEEAdvancement;
 import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
@@ -27,11 +28,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Stack;
 import java.util.function.Supplier;
 
-public class WireSpoolItem extends Item {
+public class WireSpoolItem extends Item implements IInteractDetachedNodes {
     final Supplier<WireType> wireType;
 
     public WireSpoolItem(Properties properties, Supplier<WireType> wireType) {
@@ -82,7 +84,7 @@ public class WireSpoolItem extends Item {
 
 
         if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
-            if (!(player.level() instanceof ServerLevel sl))
+            if (!(level instanceof ServerLevel sl))
                 return InteractionResult.SUCCESS;
 
             InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
@@ -155,5 +157,78 @@ public class WireSpoolItem extends Item {
         AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
 
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void interactDetachedNode(InWorldNode hoveredNode, Player player, Level level, ItemStack heldItem) {
+
+        if (player.isShiftKeyDown()) {
+            if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
+                heldItem.remove(CEEDataComponents.SELECTED_NODE);
+                if (level.isClientSide)
+                    player.displayClientMessage(Component.translatable("electroenergetics.wire_spool.cancelled_connection"), true);
+            }
+            return;
+        }
+        InWorldNode originalNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
+
+        if (originalNode != null) {
+            if (!(level instanceof ServerLevel sl))
+                return;
+
+            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+
+
+            BlockPos originalPos = originalNode.sourcePos();
+            BlockPos hoveredPos = hoveredNode.sourcePos();
+            Vec3 actualHoverPos = hoveredNode.getPosition(level);
+
+            if (actualHoverPos == null)
+                return;
+
+            if (hoveredNode.equals(originalNode) ||
+                    (sd.isConnected(hoveredNode, originalNode)) ||
+                    Math.sqrt(originalNode.sableSourcePos(level).distSqr(hoveredNode.sableSourcePos(level))) > wireType.get().getMaxLength()) {
+                AllSoundEvents.DENY.playOnServer(level, BlockPos.containing(actualHoverPos));
+                return;
+            }
+
+            BlockState originalState = level.getBlockState(originalPos);
+            BlockState hoveredState = level.getBlockState(hoveredPos);
+
+            if (originalState.getBlock() instanceof ElectricalDeviceBlock<?> edb)
+                edb.ensureNodesExist(sl, originalPos, originalState);
+
+            if (hoveredState.getBlock() instanceof ElectricalDeviceBlock<?> edb)
+                edb.ensureNodesExist(sl, hoveredPos, hoveredState);
+
+            if (!sd.getNodes().contains(hoveredNode) || !sd.getNodes().contains(originalNode))
+                return;
+
+            if (wireType.get() instanceof WireType.Dyeable dyeableWire && player.getOffhandItem().getItem() instanceof DyeItem di) {
+                WireType newWiretype = dyeableWire.getDyed(di.getDyeColor());
+                sd.connect(originalNode, hoveredNode, newWiretype);
+            } else
+                sd.connect(originalNode, hoveredNode, wireType.get());
+
+            CEEAdvancements.CONNECT_WIRES.awardTo(player);
+            if (!level.isClientSide)
+                WireSparkEffectTicker.placedConnections.computeIfAbsent(level, l -> new Stack<>()).add(Pair.of(new InWorldNodeConnection(originalNode, hoveredNode), Pair.of(hoveredNode.getPosition(level), player)));
+
+
+            AllSoundEvents.WRENCH_REMOVE.playOnServer(level, BlockPos.containing(actualHoverPos));
+
+            if (!player.isCreative()) {
+                heldItem.shrink(1);
+                player.getInventory().placeItemBackInInventory(CEEItems.EMPTY_SPOOL.asStack());
+            }
+
+            if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE))
+                heldItem.remove(CEEDataComponents.SELECTED_NODE);
+            return;
+        }
+
+        heldItem.set(CEEDataComponents.SELECTED_NODE, hoveredNode);
+
     }
 }

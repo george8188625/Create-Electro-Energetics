@@ -333,7 +333,7 @@ public class Network {
                 allNodes.remove(interiorChainNode);
             }
 
-            optimizations.push(new SimpleTopologyOptimizationEntry(p, p.originalNodes.getFirst(), p.originalNodes.getLast()));
+            optimizations.push(new SimpleTopologyOptimizationEntry(p, nodeChain.getFirst(), nodeChain.getLast()));
         }
 
         return result;

@@ -19,6 +19,7 @@ import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
@@ -51,7 +52,7 @@ import java.util.*;
 public class WireRenderer {
     public static List<Pair<InWorldNodeConnection, WireData>> WIRE_CONNECTIONS = new ArrayList<>();
 
-    private static final Map<InWorldNode, String> NODE_LABELS = new HashMap<>();
+    public static Map<InWorldNode, ClientNodeData> NODE_DATA = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     protected static Map<InWorldNodeConnection, WireEffect> WIRE_EFFECTS = new HashMap<>();
@@ -76,6 +77,7 @@ public class WireRenderer {
 
         LinemansStickRenderer.renderFirstPerson(level, pose, buffer, camera);
         ClampMeterRenderer.renderFirstPerson(level, pose, buffer, camera);
+        DetachedNodeRenderer.render(level, pose, buffer, camera);
 
         Map<InWorldNode, List<Vec3>> outerInsulatorJumpers = new HashMap<>();
 
@@ -328,7 +330,9 @@ public class WireRenderer {
         if (!levelRenderer.getFrustum().isVisible(new AABB(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z).setMinY(miny)))
             return;
 
+        VertexConsumer vb = buffer.getBuffer(wireType.renderType());
 
+        boolean renderEnds = wireType.shouldScaleLast();
 
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
@@ -339,6 +343,7 @@ public class WireRenderer {
 
             PartialModel endPointModel = wireType.getEndPointModel();
             double hypot = Math.hypot(nextPoint.x - point.x, nextPoint.z - point.z);
+
             if (endPointModel != null && i == 0) {
                 CachedBuffers.partial(endPointModel, Blocks.ANDESITE.defaultBlockState())
                         .translate(point)
@@ -347,7 +352,7 @@ public class WireRenderer {
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).scale(0.5))) :
                                 maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
-                        .renderInto(pose, buffer.getBuffer(RenderType.solid()));
+                        .renderInto(pose, vb);
             } else if (endPointModel != null && i == points.size() - 1) {
                 point = nextPoint;
                 nextPoint = points.get(i);
@@ -358,8 +363,10 @@ public class WireRenderer {
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).scale(0.5))) :
                                 maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
-                        .renderInto(pose, buffer.getBuffer(RenderType.solid()));
+                        .renderInto(pose, vb);
             }
+            if (!renderEnds && (i == 0 || i  == points.size() - 1))
+                continue;
 
             CachedBuffers.partial(wireType.getModel(), Blocks.ANDESITE.defaultBlockState())
                     .translate(point)
@@ -369,7 +376,7 @@ public class WireRenderer {
                     .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).scale(0.5))) :
                             maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
                                     LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
-                    .renderInto(pose, buffer.getBuffer(wireType.renderType()));
+                    .renderInto(pose, vb);
         }
     }
 
@@ -378,6 +385,9 @@ public class WireRenderer {
         double miny = pos1.y;
         for (Vec3 point : points)
             miny = Math.min(miny, point.y());
+
+        boolean renderEnds = wireType.shouldScaleLast();
+        VertexConsumer vb = buffer.getBuffer(wireType.renderType());
 
         for (int i = 0; i < points.size(); i++) {
             Vec3 point = points.get(i);
@@ -394,7 +404,7 @@ public class WireRenderer {
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).scale(0.5))) :
                                 maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
-                        .renderInto(pose, buffer.getBuffer(RenderType.solid()));
+                        .renderInto(pose, vb);
             } else if (endPointModel != null && i == points.size() - 1) {
                 point = nextPoint;
                 nextPoint = points.get(i);
@@ -405,8 +415,10 @@ public class WireRenderer {
                         .light(BlockPos.containing(point).equals(BlockPos.containing(nextPoint)) ? LevelRenderer.getLightColor(level, BlockPos.containing(point.add(nextPoint).scale(0.5))) :
                                 maxLightLevel(LevelRenderer.getLightColor(level, BlockPos.containing(point)),
                                         LevelRenderer.getLightColor(level, BlockPos.containing(nextPoint))))
-                        .renderInto(pose, buffer.getBuffer(RenderType.solid()));
+                        .renderInto(pose, vb);
             }
+            if (!renderEnds && (i == 0 || i  == points.size() - 1))
+                continue;
 
             BlockPos pointBlockPos = BlockPos.containing(point);
             BlockPos nextPointBlockPos = BlockPos.containing(nextPoint);
@@ -420,7 +432,7 @@ public class WireRenderer {
                                     BlockPos.containing(point.add(nextPoint).scale(0.5))) :
                             maxLightLevel(LevelRenderer.getLightColor(level, pointBlockPos),
                                     LevelRenderer.getLightColor(level, nextPointBlockPos)))
-                    .renderInto(pose, buffer.getBuffer(wireType.renderType()));
+                    .renderInto(pose, vb);
         }
     }
 
@@ -547,19 +559,33 @@ public class WireRenderer {
         }
     }
 
-    public static void setNodeLabel(InWorldNode node, @Nullable String label) {
-        if (label == null)
-            NODE_LABELS.remove(node);
-        else
-            NODE_LABELS.put(node, label);
-    }
-
     public static @Nullable String getNodeLabel(InWorldNode node) {
-        return NODE_LABELS.get(node);
+        ClientNodeData nodeData = getNodeData(node);
+        if (nodeData != null)
+            return nodeData.label;
+        return null;
     }
 
-    public static Map<InWorldNode, String> getNodeLabels() {
-        return NODE_LABELS;
+    public static void setNodeData(InWorldNode node, @Nullable String label, @Nullable Vec3 detachedPosition) {
+        ClientNodeData nodeData = NODE_DATA.computeIfAbsent(node, n -> new ClientNodeData(node));
+        nodeData.label = label;
+        nodeData.targetPosition = detachedPosition;
+    }
+
+    public static Map<InWorldNode, ClientNodeData> getNodeData() {
+        return NODE_DATA;
+    }
+
+    public static ClientNodeData getNodeData(InWorldNode node) {
+        return NODE_DATA.get(node);
+    }
+
+    public static ClientNodeData removeNodeData(InWorldNode node) {
+        return NODE_DATA.remove(node);
+    }
+
+    public static void clearAllNodeData() {
+        NODE_DATA.clear();
     }
 
     public static int maxLightLevel(int lightColo1, int lightColor2) {

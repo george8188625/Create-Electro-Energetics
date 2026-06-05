@@ -16,6 +16,7 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+@SuppressWarnings("unused")
 public class CEECreativeTab {
     private static final DeferredRegister<CreativeModeTab> REGISTER =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateElectroEnergetics.ID);
@@ -118,6 +119,9 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.HIGH_VOLTAGE_SIGN.asStack());
                         output.accept(CEEBlocks.ELECTRIC_SHOCK_SIGN.asStack());
                         output.accept(CEEBlocks.GROUNDING_SIGN.asStack());
+                        output.accept(CEEItems.GLASS_INSULATOR_SPOOL.asStack());
+                        output.accept(CEEItems.GLASS_INSULATOR_SEGMENT.asStack());
+                        output.accept(CEEItems.HANGING_GLASS_INSULATION.asStack());
                     }))
                     .build());
 

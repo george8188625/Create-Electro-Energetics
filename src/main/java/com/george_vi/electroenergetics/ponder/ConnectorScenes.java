@@ -275,7 +275,7 @@ public class ConnectorScenes {
         scene.idle(20);
 
         scene.overlay().showText(70)
-                .text("Certain items can be hanged on wires")
+                .text("Certain items can be hung on wires")
                 .pointAt(bannerClickPos)
                 .attachKeyFrame()
                 .placeNearTarget();

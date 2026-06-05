@@ -1,0 +1,29 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"render_type": "translucent",
+	"textures": {
+		"0": "electroenergetics:block/hanging_insulator/base",
+		"particle": "electroenergetics:block/hanging_insulator/base"
+	},
+	"elements": [
+		{
+			"from": [0, -1, 0],
+			"to": [0, 1, 10],
+			"rotation": {"angle": -45, "axis": "z", "origin": [0, 0, 4]},
+			"faces": {
+				"east": {"uv": [8, 0, 0, 2], "texture": "#0"},
+				"west": {"uv": [0, 2, 8, 0], "texture": "#0"}
+			}
+		},
+		{
+			"from": [-1, 0, 0],
+			"to": [1, 0, 10],
+			"rotation": {"angle": -45, "axis": "z", "origin": [0, 0, 4]},
+			"faces": {
+				"up": {"uv": [8, 0, 0, 2], "rotation": 270, "texture": "#0"},
+				"down": {"uv": [0, 2, 8, 0], "rotation": 270, "texture": "#0"}
+			}
+		}
+	]
+}

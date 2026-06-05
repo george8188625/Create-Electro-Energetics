@@ -20,11 +20,13 @@ public record RequestVoltageDataPacket(InWorldNode node) implements ServerboundP
 
     @Override
     public void handle(ServerPlayer player) {
-        Vec3 position = node.getPosition(player.level());
+        InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel)player.level());
+        if (!sd.hasNode(node))
+            return;
+        Vec3 position = sd.getNodePosition(node);
+
         if (position == null || position.distanceToSqr(player.position()) > 30)
             return;
-
-        InfrastructureSavedData sd = InfrastructureSavedData.load((ServerLevel)player.level());
 
         SendVoltageDataPacket packet = new SendVoltageDataPacket();
         packet.nodes = new InWorldNode[1];

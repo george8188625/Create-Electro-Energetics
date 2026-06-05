@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.simulation.infrastructure.ConnectionEntry;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireCrossContactModule;
+import com.george_vi.electroenergetics.simulation.infrastructure.detached_nodes.DetachedNodeType;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationStats;
 import com.george_vi.electroenergetics.simulation.simulator.SimulationTicker;
 import com.george_vi.electroenergetics.simulation.util.SimulatorProfiler;
@@ -72,6 +73,13 @@ public class CEECommands {
                             .requires(cs -> cs.hasPermission(2))
                             .then(Commands.argument("distance", IntegerArgumentType.integer(1))
                             .executes(CEECommands::devices))
+            ).then(
+                    Commands.literal("detached_node")
+                            .requires(cs -> cs.hasPermission(2))
+                            .then(Commands.literal("create_fixed")
+                                    .executes(ctx -> nodeCreate(ctx, false)))
+                            .then(Commands.literal("create_physics")
+                                    .executes(ctx1 -> nodeCreate(ctx1, true)))
             );
 
         dispatcher.register(root);
@@ -200,6 +208,17 @@ public class CEECommands {
         for (SimulatedDevice device : DevicesSavedData.load(source.getLevel()).getDevices())
             if (device.pos.distSqr(pos) <= distance * distance)
                 source.sendSuccess(() -> Component.literal(device.type.id().toString() + " : " + device.pos.toShortString()).withStyle(blue), false);
+
+        return 1;
+    }
+
+
+    public static int nodeCreate(CommandContext<CommandSourceStack> ctx, boolean physics) {
+        CommandSourceStack source = ctx.getSource();
+        Vec3 position = source.getPosition();
+
+        InfrastructureSavedData sd = InfrastructureSavedData.load(source.getLevel());
+        sd.createDetachedNode(physics ? DetachedNodeType.PHYSICS_UNINITIALIZED : DetachedNodeType.FIXED, position);
 
         return 1;
     }

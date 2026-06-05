@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "G": {
+      "tag": "c:glass_blocks"
+    },
+    "W": {
+      "tag": "c:wires/iron"
+    }
+  },
+  "pattern": [
+    "A",
+    "W",
+    "G"
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:glass_insulator_segment"
+  }
+}

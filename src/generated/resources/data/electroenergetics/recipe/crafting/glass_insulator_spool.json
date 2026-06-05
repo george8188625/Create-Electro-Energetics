@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "s": {
+      "item": "electroenergetics:empty_spool"
+    },
+    "w": {
+      "item": "electroenergetics:glass_insulator_segment"
+    }
+  },
+  "pattern": [
+    " w ",
+    "wsw",
+    " w "
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:glass_insulator_spool"
+  }
+}

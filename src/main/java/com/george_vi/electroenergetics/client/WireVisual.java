@@ -61,9 +61,20 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         double distance = pos1.distanceTo(pos2);
 
         lightSections = new LongOpenHashSet();
+        PartialModel endpointModel = wireType.getEndPointModel();
 
-        if (distance > 1000)
+        if (distance > 1000) {
+            if (endpointModel != null) {
+                startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                        .createInstance();
+                startInstance.setVisible(false);
+
+                endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                        .createInstance();
+                endInstance.setVisible(false);
+            }
             return; // Wire is wrong. It's going to be updated at some point.
+        }
 
         int minSectionX = SectionPos.blockToSectionCoord(Math.min(pos1.x, pos2.x));
         int minSectionY = SectionPos.blockToSectionCoord(Math.min(pos1.y, pos2.y));
@@ -88,9 +99,18 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
         createWire(visualizationContext, wireType, points, pos2, level);
 
-        PartialModel endpointModel = wireType.getEndPointModel();
-        if (endpointModel == null || points.size() < 3)
+        if (endpointModel == null)
             return;
+
+        if (points.size() < 2) {
+            startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                    .createInstance();
+            startInstance.setVisible(false);
+
+            endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                    .createInstance();
+            endInstance.setVisible(false);
+        }
 
         Vec3 start = points.get(0);
         BlockPos startBlockPos = BlockPos.containing(start);
@@ -172,7 +192,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
         createWire(visualizationContext, wireType, points, pos2, level);
 
-        if (startInstance == null || endInstance == null || points.size() < 3)
+        if (startInstance == null || endInstance == null || points.size() < 2)
             return;
 
         Vec3 start = points.get(0);
@@ -184,6 +204,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         Vec3 endNext = points.get(points.size() - 1);
         BlockPos endNextBlockPos = BlockPos.containing(endNext);
 
+        startInstance.setVisible(true);
         startInstance.setIdentityTransform()
                 .translate(start)
                 .rotateY((float) Mth.atan2(startNext.x() - start.x(), startNext.z() - start.z()))
@@ -194,6 +215,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
                                 LevelRenderer.getLightColor(level, startBlockPos)))
                 .setChanged();
 
+        endInstance.setVisible(true);
         endInstance.setIdentityTransform()
                 .translate(end)
                 .rotateY((float) Mth.atan2(endNext.x() - end.x(), endNext.z() - end.z()))
@@ -232,6 +254,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     private void createWire(VisualizationContext visualizationContext, WireType wireType, List<Vec3> points, Vec3 pos2,
                             ClientLevel level) {
         // The reason that it doesn't remove instances here, is it's not safe to do this here. It just sets to invisible.
+        boolean renderEnds = wireType.shouldScaleLast();
         int usedInstances = 0;
         for (int i = 0; i < points.size(); i++) {
             usedInstances++;
@@ -249,6 +272,10 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             BlockPos pointBlockPos = BlockPos.containing(point).offset(visualizationContext.renderOrigin());
             BlockPos nextBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
             BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
+            if (!renderEnds && (i == 0 || i == points.size() - 1)) {
+                instance.setVisible(false);
+                continue;
+            }
             instance.setVisible(true);
             instance.setIdentityTransform()
                     .translate(point)

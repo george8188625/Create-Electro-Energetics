@@ -27,6 +27,7 @@ public class CEETags {
     public static final TagKey<Item> HIDE_ON_LINEMANS_STICK = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("hide_on_linemans_stick"));
     public static final TagKey<Item> ELECTRICAL_PANEL_ATTACHMENT = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("electrical_panel_attachment"));
     public static final TagKey<Item> WIRE_SPOOLS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("wire_spools"));
+    public static final TagKey<Item> HANGED_WIRE_SPOOLS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("hanged_wire_spools"));
     public static final TagKey<Item> FUSE_AMPERAGE_SETTING = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("fuse_amperage_setting"));
 
     // This tag defines items that cause electrical panel covers to be hidden when held

@@ -21,7 +21,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
-import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.UnaryOperator;
@@ -98,9 +97,27 @@ public class CEERecipeGen extends RecipeProvider {
         wireSpool(recipeOutput, CEEItems.HEAVILY_INSULATED_WIRE_SPOOL, CEEItems.HEAVILY_INSULATED_WIRE);
         wireSpool(recipeOutput, CEEItems.WIRE_SPOOL, CEEItems.INSULATED_WIRE);
         wireSpool(recipeOutput, CEEItems.COPPER_WIRE_SPOOL, CEETags.COPPER_WIRE);
+        wireSpool(recipeOutput, CEEItems.GLASS_INSULATOR_SPOOL, CEEItems.GLASS_INSULATOR_SEGMENT);
         wireSpool(recipeOutput, CEEItems.IRON_WIRE_SPOOL, CEEItems.IRON_WIRE_STRAND);
         wireSpool(recipeOutput, CEEItems.IRON_BUS_SPOOL, CEETags.IRON_BUS_COMPONENT);
         wireSpool(recipeOutput, CEEItems.IRON_RAIL_SPOOL, CEETags.IRON_RAIL_COMPONENT);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.HANGING_GLASS_INSULATION)
+                .pattern("SS")
+                .pattern("SS")
+                .define('S', CEEItems.GLASS_INSULATOR_SEGMENT)
+                .unlockedBy("has_glass_insulation_segment", has(CEEItems.GLASS_INSULATOR_SEGMENT))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/hanging_glass_insulator"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.GLASS_INSULATOR_SEGMENT)
+                .pattern("A")
+                .pattern("W")
+                .pattern("G")
+                .define('A', AllItems.ANDESITE_ALLOY)
+                .define('W', CEETags.IRON_WIRE)
+                .define('G', Tags.Items.GLASS_BLOCKS)
+                .unlockedBy("has_glass", has(Tags.Items.GLASS_BLOCKS))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/glass_insulator_segment"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.ALTERNATOR_BRUSHES)
                 .pattern(" C ")

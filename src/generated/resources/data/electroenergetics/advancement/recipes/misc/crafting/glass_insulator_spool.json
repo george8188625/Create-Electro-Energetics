@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_electroenergetics:glass_insulator_segment": {
+      "conditions": {
+        "items": [
+          {
+            "items": "electroenergetics:glass_insulator_segment"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "electroenergetics:crafting/glass_insulator_spool"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_electroenergetics:glass_insulator_segment"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "electroenergetics:crafting/glass_insulator_spool"
+    ]
+  }
+}

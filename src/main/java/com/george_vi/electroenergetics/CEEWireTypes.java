@@ -95,6 +95,23 @@ public class CEEWireTypes {
             .thickness(2/16f)
             .build());
 
+    @SuppressWarnings("unchecked")
+    public static final DeferredHolder<WireType, WireType>[] COLORED_GLASS_INSULATOR = new DeferredHolder[DyeColor.values().length];
+
+    public static final DeferredHolder<WireType, WireType> GLASS_INSULATOR = WIRE_TYPES.register("glass_insulator", () -> new WireType.Builder(CEEPartialModels.HANGING_INSULATOR)
+            .resistance(() -> 1e+11d)
+            .endPointItem(CEEPartialModels.HANGING_INSULATOR_ENDPOINT)
+            .droppedItem(CEEItems.GLASS_INSULATOR_SEGMENT)
+            .spoolItem(CEEItems.GLASS_INSULATOR_SPOOL::get)
+            .maxLength(CEEConfigs.server().maxBusWireLength::get)
+            .maxInsulationVoltage(() -> Double.MAX_VALUE)
+            .decorative()
+            .sag(0.1f)
+            .thickness(4/16f)
+            .renderType(WireType.WireRenderType.TRANSLUCENT_NOT_SCALED)
+            .dyeable(COLORED_GLASS_INSULATOR)
+            .build());
+
     public static final DeferredHolder<WireType, WireType> IRON_RAIL = WIRE_TYPES.register("iron_rail", () -> new WireType.Builder(CEEPartialModels.IRON_RAIL_SEGMENT)
             .resistance(CEEConfigs.server().resistanceValues.ironRailResistance::get)
             .droppedTag(CEETags.IRON_RAIL_COMPONENT)
@@ -145,6 +162,22 @@ public class CEEWireTypes {
                     .thickness(3/16f)
                     .dyeable(COLORED_HEAVILY_INSULATED_WIRES, color)
                     .build());
+
+            COLORED_GLASS_INSULATOR[color.ordinal()] =
+                    WIRE_TYPES.register(color.getSerializedName() + "_hanging_insulator",
+                            () -> new WireType.Builder(CEEPartialModels.COLORED_HANGING_INSULATOR[color.ordinal()])
+                                    .resistance(() -> 1e+11d)
+                                    .endPointItem(CEEPartialModels.HANGING_INSULATOR_ENDPOINT)
+                                    .droppedItem(CEEItems.GLASS_INSULATOR_SEGMENT)
+                                    .spoolItem(CEEItems.GLASS_INSULATOR_SPOOL::get)
+                                    .maxLength(CEEConfigs.server().maxBusWireLength::get)
+                                    .maxInsulationVoltage(() -> Double.MAX_VALUE)
+                                    .decorative()
+                                    .sag(0.1f)
+                                    .thickness(4/16f)
+                                    .renderType(WireType.WireRenderType.TRANSLUCENT_NOT_SCALED)
+                                    .dyeable(COLORED_GLASS_INSULATOR)
+                                    .build());
         }
     }
 

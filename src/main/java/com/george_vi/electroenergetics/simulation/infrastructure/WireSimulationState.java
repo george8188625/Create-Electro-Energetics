@@ -358,8 +358,10 @@ public class WireSimulationState {
 
         double miny = pos1.y;
 
-        double lengthDiff = pos1.distanceTo(pos2) - wireData.length;
-        boolean shouldBreakWire = wireData.getSag() == 0 ? (Math.abs(lengthDiff) > 0.5) : (lengthDiff > 4);
+        double length = wireData.length;
+        double lengthDiff = pos1.distanceTo(pos2) - length;
+        double lengthRatio = length == 0 ? 1 : pos1.distanceTo(pos2) / length;
+        boolean shouldBreakWire = (lengthDiff > 1) && (wireData.getSag() == 0 ? Math.abs(1 - lengthRatio) > 0.1 : lengthRatio > 1.4f);
 
         for (Vec3 point : points)
             miny = Math.min(miny, point.y());

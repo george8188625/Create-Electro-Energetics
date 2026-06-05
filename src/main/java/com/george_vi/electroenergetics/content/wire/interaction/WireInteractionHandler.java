@@ -1,9 +1,15 @@
 package com.george_vi.electroenergetics.content.wire.interaction;
 
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.CEETags;
+import com.george_vi.electroenergetics.client.ClientNodeData;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
+import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
+import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
@@ -28,7 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class WireInteractionHandler {
-
+    public static boolean preventUseOnBlockPacket = false;
     public static NodeConnectionPoint targetedPoint = null;
     public static Vec3 targetedPos = Vec3.ZERO;
 
@@ -44,7 +50,7 @@ public class WireInteractionHandler {
         WireInteractionBehaviour behaviour = CEERegistries.WIRE_INTERACTION_BEHAVIOUR.stream()
                 .filter(h -> h.isActiveFor(stackInHand, mc.player))
                 .findFirst().orElse(null);
-        if (behaviour == null) {
+        if (behaviour == null || WireApplyingBehaviour.targetingDetachedNode != null) {
             targetedPoint = null;
             return;
         }

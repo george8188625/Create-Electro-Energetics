@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.content.clamp_meter.ClampMeterItem;
 import com.george_vi.electroenergetics.content.electrical_panel.attachments.MCBItem;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickItem;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
+import com.george_vi.electroenergetics.content.wire_spool.HangingWireSpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem;
@@ -43,6 +44,12 @@ public class CEEItems {
     public static final ItemEntry<WireSpoolItem> IRON_BUS_SPOOL = simpleWireSpoolItem("iron_bus_spool", CEEWireTypes.IRON_BUS);
 
     public static final ItemEntry<WireSpoolItem> IRON_RAIL_SPOOL = simpleWireSpoolItem("iron_rail_spool", CEEWireTypes.IRON_RAIL);
+
+    public static final ItemEntry<WireSpoolItem> GLASS_INSULATOR_SPOOL = REGISTRATE.item("glass_insulator_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.GLASS_INSULATOR))
+            .tag(CEETags.WIRE_SPOOLS)
+            .register();
+
+    public static final ItemEntry<HangingWireSpoolItem> HANGING_GLASS_INSULATION = hangingWireSpoolItem("hanging_glass_insulator", CEEWireTypes.GLASS_INSULATOR);
 
     public static final ItemEntry<WireSpoolItem> CREATIVE_WIRE_SPOOL = REGISTRATE.item("creative_wire_spool", properties -> new WireSpoolItem(properties, CEEWireTypes.CREATIVE))
             .tag(CEETags.WIRE_SPOOLS)
@@ -83,6 +90,9 @@ public class CEEItems {
             .register();
 
     public static final ItemEntry<Item> IRON_WIRE_STRAND = REGISTRATE.item("iron_wire_strand", Item::new)
+            .register();
+
+    public static final ItemEntry<Item> GLASS_INSULATOR_SEGMENT = REGISTRATE.item("glass_insulator_segment", Item::new)
             .register();
 
     public static final ItemEntry<Item> WIRE_DAMPER = REGISTRATE.item("wire_damper", Item::new)
@@ -130,6 +140,12 @@ public class CEEItems {
                 .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                         .addResistancePerMeter(() -> wireType.get().getResistance())
                         .addMaxCurrent(() -> wireType.get().getMaxTemperature() / 30 + 33.33)))
+                .register();
+    }
+
+    private static @NotNull ItemEntry<HangingWireSpoolItem> hangingWireSpoolItem(String name, DeferredHolder<WireType, WireType> wireType) {
+        return REGISTRATE.item(name, properties -> new HangingWireSpoolItem(properties, wireType))
+                .tag(CEETags.HANGED_WIRE_SPOOLS)
                 .register();
     }
 

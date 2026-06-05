@@ -77,6 +77,9 @@ public class CEEPonderPlugin implements PonderPlugin {
         helper.forComponents(CEEBlocks.SF6_BREAKER.getId())
                 .addStoryBoard("sf6_breaker_introduction", SwitchScenes::sf6Breaker);
 
+        helper.forComponents(CEEBlocks.ALTERNATOR_ROTOR.getId(), CEEBlocks.STATOR.getId())
+                .addStoryBoard("alternator", GeneratorScenes::alternator);
+
         helper.forComponents(CEEBlocks.RELAY.getId())
                 .addStoryBoard("relay", SwitchScenes::relay);
 

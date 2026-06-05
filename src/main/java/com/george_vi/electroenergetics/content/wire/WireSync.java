@@ -8,7 +8,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.infrastructure.SendNodeLabelPacket;
+import com.george_vi.electroenergetics.simulation.infrastructure.SendNodeDataPacket;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import it.unimi.dsi.fastutil.longs.*;
 import net.createmod.catnip.data.Pair;
@@ -66,9 +66,8 @@ public class WireSync {
 
         for (InWorldNode node : newNodes) {
             InWorldNodeData nodeData = sd.getNodeDataOrThrow(node);
-            if (nodeData.label != null) {
-                CatnipServices.NETWORK.sendToClient(player,
-                        new SendNodeLabelPacket(node, Optional.of(nodeData.label)));
+            if (nodeData.label != null || nodeData.detachedNodeType != null) {
+                CatnipServices.NETWORK.sendToClient(player, SendNodeDataPacket.update(nodeData));
             }
 
             for (InWorldNodeConnection connection : sd.getConnections(node)) {
@@ -97,9 +96,8 @@ public class WireSync {
         for (InWorldNode node : nodesToRemove) {
 
             InWorldNodeData nodeData = sd.getNodeDataOrThrow(node);
-            if (nodeData.label != null) {
-                CatnipServices.NETWORK.sendToClient(player,
-                        new SendNodeLabelPacket(node, Optional.empty()));
+            if (nodeData.label != null || nodeData.detachedNodeType != null) {
+                CatnipServices.NETWORK.sendToClient(player, SendNodeDataPacket.remove(node));
             }
 
             for (InWorldNodeConnection connection : sd.getConnections(node)) {
@@ -217,13 +215,27 @@ public class WireSync {
         for (ServerPlayer player : level.getPlayers(p -> true)) {
             ChunkCuboidEntry playerChunks = loadedChunks.getOrDefault(player.getUUID(), ChunkCuboidEntry.ZERO);
             if (playerChunks.includes(chunk)) {
-                CatnipServices.NETWORK.sendToClient(player, new SendNodeLabelPacket(nodeData.node, Optional.ofNullable(nodeData.label)));
+                CatnipServices.NETWORK.sendToClient(player, SendNodeDataPacket.update(nodeData));
             }
         }
     }
 
+    public void handleNodeCreate(InWorldNodeData nodeData) {
+        Vec3 globalPos = nodeData.getGlobalPos();
+        long chunk = ChunkPos.asLong(Mth.floor(globalPos.x) >> 4, Mth.floor(globalPos.z) >> 4);
+        nodeData.lastChunk = chunk;
+
+        if (nodeData.label != null || nodeData.detachedNodeType != null)
+            for (ServerPlayer player : level.getPlayers(p -> true)) {
+                ChunkCuboidEntry playerChunks = loadedChunks.getOrDefault(player.getUUID(), ChunkCuboidEntry.ZERO);
+                if (playerChunks.includes(chunk)) {
+                    CatnipServices.NETWORK.sendToClient(player, SendNodeDataPacket.update(nodeData));
+                }
+            }
+    }
+
     public void handleNodeRemove(InWorldNodeData nodeData) {
-        if (nodeData.label == null)
+        if (nodeData.label == null && nodeData.detachedNodeType == null)
             return;
         Vec3 globalPos = nodeData.getGlobalPos();
         long chunk = ChunkPos.asLong(Mth.floor(globalPos.x) >> 4, Mth.floor(globalPos.z) >> 4);
@@ -231,7 +243,7 @@ public class WireSync {
         for (ServerPlayer player : level.getPlayers(p -> true)) {
             ChunkCuboidEntry playerChunks = loadedChunks.getOrDefault(player.getUUID(), ChunkCuboidEntry.ZERO);
             if (playerChunks.includes(chunk)) {
-                CatnipServices.NETWORK.sendToClient(player, new SendNodeLabelPacket(nodeData.node, Optional.empty()));
+                CatnipServices.NETWORK.sendToClient(player, SendNodeDataPacket.remove(nodeData.node));
             }
         }
     }
@@ -240,13 +252,14 @@ public class WireSync {
         long chunk = ChunkPos.asLong(nodeData.node.sableSourcePos(level));
         long lastChunk = nodeData.lastChunk;
 
-        if (nodeData.label != null)
+        if (nodeData.label != null || nodeData.detachedNodeType != null)
             for (ServerPlayer player : level.getPlayers(p -> true)) {
                 ChunkCuboidEntry playerChunks = loadedChunks.getOrDefault(player.getUUID(), ChunkCuboidEntry.ZERO);
-                if (playerChunks.includes(chunk) && !playerChunks.includes(lastChunk)) {
-                    CatnipServices.NETWORK.sendToClient(player, new SendNodeLabelPacket(nodeData.node, Optional.of(nodeData.label)));
+                if ((nodeData.detachedNodeType != null && playerChunks.includes(chunk)) ||
+                        (playerChunks.includes(chunk) && !playerChunks.includes(lastChunk))) {
+                    CatnipServices.NETWORK.sendToClient(player, SendNodeDataPacket.update(nodeData));
                 } else if (!playerChunks.includes(chunk) && playerChunks.includes(lastChunk)) {
-                    CatnipServices.NETWORK.sendToClient(player, new SendNodeLabelPacket(nodeData.node, Optional.empty()));
+                    CatnipServices.NETWORK.sendToClient(player, SendNodeDataPacket.remove(nodeData.node));
                 }
             }
 

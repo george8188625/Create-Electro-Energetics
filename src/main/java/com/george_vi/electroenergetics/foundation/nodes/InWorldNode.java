@@ -1,6 +1,12 @@
 package com.george_vi.electroenergetics.foundation.nodes;
 
+import com.george_vi.electroenergetics.client.ClientNodeData;
+import com.george_vi.electroenergetics.client.WireRenderer;
+import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
+import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.detached_nodes.DetachedNodeHelper;
 import com.mojang.serialization.Codec;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.SubLevelAccess;
@@ -10,15 +16,23 @@ import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -126,7 +140,24 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         return new InWorldNode(nodes[0], nodes[1], nodes[2], nodes[3]);
     }
 
+    @Nullable
     public Vec3 getPosition(Level level) {
+        if (DetachedNodeHelper.isDetached(this)) {
+            if (level instanceof ServerLevel sl) {
+                InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+                InWorldNodeData data = sd.getNodeData(this);
+                if (data == null)
+                    return null;
+                return data.getGlobalPos();
+            } else {
+                ClientNodeData detachedNode = WireRenderer.getNodeData(this);
+                if (detachedNode == null)
+                    return null;
+                else
+                    return detachedNode.position;
+            }
+        }
+
         BlockState state = level.getBlockState(sourcePos);
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
             return null;
@@ -136,7 +167,23 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         return toGlobalPos(localPos, level);
     }
 
+    @Nullable
     public Vec3 getPosition(Level level, float partialTicks) {
+        if (DetachedNodeHelper.isDetached(this)) {
+            if (level instanceof ServerLevel sl) {
+                InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+                InWorldNodeData data = sd.getNodeData(this);
+                if (data == null)
+                    return null;
+                return data.getGlobalPos();
+            } else {
+                ClientNodeData detachedNode = WireRenderer.getNodeData(this);
+                if (detachedNode == null)
+                    return null;
+                else
+                    return detachedNode.getPos(partialTicks);
+            }
+        }
         BlockState state = level.getBlockState(sourcePos);
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
             return null;
@@ -146,7 +193,11 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         return toGlobalPos(localPos, level, partialTicks);
     }
 
+    @Nullable
     public Vec3 getLocalPosition(Level level) {
+        if (DetachedNodeHelper.isDetached(this))
+            return Vec3.ZERO;
+
         BlockState state = level.getBlockState(sourcePos);
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
             return null;
@@ -154,6 +205,21 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
     }
 
     public Vec3 toGlobalPos(Vec3 pos, Level level) {
+        if (DetachedNodeHelper.isDetached(this)) {
+            if (level instanceof ServerLevel sl) {
+                InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+                InWorldNodeData data = sd.getNodeData(this);
+                if (data == null)
+                    return null;
+                return data.getGlobalPos();
+            } else {
+                ClientNodeData detachedNode = WireRenderer.getNodeData(this);
+                if (detachedNode == null)
+                    return null;
+                else
+                    return detachedNode.position;
+            }
+        }
         Vec3 globalPos = pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
         SubLevelAccess subLevelAccess = SableCompanion.INSTANCE.getContaining(level, globalPos);
         if (subLevelAccess == null)
@@ -161,11 +227,37 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         return subLevelAccess.logicalPose().transformPosition(globalPos);
     }
 
+    /**
+     * This only goes around sable's sublevels, as sable already project outlines from create into the world.
+     */
     public Vec3 toGlobalPosNoSable(Vec3 pos, Level level) {
+        if (DetachedNodeHelper.isDetached(this))
+            if (level.isClientSide) {
+                ClientNodeData detachedNode = WireRenderer.getNodeData(this);
+                if (detachedNode != null)
+                    return detachedNode.position;
+            }
+        if (pos == null)
+            return null;
         return pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
     }
 
     public Vec3 toGlobalPos(Vec3 pos, Level level, float partialTicks) {
+        if (DetachedNodeHelper.isDetached(this)) {
+            if (level instanceof ServerLevel sl) {
+                InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+                InWorldNodeData data = sd.getNodeData(this);
+                if (data == null)
+                    return null;
+                return data.getGlobalPos();
+            } else {
+                ClientNodeData detachedNode = WireRenderer.getNodeData(this);
+                if (detachedNode == null)
+                    return null;
+                else
+                    return detachedNode.getPos(partialTicks);
+            }
+        }
         Vec3 globalPos = pos.add(sourcePos().getX(), sourcePos().getY(), sourcePos().getZ());
         SubLevelAccess subLevelAccess = SableCompanion.INSTANCE.getContaining(level, globalPos);
         if (subLevelAccess == null)
@@ -220,7 +312,73 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
     }
 
     public BlockPos sableSourcePos(Level level) {
+        if (DetachedNodeHelper.isDetached(this))
+            if (level instanceof ServerLevel sl) {
+                InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+                return BlockPos.containing(sd.getNodePositionOrCenter(this));
+            } else if (level.isClientSide) {
+                ClientNodeData detachedNode = WireRenderer.getNodeData(this);
+                if (detachedNode != null && detachedNode.position != null)
+                    return BlockPos.containing(detachedNode.position);
+            }
         return BlockPos.containing(SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)sourcePos.getCenter()));
+    }
+
+    public static InWorldNode getHitNode(BlockHitResult hitResult, ClientLevel level) {
+        Minecraft mc = Minecraft.getInstance();
+        assert mc.player != null;
+        BlockPos hoveredPos = hitResult.getBlockPos();
+        Vec3 hoveredLocation = hitResult.getLocation();
+
+        double range = mc.player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE) + 1;
+
+        Vec3 from = WireInteractionHandler.getTraceOrigin(mc.player);
+        Vec3 to = WireInteractionHandler.getTraceTarget(mc.player, range, from);
+        HitResult hit = mc.hitResult;
+
+        double bestDist = range;
+        if (hit != null)
+            bestDist = hit.getLocation().distanceTo(from);
+
+        // Detached Node Interactions:
+        InWorldNode detachedHoveredNode = null;
+        InWorldNode detachedNode = null;
+        for (ClientNodeData nodeData : WireRenderer.NODE_DATA.values()) {
+            Vec3 nodePos = nodeData.position;
+            if (nodePos == null)
+                continue;
+
+            AABB bb = AABB.ofSize(nodePos, 4 / 16f, 4 / 16f, 4 / 16f);
+            if (bb.clip(from, to).isEmpty())
+                continue;
+
+            detachedHoveredNode = nodeData.node;
+        }
+
+        //
+
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, hoveredLocation, 1.5f);
+        if (hoveredNode == null)
+            hoveredNode = InWorldNode.closestNode(level, hoveredPos, level.getBlockState(hoveredPos), 1.5f, hoveredLocation);
+
+        if (hoveredNode == null && detachedHoveredNode == null)
+            return null;
+        if (hoveredNode == null)
+            return detachedHoveredNode;
+        if (detachedHoveredNode == null)
+            return hoveredNode;
+
+        Vec3 position = hoveredNode.getPosition(level);
+        Vec3 detachedPosition = detachedHoveredNode.getPosition(level);
+        if (position == null || detachedPosition == null)
+            return null;
+
+        Vec3 origin = WireInteractionHandler.getTraceOrigin(mc.player);
+
+        double hoveredDistance = position.distanceTo(origin);
+        double detachedDistance = detachedPosition.distanceTo(origin);
+
+        return hoveredDistance < detachedDistance ? hoveredNode : detachedHoveredNode;
     }
 
     /**
@@ -238,8 +396,11 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
      * @return true if non-sublevel or sublevel and loaded, false if sublevel and unloaded
      */
     public static boolean isPosFullyLoadable(Level level, BlockPos pos) {
-        if (isFromSubLevel(level, pos))
+        if (isFromSubLevel(level, pos)) {
+            if (DetachedNodeHelper.isDetached(pos))
+                return true;
             return SableCompanion.INSTANCE.getContaining(level, pos) != null;
+        }
         return true;
     }
 

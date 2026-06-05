@@ -5,6 +5,8 @@ import net.minecraft.world.item.DyeColor;
 
 public class CEEPartialModels {
     public static final PartialModel WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/wire_segment"));
+    public static final PartialModel HANGING_INSULATOR = PartialModel.of(CreateElectroEnergetics.rl("block/hanging_insulator/base"));
+    public static final PartialModel HANGING_INSULATOR_ENDPOINT = PartialModel.of(CreateElectroEnergetics.rl("block/hanging_insulator/chain"));
     public static final PartialModel DUPLEX_WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/duplex_wire_segment"));
     public static final PartialModel COPPER_WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/copper_wire_segment"));
     public static final PartialModel ELECTRUM_WIRE_SEGMENT = PartialModel.of(CreateElectroEnergetics.rl("block/electrum_wire_segment"));
@@ -69,6 +71,7 @@ public class CEEPartialModels {
     public static final PartialModel ELECTRIC_MOTOR_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/electric_motor/shaft"));
     public static final PartialModel ALTERNATOR_BRUSHES_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/alternator_brushes/shaft"));
     public static final PartialModel BIRB = PartialModel.of(CreateElectroEnergetics.rl("block/birb"));
+    public static final PartialModel WIRE_TIE = PartialModel.of(CreateElectroEnergetics.rl("block/wire_tie"));
     public static final PartialModel PANEL_COVER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/cover"));
     public static final PartialModel PANEL_ATTACHMENT_AMMETER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/ammeter"));
     public static final PartialModel PANEL_ATTACHMENT_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/dial"));
@@ -102,6 +105,7 @@ public class CEEPartialModels {
 
     public static final PartialModel[] COLORED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];
     public static final PartialModel[] COLORED_HEAVILY_INSULATED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];
+    public static final PartialModel[] COLORED_HANGING_INSULATOR = new PartialModel[DyeColor.values().length];
 
     static {
         for (DyeColor color : DyeColor.values()) {
@@ -109,6 +113,8 @@ public class CEEPartialModels {
                     PartialModel.of(CreateElectroEnergetics.rl("block/colored_wire/" + color.getName()));
             COLORED_HEAVILY_INSULATED_WIRE_SEGMENTS[color.ordinal()] =
                     PartialModel.of(CreateElectroEnergetics.rl("block/colored_heavily_insulated_wire/" + color.getName()));
+            COLORED_HANGING_INSULATOR[color.ordinal()] =
+                    PartialModel.of(CreateElectroEnergetics.rl("block/hanging_insulator/" + color.getName()));
         }
     }
 

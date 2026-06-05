@@ -93,12 +93,16 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
             if (node == null)
                 return;
             BlockState state = mc.level.getBlockState(node.sourcePos());
-            if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
-                return;
+            MutableComponent baseNodeLabel;
+
+            if ((state.getBlock() instanceof ElectricalDeviceBlock<?> db))
+                baseNodeLabel = db.getNodeLabel(mc.level, node.sourcePos(), state, node.id());
+            else
+                baseNodeLabel = CEELang.nodeLabel("node");
 
             String customNodeLabel = WireRenderer.getNodeLabel(node);
             MutableComponent nodeLabel = customNodeLabel == null ?
-                    db.getNodeLabel(mc.level, node.sourcePos(), state, node.id()).withStyle(ChatFormatting.BOLD):
+                    baseNodeLabel.withStyle(ChatFormatting.BOLD):
                     Component.literal(customNodeLabel).withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.BOLD);
             if (CEEConfigs.client().debugNodeID.get())
                 nodeLabel.append(" [" + node.id() + "]");
