@@ -1,9 +1,8 @@
 {
   "values": [
-    "#minecraft:stone",
     "#minecraft:dirt",
     "#minecraft:sand",
     "#c:gravels",
-    "#c:stones",
+    "#c:stones"
   ]
 }
