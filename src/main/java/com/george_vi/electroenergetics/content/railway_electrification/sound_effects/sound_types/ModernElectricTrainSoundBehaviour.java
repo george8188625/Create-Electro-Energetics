@@ -86,6 +86,7 @@ public class ModernElectricTrainSoundBehaviour extends ElectricTrainSoundBehavio
         phasing = newPhasing;
         ElectricTrainSoundInstance newInstance = new ElectricTrainSoundInstance(pos, phasing.soundEvent);
         // if mainSoundInstance is for some reason null, this prevents an NPE (somehow the sound inside can be null too)
+        //noinspection ConstantValue
         newInstance.setPitchImmediately(mainSoundInstance == null || mainSoundInstance.getSound() == null ? 1 : mainSoundInstance.getPitch());
         newInstance.setVolumeImmediately(3);
 

@@ -18,7 +18,11 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
             return;
         }
 
-        if (mainSoundInstance == null || mainSoundInstance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(mainSoundInstance))
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null)
+            return;
+
+        if (mainSoundInstance == null || mainSoundInstance.isStopped() || !mc.getSoundManager().isActive(mainSoundInstance))
             mainSoundInstance = playSound(pos, CEESoundEvents.DC_TRAIN.get());
 
         int tth = (int) Math.max(Math.floor(trainSpeed > 0.1 ? 4 * trainSpeed + 5 : 16 * trainSpeed), -1);
@@ -31,9 +35,9 @@ public class DCElectricTrainSoundBehaviour extends ElectricTrainSoundBehaviour {
             th = Math.min(tth, th + 3);
 
         if (th != pth)
-            Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.TRAIN_RELAY.get(), SoundSource.NEUTRAL, 0.4f, 1f, false);
+            mc.level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.TRAIN_RELAY.get(), SoundSource.NEUTRAL, 0.4f, 1f, false);
         if (prevSpeed == 0)
-            Minecraft.getInstance().level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.DC_TRAIN_START.get(), SoundSource.NEUTRAL, 0.4f, 1f, false);
+            mc.level.playLocalSound(pos.x, pos.y, pos.z, CEESoundEvents.DC_TRAIN_START.get(), SoundSource.NEUTRAL, 0.4f, 1f, false);
         mainSoundInstance.setPos(pos);
 
         mainSoundInstance.setPitchImmediately(Math.min(4f, trainSpeed) + 0.4f);
