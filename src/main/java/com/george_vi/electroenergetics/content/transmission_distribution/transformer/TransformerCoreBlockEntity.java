@@ -131,7 +131,7 @@ public class TransformerCoreBlockEntity extends SmartBlockEntity implements IHav
             if (nextPos.distSqr(worldPosition) > 16)
                 continue;
             BlockState state = level.getBlockState(nextPos);
-            if ((waterlogged && !level.getFluidState(currentPos).isEmpty()) ||
+            if ((waterlogged && !level.getFluidState(nextPos).isEmpty()) ||
                     (CEEBlocks.TRANSFORMER_CORE.has(state) && direction == getBlockState().getValue(TransformerCoreBlock.FACING)) ||
                 state.is(CEETags.TRANSFORMER_HEAT_DISSIPATORS))
                 if (visited.add(nextPos))
