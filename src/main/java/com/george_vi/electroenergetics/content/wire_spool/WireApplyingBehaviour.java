@@ -38,8 +38,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
-import java.util.Map;
-
 public class WireApplyingBehaviour {
 
     /**
@@ -57,7 +55,6 @@ public class WireApplyingBehaviour {
         ElectricPropertiesOverlay.INSTANCE.connectionTooLong = false;
 
         ClientLevel level = mc.level;
-        BlockPos pos = result.getBlockPos();
         LocalPlayer player = mc.player;
         ItemStack heldItem = player.getMainHandItem();
 
@@ -92,35 +89,25 @@ public class WireApplyingBehaviour {
         InWorldNode selectedNode = heldItem.get(CEEDataComponents.SELECTED_NODE);
         if (selectedNode != null) {
             BlockState selectedState = level.getBlockState(selectedNode.sourcePos());
+            float selectedNodeSize = 4 / 16f;
+
+            if (selectedState.getBlock() instanceof ElectricalDeviceBlock<?> db) {
+                selectedNodeSize = db.getNodeSize(level, selectedNode.sourcePos(), selectedState, selectedNode.id());
+            }
 
             selectedPos = selectedNode.getLocalPosition(level);
             selectedPos = selectedNode.toGlobalPosNoSable(selectedPos, level);
             if (selectedPos == null)
                 return;
 
-            Outliner.getInstance().showAABB("electroenergetics_selected_node", AABB.ofSize(selectedPos, 4 / 16f, 4 / 16f, 4 / 16f), 3)
-                    .colored(FontHelper.Palette.STANDARD_CREATE.primary().getColor().getValue())
+            Outliner.getInstance().showAABB("electroenergetics_selected_node", AABB.ofSize(selectedPos, selectedNodeSize, selectedNodeSize, selectedNodeSize), 3)
+                    .colored(normalColor())
                     .withFaceTexture(AllSpecialTextures.SELECTION);
-        }
-
-        // Display all nodes of block
-
-        BlockState hoveredBlockState = level.getBlockState(pos);
-
-        if (hoveredBlockState.getBlock() instanceof ElectricalDeviceBlock<?> db) {
-
-            for (Map.Entry<Integer, Vec3> n : db.getNodePositions(level, pos, hoveredBlockState).entrySet()) {
-                int nodeId = n.getKey();
-                Vec3 nodePos = n.getValue();
-                if (db.isNodeAccessible(level, pos, hoveredBlockState, nodeId))
-                    Outliner.getInstance().showAABB("electroenergetics_node_" + nodeId, AABB.ofSize(nodePos.add(pos.getX(), pos.getY(), pos.getZ()), 4 / 16f, 4 / 16f, 4 / 16f), 3)
-                            .colored(FontHelper.Palette.STANDARD_CREATE.primary().getColor().getValue())
-                            .withFaceTexture(AllSpecialTextures.SELECTION);
-            }
         }
 
         // hovered node
         InWorldNode hoveredNode = InWorldNode.getHitNode(result, level);
+
 
         if (hoveredNode == null) {
             targetingDetachedNode = null;
@@ -128,15 +115,22 @@ public class WireApplyingBehaviour {
             return;
         }
 
+        BlockPos hoveredPos = hoveredNode.sourcePos();
+        BlockState hoveredBlockState = level.getBlockState(hoveredPos);
+
+
         if (DetachedNodeHelper.isDetached(hoveredNode))
             targetingDetachedNode = hoveredNode;
 
-        Vec3 hoveredPos = null;
-        if (hoveredBlockState.getBlock() instanceof ElectricalDeviceBlock<?> db)
-            hoveredPos = db.getNodePosition(level, pos, hoveredBlockState, hoveredNode.id());
+        Vec3 hoveredNodePos = null;
+        float nodeSize = 4/16f;
+        if (hoveredBlockState.getBlock() instanceof ElectricalDeviceBlock<?> db) {
+            hoveredNodePos = db.getNodePosition(level, hoveredPos, hoveredBlockState, hoveredNode.id());
+            nodeSize = db.getNodeSize(level, hoveredPos, hoveredBlockState, hoveredNode.id());
+        }
 
-        hoveredPos = hoveredNode.toGlobalPosNoSable(hoveredPos, level);
-        if (hoveredPos == null) {
+        hoveredNodePos = hoveredNode.toGlobalPosNoSable(hoveredNodePos, level);
+        if (hoveredNodePos == null) {
             ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
             return;
         }
@@ -149,8 +143,8 @@ public class WireApplyingBehaviour {
         //
 
         // display hovered node outline
-        Outliner.getInstance().showAABB("electroenergetics_node_selection", AABB.ofSize(hoveredPos, 5/16f, 5/16f, 5/16f), 3)
-                .colored(FontHelper.Palette.STANDARD_CREATE.highlight().getColor().getValue())
+        Outliner.getInstance().showAABB("electroenergetics_node_selection", AABB.ofSize(hoveredNodePos, nodeSize, nodeSize, nodeSize), 3)
+                .colored(highlightColor())
                 .withFaceTexture(AllSpecialTextures.SELECTION);
         //
 
@@ -159,6 +153,9 @@ public class WireApplyingBehaviour {
         // Player has selected a node and is looking at one
 
         boolean canConnect = !selectedNode.equals(hoveredNode);
+        if (!canConnect)
+            ElectricPropertiesOverlay.INSTANCE.invalidConnection = true;
+
         boolean isCatenary = false;
 
         if (hoveredBlockState.getBlock() instanceof ElectricalDeviceBlock<?> db) {
@@ -168,8 +165,8 @@ public class WireApplyingBehaviour {
 
             // Don't 'self-connect' a block's nodes
             if (canConnect &&
-                    hoveredNode.sourcePos().equals(selectedNode.sourcePos()) &&
-                    (!db.canSelfConnect(level, pos, hoveredBlockState, selectedNode.id(), hoveredNode.id()))) {
+                    hoveredPos.equals(selectedNode.sourcePos()) &&
+                    (!db.canSelfConnect(level, hoveredPos, hoveredBlockState, selectedNode.id(), hoveredNode.id()))) {
                 ElectricPropertiesOverlay.INSTANCE.invalidConnection = true;
                 canConnect = false;
             }
@@ -199,12 +196,12 @@ public class WireApplyingBehaviour {
                 }
         }
 
-        Outliner.getInstance().showAABB("electroenergetics_node_selection", AABB.ofSize(hoveredPos, 5/16f, 5/16f, 5/16f), 3)
+        Outliner.getInstance().showAABB("electroenergetics_node_selection", AABB.ofSize(hoveredNodePos, nodeSize, nodeSize, nodeSize), 3)
                 .colored(new Color(canConnect ? .3f : .9f, canConnect ? .9f : .3f, .5f, 1f))
                 .withFaceTexture(AllSpecialTextures.SELECTION);
 
         if (!toRemove && !mc.isPaused() && wireDistance < 512) {
-            for (Vec3 point : QuadraticWireHelper.cablePoints(selectedPos, hoveredPos, isCatenary ? 0 : (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getSag() : 1))) {
+            for (Vec3 point : QuadraticWireHelper.cablePoints(selectedPos, hoveredNodePos, isCatenary ? 0 : (heldItem.getItem() instanceof WireSpoolItem wsi ? wsi.wireType.get().getSag() : 1))) {
                 if (level.random.nextInt(7) != 0)
                     continue;
                 level.addParticle(new DustParticleOptions(new Vector3f(canConnect ? .3f : .9f, canConnect ? .9f : .3f, .5f), 1),
@@ -212,6 +209,16 @@ public class WireApplyingBehaviour {
                         0, 0, 0);
             }
         }
+    }
+
+    private static int normalColor() {
+        //noinspection DataFlowIssue
+        return FontHelper.Palette.STANDARD_CREATE.primary().getColor().getValue();
+    }
+
+    private static int highlightColor() {
+        //noinspection DataFlowIssue
+        return FontHelper.Palette.STANDARD_CREATE.highlight().getColor().getValue();
     }
 
 }

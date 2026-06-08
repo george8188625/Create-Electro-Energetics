@@ -52,8 +52,13 @@ public class DiodeBlock extends DirectionalRolledDeviceBlock<DiodeDevice> implem
         boolean roll = desirableState.firstBoolean();
         boolean flip = desirableState.secondBoolean();
 
-        return withWater(defaultBlockState().setValue(ROLL, roll).setValue(FLIP, flip)
+        return withWater(defaultBlockState().setValue(ROLL, !roll).setValue(FLIP, flip ^ roll)
                 .setValue(FACING, clickedFace), context);
+    }
+
+    @Override
+    public float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
+        return 2/16f;
     }
 
     @Override
@@ -97,11 +102,23 @@ public class DiodeBlock extends DirectionalRolledDeviceBlock<DiodeDevice> implem
 
     @Override
     protected BlockState rotate(BlockState state, Rotation rotation) {
+        if (state.getValue(FACING).getAxis().isVertical()) {
+            return switch (rotation) {
+                case NONE -> state;
+                case CLOCKWISE_90 -> state.getValue(ROLL) ? state.cycle(ROLL) : state.cycle(ROLL).cycle(FLIP);
+                case CLOCKWISE_180 -> state.cycle(FLIP);
+                case COUNTERCLOCKWISE_90 -> state.getValue(ROLL) ? state.cycle(ROLL).cycle(FLIP) : state.cycle(ROLL);
+            };
+        }
+
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
     protected BlockState mirror(BlockState state, Mirror mirror) {
+        if (state.getValue(FACING).getAxis().isVertical())
+            return mirror == Mirror.NONE ? state :
+                    (mirror != Mirror.FRONT_BACK) ^ state.getValue(ROLL) ? state.cycle(FLIP) : state;
         return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
     }
 

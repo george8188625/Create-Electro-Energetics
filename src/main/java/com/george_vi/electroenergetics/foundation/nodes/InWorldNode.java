@@ -29,8 +29,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -324,6 +325,7 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         return BlockPos.containing(SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)sourcePos.getCenter()));
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static InWorldNode getHitNode(BlockHitResult hitResult, ClientLevel level) {
         Minecraft mc = Minecraft.getInstance();
         assert mc.player != null;
@@ -334,15 +336,9 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
 
         Vec3 from = WireInteractionHandler.getTraceOrigin(mc.player);
         Vec3 to = WireInteractionHandler.getTraceTarget(mc.player, range, from);
-        HitResult hit = mc.hitResult;
-
-        double bestDist = range;
-        if (hit != null)
-            bestDist = hit.getLocation().distanceTo(from);
 
         // Detached Node Interactions:
         InWorldNode detachedHoveredNode = null;
-        InWorldNode detachedNode = null;
         for (ClientNodeData nodeData : WireRenderer.NODE_DATA.values()) {
             Vec3 nodePos = nodeData.position;
             if (nodePos == null)
@@ -404,6 +400,7 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         return true;
     }
 
+    @SuppressWarnings("unused")
     public static boolean isFromSubLevel(Level level, BlockPos pos) {
         int cX = pos.getX() >> 4;
         int cZ = pos.getZ() >> 4;

@@ -271,6 +271,24 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
     }
 
     @Override
+    public float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
+        if (!(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
+            return 4/16f;
+        for (PanelAttachment attachment : be.getAttachments()) {
+            if (attachment == null)
+                continue;
+
+            InWorldNode[] nodes = attachment.nodes;
+            for (int i = 0; i < nodes.length; i++) {
+                InWorldNode node = nodes[i];
+                if (node.id() == id)
+                    return attachment.getNodeSize(level, pos, state, i);
+            }
+        }
+        return 4/16f;
+    }
+
+    @Override
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
         if (!(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
             return super.getNodeLabel(level, pos, state, id);

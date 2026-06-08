@@ -62,6 +62,11 @@ public class ResistorBlock extends DirectionalRolledDeviceBlock<ResistorDevice> 
     }
 
     @Override
+    public float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
+        return 2/16f;
+    }
+
+    @Override
     public Class<ResistorBlockEntity> getBlockEntityClass() {
         return ResistorBlockEntity.class;
     }

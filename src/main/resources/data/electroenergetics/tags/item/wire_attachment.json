@@ -2,6 +2,6 @@
   "values": [
     "#electroenergetics:wire_damper_item",
     "#minecraft:banners",
-    { "id": "supplementaries:buntings", "required": false }
+    { "id": "#supplementaries:buntings", "required": false }
   ]
 }

@@ -464,29 +464,29 @@ public class Network {
     }
 
     double[] lastMNAResult;
-    public void getResults(double[] mnaResult, double[] toFill, int microTickBits, int microTick) {
+    public void getResults(double[] mnaResult, double[] toFill, int microTick, int totalMicroTicks) {
         lastMNAResult = mnaResult;
 
         for (int i = 0; i < simulationNodes.length; i++) {
             SimulationNode simulationNode = simulationNodes[i];
             WrappedIndexedNode originalNode = simulationNode.correspondingNode;
 
-            toFill[(originalNode.ordinal << microTickBits) | microTick] = mnaResult[i];
+            toFill[originalNode.ordinal * totalMicroTicks + microTick] = mnaResult[i];
         }
 
         for (TopologyOptimizationEntry entry : optimizations) {
             if (entry instanceof SimpleTopologyOptimizationEntry properties) {
-                double v1 = toFill[(properties.node1().ordinal << microTickBits) | microTick];
-                double v2 = toFill[(properties.node2().ordinal << microTickBits) | microTick];
-                properties.properties().getVoltages(v1, v2, toFill, microTickBits, microTick);
+                double v1 = toFill[properties.node1().ordinal * totalMicroTicks + microTick];
+                double v2 = toFill[properties.node2().ordinal * totalMicroTicks + microTick];
+                properties.properties().getVoltages(v1, v2, toFill, microTick, totalMicroTicks);
             } else if (entry instanceof StarToDeltaEntry delta) {
-                double va = toFill[(delta.na.ordinal << microTickBits) | microTick];
-                double vb = toFill[(delta.nb.ordinal << microTickBits) | microTick];
-                double vc = toFill[(delta.nc.ordinal << microTickBits) | microTick];
-                toFill[(delta.centralNode.ordinal << microTickBits) | microTick] = delta.calculateCenter(va, vb, vc);
+                double va = toFill[delta.na.ordinal * totalMicroTicks + microTick];
+                double vb = toFill[delta.nb.ordinal * totalMicroTicks + microTick];
+                double vc = toFill[delta.nc.ordinal * totalMicroTicks + microTick];
+                toFill[delta.centralNode.ordinal * totalMicroTicks + microTick] = delta.calculateCenter(va, vb, vc);
             } else if (entry instanceof SetVoltageOptimizationEntry setV) {
-                double vBase = toFill[(setV.base().ordinal << microTickBits) | microTick];
-                toFill[(setV.dead().ordinal << microTickBits) | microTick] = vBase;
+                double vBase = toFill[setV.base().ordinal * totalMicroTicks + microTick];
+                toFill[setV.dead().ordinal * totalMicroTicks + microTick] = vBase;
             }
 
         }

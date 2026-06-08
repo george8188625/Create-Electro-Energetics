@@ -6,7 +6,6 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
@@ -52,7 +51,7 @@ public abstract class PanelAttachment {
     @OnlyIn(Dist.CLIENT)
     public void tickClient(ElectricalPanelBlockEntity be) {
 
-    };
+    }
 
     @OnlyIn(Dist.CLIENT)
     public abstract void render(ElectricalPanelBlockEntity be, float partialTicks, PoseStack ms,
@@ -89,6 +88,7 @@ public abstract class PanelAttachment {
     }
 
     @OnlyIn(Dist.CLIENT)
+    @SuppressWarnings("unused")
     public boolean addToTooltip(ElectricalPanelBlockEntity be, List<Component> tooltip, boolean isPlayerSneaking) {
         return false;
     }
@@ -126,6 +126,7 @@ public abstract class PanelAttachment {
                 be.sendData();
     }
 
+    @SuppressWarnings("unused")
     public void onRemoved(Player player) {
 
     }
@@ -135,6 +136,7 @@ public abstract class PanelAttachment {
     }
 
     @OnlyIn(Dist.CLIENT)
+    @SuppressWarnings("unused")
     public void renderLabel(ElectricalPanelBlockEntity be, float partialTicks, PoseStack ms,
                             MultiBufferSource buffer, int light, int overlay) {
         Direction facing = be.getBlockState().getValue(ElectricalPanelBlock.FACING);
@@ -173,5 +175,10 @@ public abstract class PanelAttachment {
 
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int id) {
         return CEELang.nodeLabel("node");
+    }
+
+    @SuppressWarnings("unused")
+    public float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
+        return type.mode.nodeWidth;
     }
 }

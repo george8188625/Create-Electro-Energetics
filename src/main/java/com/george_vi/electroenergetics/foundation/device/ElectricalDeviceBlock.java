@@ -51,6 +51,15 @@ public interface ElectricalDeviceBlock<T extends SimulatedDevice> extends Device
     }
 
     /**
+     * This is used to get the size of a node. Primarily used for the outline and hitboxes.
+     * @param id ID of the node (block-local)
+     * @return node hitbox size
+     */
+    default float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
+        return 4/16f;
+    }
+
+    /**
      * Should an insulator rendered on the wire connected to a specific node
      * @param id ID of the node (block-local)
      * @return Whether an insulator should be rendered on the wire

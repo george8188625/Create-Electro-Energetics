@@ -1,15 +1,10 @@
 package com.george_vi.electroenergetics.content.wire.interaction;
 
 import com.george_vi.electroenergetics.CEERegistries;
-import com.george_vi.electroenergetics.CEETags;
-import com.george_vi.electroenergetics.client.ClientNodeData;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
-import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
-import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
-import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
@@ -123,17 +118,15 @@ public class WireInteractionHandler {
                 double ab_length_squared = ab.lengthSqr();
                 double t = ab_length_squared == 0 ? 0.0 : ap.dot(ab) / ab_length_squared;
 
+
+                if (t < 0 || t > 1 || (i == 0 && t < 0.5))
+                    continue;
+
+                bestProgress = (float) Mth.lerp(t, i - 1, i + 1) / (points.size());
+
                 if (points.size() == 1)
                     bestProgress = (float) t / (points.size());
-                if (points.size() == 2) {
-                    if (i == 0 && t < 0.5)
-                        continue;
-                    bestProgress = (float) Mth.lerp(t, i - 1, i + 1) / (points.size());
-                } else {
-                    if (t < 0)
-                        continue;
-                    bestProgress = (float) Mth.lerp(t, i - 1, i + 1) / (points.size() - 0.5f);
-                }
+
                 bestPosition = VecHelper.lerp((float) t, prevPoint, nextPoint);
                 bestWireData = wire.getSecond();
                 bestWirePointDistance = wirePointsDistance;

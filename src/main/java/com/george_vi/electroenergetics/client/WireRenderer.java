@@ -18,6 +18,7 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.mixins.LevelRendererAccessor;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.george_vi.electroenergetics.simulation.infrastructure.detached_nodes.DetachedNodeHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
@@ -199,21 +200,28 @@ public class WireRenderer {
             InWorldNodeConnection connection = wire.getFirst();
             WireData wireData = wire.getSecond();
 
-            BlockState state1 = level.getBlockState(connection.node1().sourcePos());
-            BlockState state2 = level.getBlockState(connection.node2().sourcePos());
+            InWorldNode node1 = connection.node1();
+            InWorldNode node2 = connection.node2();
+            BlockState state1 = level.getBlockState(node1.sourcePos());
+            BlockState state2 = level.getBlockState(node2.sourcePos());
 
-            Vec3 pos1 = connection.node1().getPosition(level, partialTick);
-            Vec3 pos2 = connection.node2().getPosition(level, partialTick);
+            Vec3 pos1 = node1.getPosition(level, partialTick);
+            Vec3 pos2 = node2.getPosition(level, partialTick);
 
-            if (pos1 == null)
-                pos1 = connection.node1().sourcePos().getCenter();
-            if (pos2 == null)
-                pos2 = connection.node2().sourcePos().getCenter();
+            if (pos1 == null) {
+                if (DetachedNodeHelper.isDetached(node1))
+                    continue;
+                pos1 = node1.sourcePos().getCenter();
+            } if (pos2 == null) {
+                if (DetachedNodeHelper.isDetached(node2))
+                    continue;
+                pos2 = node2.sourcePos().getCenter();
+            }
 
             boolean isBlock1Outer = state1.getBlock() instanceof ElectricalDeviceBlock<?> db &&
-                    db.isOuterInsulator(level, connection.node1().sourcePos(), state1, connection.node1().id());
+                    db.isOuterInsulator(level, node1.sourcePos(), state1, node1.id());
             boolean isBlock2Outer = state2.getBlock() instanceof ElectricalDeviceBlock<?> db &&
-                    db.isOuterInsulator(level, connection.node2().sourcePos(), state2, connection.node2().id());
+                    db.isOuterInsulator(level, node2.sourcePos(), state2, node2.id());
             double distance = pos1.distanceTo(pos2);
 
             mc.getProfiler().popPush("renderBirds");
@@ -278,7 +286,7 @@ public class WireRenderer {
                                         BlockPos.containing(pos1.add(nextPoint).scale(0.5))))
                                 .renderInto(pose, buffer.getBuffer(RenderType.solid()));
 
-                        outerInsulatorJumpers.computeIfAbsent(connection.node1(), (k) -> new ArrayList<>())
+                        outerInsulatorJumpers.computeIfAbsent(node1, (k) -> new ArrayList<>())
                                 .add(nextPoint);
                     }
 
@@ -295,7 +303,7 @@ public class WireRenderer {
                                         BlockPos.containing(pos2.add(nextPoint).scale(0.5))))
                                 .renderInto(pose, buffer.getBuffer(RenderType.solid()));
 
-                        outerInsulatorJumpers.computeIfAbsent(connection.node2(), (k) -> new ArrayList<>())
+                        outerInsulatorJumpers.computeIfAbsent(node2, (k) -> new ArrayList<>())
                                 .add(nextPoint);
                     }
                 }

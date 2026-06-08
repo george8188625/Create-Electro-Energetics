@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.config;
 
 import net.createmod.catnip.config.ConfigBase;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import org.jetbrains.annotations.NotNull;
 
 public class CServer extends ConfigBase {
 
@@ -26,7 +27,7 @@ public class CServer extends ConfigBase {
     public final CSimulation simulationConfig = nested(1, CSimulation::new, "Simulation Configs");
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "server";
     }
 

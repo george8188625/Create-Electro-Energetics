@@ -113,6 +113,7 @@ public class GameEvents {
 
         if (WireInteractionHandler.targetedPoint != null) {
             event.setCanceled(true);
+            return;
         }
 
         BlockState state = level.getBlockState(pos);

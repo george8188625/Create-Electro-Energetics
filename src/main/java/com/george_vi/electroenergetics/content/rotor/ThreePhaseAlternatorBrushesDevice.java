@@ -10,11 +10,9 @@ import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.google.common.util.concurrent.AtomicDouble;
 import net.createmod.catnip.nbt.NBTHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -153,7 +151,7 @@ public class ThreePhaseAlternatorBrushesDevice extends SimpleElectricalDevice {
         }
 
         @Override
-        public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
+        public void tick(double[] allVoltages, int microTick, int totalMicroTicks, int n1, int n2) {
             if (workCounter.getAndIncrement() % 3 == 0) {
                 virtualRotor.advance();
             }
@@ -176,9 +174,11 @@ public class ThreePhaseAlternatorBrushesDevice extends SimpleElectricalDevice {
         }
 
         @Override
-        public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
+        public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int totalMicroTicks) {
             double angle = virtualRotor.angle + offset;
-            double vd = allVoltages[(n2 << microTickBits) | (microTick)] - allVoltages[(n1 << microTickBits) | (microTick)];
+            double vd =
+                    allVoltages[n2 * totalMicroTicks + microTick] -
+                    allVoltages[n1 * totalMicroTicks + microTick];
             double current = (v - vd) / this.resistance;
 
             double powerDelivered = Math.abs(current * vd);

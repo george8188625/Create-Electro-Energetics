@@ -22,15 +22,15 @@ public class InductorProperties extends MicroTickingElectricalProperties {
     }
 
     @Override
-    public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
+    public void tick(double[] allVoltages, int microTick, int totalMicroTicks, int n1, int n2) {
         tickInductor(totalMicroTicks);
     }
 
     @Override
-    public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
+    public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int totalMicroTicks) {
         double voltage =
-                allVoltages[(n1 << microTickBits) | (microTick)] -
-                allVoltages[(n2 << microTickBits) | (microTick)];
+                allVoltages[n1 * totalMicroTicks + microTick] -
+                allVoltages[n2 * totalMicroTicks + microTick];
 
         double inductance = Math.max(this.inductance, 1e-12d);
         double timeStep = 0.05 / totalMicroTicks;

@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-06T00:19:05.48572074	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-06-07T22:20:42.269532526	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 efaff624fae8f426c8927b933899a261b68f7685 assets/electroenergetics/blockstates/accumulator.json
 bc7e544079464f9fb40950d4499967da027b352f assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -68,7 +68,7 @@ c62ae8ec67bbe95b7386f2ee9a6e67d3b168caed assets/electroenergetics/blockstates/re
 21483e06953c4048b9742a56e66a5776f5e02ff5 assets/electroenergetics/blockstates/synchroscope.json
 8dd69ade947fd9e612a9efb86cca1bc8d7343b38 assets/electroenergetics/blockstates/three_phase_alternator_brushes.json
 1d6614f80d85c6300b750e52a5d49328d5126b2b assets/electroenergetics/blockstates/transformer.json
-2881b383fce4df10fd7e9d17e63540ef31b5b0ba assets/electroenergetics/blockstates/transformer_core.json
+f8540ad5d3089a7bd0354af1ab7411aa8a0cf872 assets/electroenergetics/blockstates/transformer_core.json
 5585514907074e8b0e9af45726fe0c0161314b26 assets/electroenergetics/blockstates/transformer_oil.json
 d0538227542ff7285de13470ea709c5d19fa416e assets/electroenergetics/blockstates/tri_polar_energy_meter.json
 a92bfd6311161a261beaea0e82673049f09158a3 assets/electroenergetics/blockstates/triple_connector.json

@@ -22,15 +22,15 @@ public class CapacitorProperties extends MicroTickingElectricalProperties {
     }
 
     @Override
-    public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
+    public void tick(double[] allVoltages, int microTick, int totalMicroTicks, int n1, int n2) {
         tickCapacitor(totalMicroTicks);
     }
 
     @Override
-    public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
+    public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int totalMicroTicks) {
         lastVoltage =
-                allVoltages[(n1 << microTickBits) | (microTick)] -
-                allVoltages[(n2 << microTickBits) | (microTick)];
+                allVoltages[n1 * totalMicroTicks + microTick] -
+                allVoltages[n2 * totalMicroTicks + microTick];
     }
 
     private void tickCapacitor(int totalMicroTicks) {

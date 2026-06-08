@@ -63,7 +63,7 @@ public class WireEffects {
                 continue;
 
             // Wires aren't gonna spawn at a level lower than 70
-            if (points.getMinY() < 70)
+            if (points.getMinY() < 70 || points.size() < 10)
                 continue;
 
             if (mc.level.random.nextFloat() > 0.9996) {
@@ -79,7 +79,7 @@ public class WireEffects {
                     continue;
 
                 for (IntIterator iterator = positions.iterator(); iterator.hasNext(); ) {
-                    int pos = iterator.next();
+                    int pos = iterator.nextInt();
 
                     if (pos >= points.size())
                         iterator.remove();

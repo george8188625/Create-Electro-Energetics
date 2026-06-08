@@ -20,7 +20,7 @@ public class DissolvedProperties extends ElectricalProperties implements IDissol
     }
 
     @Override
-    public void getVoltages(double v1, double v2, double[] toFill, int microTickBits, int microTick) {
+    public void getVoltages(double v1, double v2, double[] toFill, int microTick, int totalMicroTicks) {
         double totalResistance = resistance;
         double current = (v1 - v2) / totalResistance;
         double currentVoltage = v1;
@@ -32,7 +32,7 @@ public class DissolvedProperties extends ElectricalProperties implements IDissol
 
             currentVoltage = currentVoltage - voltageDrop;
 
-            toFill[(nextNodeID << microTickBits) | microTick] = currentVoltage;
+            toFill[nextNodeID * totalMicroTicks + microTick] = currentVoltage;
         }
     }
 

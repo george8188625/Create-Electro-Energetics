@@ -74,7 +74,7 @@ public class CreativeBatteryDevice extends SimpleElectricalDevice {
         }
 
         @Override
-        public void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2) {
+        public void tick(double[] allVoltages, int microTick, int totalMicroTicks, int n1, int n2) {
             if (seriesResistance == 0)
                 this.voltageSource = Math.cos(((double) microTick / (totalMicroTicks)) * Mth.TWO_PI + phaseOffset * Mth.DEG_TO_RAD) * voltage;
             else

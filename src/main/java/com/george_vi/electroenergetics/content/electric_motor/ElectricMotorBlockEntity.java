@@ -56,7 +56,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     public ElectricMotorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         setLazyTickRate(12);
-        averageVoltage = new RMSHolder(8 * (1 << CEEConfigs.server().simulationConfig.microTickBits.get()));
+        averageVoltage = new RMSHolder(8 * CEEConfigs.server().simulationConfig.microTicks.get());
     }
 
     @Override

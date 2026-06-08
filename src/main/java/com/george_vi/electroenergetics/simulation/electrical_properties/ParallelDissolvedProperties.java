@@ -20,15 +20,8 @@ public class ParallelDissolvedProperties extends ElectricalProperties implements
     }
 
     @Override
-    public void getVoltages(double v1, double v2, double[] toFill, int microTickBits, int microTick) {
-//        for (ElectricalProperties properties : originalResistances) {
-//            if (properties instanceof DissolvedProperties dp) {
-//                if (dp.originalNodes.getFirst().equals(node1))
-//                    dp.getVoltages(v1, v2, toFill, microTickBits, microTick);
-//                else
-//                    dp.getVoltages(v2, v1, toFill, microTickBits, microTick);
-//            }
-//        }
+    public void getVoltages(double v1, double v2, double[] toFill, int microTick, int totalMicroTicks) {
+
     }
 
     @Override

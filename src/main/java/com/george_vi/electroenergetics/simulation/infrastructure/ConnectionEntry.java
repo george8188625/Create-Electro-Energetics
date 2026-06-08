@@ -43,15 +43,4 @@ public class ConnectionEntry {
         this.resistance = wireData.wireType()::getResistance;
         this.cuts = cuts;
     }
-//
-//    public AttachedNode addCut(float point) {
-//        AttachedNode node = new AttachedNode(cutNodeIds++, "CEECutWire");
-//        cuts.add(Pair.of(point, node));
-//        cuts.sort(Comparator.comparing(Pair::getFirst));
-//        return node;
-//    }
-//
-//    public void removeCut(AttachedNode node) {
-//        cuts.removeIf(p -> p.getSecond().equals(node));
-//    }
 }

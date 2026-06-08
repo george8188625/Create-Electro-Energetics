@@ -30,22 +30,24 @@ public record RequestVoltageDataPacket(InWorldNode node) implements ServerboundP
 
         SendVoltageDataPacket packet = new SendVoltageDataPacket();
         packet.nodes = new InWorldNode[1];
-        packet.voltages = new double[1 << sd.ticker.lastResults.microTickBits];
+        int microTicks = packet.microTicks = sd.ticker.lastResults.microTicks;
+        double[] voltages = sd.ticker.lastResults.voltages;
+
+        packet.voltages = new double[microTicks];
         packet.frequencies = new float[1];
-        packet.microTickBits = (byte) sd.ticker.lastResults.microTickBits;
 
         packet.nodes[0] = node;
 
         int id1 = sd.ticker.lastResults.circuitBuilder.nodeIndexes.getInt(node);
         if (id1 == -1) {
-            for (int j = 0; j < sd.ticker.lastResults.microTicks; j++)
+            for (int j = 0; j < microTicks; j++)
                 packet.voltages[j] = 0;
             CatnipServices.NETWORK.sendToClient(player, packet);
             return;
         }
-        id1 = id1 << sd.ticker.lastResults.microTickBits;
-        for (int j = 0; j < sd.ticker.lastResults.microTicks; j++)
-            packet.voltages[j] = sd.ticker.lastResults.voltages[id1 | j];
+
+        id1 = id1 * microTicks;
+        System.arraycopy(voltages, id1, packet.voltages, 0, microTicks);
 
         CatnipServices.NETWORK.sendToClient(player, packet);
 

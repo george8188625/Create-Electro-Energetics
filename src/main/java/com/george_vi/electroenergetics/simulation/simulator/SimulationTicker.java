@@ -47,8 +47,7 @@ public class SimulationTicker {
     public List<SimulatorProfiler.ResultEntry> lastProfilerResults;
     public SimulationStats lastStats;
 
-    public int microTickBits = 0;
-    public int microTicks = 1 << microTickBits;
+    public int microTicks = 1;
 
     public Future<SimulationResults> future = null;
 
@@ -70,8 +69,7 @@ public class SimulationTicker {
     public void tick() {
         if (level.tickRateManager().isFrozen())
             return;
-        microTickBits = CEEConfigs.server().simulationConfig.microTickBits.get();
-        microTicks = 1 << microTickBits;
+        microTicks = CEEConfigs.server().simulationConfig.microTicks.get();
 
         profiler.push(level.dimension().location().toString());
         // Setup
@@ -173,7 +171,7 @@ public class SimulationTicker {
                 for (Long2ObjectMap.Entry<MicroTickingElectricalProperties> entry : circuitBuilder.microTickers.long2ObjectEntrySet()) {
                     int first = DataPacker.unpackFirstI(entry.getLongKey());
                     int second = DataPacker.unpackSecondI(entry.getLongKey());
-                    entry.getValue().tick(allVoltages, i, microTickBits, microTicks, first, second);
+                    entry.getValue().tick(allVoltages, i, microTicks, first, second);
                 }
                 for (Network network : allNetworks) {
                     network.formMatrix();
@@ -185,7 +183,7 @@ public class SimulationTicker {
                         mnaResults = CholeskySolver.solve(network.conductanceMatrix, network.rhsVector);
 
                     solveNanos += (System.nanoTime() - solveNanos);
-                    network.getResults(mnaResults, allVoltages, microTickBits, i);
+                    network.getResults(mnaResults, allVoltages, i, microTicks);
                     int j = 0;
                     for (long packedConnection : network.voltageSources.keySet()) {
                         double amps = mnaResults[network.simulationNodes.length + j];
@@ -200,16 +198,16 @@ public class SimulationTicker {
                 for (Long2ObjectMap.Entry<MicroTickingElectricalProperties> entry : circuitBuilder.microTickers.long2ObjectEntrySet()) {
                     int first = DataPacker.unpackFirstI(entry.getLongKey());
                     int second = DataPacker.unpackSecondI(entry.getLongKey());
-                    entry.getValue().afterTick(allVoltages, first, second, i, microTickBits, microTicks);
+                    entry.getValue().afterTick(allVoltages, first, second, i, microTicks);
                 }
 
             }
 
             for (int i = 0; i < allVoltages.length; i += microTicks) {
-                WrappedIndexedNode node = circuitBuilder.getNode(i >> microTickBits);
+                WrappedIndexedNode node = circuitBuilder.getNode(i % microTicks);
                 if (!(node.node instanceof InWorldNode iwn))
                     continue;
-                if (microTickBits == 0) {
+                if (microTicks == 1) {
                     VOLTAGES.put(iwn, allVoltages[i]);
                     continue;
                 }
@@ -226,7 +224,7 @@ public class SimulationTicker {
                 allSourceAmps.putAll(v);
             profiler.addThreadedNanos(System.nanoTime() - thrStart);
             profiler.addSolverNanos(System.nanoTime() - solveStart);
-            return new SimulationResults(allVoltages, microTicks, microTickBits, allSourceAmps, circuitBuilder, sd);
+            return new SimulationResults(allVoltages, microTicks, allSourceAmps, circuitBuilder, sd);
         });
     }
 

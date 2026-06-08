@@ -7,20 +7,22 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
 public enum PanelAttachmentMode {
-    FULL_SINGLE(2),
-    FULL_DOUBLE(4),
-    FULL_TRIPLE(6),
-    FULL_QUAD(8),
-    HALF(2),
-    HALF_ONLY_HORIZONTAL(2),
-    HALF_ONLY_VERTICAL(2),
-    THIRD(2),
+    FULL_SINGLE(2, 4 / 16f),
+    FULL_DOUBLE(4, 4 / 16f),
+    FULL_TRIPLE(6, 4 / 16f),
+    FULL_QUAD(8, 4 / 16f),
+    HALF(2, 4 / 16f),
+    HALF_ONLY_HORIZONTAL(2, 4 / 16f),
+    HALF_ONLY_VERTICAL(2, 4 / 16f),
+    THIRD(2, 3 / 16f),
     ;
 
     public final int nodes;
+    public final float nodeWidth;
 
-    PanelAttachmentMode(int nodes) {
+    PanelAttachmentMode(int nodes, float nodeWidth) {
         this.nodes = nodes;
+        this.nodeWidth = nodeWidth;
     }
 
     public ElectricalPanelSlot getSlot(Direction facing, Vec3 clickPosition) {

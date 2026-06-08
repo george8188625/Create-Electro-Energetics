@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.simulation.electrical_properties;
 
 /**
- * MicroTickingEP May NEVER access ANY blocks, BEs, entities, levels, etc.
+ * MicroTickingElectricalProperties must not access any blocks, block-entities, entities, levels, etc.
  * This is because the electrical simulation is run off thread.
  */
 public abstract class MicroTickingElectricalProperties extends ElectricalProperties {
@@ -10,9 +10,9 @@ public abstract class MicroTickingElectricalProperties extends ElectricalPropert
         super(1, 0, 0);
     }
 
-    public abstract void tick(double[] allVoltages, int microTick, int microTickBits, int totalMicroTicks, int n1, int n2);
+    public abstract void tick(double[] allVoltages, int microTick, int totalMicroTicks, int n1, int n2);
 
-    public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int microTickBits, int totalMicroTicks) {
+    public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int totalMicroTicks) {
 
     }
 
@@ -35,7 +35,6 @@ public abstract class MicroTickingElectricalProperties extends ElectricalPropert
     public ElectricalProperties invert() {
         if (inverted == null)
             return inverted = new MicroTickingInvertedElectricalProperties(this);
-        else
-            return inverted;
+        return inverted;
     }
 }

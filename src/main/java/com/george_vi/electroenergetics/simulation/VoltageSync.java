@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 public class VoltageSync {
 
     public static void finishSimulation(InfrastructureSavedData sd, ServerLevel level, SimulationResults results) {
+        int microTicks = results.microTicks;
 
         for (ServerPlayer player : level.getPlayers(p -> true)) {
             if (!player.isUsingItem())
@@ -28,24 +29,23 @@ public class VoltageSync {
                 InWorldNodeConnection connection = usedStack.getOrDefault(CEEDataComponents.NODE_CONNECTION, new InWorldNodeConnection(BlockPos.ZERO, 0, 0));
                 SendVoltageDataPacket packet = new SendVoltageDataPacket();
                 packet.nodes = new InWorldNode[2];
-                packet.voltages = new double[2 << results.microTickBits];
+
+                packet.voltages = new double[2 * microTicks];
                 packet.frequencies = new float[2];
-                packet.microTickBits = (byte) results.microTickBits;
+                packet.microTicks = microTicks;
 
                 packet.nodes[0] = connection.node1();
                 packet.nodes[1] = connection.node2();
 
-                int id1 = results.circuitBuilder.nodeIndexes.getInt(connection.node1()) << results.microTickBits;
-                int id2 = results.circuitBuilder.nodeIndexes.getInt(connection.node2()) << results.microTickBits;
+                int id1 = results.circuitBuilder.nodeIndexes.getInt(connection.node1()) * results.microTicks;
+                int id2 = results.circuitBuilder.nodeIndexes.getInt(connection.node2()) * results.microTicks;
 
                 // Wire was removed.
                 if (id1 < 0 || id2 < 0)
                     continue;
-                
-                for (int j = 0; j < results.microTicks; j++) {
-                    packet.voltages[j] = results.voltages[id1 | j];
-                    packet.voltages[results.microTicks + j] = results.voltages[id2 | j];
-                }
+
+                System.arraycopy(results.voltages, id1, packet.voltages, 0, microTicks);
+                System.arraycopy(results.voltages, id2, packet.voltages, microTicks, microTicks);
 
                 CatnipServices.NETWORK.sendToClient(player, packet);
             }

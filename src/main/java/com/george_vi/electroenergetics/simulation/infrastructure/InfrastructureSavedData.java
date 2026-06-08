@@ -959,17 +959,26 @@ public class InfrastructureSavedData extends SavedData {
                 lastDetachedNodeId = node.id();
         }
 
+        InWorldNodeData data;
         if (freeNodeIDs.isEmpty()) {
-            InWorldNodeData data = new InWorldNodeData(NODES_BY_ID.size(), node);
+            data = new InWorldNodeData(NODES_BY_ID.size(), node);
             NODES_BY_ID.add(data);
-            ALL_NODES.put(node, data);
-            return data;
+        } else {
+            int index = freeNodeIDs.popInt();
+            data = new InWorldNodeData(index, node);
+            NODES_BY_ID.set(index, data);
         }
-        int index = freeNodeIDs.popInt();
-        InWorldNodeData data = new InWorldNodeData(index, node);
-        NODES_BY_ID.set(index, data);
         ALL_NODES.put(node, data);
         wireSimulationState.onNodeChange(ALL_NODES.keySet());
+
+        if (!InWorldNode.isFromSubLevel(level, node.sourcePos())) {
+
+            Set<InWorldNode> chunkNodes = NODES_BY_CHUNK.computeIfAbsent(ChunkPos.asLong(node.sourcePos()),
+                    c -> new HashSet<>());
+
+            chunkNodes.add(node);
+        }
+
         return data;
     }
 
@@ -990,6 +999,13 @@ public class InfrastructureSavedData extends SavedData {
         List<InWorldNodeData> nodesAtPos = NODES_BY_POS.get(nodeData.node.sourcePos());
         if (nodesAtPos != null)
             nodesAtPos.remove(nodeData);
+        Set<InWorldNode> chunkNodes = NODES_BY_CHUNK.computeIfAbsent(ChunkPos.asLong(node.sourcePos()),
+                c -> new HashSet<>());
+
+        chunkNodes.remove(node);
+
+        if (chunkNodes.isEmpty())
+            NODES_BY_CHUNK.remove(ChunkPos.asLong(node.sourcePos()));
         return nodeData;
     }
 
@@ -1017,14 +1033,9 @@ public class InfrastructureSavedData extends SavedData {
     /**
      * Hook for node update
      */
+    @SuppressWarnings("unused")
     private void onNodeUpdateOrCreate(InWorldNode node, InWorldNodeData nodeData) {
-        if (InWorldNode.isFromSubLevel(level, node.sourcePos()))
-            return;
 
-        Set<InWorldNode> chunkNodes = NODES_BY_CHUNK.computeIfAbsent(ChunkPos.asLong(node.sourcePos()),
-                c -> new HashSet<>());
-
-        chunkNodes.add(node);
     }
 
     /**
@@ -1044,17 +1055,6 @@ public class InfrastructureSavedData extends SavedData {
         if (DetachedNodeHelper.isDetached(node)) {
             freeDetachedNodeIDs.add(node.id());
         }
-
-        if (nodeData.isDynamic)
-            return;
-
-        Set<InWorldNode> chunkNodes = NODES_BY_CHUNK.computeIfAbsent(ChunkPos.asLong(node.sourcePos()),
-                c -> new HashSet<>());
-
-        chunkNodes.remove(node);
-
-        if (chunkNodes.isEmpty())
-            NODES_BY_CHUNK.remove(ChunkPos.asLong(node.sourcePos()));
     }
 
     // UTILS:

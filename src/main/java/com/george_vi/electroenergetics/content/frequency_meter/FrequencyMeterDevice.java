@@ -7,7 +7,6 @@ import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -84,7 +83,7 @@ public class FrequencyMeterDevice extends SimpleElectricalDevice {
         double actualPeriod = Math.max(prevPeriod, ticks - prevCross);
 
         double frequency = Math.abs(actualPeriod) < 1e-3d ? 0 : 1 / actualPeriod;
-        frequency *= (1 << CEEConfigs.server().simulationConfig.microTickBits.get()) * 20;
+        frequency *= CEEConfigs.server().simulationConfig.microTicks.get() * 20;
 
         return (float) frequency;
     }

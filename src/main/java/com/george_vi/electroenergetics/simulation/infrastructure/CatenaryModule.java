@@ -58,6 +58,7 @@ public class CatenaryModule {
                 Carriage.DimensionalCarriageEntity dce = carriage.getDimensional(carriage.getPresentDimensions().getFirst());
                 Vec3 positionVec = dce.rotationAnchors.getFirst();
                 Vec3 coupledVec = dce.rotationAnchors.getSecond();
+                //noinspection ConstantValue
                 if (positionVec == null || coupledVec == null)
                     continue;
 

@@ -461,7 +461,11 @@ public class CEEBlocks {
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .blockstate((c, p) ->
+                    p.horizontalBlock(c.get(), bs ->
+                            bs.getValue(TransformerCoreBlock.FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ?
+                                    AssetLookup.partialBaseModel(c, p) :
+                                    AssetLookup.partialBaseModel(c, p, "other")))
             .transform(pickaxeOnly())
             .loot((lt, b) -> lt.add(b, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1f)).add(LootItem.lootTableItem(b.asItem())).when(
                     AnyOfCondition.anyOf(
@@ -819,6 +823,7 @@ public class CEEBlocks {
             .build()
             .register();
 
+    @SuppressWarnings("unused")
     public static final BlockEntry<BundledWireTerminationBlock> DUPLEX_WIRE_TERMINATION = REGISTRATE.block("duplex_wire_termination", p -> new BundledWireTerminationBlock(p, BundledWireType.DUPLEX))
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))

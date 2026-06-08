@@ -13,13 +13,13 @@
       "y": 90
     },
     "facing=north,logged_state=dry": {
-      "model": "electroenergetics:block/transformer_core/block"
+      "model": "electroenergetics:block/transformer_core/block_other"
     },
     "facing=north,logged_state=oillogged": {
-      "model": "electroenergetics:block/transformer_core/block"
+      "model": "electroenergetics:block/transformer_core/block_other"
     },
     "facing=north,logged_state=waterlogged": {
-      "model": "electroenergetics:block/transformer_core/block"
+      "model": "electroenergetics:block/transformer_core/block_other"
     },
     "facing=south,logged_state=dry": {
       "model": "electroenergetics:block/transformer_core/block",
@@ -34,15 +34,15 @@
       "y": 180
     },
     "facing=west,logged_state=dry": {
-      "model": "electroenergetics:block/transformer_core/block",
+      "model": "electroenergetics:block/transformer_core/block_other",
       "y": 270
     },
     "facing=west,logged_state=oillogged": {
-      "model": "electroenergetics:block/transformer_core/block",
+      "model": "electroenergetics:block/transformer_core/block_other",
       "y": 270
     },
     "facing=west,logged_state=waterlogged": {
-      "model": "electroenergetics:block/transformer_core/block",
+      "model": "electroenergetics:block/transformer_core/block_other",
       "y": 270
     }
   }

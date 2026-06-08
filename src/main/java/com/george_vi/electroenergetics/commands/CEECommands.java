@@ -147,7 +147,7 @@ public class CEECommands {
             source.sendSuccess(() -> Component.literal("totalMicroTickers: ").withStyle(blue)
                     .append(Component.literal(String.valueOf(stats.totalMicroTickers)).withStyle(orange)), false);
             source.sendSuccess(() -> Component.literal("mtpt: ").withStyle(blue)
-                    .append(Component.literal(String.valueOf(1 << CEEConfigs.server().simulationConfig.microTickBits.get())).withStyle(orange)), false);
+                    .append(Component.literal(String.valueOf(CEEConfigs.server().simulationConfig.microTicks.get())).withStyle(orange)), false);
 
         }
 

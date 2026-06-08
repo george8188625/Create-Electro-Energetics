@@ -15,10 +15,10 @@ public final class SendVoltageDataPacket implements ClientboundPacketPayload {
         @Override
         public SendVoltageDataPacket decode(ByteBuf buffer) {
             SendVoltageDataPacket p = new SendVoltageDataPacket();
-            p.microTickBits = buffer.readByte();
-            if (p.microTickBits > 6 || p.microTickBits < 0)
-                throw new DecoderException(p.microTickBits < 0 ? "Received a voltage sync packet with negative micro-tick bits" : "Received a voltage sync packet with too many micro-ticks!");
-            int microTicks = (1 << p.microTickBits);
+            int microTicks = p.microTicks = buffer.readShort();
+            if (microTicks < 0)
+                throw new DecoderException("Received a voltage sync packet with negative micro-ticks!");
+
             int length = buffer.readInt();
 
             p.nodes = new InWorldNode[length];
@@ -29,22 +29,22 @@ public final class SendVoltageDataPacket implements ClientboundPacketPayload {
                 p.nodes[i] = InWorldNode.STREAM_CODEC.decode(buffer);
                 p.frequencies[i] = buffer.readFloat();
                 for (int j = 0; j < microTicks; j++)
-                    p.voltages[(i << p.microTickBits) | j] = buffer.readDouble();
+                    p.voltages[i * microTicks + j] = buffer.readDouble();
             }
             return p;
         }
 
         @Override
         public void encode(ByteBuf buffer, SendVoltageDataPacket p) {
-            buffer.writeByte(p.microTickBits);
+            int microTicks = p.microTicks;
+            buffer.writeShort(microTicks);
             buffer.writeInt(p.nodes.length);
-            int microTicks = (1 << p.microTickBits);
 
             for (int i = 0; i < p.nodes.length; i++) {
                 InWorldNode.STREAM_CODEC.encode(buffer, p.nodes[i]);
                 buffer.writeFloat(p.frequencies[i]);
                 for (int j = 0; j < microTicks; j++)
-                    buffer.writeDouble(p.voltages[(i << p.microTickBits) | j]);
+                    buffer.writeDouble(p.voltages[i * microTicks + j]);
             }
         }
     };
@@ -53,13 +53,11 @@ public final class SendVoltageDataPacket implements ClientboundPacketPayload {
 
     // a flattened 2d array
     double[] voltages;
-    byte microTickBits;
-
+    int microTicks;
     float[] frequencies;
 
     @Override
     public void handle(LocalPlayer player) {
-        int microTicks = 1 << microTickBits;
         for (int i = 0; i < nodes.length; i++) {
             InWorldNode node = nodes[i];
             NodeVoltageHolder.VoltageEntry ve = NodeVoltageHolder.getVoltageEntry(node);
@@ -67,16 +65,14 @@ public final class SendVoltageDataPacket implements ClientboundPacketPayload {
                 ve = new NodeVoltageHolder.VoltageEntry();
                 ve.frequency = frequencies[i];
                 ve.voltages = new double[microTicks];
-                for (int j = 0; j < microTicks; j++)
-                    ve.voltages[j] = voltages[(i << microTickBits) | j];
+                System.arraycopy(voltages, i * microTicks, ve.voltages, 0, microTicks);
 
                 ve.recompute();
                 NodeVoltageHolder.addVoltageData(node, ve);
             } else {
                 double[] list = (ve.voltages != null && ve.voltages.length == microTicks) ? ve.voltages : (ve.voltages = new double[microTicks]);
 
-                for (int j = 0; j < microTicks; j++)
-                    list[j] = voltages[(i << microTickBits) | j];
+                System.arraycopy(voltages, i * microTicks, list, 0, microTicks);
 
                 ve.frequency = frequencies[i];
                 ve.recompute();
