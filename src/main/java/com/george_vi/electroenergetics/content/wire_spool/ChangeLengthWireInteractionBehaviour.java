@@ -1,16 +1,21 @@
 package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
+import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.simibubi.create.AllKeys;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -99,6 +104,51 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
 
     @Override
     public DisplayType getWireDisplayType(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
-        return DisplayType.NONE;
+        if (!AllKeys.altDown())
+            return DisplayType.NONE;
+
+        InWorldNodeConnection connection = point.connection();
+
+        WireData wireData = WireRenderer.getConnectionData(connection);
+
+        if (wireData == null)
+            return DisplayType.NONE;
+
+        TagKey<Item> droppedTag = wireData.wireType().getDroppedTag();
+        if (droppedTag == null && wireData.wireType().getDrops() != stack.getItem())
+            return DisplayType.NONE;
+        if (droppedTag != null && !stack.is(droppedTag))
+            return DisplayType.NONE;
+
+        return DisplayType.LINE;
+    }
+
+    public static boolean mouseScrolled(double delta) {
+        if (!AllKeys.altDown() )
+            return false;
+
+        Minecraft mc = Minecraft.getInstance();
+
+        NodeConnectionPoint point = WireInteractionHandler.targetedPoint;
+        if (point == null || mc.player == null)
+            return false;
+
+        InWorldNodeConnection connection = point.connection();
+
+        WireData wireData = WireRenderer.getConnectionData(connection);
+
+        if (wireData == null)
+            return false;
+
+        ItemStack stack = mc.player.getMainHandItem();
+        TagKey<Item> droppedTag = wireData.wireType().getDroppedTag();
+        if (droppedTag == null && wireData.wireType().getDrops() != stack.getItem())
+            return false;
+        if (droppedTag != null && !stack.is(droppedTag))
+            return false;
+
+        CatnipServices.NETWORK.sendToServer(new ChangeLengthWirePacket(point, (byte) delta));
+
+        return true;
     }
 }

@@ -1,0 +1,94 @@
+package com.george_vi.electroenergetics.content.wire_spool;
+
+import com.george_vi.electroenergetics.CEEPackets;
+import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.foundation.CEELang;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
+import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.net.base.ServerboundPacketPayload;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
+
+public record ChangeLengthWirePacket(NodeConnectionPoint point, byte delta) implements ServerboundPacketPayload {
+    public static final StreamCodec<ByteBuf, ChangeLengthWirePacket> STREAM_CODEC = StreamCodec.composite(
+            NodeConnectionPoint.STREAM_CODEC, ChangeLengthWirePacket::point,
+            ByteBufCodecs.BYTE, ChangeLengthWirePacket::delta,
+            ChangeLengthWirePacket::new
+    );
+
+    @Override
+    public void handle(ServerPlayer player) {
+
+        ServerLevel level = (ServerLevel) player.level();
+        ItemStack stackInHand = player.getMainHandItem();
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        InWorldNodeConnection connection = point.connection();
+        WireData connectionData = sd.getConnectionData(connection);
+
+        if (connectionData == null)
+            return;
+
+        TagKey<Item> droppedTag = connectionData.wireType().getDroppedTag();
+        if (droppedTag == null && connectionData.wireType().getDrops() != stackInHand.getItem())
+            return;
+        if (droppedTag != null && !stackInHand.is(droppedTag))
+            return;
+
+        Vec3 pos1 = connection.node1().getPosition(level);
+        Vec3 pos2 = connection.node2().getPosition(level);
+
+        if (pos1 == null)
+            pos1 = connection.node1().sableSourcePos(level).getCenter();
+
+        if (pos2 == null)
+            pos2 = connection.node1().sableSourcePos(level).getCenter();
+
+        double distance = pos1.distanceTo(pos2);
+
+        if (delta < 0) {
+            double newLength = connectionData.length - 0.25;
+            double lengthDiff = distance - newLength;
+            double lengthRatio = newLength == 0 ? 1 : distance / newLength;
+
+            boolean shouldBreakWire = (lengthDiff > 1) && (connectionData.getSag() == 0 ? Math.abs(1 - lengthRatio) > 0.1 : lengthRatio > 1.4f);
+
+            if (shouldBreakWire || newLength < 0.5) {
+                player.connection.send(new ClientboundSetActionBarTextPacket(
+                        CEELang.translateDirect("action_bar.wire_too_short").withStyle(ChatFormatting.RED)));
+                return;
+            }
+            connectionData.length = newLength;
+        } else {
+            if (connectionData.length >= connectionData.wireType().getMaxLength()) {
+                player.connection.send(new ClientboundSetActionBarTextPacket(
+                        CEELang.translateDirect("action_bar.wire_too_long").withStyle(ChatFormatting.RED)));
+                return;
+            }
+            connectionData.length += 0.25f;
+        }
+
+        if (sd.wireSimulationState.relocateConnection(connection, connectionData)) {
+            Vec3 pos = VecHelper.lerp(0.5f, connection.node1().sableSourcePos(level).getCenter(), connection.node2().sableSourcePos(level).getCenter());
+            Containers.dropItemStack(level, pos.x, pos.y, pos.z, new ItemStack(sd.removeConnection(connection).wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
+        } else
+            sd.wireSync.handleWireAdded(connection, connectionData);
+    }
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return CEEPackets.CHANGE_LENGTH;
+    }
+}

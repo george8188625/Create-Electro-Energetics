@@ -21,6 +21,7 @@ import com.george_vi.electroenergetics.content.wire.WireSync;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractDetachedNodePacket;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
+import com.george_vi.electroenergetics.content.wire_spool.ChangeLengthWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.WireSparkEffectTicker;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
@@ -29,7 +30,6 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.simibubi.create.AllSoundEvents;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
-import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -99,7 +99,7 @@ public class GameEvents {
     @SubscribeEvent
     public static void mouseScrolled(InputEvent.MouseScrollingEvent event) {
         double delta = event.getScrollDeltaY();
-        event.setCanceled(FuseBlockItem.mouseScrolled(delta));
+        event.setCanceled(FuseBlockItem.mouseScrolled(delta) || ChangeLengthWireInteractionBehaviour.mouseScrolled(delta));
     }
 
     @OnlyIn(Dist.CLIENT)

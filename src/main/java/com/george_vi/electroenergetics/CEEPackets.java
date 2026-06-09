@@ -10,6 +10,7 @@ import com.george_vi.electroenergetics.content.railway_electrification.sound_eff
 import com.george_vi.electroenergetics.content.wire.*;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractDetachedNodePacket;
 import com.george_vi.electroenergetics.content.wire.interaction.InteractWirePacket;
+import com.george_vi.electroenergetics.content.wire_spool.ChangeLengthWirePacket;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.simulation.RequestVoltageDataPacket;
 import com.george_vi.electroenergetics.simulation.SendVoltageDataPacket;
@@ -30,6 +31,7 @@ public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     SEND_CATENARY(SendCatenaryPacket.class, SendCatenaryPacket.STREAM_CODEC),
     CLEAR_CATENARY(ClearCatenaryPacket.class, ClearCatenaryPacket.STREAM_CODEC),
     INTERACT_WIRE(InteractWirePacket.class, InteractWirePacket.STREAM_CODEC),
+    CHANGE_LENGTH(ChangeLengthWirePacket.class, ChangeLengthWirePacket.STREAM_CODEC),
     INTERACT_DETACHED_NODE(InteractDetachedNodePacket.class, InteractDetachedNodePacket.STREAM_CODEC),
     CHANGE_ENERGY_METER_STATE(ChangeEnergyMeterStatePacket.class, ChangeEnergyMeterStatePacket.STREAM_CODEC),
     UPDATE_ELECTRIC_TRAIN_SOUND(UpdateElectricTrainSoundPacket.class, UpdateElectricTrainSoundPacket.STREAM_CODEC),

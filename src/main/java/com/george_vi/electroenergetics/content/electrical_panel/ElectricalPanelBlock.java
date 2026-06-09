@@ -49,7 +49,6 @@ import java.util.*;
 
 public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<ElectricalPanelDevice> implements ProperOilAndWaterloggedBlock, IBE<ElectricalPanelBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final EnumProperty<ElectricalPanelNodeState> NODE_STATE = EnumProperty.create("node_state", ElectricalPanelNodeState.class);
     public static final EnumProperty<LoggedState> LOGGED_STATE = ProperOilAndWaterloggedBlock.LOGGED_STATE;
     public static final BooleanProperty TOP = BooleanProperty.create("top");
     public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
@@ -57,7 +56,6 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
     public ElectricalPanelBlock(Properties properties) {
         super(properties);
         registerDefaultState(defaultBlockState()
-                .setValue(NODE_STATE, ElectricalPanelNodeState.NONE)
                 .setValue(LOGGED_STATE, LoggedState.DRY)
                 .setValue(TOP, false)
                 .setValue(BOTTOM, false)
@@ -104,17 +102,19 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(FACING, NODE_STATE, LOGGED_STATE, TOP, BOTTOM);
+        builder.add(FACING, LOGGED_STATE, TOP, BOTTOM);
     }
 
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
-        return state.getValue(NODE_STATE).nodeConfigurator.getNodes(state.getValue(FACING));
+        if (!(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
+            return Collections.emptyMap();
+        return be.getNodePositions();
     }
 
     @Override
     public @Nullable Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
-        return state.getValue(NODE_STATE).nodeConfigurator.getNodePos(state.getValue(FACING), id);
+        return ElectricalPanelNodeState.configurator.getNodePos(state.getValue(FACING), id);
     }
 
     @Override

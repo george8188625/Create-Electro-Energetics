@@ -206,7 +206,7 @@ public class SwitchScenes {
         scene.idle(20);
 
         scene.overlay().showText(70)
-                .text("Relays are just switches that can are operated with a small electric current")
+                .text("Relays are just switches that can be operated with a small electric current")
                 .pointAt(relay.getBottomCenter())
                 .attachKeyFrame()
                 .placeNearTarget();

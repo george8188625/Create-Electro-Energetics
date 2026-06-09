@@ -95,7 +95,9 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         prevPos1 = pos1;
         prevPos2 = pos2;
 
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
+        List<Vec3> points = wireType.shouldScaleLast() ?
+                QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance)) :
+                QuadraticWireHelper.cablePointsRaw(pos1, pos2, wireData.getSag(distance));
 
         createWire(visualizationContext, wireType, points, pos2, level);
 
@@ -188,7 +190,9 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         prevLength = wireData.length;
 
         double distance = pos1.distanceTo(pos2);
-        List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
+        List<Vec3> points = wireType.shouldScaleLast() ?
+                QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance)) :
+                QuadraticWireHelper.cablePointsRaw(pos1, pos2, wireData.getSag(distance));
 
         createWire(visualizationContext, wireType, points, pos2, level);
 

@@ -265,9 +265,13 @@ public class WireRenderer {
                 if (!connection.isFullyLoaded(level))
                     continue;
                 List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
-                List<Vec3> renderedPoints = CEEConfigs.client().wireLOD.get() ?
-                        QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), cameraPosition) :
-                        QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
+                List<Vec3> renderedPoints;
+                if (wireData.wireType().shouldScaleLast())
+                    renderedPoints = CEEConfigs.client().wireLOD.get() ?
+                            QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance), cameraPosition) :
+                            QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance));
+                else
+                    renderedPoints = QuadraticWireHelper.cablePointsRaw(pos1, pos2, wireData.getSag(distance));
 
                 if (renderImmediately)
                     renderWire(renderedPoints, pos1, pos2, pose, buffer, levelRenderer, wireData.wireType(), level);
@@ -588,6 +592,7 @@ public class WireRenderer {
         return NODE_DATA.get(node);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static ClientNodeData removeNodeData(InWorldNode node) {
         return NODE_DATA.remove(node);
     }

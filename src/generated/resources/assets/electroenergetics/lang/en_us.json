@@ -332,7 +332,7 @@
   "electroenergetics.ponder.railway_electrification.text_7": "2500 V",
   "electroenergetics.ponder.railway_electrification.text_8": "Pantographs can be dyed",
   "electroenergetics.ponder.relay.header": "Using a relay",
-  "electroenergetics.ponder.relay.text_1": "Relays are just switches that can are operated with a small electric current",
+  "electroenergetics.ponder.relay.text_1": "Relays are just switches that can be operated with a small electric current",
   "electroenergetics.ponder.relay.text_2": "Connect the controlling circuit to the 'coil' connectors",
   "electroenergetics.ponder.relay.text_3": "Connect the switched circuit to the remaining connectors",
   "electroenergetics.ponder.relay.text_4": "Wrench the relay to change its state to Normally-Closed (NC)",

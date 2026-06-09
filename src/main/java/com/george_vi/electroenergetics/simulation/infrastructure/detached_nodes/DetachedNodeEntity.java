@@ -55,7 +55,7 @@ public class DetachedNodeEntity extends Entity {
                 double distance = adjacentPos.distanceTo(targetPos);
                 double length = wireData.length;
                 boolean isRigid = wireData.wireType().getSag() <= 0.2f;
-                double stretch = (distance + (isRigid ? 0 : 1)) - length;
+                double stretch = (distance + Math.min(length * 0.1f, isRigid ? 0 : 1)) - length;
                 if (stretch != 0) {
                     Vec3 diff = adjacentPos.subtract(targetPos)
                             .normalize()
@@ -69,6 +69,8 @@ public class DetachedNodeEntity extends Entity {
                 targetPos = targetSum.scale(1f / targets);
 
             deltaMovement = targetPos.subtract(prevPos);
+            if (deltaMovement.lengthSqr() > 0.25f)
+                deltaMovement = deltaMovement.normalize().scale(0.5f);
             setDeltaMovement(deltaMovement);
             move(MoverType.SELF, deltaMovement);
         }

@@ -151,7 +151,8 @@ public class WireInteractionHandler {
         targetedPos = bestPosition;
         WireInteractionBehaviour.DisplayType displayType = behaviour.getWireDisplayType(targetedPoint, mc.level, mc.player, stackInHand);
         if (displayType == WireInteractionBehaviour.DisplayType.DOT) {
-            Outliner.getInstance().chaseAABB("cee_wire_interaction_point", AABB.ofSize(bestPosition, 0.01, 0.01, 0.01))
+            Outliner.getInstance()
+                    .chaseAABB("cee_wire_interaction_point", AABB.ofSize(bestPosition, 0.01, 0.01, 0.01))
                     .lineWidth(0.15f)
                     .colored(behaviour.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
                     .disableLineNormals();
@@ -164,7 +165,8 @@ public class WireInteractionHandler {
                 Vec3 point = points.get(i);
                 Vec3 nextPoint = points.get(i + 1);
 
-                Outliner.getInstance().showLine("cee_wire_interaction_line_" + i, point, nextPoint)
+                Outliner.getInstance()
+                        .showLine("cee_wire_interaction_line_" + i, point, nextPoint)
                         .lineWidth(0.07f * 16 * bestWireData.wireType().getThickness())
                         .colored(behaviour.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
                         .disableLineNormals();

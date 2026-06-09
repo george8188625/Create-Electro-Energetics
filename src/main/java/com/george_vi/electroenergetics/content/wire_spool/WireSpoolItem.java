@@ -6,8 +6,8 @@ import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.interaction.IInteractDetachedNodes;
-import com.george_vi.electroenergetics.events.datagen.CEEAdvancement;
 import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
@@ -16,7 +16,6 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureS
 import com.simibubi.create.AllSoundEvents;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -47,8 +46,11 @@ public class WireSpoolItem extends Item implements IInteractDetachedNodes {
             return super.use(level, player, usedHand);
 
         ItemStack heldItem = player.getItemInHand(usedHand);
-        if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE))
+        if (heldItem.has(CEEDataComponents.SELECTED_NODE)) {
             heldItem.remove(CEEDataComponents.SELECTED_NODE);
+            if (level.isClientSide)
+                player.displayClientMessage(CEELang.translateDirect("wire_spool.cancelled_connection"), true);
+        }
         return InteractionResultHolder.success(heldItem);
     }
 
@@ -65,11 +67,11 @@ public class WireSpoolItem extends Item implements IInteractDetachedNodes {
         ItemStack heldItem = context.getItemInHand();
         BlockState state = level.getBlockState(pos);
 
-        if (player.isShiftKeyDown()) {
-            if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
+        if (player != null && player.isShiftKeyDown()) {
+            if (heldItem.has(CEEDataComponents.SELECTED_NODE)) {
                 heldItem.remove(CEEDataComponents.SELECTED_NODE);
                 if (level.isClientSide)
-                    player.displayClientMessage(Component.translatable("electroenergetics.wire_spool.cancelled_connection"), true);
+                    player.displayClientMessage(CEELang.translateDirect("wire_spool.cancelled_connection"), true);
             }
             return InteractionResult.SUCCESS;
         }
@@ -166,7 +168,7 @@ public class WireSpoolItem extends Item implements IInteractDetachedNodes {
             if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
                 heldItem.remove(CEEDataComponents.SELECTED_NODE);
                 if (level.isClientSide)
-                    player.displayClientMessage(Component.translatable("electroenergetics.wire_spool.cancelled_connection"), true);
+                    player.displayClientMessage(CEELang.translateDirect("wire_spool.cancelled_connection"), true);
             }
             return;
         }

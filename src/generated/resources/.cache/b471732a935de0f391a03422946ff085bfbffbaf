@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-07T22:20:42.269532526	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-06-09T18:25:19.487702736	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 efaff624fae8f426c8927b933899a261b68f7685 assets/electroenergetics/blockstates/accumulator.json
 bc7e544079464f9fb40950d4499967da027b352f assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -26,7 +26,7 @@ a8502765eeba2ac4241f7bb7e1fa2616f217cce1 assets/electroenergetics/blockstates/do
 bffbc28f5fec23a58f705c832dcf8069989e5cff assets/electroenergetics/blockstates/duplex_wire_termination.json
 0993cfeb0badd14a5fee3d5942be676c38bf7e76 assets/electroenergetics/blockstates/electric_pump.json
 5cdddebd1cb19990c46e41930eb66520a2b7bd80 assets/electroenergetics/blockstates/electric_shock_sign.json
-e2ef778aeb99713ce026441044be67d141faf6df assets/electroenergetics/blockstates/electrical_panel.json
+5deed645d46fb7f64c4c8889d8251c4d359284ce assets/electroenergetics/blockstates/electrical_panel.json
 cb622dd00232990feeee2813f8c3f43715f2e9c1 assets/electroenergetics/blockstates/emergency_stop_button.json
 b7f4521a989fd25e71aeec651522774d3ad74630 assets/electroenergetics/blockstates/energy_meter.json
 fb7aa10b3134fc87e3b0e6ffaa7443fa2f9de6ea assets/electroenergetics/blockstates/frequency_meter.json
@@ -76,8 +76,8 @@ a92bfd6311161a261beaea0e82673049f09158a3 assets/electroenergetics/blockstates/tr
 b5930496106654f114f652953190ba903785da89 assets/electroenergetics/blockstates/voltmeter.json
 f407a37a266195fcfc499e4b24ffdb23655d6ed6 assets/electroenergetics/blockstates/white_electric_motor.json
 08773c07f26e18921d02a6d72d8e5009381faebe assets/electroenergetics/blockstates/yellow_electric_motor.json
-bf5fb6e0a1f9ad54374972ed938a65ffb9337552 assets/electroenergetics/lang/en_ud.json
-fc0d4bc517309e8677b2c039c410b6d37000341c assets/electroenergetics/lang/en_us.json
+c8bf49ca4606db6d07a76e2bf1820b536a8ee723 assets/electroenergetics/lang/en_ud.json
+a29ae1b61e370c2bab9b8315ec7a1e7ef2c662e9 assets/electroenergetics/lang/en_us.json
 706ea17778dccc4e51f059c39b5c730336b598c6 assets/electroenergetics/models/block/black_electric_motor.json
 c4d97346cc2c5227ea79460ab456d978989a4917 assets/electroenergetics/models/block/black_electric_motor_roll.json
 4cb846021d3aba319f8bb6025abc8817d830996a assets/electroenergetics/models/block/blue_electric_motor.json

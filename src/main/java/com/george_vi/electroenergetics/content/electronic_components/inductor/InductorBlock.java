@@ -43,6 +43,11 @@ public class InductorBlock extends DirectionalRolledDeviceBlock<InductorDevice> 
     }
 
     @Override
+    public float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
+        return 2/16f;
+    }
+
+    @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
         if (state.getValue(DirectionalRolledDeviceBlock.ROLL))
             return CEENodeConfigurations.ELECTRONIC_10.rotate(new Vec3(0, -90, 0)).getNodes(state.getValue(FACING));

@@ -203,8 +203,8 @@ public class SimulationTicker {
 
             }
 
-            for (int i = 0; i < allVoltages.length; i += microTicks) {
-                WrappedIndexedNode node = circuitBuilder.getNode(i % microTicks);
+            for (int i = 0; i * microTicks < allVoltages.length; i++) {
+                WrappedIndexedNode node = circuitBuilder.getNode(i);
                 if (!(node.node instanceof InWorldNode iwn))
                     continue;
                 if (microTicks == 1) {
@@ -212,11 +212,14 @@ public class SimulationTicker {
                     continue;
                 }
                 double rms = 0;
-                for (int j = 0; j < microTicks; j++)
-                    rms += allVoltages[i|j] * allVoltages[i|j];
+                for (int j = 0; j < microTicks; j++) {
+                    double v = allVoltages[(i * microTicks) + j];
+                    rms += v * v;
+                }
                 rms /= microTicks;
                 rms = Math.sqrt(rms);
-                VOLTAGES.put(iwn, rms);
+                if (rms != 0)
+                    VOLTAGES.put(iwn, rms);
             }
 
             Object2DoubleMap<DirectionalNodeConnection> allSourceAmps = new Object2DoubleOpenHashMap<>();

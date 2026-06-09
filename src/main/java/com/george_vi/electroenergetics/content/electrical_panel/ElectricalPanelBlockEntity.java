@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachment;
 import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachmentType;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.api.equipment.goggles.IHaveHoveringInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -24,7 +25,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IHaveHoveringInformation {
 
@@ -151,8 +154,6 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
     }
 
     public void attachmentUpdate() {
-        assert level != null;
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(ElectricalPanelBlock.NODE_STATE, ElectricalPanelNodeState.getState(getAttachments(), getLayoutType())));
         sendData();
     }
 
@@ -235,5 +236,21 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
         if (attachments[slotIndex] != null)
             return slotIndex;
         return  -1;
+    }
+
+    public Map<Integer, Vec3> getNodePositions() {
+        PanelAttachment[] attachments = getAttachments();
+        Map<Integer, Vec3> out = new HashMap<>();
+        Direction facing = getBlockState().getValue(ElectricalPanelBlock.FACING);
+        for (PanelAttachment attachment : attachments) {
+            if (attachment == null)
+                continue;
+            for (InWorldNode node : attachment.nodes) {
+                int id = node.id();
+                out.put(id, ElectricalPanelNodeState.configurator.getNodePos(facing, id));
+            }
+        }
+
+        return out;
     }
 }

@@ -67,6 +67,7 @@ public class WireElectrocutionModule {
             computeElectrocutionFor(entity, builder);
         }
     }
+
     private void computeElectrocutionFor(Entity entity, CircuitBuilder builder) {
         Map<ConnectionEntry, ElectrocutionPart> electrocutionParts = new HashMap<>();
         SectionPos.aroundAndAtBlockPos(entity.blockPosition(), s -> computeForWires(wireSimulationState.getConnectionsInSection(s), entity, electrocutionParts::put));
@@ -116,7 +117,6 @@ public class WireElectrocutionModule {
         AABB bb1 = entity.getBoundingBox();
 
         for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wiresToCheck.entrySet()) {
-            InWorldNodeConnection connection = e.getKey();
             ConnectionEntry connectionEntry = e.getValue();
 
             AABB bb2 = connectionEntry.dangerousBB;
@@ -191,7 +191,7 @@ public class WireElectrocutionModule {
                 if (current > 0.03) {
                     Vec3 pos2 = entity.position();
                     if (!(entity instanceof Player p && p.isCreative()))
-                        CatnipServices.NETWORK.sendToClientsAround((ServerLevel) level, pos1, 40, new SendQuadraticParticlesPacket(pos1, pos2, ParticleTypes.BUBBLE_POP, -2f, 0.7f));
+                        CatnipServices.NETWORK.sendToClientsAround(level, pos1, 40, new SendQuadraticParticlesPacket(pos1, pos2, ParticleTypes.BUBBLE_POP, -2f, 0.7f));
                 }
                 highestCurrent = Math.max(highestCurrent, current);
                 highestVoltage = Math.max(highestVoltage, voltage);
