@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.rotor;
 
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.config.CRotor;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -42,12 +43,12 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
                 break;
             }
         }
-
         float totalStress = 0;
         for (AlternatorRotorBlockEntity rotor : rotors) {
-            totalStress += rotor.magnets * CEEConfigs.server().rotorValues.rotorPowerMultiplier.getF() * Math.abs(rotor.getSpeed());
+            totalStress += rotor.magnets * Math.abs(rotor.getSpeed());
         }
-
+        CRotor rotorConfig = CEEConfigs.server().rotorValues;
+        totalStress *= rotorConfig.rotorPowerMultiplier.getF();
         if (!(level instanceof ServerLevel sl))
             return;
 
@@ -56,7 +57,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
         if (!(device instanceof AlternatorBrushesDevice dataHolder)) {
             if (device instanceof ThreePhaseAlternatorBrushesDevice dataHolder) {
                 dataHolder.stress = totalStress;
-                dataHolder.voltage = totalStress / 100;
+                dataHolder.voltage = totalStress / rotorConfig.rotorFullLoadCurrent.getF();
                 dataHolder.otherBrush = otherBrush;
                 float speed = getSpeed();
                 dataHolder.rpmSpeed = Float.isFinite(dataHolder.rpmSpeed) ?
@@ -67,7 +68,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
         }
 
         dataHolder.stress = totalStress;
-        dataHolder.voltage = totalStress / 100;
+        dataHolder.voltage = totalStress / rotorConfig.rotorFullLoadCurrent.getF();
         dataHolder.otherBrush = otherBrush;
     }
 
@@ -75,7 +76,10 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         float totalStress = 0;
         for (AlternatorRotorBlockEntity rotor : rotors)
-            totalStress += rotor.magnets * CEEConfigs.server().rotorValues.rotorPowerMultiplier.getF() * Math.abs(rotor.getSpeed());
+            totalStress += rotor.magnets * Math.abs(rotor.getSpeed());
+
+        CRotor rotorConfig = CEEConfigs.server().rotorValues;
+        totalStress *= rotorConfig.rotorPowerMultiplier.getF();
 
         Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.electric_stats")
@@ -100,7 +104,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
         Lang.builder(CreateElectroEnergetics.ID)
                 .text(LangNumberFormat.format(Math.round(voltage)))
                 .translate("generic.volts")
-                .text(" / " + LangNumberFormat.format(Math.round(totalStress / 100)))
+                .text(" / " + LangNumberFormat.format(Math.round(totalStress / rotorConfig.rotorFullLoadCurrent.getF())))
                 .translate("generic.volts")
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
