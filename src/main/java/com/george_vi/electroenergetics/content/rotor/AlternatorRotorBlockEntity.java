@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.rotor;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEESoundEvents;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.ElectricHumSoundInstance;
 import com.simibubi.create.content.kinetics.KineticNetwork;
 import com.simibubi.create.content.kinetics.base.IRotate;
@@ -106,7 +107,9 @@ public class AlternatorRotorBlockEntity extends KineticBlockEntity {
 
     @Override
     public float calculateStressApplied() {
-        float impact = (magnets + 0.125f) * 48;
+        float impact = (magnets + 0.125f)
+                * CEEConfigs.server().rotorValues.rotorPowerMultiplier.getF()
+                * CEEConfigs.server().rotorValues.rotorStressMultiplier.getF();
         this.lastStressApplied = impact;
         return impact;
     }

@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.rotor;
 
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -44,7 +45,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
 
         float totalStress = 0;
         for (AlternatorRotorBlockEntity rotor : rotors) {
-            totalStress += rotor.magnets * 48 * Math.abs(rotor.getSpeed());
+            totalStress += rotor.magnets * CEEConfigs.server().rotorValues.rotorPowerMultiplier.getF() * Math.abs(rotor.getSpeed());
         }
 
         if (!(level instanceof ServerLevel sl))
@@ -74,7 +75,7 @@ public class AlternatorBrushesBlockEntity extends KineticBlockEntity {
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         float totalStress = 0;
         for (AlternatorRotorBlockEntity rotor : rotors)
-            totalStress += rotor.magnets * 48 * Math.abs(rotor.getSpeed());
+            totalStress += rotor.magnets * CEEConfigs.server().rotorValues.rotorPowerMultiplier.getF() * Math.abs(rotor.getSpeed());
 
         Lang.builder(CreateElectroEnergetics.ID)
                 .translate("gui.goggles.electric_stats")
