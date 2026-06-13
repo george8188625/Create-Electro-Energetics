@@ -43,9 +43,9 @@ public class WireLifetimeModule {
             List<WireSimulationState.CutWireEntry> cuts = connectionData.cuts;
 
             double current = 0;
-            double wholeWireResistance = connectionData.wireData.getResistance();
+            double wholeWireResistance = connectionData.resistance;
             if (cuts == null || cuts.isEmpty()) {
-                double vd = Math.abs(results.getVoltageAt(connection.node1(), connection.node2()));
+                double vd = connectionData.getVoltageOnWire(results, connection.node1(), connection.node2());
                 current = vd / wholeWireResistance;
             } else {
                 float prevPoint = 0;

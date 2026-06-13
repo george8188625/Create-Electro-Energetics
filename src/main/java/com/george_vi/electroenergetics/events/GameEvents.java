@@ -136,7 +136,6 @@ public class GameEvents {
             for (ServerLevel level : event.getServer().getAllLevels()) {
                 InfrastructureSavedData sd = InfrastructureSavedData.load(level);
                 sd.wireSimulationState.onReloadConfigs();
-                sd.wireSimulationState.reloadLazyConnections();
             }
     }
 

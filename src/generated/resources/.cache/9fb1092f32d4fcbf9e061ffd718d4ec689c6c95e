@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-06T00:19:44.824883541	Recipes
+// 1.21.1	2026-06-12T19:36:13.550191734	Recipes
 e4558ff2c12de196a56a9f67ffe27050cdfe38f7 data/electroenergetics/advancement/recipes/decorations/stonecutting/electric_shock_sign.json
 1e443110466e17eb3a8f102e9fc77c86fc29380e data/electroenergetics/advancement/recipes/decorations/stonecutting/grounding_sign.json
 e89fe60463584c2f2421e5f0b94ad49c5b1927a5 data/electroenergetics/advancement/recipes/decorations/stonecutting/high_voltage_sign.json
@@ -154,7 +154,7 @@ baa0fdbb2102c6b209eb385649922df5e01ca610 data/electroenergetics/recipe/crafting/
 70298a9b34e226a688db864145d73f1dc2c35550 data/electroenergetics/recipe/crafting/energy_meter.json
 69c3deca08049ce15318df5ebaf560f5f03c15d1 data/electroenergetics/recipe/crafting/fuse.json
 26c490f0f5aa438568f9da18ce33e593743cc759 data/electroenergetics/recipe/crafting/fuse_holder.json
-36198c69f845fb4bfbc64774b92bf9daf9add167 data/electroenergetics/recipe/crafting/glass_insulator_segment.json
+1fb6f82e259fd2fca21282389fc825586cf65b06 data/electroenergetics/recipe/crafting/glass_insulator_segment.json
 2d3f1d2e1c9701952edd9e37ccc8aad1c08ae27f data/electroenergetics/recipe/crafting/glass_insulator_spool.json
 1acc4301c8c23111d7d733049f9ed5c00fb49837 data/electroenergetics/recipe/crafting/gray_electric_motor.json
 298150200fdba6127be32e98ffb86b5960da121e data/electroenergetics/recipe/crafting/gray_electric_motor_dye.json

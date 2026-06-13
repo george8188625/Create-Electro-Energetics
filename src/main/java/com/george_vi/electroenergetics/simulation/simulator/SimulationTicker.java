@@ -2,6 +2,8 @@ package com.george_vi.electroenergetics.simulation.simulator;
 
 import com.george_vi.electroenergetics.CEESimulatedDeviceFeatureTypes;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.events.AddToElectricGraphEvent;
 import com.george_vi.electroenergetics.events.FinishElectricSimulationEvent;
 import com.george_vi.electroenergetics.foundation.device.TickingElectricalDevice;
@@ -13,16 +15,12 @@ import com.george_vi.electroenergetics.simulation.electrical_properties.Electric
 import com.george_vi.electroenergetics.simulation.electrical_properties.MicroTickingElectricalProperties;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.util.*;
-import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
-import dev.ryanhcode.sable.companion.SableCompanion;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Position;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
@@ -40,7 +38,6 @@ public class SimulationTicker {
     public final ServerLevel level;
     public final InfrastructureSavedData sd;
 
-    Object2DoubleMap<InWorldNode> VOLTAGES = new Object2DoubleOpenHashMap<>();
     public SimulationResults lastResults;
     private CircuitBuilder circuitBuilder;
     private SimulationStats stats;
@@ -100,8 +97,6 @@ public class SimulationTicker {
         profiler.popPush("addToGraphEvent");
 
         NeoForge.EVENT_BUS.post(new AddToElectricGraphEvent(circuitBuilder, level, sd));
-
-        VOLTAGES.clear();
 
         profiler.pop();
         profiler.pop();
@@ -203,25 +198,6 @@ public class SimulationTicker {
 
             }
 
-            for (int i = 0; i * microTicks < allVoltages.length; i++) {
-                WrappedIndexedNode node = circuitBuilder.getNode(i);
-                if (!(node.node instanceof InWorldNode iwn))
-                    continue;
-                if (microTicks == 1) {
-                    VOLTAGES.put(iwn, allVoltages[i]);
-                    continue;
-                }
-                double rms = 0;
-                for (int j = 0; j < microTicks; j++) {
-                    double v = allVoltages[(i * microTicks) + j];
-                    rms += v * v;
-                }
-                rms /= microTicks;
-                rms = Math.sqrt(rms);
-                if (rms != 0)
-                    VOLTAGES.put(iwn, rms);
-            }
-
             Object2DoubleMap<DirectionalNodeConnection> allSourceAmps = new Object2DoubleOpenHashMap<>();
             for (Object2DoubleMap<DirectionalNodeConnection> v : sourceAmps.values())
                 allSourceAmps.putAll(v);
@@ -276,14 +252,5 @@ public class SimulationTicker {
 
         SimulationTicker.allStats.put(level, stats);
         deviceSD.setDirty();
-    }
-
-    public double getVoltageAt(InWorldNode node) {
-        return VOLTAGES.getOrDefault(node, 0d);
-    }
-
-    public static double getWireResistance(InWorldNode node1, InWorldNode node2, double resistance, Level level) {
-        double res = SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)node1.sourcePos().getCenter()).distanceTo(SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)node2.sourcePos().getCenter())) * resistance;
-        return res == 0 ? resistance : res;
     }
 }

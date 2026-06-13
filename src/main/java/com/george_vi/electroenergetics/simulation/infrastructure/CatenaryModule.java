@@ -21,8 +21,10 @@ import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
@@ -84,7 +86,8 @@ public class CatenaryModule {
                     pantographPos = pivotPosition.add(pantographPos);
 //                    level.sendParticles(ParticleTypes.ELECTRIC_SPARK, pantographPos.x, pantographPos.y, pantographPos.z, 3, 0, 0, 0, 0);
 
-                    for (ConnectionEntry connectionEntry : levelWireSimulationState.getAllConnectionEntries()) {
+                    long section = SectionPos.asLong(Mth.floor(pantographPos.x) >> 4, Mth.floor(pantographPos.y) >> 4, Mth.floor(pantographPos.z) >> 4);
+                    for (ConnectionEntry connectionEntry : levelWireSimulationState.getConnectionsInSection(section).values()) {
                         if (connectionEntry.wireData.wireType().getSag() != 0 && !(connectionEntry.wireData instanceof CatenaryConnectionData))
                             continue;
                         Vec3 start = connectionEntry.pos1;

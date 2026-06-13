@@ -17,8 +17,7 @@ public class WrappedIndexedNode {
     public IntList invisibleAdjacency = new IntArrayList(8);
     public double groundConductance = 0d;
 
-    // PER NETWORK DATA
-    public int localNetworkID;
+    public double rmsVoltage;
     public Int2ObjectArrayMap<ElectricalProperties> localAdjacencyOverride = null;
 
     // for Network#seriesOptimize
@@ -40,7 +39,6 @@ public class WrappedIndexedNode {
         adjacency.clear();
         invisibleAdjacency.clear();
         groundConductance = 0;
-        localNetworkID = 0;
         localAdjacencyOverride = null;
     }
 }

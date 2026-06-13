@@ -15,11 +15,11 @@ import java.util.List;
 
 public class SimulationResults {
     double[] voltages;
+    double[] rmsVoltages;
     Object2DoubleMap<DirectionalNodeConnection> sourceAmps;
-    CircuitBuilder circuitBuilder;
+    public CircuitBuilder circuitBuilder;
     InfrastructureSavedData sd;
     final int microTicks;
-
 
     public SimulationResults(double[] voltages, int microTicks, Object2DoubleMap<DirectionalNodeConnection> sourceAmps, CircuitBuilder circuitBuilder, InfrastructureSavedData sd) {
         this.voltages = voltages;
@@ -27,6 +27,31 @@ public class SimulationResults {
         this.circuitBuilder = circuitBuilder;
         this.sd = sd;
         this.microTicks = microTicks;
+
+        if (microTicks == 1) {
+            rmsVoltages = voltages;
+            for (int i = 0; i < rmsVoltages.length; i++)
+                circuitBuilder.allIndexedNodes.get(i).rmsVoltage = rmsVoltages[i];
+
+            return;
+        }
+
+        rmsVoltages = new double[voltages.length / microTicks];
+
+        for (int i = 0; i * microTicks < voltages.length; i++) {
+            double rms = 0;
+            for (int j = 0; j < microTicks; j++) {
+                double v = voltages[(i * microTicks) + j];
+                rms += v * v;
+            }
+            rms /= microTicks;
+            rms = Math.sqrt(rms);
+            if (rms != 0)
+                rmsVoltages[i] = rms;
+        }
+
+        for (int i = 0; i < rmsVoltages.length; i++)
+            circuitBuilder.allIndexedNodes.get(i).rmsVoltage = rmsVoltages[i];
     }
 
     public InfrastructureSavedData getSD() {
@@ -37,16 +62,11 @@ public class SimulationResults {
         int nodeID = circuitBuilder.nodeIndexes.getInt(node);
         if (nodeID == -1)
             return 0;
-        if (microTicks == 1)
-            return voltages[nodeID];
+        return getVoltageAt(nodeID);
+    }
 
-        int i = nodeID * microTicks;
-        double rms = 0;
-        for (int j = 0; j < microTicks; j++)
-            rms += voltages[i+j] * voltages[i+j];
-        rms /= microTicks;
-        rms = Math.sqrt(rms);
-        return rms;
+    public double getVoltageAt(int nodeID) {
+        return rmsVoltages[nodeID];
     }
 
     public double getVoltageAt(BlockPos pos, int id) {
@@ -148,10 +168,20 @@ public class SimulationResults {
         return Math.sqrt(getVoltageAtSqr(n1, n2));
     }
 
+    public double getVoltageAt(int nodeId1, int nodeId2) {
+        if (microTicks == 1)
+            return voltages[nodeId1] - voltages[nodeId2];
+        return Math.sqrt(getVoltageAtSqr(nodeId1, nodeId2));
+    }
+
     public double getVoltageAtSqr(Node n1, Node n2) {
         int nodeId1 = circuitBuilder.nodeIndexes.getInt(n1);
         int nodeId2 = circuitBuilder.nodeIndexes.getInt(n2);
-        if (nodeId1 == -1 || nodeId2 == -1)
+        return getVoltageAtSqr(nodeId1, nodeId2);
+    }
+
+    public double getVoltageAtSqr(int nodeId1, int nodeId2) {
+        if (nodeId1 < 0 || nodeId2 < 0)
             return 0;
         int id1 = nodeId1 * microTicks;
         int id2 = nodeId2 * microTicks;
@@ -192,5 +222,18 @@ public class SimulationResults {
         int id = nodeID * microTicks;
         System.arraycopy(voltages, id, toFill, 0, microTicks);
         return toFill;
+    }
+
+    /**
+     * @param hint Checks the hint first
+     * @return -1 if the node doesn't exist.
+     */
+    public int getNodeID(Node node, int hint) {
+        List<WrappedIndexedNode> allIndexedNodes = circuitBuilder.allIndexedNodes;
+        if (hint >= 0 && hint < allIndexedNodes.size()) {
+            WrappedIndexedNode wn = allIndexedNodes.get(hint);
+            return hint;
+        }
+        return circuitBuilder.nodeIndexes.getInt(node);
     }
 }

@@ -4,10 +4,7 @@ import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
 import com.george_vi.electroenergetics.simulation.electrical_properties.*;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
-import com.george_vi.electroenergetics.simulation.optimization.SetVoltageOptimizationEntry;
-import com.george_vi.electroenergetics.simulation.optimization.SimpleTopologyOptimizationEntry;
-import com.george_vi.electroenergetics.simulation.optimization.StarToDeltaEntry;
-import com.george_vi.electroenergetics.simulation.optimization.TopologyOptimizationEntry;
+import com.george_vi.electroenergetics.simulation.optimization.*;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -61,7 +58,6 @@ public class Network {
         for (SimulationNode simulationNode : simulationNodes) {
             simulationNode.id = id;
             nodeIDs.addTo(simulationNode.correspondingNode, id);
-            simulationNode.correspondingNode.localNetworkID = id;
             id++;
         }
 
@@ -97,13 +93,14 @@ public class Network {
 
     public void optimize() {
         for (int i = 0; i < 1000; i++) {
-            if (!seriesOptimize() &
+            if (
+                    !seriesOptimize() &
                     !starToDeltaOptimize())
                 break;
         }
     }
 
-    boolean starToDeltaOptimize() {
+    private boolean starToDeltaOptimize() {
         for (WrappedIndexedNode node : allNodes) {
             double groundConductance = node.groundConductance;
             Int2ObjectMap<ElectricalProperties> nodeAdjacency = getAdjacency(node);
@@ -128,14 +125,13 @@ public class Network {
         if (!baseId.getValue().isSimpleResistor())
             return false;
 
-        SetVoltageOptimizationEntry e = new SetVoltageOptimizationEntry(base, node);
+        SetVoltageOptimizationEntry e = new SetVoltageOptimizationEntry(base.ordinal, node.ordinal);
         overrideAdjacency(base).remove(node.ordinal);
         overrideAdjacency(node).remove(base.ordinal);
         allNodes.remove(node);
         optimizations.push(e);
 
         return true;
-
     }
 
     private boolean starToDeltaOptimizeInner(WrappedIndexedNode node, Int2ObjectMap<ElectricalProperties> nodeAdjacency) {
@@ -257,6 +253,56 @@ public class Network {
             // also it can be assumed the series chain ends here, as a non-series connection appeared.
             ElectricalProperties propertiesInPlace = getAdjacency(prevNode).get(nextNode.ordinal);
             if (propertiesInPlace != null) {
+
+                // If that connection is a transformer, and it is the only one, completely dissolve it.
+                if (propertiesInPlace instanceof CoupledProperties cp) {
+                    if (getAdjacency(prevNode).size() != 2 ||
+                            getAdjacency(nextNode).size() != 2)
+                        continue;
+
+                    WrappedIndexedNode primaryLeft;
+                    WrappedIndexedNode primaryRight;
+                    if (cp.nodes().node1().equals(prevNode.node)) {
+                        // n1 -- prev -- left
+                        primaryLeft = builder.getNode(cp.coupledNodes().node1());
+                        // n2 -- next -- right
+                        primaryRight = builder.getNode(cp.coupledNodes().node2());
+
+                    } else {
+                        // n1 -- next -- right
+                        primaryLeft = builder.getNode(cp.coupledNodes().node2());
+                        // n2 -- prev -- left
+                        primaryRight = builder.getNode(cp.coupledNodes().node1());
+                    }
+
+                    double leftResistance = resistanceChain.getFirst().resistance;
+                    double rightResistance = resistanceChain.getLast().resistance;
+
+                    double ratio = cp.isPrimary() ? cp.ratio() : 1 / cp.ratio();
+                    double secondaryResistance = leftResistance + rightResistance;
+                    double replacementResistance = secondaryResistance / ratio / ratio;
+
+                    optimizations.push(new CoupledPropertiesOptimizationEntry(
+                            prevNode.ordinal, node.ordinal, nextNode.ordinal,
+                            primaryLeft.ordinal, primaryRight.ordinal,
+                            replacementResistance,
+                            leftResistance,
+                            rightResistance,
+                            ratio));
+
+                    allNodes.remove(prevNode);
+                    allNodes.remove(node);
+                    allNodes.remove(nextNode);
+
+                    ElectricalProperties newResistance = ElectricalProperties.resistor(replacementResistance);
+
+                    overrideAdjacency(primaryLeft).put(primaryRight.ordinal, newResistance);
+                    overrideAdjacency(primaryRight).put(primaryLeft.ordinal, newResistance);
+
+                    result = true;
+                    continue;
+                }
+
                 if (!propertiesInPlace.isSimpleResistor())
                     continue;
                 Int2ObjectMap<ElectricalProperties> prevAdjacency = overrideAdjacency(prevNode);
@@ -271,7 +317,8 @@ public class Network {
                 prevAdjacency.put(nextNode.ordinal, pdp);
                 nextAdjacency.put(prevNode.ordinal, pdp);
 
-                optimizations.push(new SimpleTopologyOptimizationEntry(dp, prevNode, nextNode));
+                optimizations.push(new SimpleTopologyOptimizationEntry(dp, prevNode.ordinal, nextNode.ordinal));
+                result = true;
                 continue;
             }
 
@@ -333,7 +380,7 @@ public class Network {
                 allNodes.remove(interiorChainNode);
             }
 
-            optimizations.push(new SimpleTopologyOptimizationEntry(p, nodeChain.getFirst(), nodeChain.getLast()));
+            optimizations.push(new SimpleTopologyOptimizationEntry(p, nodeChain.getFirst().ordinal, nodeChain.getLast().ordinal));
         }
 
         return result;
@@ -476,8 +523,8 @@ public class Network {
 
         for (TopologyOptimizationEntry entry : optimizations) {
             if (entry instanceof SimpleTopologyOptimizationEntry properties) {
-                double v1 = toFill[properties.node1().ordinal * totalMicroTicks + microTick];
-                double v2 = toFill[properties.node2().ordinal * totalMicroTicks + microTick];
+                double v1 = toFill[properties.node1() * totalMicroTicks + microTick];
+                double v2 = toFill[properties.node2() * totalMicroTicks + microTick];
                 properties.properties().getVoltages(v1, v2, toFill, microTick, totalMicroTicks);
             } else if (entry instanceof StarToDeltaEntry delta) {
                 double va = toFill[delta.na.ordinal * totalMicroTicks + microTick];
@@ -485,8 +532,20 @@ public class Network {
                 double vc = toFill[delta.nc.ordinal * totalMicroTicks + microTick];
                 toFill[delta.centralNode.ordinal * totalMicroTicks + microTick] = delta.calculateCenter(va, vb, vc);
             } else if (entry instanceof SetVoltageOptimizationEntry setV) {
-                double vBase = toFill[setV.base().ordinal * totalMicroTicks + microTick];
-                toFill[setV.dead().ordinal * totalMicroTicks + microTick] = vBase;
+                double vBase = toFill[setV.base() * totalMicroTicks + microTick];
+                toFill[setV.dead() * totalMicroTicks + microTick] = vBase;
+            } else if (entry instanceof CoupledPropertiesOptimizationEntry optimization) {
+                double leftPrimary = toFill[optimization.leftPrimary() * totalMicroTicks + microTick];
+                double rightPrimary = toFill[optimization.rightPrimary() * totalMicroTicks + microTick];
+                double voltage = leftPrimary - rightPrimary;
+                double current = voltage / optimization.replacementResistance();
+                double scaledCurrent = current / optimization.ratio();
+                double scaledVoltage = voltage * optimization.ratio();
+                double originVoltage = scaledVoltage < 0 ? -scaledVoltage : 0;
+
+                toFill[optimization.leftNode() * totalMicroTicks + microTick] = originVoltage;
+                toFill[optimization.node() * totalMicroTicks + microTick] = originVoltage + optimization.leftResistance() * scaledCurrent;
+                toFill[optimization.rightNode() * totalMicroTicks + microTick] = originVoltage + scaledVoltage;
             }
 
         }

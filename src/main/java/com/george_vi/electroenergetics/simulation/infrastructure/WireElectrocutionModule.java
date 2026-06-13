@@ -120,7 +120,7 @@ public class WireElectrocutionModule {
             ConnectionEntry connectionEntry = e.getValue();
 
             AABB bb2 = connectionEntry.dangerousBB;
-            double dangerousDistance = connectionEntry.dangerousDistance;
+            double dangerousDistanceSqr = connectionEntry.dangerousDistanceSqr;
 
             if (!(bb1.minX <= bb2.maxX) || !(bb1.maxX >= bb2.minX) ||
                     !(bb1.minY <= bb2.maxY) || !(bb1.maxY >= bb2.minY) ||
@@ -141,7 +141,7 @@ public class WireElectrocutionModule {
                 double distanceY = Math.max(0, Math.max(bb1.minY - point.y, point.y - bb1.maxY));
                 double distanceZ = Math.max(0, Math.max(bb1.minZ - point.z, point.z - bb1.maxZ));
                 double distanceSqr = (distanceX * distanceX) + (distanceY * distanceY) + (distanceZ * distanceZ);
-                if (distanceSqr < dangerousDistance) {
+                if (distanceSqr < dangerousDistanceSqr) {
                     double resistance = wireData.wireType().insulationResistance() + 1444;
                     if (distanceSqr > 0.1f)
                         resistance += distanceSqr * 1000;
@@ -159,17 +159,16 @@ public class WireElectrocutionModule {
         }
     }
 
-
-
     public void finishSimulation(SimulationResults results) {
         if (!CEEConfigs.server().enableElectrocution.get())
             return;
 
-        Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-        if (damageSource == null)
+        if (damageSource == null || hvDamageSource == null) {
+            Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
             damageSource = new DamageSource(registry.getHolderOrThrow(CEEDamageTypes.ELECTROCUTION));
-        if (hvDamageSource == null)
             hvDamageSource = new DamageSource(registry.getHolderOrThrow(CEEDamageTypes.HV_ELECTROCUTION));
+        }
+
         for (Iterator<Map.Entry<Entity, ElectrocutionEntry>> iterator = electrocutions.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<Entity, ElectrocutionEntry> e = iterator.next();
             Entity entity = e.getKey();
@@ -214,13 +213,11 @@ public class WireElectrocutionModule {
             InWorldNodeConnection connection = e.getKey();
             ConnectionEntry connectionEntry = e.getValue();
             WireType wireType = connectionEntry.wireData.wireType();
-            double lastWireVoltage = Math.max(Math.abs(sd.ticker.getVoltageAt(connection.node1())), Math.abs(sd.ticker.getVoltageAt(connection.node2())));
+
+            double lastWireVoltage = connectionEntry.getWireVoltageToGround(results, connection.node1(), connection.node2());
             double unsafeDistance = Mth.clamp(Math.log(0.006d * lastWireVoltage + 1) / 8.1d + 0.000011d * lastWireVoltage -0.6d, 0.1, 3);
-            connectionEntry.dangerousDistance = unsafeDistance * unsafeDistance;
-
-            connectionEntry.dangerousBB = connectionEntry.bb.inflate(connectionEntry.dangerousDistance);
+            connectionEntry.dangerousDistanceSqr = unsafeDistance * unsafeDistance;
             connectionEntry.isOvervolted = lastWireVoltage > wireType.maxInsulationVoltage();
-
         }
     }
 

@@ -2,7 +2,7 @@
 
 Everyone is welcome to contribute - whether to add a feature, fix something small, or create a translation.
 
-If you want to contribute, feel free to open a PR.
+If you want to contribute, feel free to open a PR or send me a git patch directly.
 
 ### Creating translations
 1. Take the English localization from [`src/generated/resources/assets/electroenergetics/lang/en_us`](https://github.com/george8188625/Create-Electro-Energetics/blob/1.21.1/src/generated/resources/assets/electroenergetics/lang/en_us.json)

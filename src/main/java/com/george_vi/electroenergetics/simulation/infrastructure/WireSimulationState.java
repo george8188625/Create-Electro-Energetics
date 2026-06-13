@@ -47,6 +47,8 @@ public class WireSimulationState {
 
     public void onReloadConfigs() {
         sd.wireCrossContactModule.onReloadConfigs();
+        connections.values().forEach(ConnectionEntry::onReloadConfigs);
+
         reloadLazyConnections();
     }
 

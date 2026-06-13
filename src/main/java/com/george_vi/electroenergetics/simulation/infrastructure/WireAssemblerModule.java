@@ -33,7 +33,7 @@ public class WireAssemblerModule {
         for (Map.Entry<InWorldNodeConnection, ConnectionEntry> e : wireSimulationState.getAllConnections()) {
             InWorldNodeConnection connection = e.getKey();
             ConnectionEntry connectionData = e.getValue();
-            double resistance = connectionData.wireData.getResistance();
+            double resistance = connectionData.resistance;
             if (resistance > 1e+10d)
                 continue;
             List<WireSimulationState.CutWireEntry> cuts = connectionData.cuts;

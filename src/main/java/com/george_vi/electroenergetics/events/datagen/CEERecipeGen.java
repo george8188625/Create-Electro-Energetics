@@ -109,7 +109,7 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_glass_insulation_segment", has(CEEItems.GLASS_INSULATOR_SEGMENT))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/hanging_glass_insulator"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.GLASS_INSULATOR_SEGMENT)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.GLASS_INSULATOR_SEGMENT, 4)
                 .pattern("A")
                 .pattern("W")
                 .pattern("G")
