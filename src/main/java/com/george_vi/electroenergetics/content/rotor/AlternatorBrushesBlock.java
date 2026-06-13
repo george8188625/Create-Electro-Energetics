@@ -9,6 +9,7 @@ import com.george_vi.electroenergetics.foundation.base.DirectionalKineticElectri
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.simibubi.create.foundation.block.IBE;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -51,6 +52,14 @@ public class AlternatorBrushesBlock extends DirectionalKineticElectricBlock<Alte
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction preferred = getPreferredFacing(context);
+        if (!context.getPlayer().isShiftKeyDown()){
+            BlockPos clickedPos = context.getClickedPos();
+            for (Direction d : Iterate.directions){
+                if (context.getLevel().getBlockState(clickedPos.relative(d)).getBlock() instanceof AlternatorRotorBlock){
+                    preferred = d;
+                }
+            }
+        }
         if (preferred == null || context.getPlayer().isShiftKeyDown())
             preferred = context.getNearestLookingDirection();
         if (!context.getPlayer().isShiftKeyDown())
