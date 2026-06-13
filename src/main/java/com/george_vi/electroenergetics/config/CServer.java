@@ -21,6 +21,7 @@ public class CServer extends ConfigBase {
     public final ConfigBool enableCrossContact = b(false, "enableCrossContact", "Uninsulated wires can connect");
     public final ConfigBool componentDamage = b(true, "componentDamage", "Components get damaged when overloaded");
     public final ConfigBool saveInfrastructureInSchematics = b(true, "saveInfrastructureSDInSchematics");
+    public final CRotor rotorValues = nested(1, CRotor::new, "Alternator Values");
     public final CResistances resistanceValues = nested(1, CResistances::new, "Resistance Values");
     public final CVoltages voltageValues = nested(1, CVoltages::new, "Voltage Values");
     public final CTrains trainValues = nested(1, CTrains::new, "Train Values");
