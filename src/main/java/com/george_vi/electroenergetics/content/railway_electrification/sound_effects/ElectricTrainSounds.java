@@ -40,7 +40,7 @@ public class ElectricTrainSounds {
             soundBehaviour.trainSpeed = e.getValue().speed();
             soundBehaviour.acceleration = e.getValue().acceleration();
             soundBehaviour.pos = null;
-            if (train.carriages.size() >= Math.abs(carriageID) - 1) {
+            if (train.carriages.size() >= Math.abs(carriageID)) {
                 Carriage.DimensionalCarriageEntity dimensional = train.carriages.get(Math.abs(carriageID) - 1).getDimensional(Minecraft.getInstance().level);
                 Vec3 leading = dimensional.leadingAnchor();
                 Vec3 trailing = dimensional.trailingAnchor();
