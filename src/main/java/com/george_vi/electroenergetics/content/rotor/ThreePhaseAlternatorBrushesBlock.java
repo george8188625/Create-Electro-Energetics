@@ -9,10 +9,12 @@ import com.george_vi.electroenergetics.foundation.base.DirectionalKineticElectri
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.simibubi.create.foundation.block.IBE;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -67,6 +69,25 @@ public class ThreePhaseAlternatorBrushesBlock extends DirectionalKineticElectric
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
         return face.getAxis() == getRotationAxis(state);
+    }
+
+    @Override
+    public Direction getPreferredFacing(BlockPlaceContext context) {
+        Direction preferred = super.getPreferredFacing(context);
+        if (!context.getPlayer().isShiftKeyDown()){
+            BlockPos clickedPos = context.getClickedPos();
+            for (Direction d : Iterate.directions){
+                if (context.getLevel().getBlockState(clickedPos.relative(d)).getBlock() instanceof AlternatorRotorBlock){
+                    preferred = d;
+                }
+            }
+        }
+        if (preferred == null || context.getPlayer().isShiftKeyDown())
+            preferred = context.getNearestLookingDirection();
+        if (context.getPlayer().isShiftKeyDown())
+            preferred = preferred.getOpposite();
+
+        return preferred;
     }
 
     @Override
