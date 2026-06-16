@@ -23,15 +23,15 @@ import org.slf4j.Logger;
 import java.util.*;
 
 public class DevicesSavedData extends SavedData {
-    Long2ObjectMap<SimulatedDevice> DEVICES_BY_POS = new Long2ObjectOpenHashMap<>();
+    final Long2ObjectMap<SimulatedDevice> DEVICES_BY_POS = new Long2ObjectOpenHashMap<>();
     List<SimulatedDevice>[] DEVICES_BY_FEATURE_TYPE;
-
 
     public final ServerLevel level;
     public static final Logger LOGGER = LogUtils.getLogger();
 
     private DevicesSavedData(ServerLevel level) {
         this.level = level;
+        //noinspection unchecked
         this.DEVICES_BY_FEATURE_TYPE = new ArrayList[DeviceFeatureType.globalID];
     }
 
@@ -59,6 +59,7 @@ public class DevicesSavedData extends SavedData {
     private static DevicesSavedData load(ServerLevel level, CompoundTag tag, HolderLookup.Provider provider) {
         DevicesSavedData sd = new DevicesSavedData(level);
         sd.DEVICES_BY_POS.clear();
+        //noinspection unchecked
         sd.DEVICES_BY_FEATURE_TYPE = new ArrayList[DeviceFeatureType.globalID];
 
         tag.getList("Devices", Tag.TAG_COMPOUND).forEach(tg -> {
@@ -102,8 +103,14 @@ public class DevicesSavedData extends SavedData {
     }
 
     public Deque<Pair<BlockPos, SimulatedDevice>> devicesToAddSable = new ArrayDeque<>();
+    public Deque<SimulatedDevice> devicesToInitialize = new ArrayDeque<>();
 
     public void tick() {
+        while (!devicesToInitialize.isEmpty()) {
+            SimulatedDevice device = devicesToInitialize.pop();
+            device.initialize();
+        }
+
         while (!devicesToAddSable.isEmpty()) {
             Pair<BlockPos, SimulatedDevice> e = devicesToAddSable.pop();
             BlockPos destinationPos = e.getFirst();
@@ -124,7 +131,7 @@ public class DevicesSavedData extends SavedData {
     /**
      * Adds a device to the specified position. If it already exists, calls {@link SimulatedDevice#update()}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "UnusedReturnValue"})
     public <T extends SimulatedDevice> T addDevice(SimulatedDeviceType<T> deviceType, BlockPos pos, CompoundTag tag) {
         SimulatedDevice oldDevice = DEVICES_BY_POS.get(pos.asLong());
 
@@ -150,6 +157,7 @@ public class DevicesSavedData extends SavedData {
         }
         setDirty();
         device.update();
+        devicesToInitialize.push(device);
         return device;
     }
 

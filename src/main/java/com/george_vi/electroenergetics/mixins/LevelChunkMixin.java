@@ -34,15 +34,7 @@ public class LevelChunkMixin {
             SimulatedDeviceType<?> type = db.getDevice();
             DevicesSavedData sd = DevicesSavedData.load(level);
             sd.addDevice(type, pos, db.getDefaultDeviceData(level, pos, state));
-            return;
         }
-//
-//        SimulatedDeviceType<?> type = SimulatedDeviceType.BY_BLOCK.get(state.getBlock());
-//        if (type == null)
-//            return;
-//
-//        DevicesSavedData sd = DevicesSavedData.load(level);
-//        sd.addDevice(type, pos, new CompoundTag());
     }
 
     private static final java.util.function.Predicate<BlockState> IS_DEVICE_BLOCK = state -> state.getBlock() instanceof DeviceBlock<?>;

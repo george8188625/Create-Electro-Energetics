@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.simulation.infrastructure;
 
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.Node;
+import com.george_vi.electroenergetics.simulation.CircuitBuilder;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
 import net.minecraft.world.phys.AABB;
@@ -66,23 +67,29 @@ public class ConnectionEntry {
     public double getWireVoltageToGround(SimulationResults results, Node node1, Node node2) {
         // Very messy stuff but hopefully fast
 
-        List<WrappedIndexedNode> allIndexedNodes = results.circuitBuilder.allNodes();
+        CircuitBuilder circuitBuilder = results.circuitBuilder;
+        List<WrappedIndexedNode> allIndexedNodes = circuitBuilder.allNodes();
         WrappedIndexedNode wn1;
         if (lastID1 >= 0 && lastID1 < allIndexedNodes.size()) {
             wn1 = allIndexedNodes.get(lastID1);
             if (!wn1.node.equals(node1))
-                wn1 = allIndexedNodes.get(results.getNodeID(node1, -1));
+                wn1 = circuitBuilder.getNode(node1);
         } else
-            wn1 = allIndexedNodes.get(results.getNodeID(node1, -1));
+            wn1 = circuitBuilder.getNode(node1);
+        if (wn1 == null)
+            return 0;
         lastID1 = wn1.ordinal;
 
         WrappedIndexedNode wn2;
         if (lastID2 >= 0 && lastID2 < allIndexedNodes.size()) {
             wn2 = allIndexedNodes.get(lastID2);
             if (!wn2.node.equals(node2))
-                wn2 = allIndexedNodes.get(results.getNodeID(node2, -1));
+                wn2 = circuitBuilder.getNode(node2);
         } else
-            wn2 = allIndexedNodes.get(results.getNodeID(node2, -1));
+            wn2 = circuitBuilder.getNode(node2);
+        if (wn2 == null)
+            return 0;
+        
         lastID2 = wn2.ordinal;
 
         return Math.max(Math.abs(wn1.rmsVoltage), Math.abs(wn2.rmsVoltage));
@@ -93,7 +100,7 @@ public class ConnectionEntry {
      */
     public double getVoltageOnWire(SimulationResults results, Node node1, Node node2) {
         lastID1 = results.getNodeID(node1, lastID1);
-        lastID2 = results.getNodeID(node1, lastID2);
+        lastID2 = results.getNodeID(node2, lastID2);
 
         if (lastID1 == -1 || lastID2 == -1)
             return 0;

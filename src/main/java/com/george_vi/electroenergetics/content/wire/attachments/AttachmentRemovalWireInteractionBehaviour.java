@@ -87,4 +87,29 @@ public class AttachmentRemovalWireInteractionBehaviour extends WireInteractionBe
 
         return 0xffffff;
     }
+
+    @Override
+    public boolean isActuallyActiveFor(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
+        InWorldNodeConnection connection = new InWorldNodeConnection(point.node1(), point.node2());
+        WireData data = WireRenderer.getConnectionData(connection);
+        if (data == null)
+            return false;
+
+        Vec3 pos1 = connection.node1().getPosition(level);
+        Vec3 pos2 = connection.node2().getPosition(level);
+
+        if (pos1 == null || pos2 == null) {
+            pos1 = connection.node1().sourcePos().getCenter();
+            pos2 = connection.node2().sourcePos().getCenter();
+        }
+
+        double distance = pos1.distanceTo(pos2);
+
+        for (Pair<Float, WireAttachment> attachment : data.attachments()) {
+            if (Math.abs(point.point() - attachment.getFirst()) * distance < attachment.getSecond().getWidth() / 2 + 0.25)
+                return true;
+        }
+
+        return false;
+    }
 }

@@ -23,11 +23,6 @@ public class CEEMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if ((mixinClassName.equals("com.george_vi.electroenergetics.mixins.StructureTemplateMixin") ||
-                mixinClassName.equals("com.george_vi.electroenergetics.mixins.SchematicPrinterMixin")) &&
-                (LoadingModList.get().getModFileById("betterend") != null ||
-                 LoadingModList.get().getModFileById("betternether") != null))
-            return false;
         if (mixinClassName.equals("com.george_vi.electroenergetics.mixins.SubLevelAssemblyHelper") &&
                 LoadingModList.get().getModFileById("sable") == null)
             return false;

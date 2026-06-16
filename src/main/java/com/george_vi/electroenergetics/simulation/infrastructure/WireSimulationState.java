@@ -31,7 +31,7 @@ public class WireSimulationState {
     private int nextHandleID = 0;
     private final Map<InWorldNodeConnection, List<CutWireEntry>> cutsByWire = new HashMap<>();
     private final AttachedNodeGenerator cutNodeGenerator = new AttachedNodeGenerator("CEECutNode");
-    private List<ObjectDoublePair<DirectionalNodeConnection>> lazyConnections = new ArrayList<>();
+    private final List<ObjectDoublePair<DirectionalNodeConnection>> lazyConnections = new ArrayList<>();
     private boolean reloadLazy = true;
 
     private List<WrappedIndexedNode> allLazyIndexedNodes = new ArrayList<>();
@@ -127,6 +127,7 @@ public class WireSimulationState {
         reloadLazyConnections();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     ConnectionEntry removeConnection(InWorldNodeConnection connection) {
         ConnectionEntry v = connections.remove(connection);
         if (v != null) {
@@ -255,9 +256,8 @@ public class WireSimulationState {
         if (handle.invalidated)
             throw new IllegalArgumentException("Used an invalidated wire cut handle! " + handle);
         Map<AttachedNode, CutWireEntry> entries = cutsByHandle.get(handle.id);
-        entries.forEach(((node, cutWireEntry) -> {
-            cutWireEntry.originalList.remove(cutWireEntry);
-        }));
+        entries.forEach(((node, cutWireEntry) ->
+                cutWireEntry.originalList.remove(cutWireEntry)));
         entries.clear();
         reloadLazyConnections();
     }
@@ -329,13 +329,17 @@ public class WireSimulationState {
     }
 
     public Map<InWorldNodeConnection, ConnectionEntry> getConnectionsInSection(long section) {
-        return connectionsBySection.get(section);
+        Map<InWorldNodeConnection, ConnectionEntry> out = connectionsBySection.get(section);
+        if (out == null)
+            return Collections.emptyMap();
+        return out;
     }
 
     public Set<Map.Entry<InWorldNodeConnection, ConnectionEntry>> getAllConnections() {
         return connections.entrySet();
     }
 
+    @SuppressWarnings("unused")
     public ConnectionEntry getConnection(InWorldNodeConnection connection) {
         return connections.get(connection);
     }

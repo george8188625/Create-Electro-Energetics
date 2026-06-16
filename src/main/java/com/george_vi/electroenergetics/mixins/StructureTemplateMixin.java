@@ -57,8 +57,6 @@ public class StructureTemplateMixin {
 
     @Inject(method = "fillFromWorld(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Vec3i;ZLnet/minecraft/world/level/block/Block;)V", at=@At("HEAD"), remap = false)
     public void fillFromWorld(Level level, BlockPos pos, Vec3i size, boolean withEntities, @Nullable Block toIgnore, CallbackInfo ci) {
-        if (!CEEConfigs.server().saveInfrastructureInSchematics.get())
-            return;
 
         // When saving schematics, Create saves them both on the client and server
         // Client -> saves the schematic to the /schematics path
@@ -208,8 +206,6 @@ public class StructureTemplateMixin {
 
     @Inject(method = "load", at=@At("HEAD"), remap = false)
     public void load(HolderGetter<Block> blockGetter, CompoundTag tag, CallbackInfo ci) {
-        if (!CEEConfigs.server().saveInfrastructureInSchematics.get())
-            return;
         CompoundTag ceeTag = tag.getCompound("electroenergetics_data");
 
         NBTHelper.iterateCompoundList(ceeTag.getList("Catenary", Tag.TAG_COMPOUND), connectionTag -> {

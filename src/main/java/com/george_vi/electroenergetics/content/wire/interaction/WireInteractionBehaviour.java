@@ -27,6 +27,10 @@ public abstract class WireInteractionBehaviour {
 
     public abstract boolean isActiveFor(ItemStack stack, Player player);
 
+    public boolean isActuallyActiveFor(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
+        return true;
+    }
+
     @OnlyIn(Dist.CLIENT)
     public DisplayType getWireDisplayType(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
         return DisplayType.DOT;

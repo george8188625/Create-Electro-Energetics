@@ -78,7 +78,7 @@ public class WireData {
     }
 
     public double getResistance() {
-        return Math.max(0.001, wireType.getResistance() * length);
+        return Math.max(0.00001, wireType.getResistance() * length);
     }
 
     public WireType wireType() {

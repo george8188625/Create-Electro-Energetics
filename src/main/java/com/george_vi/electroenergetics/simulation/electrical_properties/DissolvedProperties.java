@@ -2,21 +2,23 @@ package com.george_vi.electroenergetics.simulation.electrical_properties;
 
 import com.george_vi.electroenergetics.simulation.WrappedIndexedNode;
 
-import java.util.List;
+import java.util.Collection;
 
 public class DissolvedProperties extends ElectricalProperties implements IDissolvedProperties {
     private final int[] originalNodeIDs;
     private final double[] originalResistances;
 
-    public DissolvedProperties(List<WrappedIndexedNode> originalNodes, List<ElectricalProperties> originalResistances) {
+    public DissolvedProperties(Collection<WrappedIndexedNode> originalNodes, Collection<ElectricalProperties> originalResistances) {
         super(originalResistances.stream().mapToDouble(ElectricalProperties::resistance).sum(), 0, 0);
         this.originalNodeIDs = new int[originalNodes.size()];
-        for (int i = 0; i < originalNodes.size(); i++)
-            this.originalNodeIDs[i] = originalNodes.get(i).ordinal;
+        int i = 0;
+        for (WrappedIndexedNode node : originalNodes)
+            this.originalNodeIDs[i++] = node.ordinal;
 
         this.originalResistances = new double[originalResistances.size()];
-        for (int i = 0; i < originalResistances.size(); i++)
-            this.originalResistances[i] = originalResistances.get(i).resistance;
+        i = 0;
+        for (ElectricalProperties properties : originalResistances)
+            this.originalResistances[i++] = properties.resistance;
     }
 
     @Override

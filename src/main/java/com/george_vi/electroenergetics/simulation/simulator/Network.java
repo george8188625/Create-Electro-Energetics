@@ -237,14 +237,14 @@ public class Network {
             WrappedIndexedNode prevNode = builder.getNode(it.nextInt());
             WrappedIndexedNode nextNode = builder.getNode(it.nextInt());
 
-            LinkedList<WrappedIndexedNode> nodeChain = new LinkedList<>();
+            Deque<WrappedIndexedNode> nodeChain = new ArrayDeque<>();
             nodeChain.add(prevNode);
             nodeChain.add(node);
             nodeChain.add(nextNode);
             prevNode.isDissolved = true;
             node.isDissolved = true;
             nextNode.isDissolved = true;
-            LinkedList<ElectricalProperties> resistanceChain = new LinkedList<>();
+            Deque<ElectricalProperties> resistanceChain = new ArrayDeque<>();
             resistanceChain.add(getAdjacency(prevNode).get(node.ordinal));
             resistanceChain.add(getAdjacency(nextNode).get(node.ordinal));
 
@@ -372,12 +372,18 @@ public class Network {
             leftAdjacency.put(rightNode.ordinal, p);
             rightAdjacency.put(leftNode.ordinal, p);
 
-            List<WrappedIndexedNode> toRemove = nodeChain.subList(1, nodeChain.size() - 1);
-            for (WrappedIndexedNode interiorChainNode : toRemove) {
-                for (int neighbor : getAdjacency(interiorChainNode).keySet())
-                    overrideAdjacency(builder.getNode(neighbor)).remove(interiorChainNode.ordinal);
-                overrideAdjacency(interiorChainNode).clear();
-                allNodes.remove(interiorChainNode);
+            // remove the nodes in the middle of the node chain
+            int i = 0;
+            for (WrappedIndexedNode toRemove : nodeChain) {
+                if (i == 0 || i == nodeChain.size() - 1) {
+                    i++;
+                    continue;
+                }
+                for (int neighbor : getAdjacency(toRemove).keySet())
+                    overrideAdjacency(builder.getNode(neighbor)).remove(toRemove.ordinal);
+                overrideAdjacency(toRemove).clear();
+                allNodes.remove(toRemove);
+                i++;
             }
 
             optimizations.push(new SimpleTopologyOptimizationEntry(p, nodeChain.getFirst().ordinal, nodeChain.getLast().ordinal));

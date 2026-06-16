@@ -144,6 +144,12 @@ public class WireInteractionHandler {
         Vec3 pos1 = targetedPoint.node1().getPosition(mc.level);
         Vec3 pos2 = targetedPoint.node2().getPosition(mc.level);
 
+        if (!behaviour.isActuallyActiveFor(targetedPoint, mc.level, mc.player, stackInHand)) {
+            targetedPoint = null;
+            return;
+        }
+
+
         if (pos1 == null || pos2 == null)
             return;
 

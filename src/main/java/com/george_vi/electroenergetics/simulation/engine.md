@@ -8,7 +8,7 @@ The low level stuff is really abstracted from the engine. You will never have to
 
 ### Terminology:
 - `micro-ticker` A special electrical connection that ticks and can change its electrical properties in between `micro-ticks` 
-- `micro-tick` Describes the act of one MNA solve. There can be `2^n` total micro-ticks. `n=0` is the default, `n=5` is the max. `n=3` is a balanced value.
+- `micro-tick` Describes one MNA solve. There can be multiple per tick.
 - `node` It's a node
 - `electrical properties` a collection of three values: Resistance, Voltage source value and Current source value. These values define everything.
 - `device` Devices are data structures that define the behavior of blocks. when a block is placed, a device may be added for that position.
@@ -74,7 +74,7 @@ All voltages are stored in an array of `n*m` size where `n` is the amount of nod
 
 A specific voltage is accessed through: 
 ```java
-double voltage = voltages[(nodeOrdinal << microTickBits) | microTick];
+double voltage = voltages[nodeOrdinal * microTickBits + microTick];
 ```
 
 ### Solving

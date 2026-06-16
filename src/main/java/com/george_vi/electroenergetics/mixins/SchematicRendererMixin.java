@@ -3,7 +3,6 @@ package com.george_vi.electroenergetics.mixins;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.client.WireRenderer;
-import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;

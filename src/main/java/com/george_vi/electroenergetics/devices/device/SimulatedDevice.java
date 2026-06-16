@@ -58,6 +58,20 @@ public abstract class SimulatedDevice {
 
     }
 
+    /**
+     * Called when the device is added (deferred to the end of the tick)
+     */
+    public void initialize() {
+        // read from DeviceBlock#getDefaultDeviceData here instead of on creation for greater mod compatibility
+        BlockState state = level.getBlockState(pos);
+        if (state.getBlock() instanceof DeviceBlock<?> db) {
+            CompoundTag defaultData = db.getDefaultDeviceData(level, pos, state);
+            CompoundTag data = new CompoundTag();
+            write(data);
+            read(data.merge(defaultData));
+        }
+    }
+
     public final boolean isValid() {
         return isValid;
     }
