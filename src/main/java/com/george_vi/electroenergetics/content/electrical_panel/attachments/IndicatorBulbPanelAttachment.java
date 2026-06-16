@@ -3,6 +3,7 @@ package com.george_vi.electroenergetics.content.electrical_panel.attachments;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -29,22 +30,12 @@ import net.minecraft.world.phys.BlockHitResult;
 
 public class IndicatorBulbPanelAttachment extends PanelAttachment {
 
-    public final boolean miniature;
     public DyeColor color = DyeColor.WHITE;
     LerpedFloat smoothLight = LerpedFloat.linear();
     float light = 0f;
 
-    private IndicatorBulbPanelAttachment(PanelAttachmentType type, boolean miniature) {
+    public IndicatorBulbPanelAttachment(PanelAttachmentType type) {
         super(type);
-        this.miniature = miniature;
-    }
-
-    public static IndicatorBulbPanelAttachment normal(PanelAttachmentType type) {
-        return new IndicatorBulbPanelAttachment(type, false);
-    }
-
-    public static IndicatorBulbPanelAttachment miniature(PanelAttachmentType type) {
-        return new IndicatorBulbPanelAttachment(type, true);
     }
 
     @Override
@@ -52,13 +43,13 @@ public class IndicatorBulbPanelAttachment extends PanelAttachment {
                        MultiBufferSource buffer, int light, int overlay) {
         transformPose(ms, be);
 
-        CachedBuffers.partial(miniature ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_INDICATOR_BULB : CEEPartialModels.PANEL_ATTACHMENT_INDICATOR_BULB, be.getBlockState())
+        CachedBuffers.partial(miniature() ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_INDICATOR_BULB : CEEPartialModels.PANEL_ATTACHMENT_INDICATOR_BULB, be.getBlockState())
                 .light(light)
                 .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
         float lightStrength = smoothLight.getValue(partialTicks);
 
         RenderType renderType = lightStrength > 0.05f ? RenderTypes.additive() : RenderType.translucent();
-        if (miniature) {
+        if (miniature()) {
             CachedBuffers.partial(CEEPartialModels.INDICATOR_BULB_TUBE, be.getBlockState())
                     .color(color.getTextColor())
                     .rotateXCenteredDegrees(270)
@@ -190,5 +181,9 @@ public class IndicatorBulbPanelAttachment extends PanelAttachment {
             tag.putFloat("Light", light);
         if (color != null)
             tag.putString("Color", color.getSerializedName());
+    }
+
+    private boolean miniature() {
+        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
     }
 }

@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.electric_motor.ElectricMotorBlock;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.simibubi.create.AllCreativeModeTabs;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.core.Holder;
@@ -68,6 +69,9 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.FUSE.asStack());
                         output.accept(CEEBlocks.FUSE_HOLDER.asStack());
                         output.accept(CEEBlocks.ELECTRICAL_PANEL.asStack());
+                        for (BlockEntry<ElectricalPanelBlock> e : CEEBlocks.DYED_ELECTRICAL_PANELS)
+                            output.accept(e.asStack(), CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
+
                         output.accept(CEEBlocks.SF6_BREAKER.asStack());
                         output.accept(CEEBlocks.GROUND_ROD.asStack());
                         output.accept(CEEBlocks.RADIATOR_PANEL.asStack());
@@ -113,9 +117,6 @@ public class CEECreativeTab {
                         output.accept(CEEItems.WIRE_DAMPER.asStack());
                         output.accept(CEEItems.MINIATURE_CIRCUIT_BREAKER.asStack());
                         output.accept(CEEItems.MINIATURE_MOMENTARY_SWITCH.asStack());
-                        output.accept(CEEItems.MINIATURE_INDICATOR_BULB.asStack());
-                        output.accept(CEEItems.MINIATURE_VOLTMETER.asStack());
-                        output.accept(CEEItems.MINIATURE_AMMETER.asStack());
                         output.accept(CEEBlocks.HIGH_VOLTAGE_SIGN.asStack());
                         output.accept(CEEBlocks.ELECTRIC_SHOCK_SIGN.asStack());
                         output.accept(CEEBlocks.GROUNDING_SIGN.asStack());

@@ -1,0 +1,6 @@
+{
+  "parent": "electroenergetics:block/electrical_panel/item",
+  "textures": {
+    "casing": "electroenergetics:block/electrical_panel/orange"
+  }
+}

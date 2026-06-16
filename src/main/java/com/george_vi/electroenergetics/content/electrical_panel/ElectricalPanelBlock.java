@@ -7,18 +7,25 @@ import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.ProperOilAndWaterloggedBlock;
 import com.george_vi.electroenergetics.foundation.base.SimpleElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
@@ -52,14 +59,20 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
     public static final EnumProperty<LoggedState> LOGGED_STATE = ProperOilAndWaterloggedBlock.LOGGED_STATE;
     public static final BooleanProperty TOP = BooleanProperty.create("top");
     public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
+    public final DyeColor color;
 
-    public ElectricalPanelBlock(Properties properties) {
+    public ElectricalPanelBlock(Properties properties, DyeColor color) {
         super(properties);
         registerDefaultState(defaultBlockState()
                 .setValue(LOGGED_STATE, LoggedState.DRY)
                 .setValue(TOP, false)
                 .setValue(BOTTOM, false)
         );
+        this.color = color;
+    }
+
+    public ElectricalPanelBlock(Properties properties) {
+        this(properties, null);
     }
 
     @Override
@@ -68,11 +81,43 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
         BlockState above = context.getLevel().getBlockState(context.getClickedPos().above());
         return withWater(defaultBlockState()
                 .setValue(FACING, context.getHorizontalDirection().getOpposite())
-                .setValue(BOTTOM, !CEEBlocks.ELECTRICAL_PANEL.has(below))
-                .setValue(TOP, !CEEBlocks.CURRENT_TRANSFORMER.has(above)),
+                .setValue(BOTTOM, below.getBlock() != this)
+                .setValue(TOP, above.getBlock() != this),
                 context);
     }
 
+    @Override
+    public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
+        CompoundTag tag = new CompoundTag();
+        if (level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be) {
+            ElectricalPanelLayoutType layoutType = be.beLayoutType;
+            if (layoutType == ElectricalPanelLayoutType.NONE)
+                return tag;
+            PanelAttachment[] attachments = be.beAttachments;
+            tag.putString("Layout", layoutType.getSerializedName());
+
+            for (int i = 0; i < attachments.length; i++) {
+                if (attachments[i] == null)
+                    continue;
+
+                ResourceLocation id = CEERegistries.PANEL_ATTACHMENT_TYPE.getKey(attachments[i].type);
+                if (id == null)
+                    continue;
+
+                CompoundTag attachmentTag = new CompoundTag();
+                tag.put("Attachment" + i, attachmentTag);
+
+                attachmentTag.putString("ID", id.toString());
+
+                CompoundTag dataTag = new CompoundTag();
+                attachmentTag.put("Data", dataTag);
+                attachments[i].write(dataTag, false);
+                if (attachments[i].label != null)
+                    attachmentTag.putString("Label", attachments[i].label);
+            }
+        }
+        return tag;
+    }
 
     @Override
     protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
@@ -82,8 +127,8 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
 
         updateWater(level, state, pos);
 
-        boolean bottom = !CEEBlocks.ELECTRICAL_PANEL.has(below);
-        boolean top = !CEEBlocks.ELECTRICAL_PANEL.has(above);
+        boolean bottom = below.getBlock() != this;
+        boolean top = above.getBlock() != this;
 
         return state.setValue(BOTTOM, bottom)
                 .setValue(TOP, top);
@@ -122,7 +167,7 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
                                               Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (hitResult.getDirection() != state.getValue(FACING) ||
                 !(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return interactOnPanelItself(stack, state, level, pos, player, hand, hitResult);
 
         Direction facing = state.getValue(FACING);
         ElectricalPanelLayoutType layout = be.getLayoutType();
@@ -143,7 +188,7 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
 
             clickedSlot = attachmentType.mode.getSlot(facing, localClickPos);
         } else {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return interactOnPanelItself(stack, state, level, pos, player, hand, hitResult);
         }
 
         if (layout == ElectricalPanelLayoutType.NONE) {
@@ -179,7 +224,22 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
 
             // If the player presses the panel, it won't cause an interaction.
             if (clickedX < 2/16f || clickedX > 14/16f || clickedY < 2/16f || clickedY > 14/16f)
-                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                return interactOnPanelItself(stack, state, level, pos, player, hand, hitResult);
+
+            if (stack.is(CEETags.PANEL_ATTACHMENT_RENAME_ITEM)) {
+                Component component = stack.get(DataComponents.CUSTOM_NAME);
+                String prevLabel = attachments[slotIndex].label;
+                attachments[slotIndex].label = component == null ? null : component.getString();
+                if (!Objects.equals(prevLabel, attachments[slotIndex].label)) {
+                    if (attachments[slotIndex].label == null)
+                        AllSoundEvents.CLIPBOARD_ERASE.playOnServer(level, pos);
+                    else
+                        AllSoundEvents.CLIPBOARD_CHECKMARK.playOnServer(level, pos);
+                    be.sendData();
+                    return ItemInteractionResult.SUCCESS;
+                }
+                return ItemInteractionResult.SUCCESS;
+            }
 
             ItemInteractionResult result = attachments[slotIndex].onInteract(stack, player, hand, hitResult);
             if (result == null)
@@ -187,6 +247,35 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
             be.sendData();
             return result;
         }
+    }
+
+    private ItemInteractionResult interactOnPanelItself(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                                        Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (stack.getItem() instanceof DyeItem item) {
+            DyeColor color = item.getDyeColor();
+
+            level.playSound(null, pos, SoundEvents.DYE_USE, SoundSource.BLOCKS);
+
+            for (int i = 0; i < 16; i++) {
+                BlockPos below = pos.below(i);
+                BlockState stateBelow = level.getBlockState(below);
+                if (stateBelow.getBlock() == this && stateBelow.getValue(FACING) == state.getValue(FACING)) {
+                    level.setBlockAndUpdate(below, CEEBlocks.DYED_ELECTRICAL_PANELS[color.ordinal()].get().withPropertiesOf(stateBelow));
+                }
+            }
+
+            for (int i = 1; i < 16; i++) {
+                BlockPos above = pos.above(i);
+                BlockState stateBelow = level.getBlockState(above);
+                if (stateBelow.getBlock() == this && stateBelow.getValue(FACING) == state.getValue(FACING)) {
+                    level.setBlockAndUpdate(above, CEEBlocks.DYED_ELECTRICAL_PANELS[color.ordinal()].get().withPropertiesOf(stateBelow));
+                }
+            }
+
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -224,7 +313,6 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
 
         be.attachmentUpdate();
         return InteractionResult.SUCCESS;
-
     }
 
 

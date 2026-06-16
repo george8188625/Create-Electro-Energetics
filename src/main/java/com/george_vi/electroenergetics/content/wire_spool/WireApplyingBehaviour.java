@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.NodeVoltageHolder;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
@@ -57,8 +58,12 @@ public class WireApplyingBehaviour {
         ClientLevel level = mc.level;
         LocalPlayer player = mc.player;
         ItemStack heldItem = player.getMainHandItem();
+        BlockState cursorOnState = level.getBlockState(result.getBlockPos());
 
-        if (!(heldItem.getItem() instanceof WireSpoolItem || CEEItems.EMPTY_SPOOL.isIn(heldItem) || heldItem.is(CEETags.SEE_NODE_DATA))) {
+        if (!(heldItem.getItem() instanceof WireSpoolItem) &&
+                !CEEItems.EMPTY_SPOOL.isIn(heldItem) &&
+                !heldItem.is(CEETags.SEE_NODE_DATA) ||
+                (heldItem.is(CEETags.PANEL_ATTACHMENT_RENAME_ITEM) && cursorOnState.getBlock() instanceof ElectricalPanelBlock)) {
             if (AllItems.WRENCH.isIn(heldItem) && player.isShiftKeyDown()) {
                 InWorldNode hoveredNode = InWorldNode.getHitNode(result, level);
 

@@ -53,7 +53,7 @@ public class ElectricalPanelClientTicker {
         BlockPos targetPos = result.getBlockPos();
         BlockState targetState = level.getBlockState(targetPos);
 
-        if (!CEEBlocks.ELECTRICAL_PANEL.has(targetState) ||
+        if (!(targetState.getBlock() instanceof ElectricalPanelBlock) ||
                 result.getDirection() != targetState.getValue(ElectricalPanelBlock.FACING) ||
                 !(level.getBlockEntity(targetPos) instanceof ElectricalPanelBlockEntity be))
             return;

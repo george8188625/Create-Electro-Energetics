@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -32,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class CutOffSwitchPanelAttachment extends PanelAttachment {
 
-    public final boolean miniature;
     public SwitchingBehaviour behaviour;
     public boolean isClosed;
     Style style = Style.LEVER;
@@ -41,17 +41,8 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
     public float leverAngle = 0;
     public float prevLeverAngle = 0;
 
-    private CutOffSwitchPanelAttachment(PanelAttachmentType type, boolean miniature) {
+    public CutOffSwitchPanelAttachment(PanelAttachmentType type) {
         super(type);
-        this.miniature = miniature;
-    }
-
-    public static CutOffSwitchPanelAttachment normal(PanelAttachmentType type) {
-        return new CutOffSwitchPanelAttachment(type, false);
-    }
-
-    public static CutOffSwitchPanelAttachment miniature(PanelAttachmentType type) {
-        return new CutOffSwitchPanelAttachment(type, true);
     }
 
     @Override
@@ -59,7 +50,7 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
                        MultiBufferSource buffer, int light, int overlay) {
         transformPose(ms, be);
 
-        CachedBuffers.partial(miniature ? style.miniatureBody : style.body, be.getBlockState())
+        CachedBuffers.partial(miniature() ? style.miniatureBody : style.body, be.getBlockState())
                 .light(light)
                 .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
 
@@ -70,28 +61,28 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
                     CachedBuffers.partial(CEEPartialModels.PANEL_ATTACHMENT_CUT_OFF_SWITCH_LEVER, be.getBlockState())
                             .translate(5/16f, 8/16f, 10/16f)
                             .rotateXDegrees(angle)
-                            .translate(-5/16f, -8/16f, -10/16f)
+                            .translate(miniature() ? -6/16f : -5/16f, -8/16f, -10/16f)
                             .light(light)
                             .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
                 else
                     CachedBuffers.partial(CEEPartialModels.PANEL_ATTACHMENT_CUT_OFF_SWITCH_LEVER_DYEABLE, be.getBlockState())
                             .translate(5/16f, 8/16f, 10/16f)
                             .rotateXDegrees(angle)
-                            .translate(-5/16f, -8/16f, -10/16f)
+                            .translate(miniature() ? -6/16f : -5/16f, -8/16f, -10/16f)
                             .color(color.getFireworkColor())
                             .light(light)
                             .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
             }
             case BUTTON -> {
                 if (color == null)
-                    CachedBuffers.partial(miniature ?
+                    CachedBuffers.partial(miniature() ?
                                     CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON :
                                     CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON, be.getBlockState())
                             .translate(0, 0, angle)
                             .light(light)
                             .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
                 else
-                    CachedBuffers.partial(miniature ?
+                    CachedBuffers.partial(miniature() ?
                                     CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON_DYEABLE :
                                     CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON_DYEABLE, be.getBlockState())
                             .translate(0, 0, angle)
@@ -102,14 +93,14 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
             case DIAL -> {
                 if (color == null)
                     CachedBuffers.partial(CEEPartialModels.PANEL_ATTACHMENT_CUT_OFF_SWITCH_DIAL, be.getBlockState())
-                            .translate(5/16f, 8/16f, 10/16f)
+                            .translate(miniature() ? 4/16f : 5/16f, 8/16f, 10/16f)
                             .rotateZDegrees(angle)
                             .translate(-5/16f, -8/16f, -10/16f)
                             .light(light)
                             .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
                 else
                     CachedBuffers.partial(CEEPartialModels.PANEL_ATTACHMENT_CUT_OFF_SWITCH_DIAL_DYEABLE, be.getBlockState())
-                            .translate(5/16f, 8/16f, 10/16f)
+                            .translate(miniature() ? 4/16f : 5/16f, 8/16f, 10/16f)
                             .rotateZDegrees(angle)
                             .translate(-5/16f, -8/16f, -10/16f)
                             .color(color.getFireworkColor())
@@ -124,7 +115,7 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
         prevLeverAngle = leverAngle;
         float target = switch (style) {
             case LEVER, DIAL -> isClosed ? 45 : -45;
-            case BUTTON -> isClosed ? (miniature ? 0.99f : 1.99f)/16f : 0f;
+            case BUTTON -> isClosed ? (miniature() ? 0.99f : 1.99f)/16f : 0f;
         };
 
         leverAngle = Mth.lerp(style == Style.DIAL ? 0.5f : 1f, leverAngle, target);
@@ -196,7 +187,7 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
     }
 
     private enum Style implements StringRepresentable {
-        LEVER(CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH,
+        LEVER(CEEPartialModels.PANEL_ATTACHMENT_SMOL_CUT_OFF_SWITCH,
                 CEEPartialModels.PANEL_ATTACHMENT_CUT_OFF_SWITCH,
                 CEEPartialModels.PANEL_ATTACHMENT_CUT_OFF_SWITCH_LEVER,
                 CEEPartialModels.PANEL_ATTACHMENT_CUT_OFF_SWITCH_LEVER_DYEABLE),
@@ -233,5 +224,9 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
                     return type;
             return LEVER;
         }
+    }
+
+    private boolean miniature() {
+        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
     }
 }

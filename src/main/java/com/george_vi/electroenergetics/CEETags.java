@@ -29,6 +29,7 @@ public class CEETags {
     public static final TagKey<Item> WIRE_SPOOLS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("wire_spools"));
     public static final TagKey<Item> HANGED_WIRE_SPOOLS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("hanged_wire_spools"));
     public static final TagKey<Item> FUSE_AMPERAGE_SETTING = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("fuse_amperage_setting"));
+    public static final TagKey<Item> DYED_ELECTRICAL_PANELS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("dyed_electrical_panels"));
 
     // This tag defines items that cause electrical panel covers to be hidden when held
     public static final TagKey<Item> ELECTRICAL_PANEL_SEE_THROUGH = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("electrical_panel_see_through"));
@@ -38,6 +39,9 @@ public class CEETags {
 
     // This tag defines items that can label nodes
     public static final TagKey<Item> NODE_RENAME_ITEM = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("node_rename_item"));
+
+    // This tag defines items that can label panel attachments
+    public static final TagKey<Item> PANEL_ATTACHMENT_RENAME_ITEM = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("panel_attachment_rename_item"));
 
     public static final TagKey<Block> TRAIN_SOUND_MODIFIER = TagKey.create(Registries.BLOCK, CreateElectroEnergetics.rl("train_sound_modifier"));
 

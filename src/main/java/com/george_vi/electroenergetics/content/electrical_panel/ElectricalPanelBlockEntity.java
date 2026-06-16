@@ -7,6 +7,8 @@ import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.api.equipment.goggles.IHaveHoveringInformation;
+import com.simibubi.create.api.schematic.requirement.SpecialBlockEntityItemRequirement;
+import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.createmod.catnip.math.VecHelper;
@@ -29,12 +31,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IHaveHoveringInformation {
+public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IHaveHoveringInformation, SpecialBlockEntityItemRequirement {
 
     // This exists purely to mirror the device's data, or for rendering on the client side.
     // The device actually owns those.
-    private ElectricalPanelLayoutType layoutType = ElectricalPanelLayoutType.NONE;
-    private PanelAttachment[] attachments = new PanelAttachment[0];
+    ElectricalPanelLayoutType beLayoutType = ElectricalPanelLayoutType.NONE;
+    PanelAttachment[] beAttachments = new PanelAttachment[0];
 
     public ElectricalPanelBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -49,7 +51,7 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
 
     @OnlyIn(Dist.CLIENT)
     protected void tickAudio() {
-        for (PanelAttachment attachment : attachments)
+        for (PanelAttachment attachment : beAttachments)
             if (attachment != null)
                 attachment.tickClient(this);
     }
@@ -136,9 +138,9 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
             return false;
         Vec3 clickedPos = mc.hitResult.getLocation().subtract(Vec3.atLowerCornerOf(worldPosition));
         int slot = getHoveringAttachmentIndex(clickedPos);
-        if (slot == -1 || attachments[slot] == null)
+        if (slot == -1 || beAttachments[slot] == null)
             return false;
-        return attachments[slot].addToGoggleTooltip(this, tooltip, isPlayerSneaking);
+        return beAttachments[slot].addToGoggleTooltip(this, tooltip, isPlayerSneaking);
     }
 
     @Override
@@ -148,9 +150,9 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
             return false;
         Vec3 clickedPos = mc.hitResult.getLocation().subtract(Vec3.atLowerCornerOf(worldPosition));
         int slot = getHoveringAttachmentIndex(clickedPos);
-        if (slot == -1 || attachments[slot] == null)
+        if (slot == -1 || beAttachments[slot] == null)
             return false;
-        return attachments[slot].addToTooltip(this, tooltip, isPlayerSneaking);
+        return beAttachments[slot].addToTooltip(this, tooltip, isPlayerSneaking);
     }
 
     public void attachmentUpdate() {
@@ -161,28 +163,28 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
         ElectricalPanelDevice device = deviceOrNull();
         if (device != null)
             return device.layoutType;
-        return layoutType;
+        return beLayoutType;
     }
 
     public void setLayoutType(ElectricalPanelLayoutType layoutType) {
         ElectricalPanelDevice device = deviceOrNull();
         if (device != null)
             device.layoutType = layoutType;
-        this.layoutType = layoutType;
+        this.beLayoutType = layoutType;
     }
 
     public PanelAttachment[] getAttachments() {
         ElectricalPanelDevice device = deviceOrNull();
         if (device != null)
             return device.attachments;
-        return attachments;
+        return beAttachments;
     }
 
     public void setAttachments(PanelAttachment[] attachments) {
         ElectricalPanelDevice device = deviceOrNull();
         if (device != null)
             device.attachments = attachments;
-        this.attachments = attachments;
+        this.beAttachments = attachments;
     }
 
     private ElectricalPanelDevice deviceOrNull() {
@@ -252,5 +254,17 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
         }
 
         return out;
+    }
+
+    @Override
+    public ItemRequirement getRequiredItems(BlockState state) {
+        ItemRequirement requiredItems = super.getRequiredItems(state);
+        for (PanelAttachment attachment : getAttachments()) {
+            if (attachment == null)
+                continue;
+
+            requiredItems = requiredItems.union(new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, attachment.getDrops()));
+        }
+        return requiredItems;
     }
 }

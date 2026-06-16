@@ -4,6 +4,7 @@ import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -28,7 +29,6 @@ import net.minecraft.world.phys.BlockHitResult;
 
 public class MomentarySwitchPanelAttachment extends PanelAttachment {
 
-    public final boolean miniature;
     public SwitchingBehaviour behaviour;
     public int closedTicks;
     public DyeColor color;
@@ -36,17 +36,8 @@ public class MomentarySwitchPanelAttachment extends PanelAttachment {
     public float offsetState = 0;
     public float prevOffsetState = 0;
 
-    private MomentarySwitchPanelAttachment(PanelAttachmentType type, boolean miniature) {
+    public MomentarySwitchPanelAttachment(PanelAttachmentType type) {
         super(type);
-        this.miniature = miniature;
-    }
-
-    public static MomentarySwitchPanelAttachment normal(PanelAttachmentType type) {
-        return new MomentarySwitchPanelAttachment(type, false);
-    }
-
-    public static MomentarySwitchPanelAttachment miniature(PanelAttachmentType type) {
-        return new MomentarySwitchPanelAttachment(type, true);
     }
 
     @Override
@@ -54,18 +45,18 @@ public class MomentarySwitchPanelAttachment extends PanelAttachment {
                        MultiBufferSource buffer, int light, int overlay) {
         transformPose(ms, be);
 
-        CachedBuffers.partial(miniature ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH : CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH, be.getBlockState())
+        CachedBuffers.partial(miniature() ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH : CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH, be.getBlockState())
                 .light(light)
                 .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
 
         float offset = Mth.lerp(partialTicks, prevOffsetState, offsetState);
         if (color == null)
-            CachedBuffers.partial(miniature ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON : CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON, be.getBlockState())
+            CachedBuffers.partial(miniature() ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON : CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON, be.getBlockState())
                     .translate(0, 0, offset)
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
         else
-            CachedBuffers.partial(miniature ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON_DYEABLE : CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON_DYEABLE, be.getBlockState())
+            CachedBuffers.partial(miniature() ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON_DYEABLE : CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON_DYEABLE, be.getBlockState())
                     .translate(0, 0, offset)
                     .color(color.getFireworkColor())
                     .light(light)
@@ -75,7 +66,7 @@ public class MomentarySwitchPanelAttachment extends PanelAttachment {
     @Override
     public void tickClient(ElectricalPanelBlockEntity be) {
         prevOffsetState = offsetState;
-        offsetState = closedTicks > 0 ? (miniature ? 0.99f : 1.99f)/16f : 0f;
+        offsetState = closedTicks > 0 ? (miniature() ? 0.99f : 1.99f)/16f : 0f;
     }
 
     @Override
@@ -137,5 +128,9 @@ public class MomentarySwitchPanelAttachment extends PanelAttachment {
             tag.putInt("ClosedTicks", closedTicks);
         if (color != null)
             tag.putString("Color", color.getSerializedName());
+    }
+
+    private boolean miniature() {
+        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
     }
 }

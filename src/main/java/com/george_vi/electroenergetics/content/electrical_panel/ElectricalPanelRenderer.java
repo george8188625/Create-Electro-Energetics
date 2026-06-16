@@ -4,8 +4,8 @@ import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachment;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
+import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.render.CachedBuffers;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -38,12 +38,17 @@ public class ElectricalPanelRenderer extends SmartBlockEntityRenderer<Electrical
 
         float coverAlpha = Mth.lerp(partialTicks, ElectricalPanelClientTicker.prevCoverAlpha, ElectricalPanelClientTicker.coverAlpha);
 
-        if (coverAlpha != 0)
-            CachedBuffers.partial(CEEPartialModels.PANEL_COVER, blockEntity.getBlockState())
+        if (coverAlpha != 0) {
+            PartialModel panelCover = CEEPartialModels.PANEL_COVER;
+            if (blockEntity.getBlockState().getBlock() instanceof ElectricalPanelBlock b && b.color != null)
+                panelCover = CEEPartialModels.DYED_ELECTRICAL_PANEL_COVERS[b.color.ordinal()];
+
+            CachedBuffers.partial(panelCover, blockEntity.getBlockState())
                     .rotateYCenteredDegrees(-blockEntity.getBlockState().getValue(ElectricalPanelBlock.FACING).toYRot() + 180)
                     .color(255, 255, 255, (int) (coverAlpha * 255))
                     .light(light)
                     .renderInto(ms, buffer.getBuffer(coverAlpha == 1 ? RenderType.solid() : RenderType.translucent()));
+        }
     }
 
     @Override

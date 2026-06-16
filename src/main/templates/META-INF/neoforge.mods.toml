@@ -33,10 +33,3 @@ issueTrackerURL="https://github.com/george8188625/Create-Electro-Energetics/issu
     versionRange="${create_version_range}"
     ordering="NONE"
     side="BOTH"
-
-[[dependencies.${mod_id}]]
-    type="incompatible"
-    modId="simulateddevices"
-    reason="Remove it"
-    ordering="NONE"
-    side="BOTH"

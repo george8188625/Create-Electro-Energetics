@@ -1,0 +1,184 @@
+{
+  "variants": {
+    "bottom=false,facing=east,logged_state=dry,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle",
+      "y": 90
+    },
+    "bottom=false,facing=east,logged_state=dry,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top",
+      "y": 90
+    },
+    "bottom=false,facing=east,logged_state=oillogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle",
+      "y": 90
+    },
+    "bottom=false,facing=east,logged_state=oillogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top",
+      "y": 90
+    },
+    "bottom=false,facing=east,logged_state=waterlogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle",
+      "y": 90
+    },
+    "bottom=false,facing=east,logged_state=waterlogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top",
+      "y": 90
+    },
+    "bottom=false,facing=north,logged_state=dry,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle"
+    },
+    "bottom=false,facing=north,logged_state=dry,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top"
+    },
+    "bottom=false,facing=north,logged_state=oillogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle"
+    },
+    "bottom=false,facing=north,logged_state=oillogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top"
+    },
+    "bottom=false,facing=north,logged_state=waterlogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle"
+    },
+    "bottom=false,facing=north,logged_state=waterlogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top"
+    },
+    "bottom=false,facing=south,logged_state=dry,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle",
+      "y": 180
+    },
+    "bottom=false,facing=south,logged_state=dry,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top",
+      "y": 180
+    },
+    "bottom=false,facing=south,logged_state=oillogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle",
+      "y": 180
+    },
+    "bottom=false,facing=south,logged_state=oillogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top",
+      "y": 180
+    },
+    "bottom=false,facing=south,logged_state=waterlogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle",
+      "y": 180
+    },
+    "bottom=false,facing=south,logged_state=waterlogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top",
+      "y": 180
+    },
+    "bottom=false,facing=west,logged_state=dry,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle",
+      "y": 270
+    },
+    "bottom=false,facing=west,logged_state=dry,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top",
+      "y": 270
+    },
+    "bottom=false,facing=west,logged_state=oillogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle",
+      "y": 270
+    },
+    "bottom=false,facing=west,logged_state=oillogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top",
+      "y": 270
+    },
+    "bottom=false,facing=west,logged_state=waterlogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_middle",
+      "y": 270
+    },
+    "bottom=false,facing=west,logged_state=waterlogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel_top",
+      "y": 270
+    },
+    "bottom=true,facing=east,logged_state=dry,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom",
+      "y": 90
+    },
+    "bottom=true,facing=east,logged_state=dry,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel",
+      "y": 90
+    },
+    "bottom=true,facing=east,logged_state=oillogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom",
+      "y": 90
+    },
+    "bottom=true,facing=east,logged_state=oillogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel",
+      "y": 90
+    },
+    "bottom=true,facing=east,logged_state=waterlogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom",
+      "y": 90
+    },
+    "bottom=true,facing=east,logged_state=waterlogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel",
+      "y": 90
+    },
+    "bottom=true,facing=north,logged_state=dry,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom"
+    },
+    "bottom=true,facing=north,logged_state=dry,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel"
+    },
+    "bottom=true,facing=north,logged_state=oillogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom"
+    },
+    "bottom=true,facing=north,logged_state=oillogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel"
+    },
+    "bottom=true,facing=north,logged_state=waterlogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom"
+    },
+    "bottom=true,facing=north,logged_state=waterlogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel"
+    },
+    "bottom=true,facing=south,logged_state=dry,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom",
+      "y": 180
+    },
+    "bottom=true,facing=south,logged_state=dry,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel",
+      "y": 180
+    },
+    "bottom=true,facing=south,logged_state=oillogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom",
+      "y": 180
+    },
+    "bottom=true,facing=south,logged_state=oillogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel",
+      "y": 180
+    },
+    "bottom=true,facing=south,logged_state=waterlogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom",
+      "y": 180
+    },
+    "bottom=true,facing=south,logged_state=waterlogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel",
+      "y": 180
+    },
+    "bottom=true,facing=west,logged_state=dry,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom",
+      "y": 270
+    },
+    "bottom=true,facing=west,logged_state=dry,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel",
+      "y": 270
+    },
+    "bottom=true,facing=west,logged_state=oillogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom",
+      "y": 270
+    },
+    "bottom=true,facing=west,logged_state=oillogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel",
+      "y": 270
+    },
+    "bottom=true,facing=west,logged_state=waterlogged,top=false": {
+      "model": "electroenergetics:block/gray_electrical_panel_bottom",
+      "y": 270
+    },
+    "bottom=true,facing=west,logged_state=waterlogged,top=true": {
+      "model": "electroenergetics:block/gray_electrical_panel",
+      "y": 270
+    }
+  }
+}

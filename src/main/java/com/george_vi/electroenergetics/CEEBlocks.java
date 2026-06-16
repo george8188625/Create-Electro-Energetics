@@ -541,6 +541,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<ElectricalPanelBlock> ELECTRICAL_PANEL = REGISTRATE.block("electrical_panel", ElectricalPanelBlock::new)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
@@ -885,6 +886,9 @@ public class CEEBlocks {
     @SuppressWarnings("unchecked")
     public static final BlockEntry<ElectricMotorBlock>[] ELECTRIC_MOTORS = new BlockEntry[DyeColor.values().length];
 
+    @SuppressWarnings("unchecked")
+    public static final BlockEntry<ElectricalPanelBlock>[] DYED_ELECTRICAL_PANELS = new BlockEntry[DyeColor.values().length];
+
     static {
         for (DyeColor color : DyeColor.values()) {
             ELECTRIC_MOTORS[color.ordinal()] = REGISTRATE.block(color.getSerializedName() + "_electric_motor", ElectricMotorBlock::new)
@@ -904,6 +908,31 @@ public class CEEBlocks {
                                     .texture("casing", p.modLoc("block/electric_motor/" + color.getSerializedName())))
                     .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
                             .addResistance(CEEConfigs.server().resistanceValues.motorResistance::get)))
+                    .build()
+                    .register();
+
+            DYED_ELECTRICAL_PANELS[color.ordinal()] = REGISTRATE.block(color.getSerializedName() + "_electrical_panel", properties -> new ElectricalPanelBlock(properties, color))
+                    .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+                    .initialProperties(SharedProperties::stone)
+                    .properties(p -> p.mapColor(color))
+                    .blockstate((c, p) ->
+                            p.horizontalBlock(c.getEntry(), bs ->
+                            (!(bs.getValue(ElectricalPanelBlock.BOTTOM) || bs.getValue(ElectricalPanelBlock.TOP)) ?
+                                    p.models().withExistingParent(c.getName() + "_middle", p.modLoc("block/electrical_panel/block_middle")) :
+                                    bs.getValue(ElectricalPanelBlock.BOTTOM) && bs.getValue(ElectricalPanelBlock.TOP) ?
+                                            p.models().withExistingParent(c.getName(), p.modLoc("block/electrical_panel/block")) :
+                                    bs.getValue(ElectricalPanelBlock.BOTTOM) ?
+                                            p.models().withExistingParent(c.getName() + "_bottom", p.modLoc("block/electrical_panel/block_bottom")) :
+                                            p.models().withExistingParent(c.getName() + "_top", p.modLoc("block/electrical_panel/block_top")))
+                                    .texture("casing", p.modLoc("block/electrical_panel/" + color.getSerializedName()))
+                                    .texture("inside", p.modLoc("block/electrical_panel/" + color.getSerializedName() + "_inside"))
+                    ))
+                    .transform(pickaxeOnly())
+                    .item()
+                    .tag(CEETags.DYED_ELECTRICAL_PANELS)
+                    .model((c, p) ->
+                            p.withExistingParent(p.name(c::getEntry), p.modLoc("block/electrical_panel/item"))
+                                    .texture("casing", p.modLoc("block/electrical_panel/" + color.getSerializedName())))
                     .build()
                     .register();
         }

@@ -95,6 +95,12 @@ public abstract class PanelAttachment {
 
     @OnlyIn(Dist.CLIENT)
     public boolean addToGoggleTooltip(ElectricalPanelBlockEntity be, List<Component> tooltip, boolean isPlayerSneaking) {
+        if (label != null) {
+            CEELang.builder()
+                    .text(label)
+                    .forGoggles(tooltip);
+            return true;
+        }
         return false;
     }
 
@@ -141,7 +147,7 @@ public abstract class PanelAttachment {
                             MultiBufferSource buffer, int light, int overlay) {
         Direction facing = be.getBlockState().getValue(ElectricalPanelBlock.FACING);
         boolean isHorizontal = be.getLayoutType() == ElectricalPanelLayoutType.HALF_HORIZONTAL;
-        int fullWidth = type.mode == PanelAttachmentMode.THIRD ? 14 : be.getLayoutType() == ElectricalPanelLayoutType.FULL ? 48 : 24;
+        int fullWidth = slot.layoutType() == ElectricalPanelLayoutType.THIRD ? 14 : be.getLayoutType() == ElectricalPanelLayoutType.FULL ? 48 : 24;
         if (isHorizontal)
             fullWidth = 48;
         float scale = 1 / 128f;
@@ -179,6 +185,6 @@ public abstract class PanelAttachment {
 
     @SuppressWarnings("unused")
     public float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
-        return type.mode.nodeWidth;
+        return slot.nodeSize;
     }
 }

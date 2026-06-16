@@ -88,6 +88,7 @@ public class CEEPartialModels {
     public static final PartialModel PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/momentary_switch_button"));
     public static final PartialModel PANEL_ATTACHMENT_MOMENTARY_SWITCH_BUTTON_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/momentary_switch_button_dyeable"));
     public static final PartialModel PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_momentary_switch"));
+    public static final PartialModel PANEL_ATTACHMENT_SMOL_CUT_OFF_SWITCH = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_cut_off_switch"));
     public static final PartialModel PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_momentary_switch_button"));
     public static final PartialModel PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH_BUTTON_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_momentary_switch_button_dyeable"));
     public static final PartialModel PANEL_ATTACHMENT_SMOL_AMMETER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_ammeter"));
@@ -106,6 +107,7 @@ public class CEEPartialModels {
     public static final PartialModel[] COLORED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];
     public static final PartialModel[] COLORED_HEAVILY_INSULATED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];
     public static final PartialModel[] COLORED_HANGING_INSULATOR = new PartialModel[DyeColor.values().length];
+    public static final PartialModel[] DYED_ELECTRICAL_PANEL_COVERS = new PartialModel[DyeColor.values().length];
 
     static {
         for (DyeColor color : DyeColor.values()) {
@@ -115,6 +117,7 @@ public class CEEPartialModels {
                     PartialModel.of(CreateElectroEnergetics.rl("block/colored_heavily_insulated_wire/" + color.getName()));
             COLORED_HANGING_INSULATOR[color.ordinal()] =
                     PartialModel.of(CreateElectroEnergetics.rl("block/hanging_insulator/" + color.getName()));
+            DYED_ELECTRICAL_PANEL_COVERS[color.ordinal()] = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/cover/" + color.getSerializedName()));
         }
     }
 

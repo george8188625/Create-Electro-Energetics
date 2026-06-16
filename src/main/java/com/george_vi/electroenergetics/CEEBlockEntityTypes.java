@@ -206,6 +206,7 @@ public class CEEBlockEntityTypes {
 
     public static final BlockEntityEntry<ElectricalPanelBlockEntity> ELECTRICAL_PANEL = REGISTRATE.blockEntity("electrical_panel", ElectricalPanelBlockEntity::new)
             .validBlock(CEEBlocks.ELECTRICAL_PANEL)
+            .validBlocks(CEEBlocks.DYED_ELECTRICAL_PANELS)
             .renderer(() -> ElectricalPanelRenderer::new)
             .register();
 

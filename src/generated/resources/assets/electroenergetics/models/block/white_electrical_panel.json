@@ -1,0 +1,7 @@
+{
+  "parent": "electroenergetics:block/electrical_panel/block",
+  "textures": {
+    "casing": "electroenergetics:block/electrical_panel/white",
+    "inside": "electroenergetics:block/electrical_panel/white_inside"
+  }
+}

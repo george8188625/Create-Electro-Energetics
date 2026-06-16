@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_electrical_panel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "electroenergetics:electrical_panel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "electroenergetics:crafting/red_electrical_panel"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_electrical_panel"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "electroenergetics:crafting/red_electrical_panel"
+    ]
+  }
+}

@@ -3,6 +3,8 @@ package com.george_vi.electroenergetics.content.electrical_panel.attachments;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
+import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.RMSHolder;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
@@ -27,30 +29,20 @@ public class GaugePanelAttachment extends PanelAttachment {
     public float dialState;
     public float prevDialState;
     public final boolean voltmeter;
-    public final boolean miniature;
     public RMSHolder rmsVoltages;
     public double value;
 
-    private GaugePanelAttachment(PanelAttachmentType type, boolean voltmeter, boolean miniature) {
+    private GaugePanelAttachment(PanelAttachmentType type, boolean voltmeter) {
         super(type);
         this.voltmeter = voltmeter;
-        this.miniature = miniature;
     }
 
     public static PanelAttachment ammeter(PanelAttachmentType type) {
-        return new GaugePanelAttachment(type, false, false);
+        return new GaugePanelAttachment(type, false);
     }
 
     public static PanelAttachment voltmeter(PanelAttachmentType type) {
-        return new GaugePanelAttachment(type, true, false);
-    }
-
-    public static PanelAttachment smolAmmeter(PanelAttachmentType type) {
-        return new GaugePanelAttachment(type, false, true);
-    }
-
-    public static PanelAttachment smolVoltmeter(PanelAttachmentType type) {
-        return new GaugePanelAttachment(type, true, true);
+        return new GaugePanelAttachment(type, true);
     }
 
     @Override
@@ -68,7 +60,7 @@ public class GaugePanelAttachment extends PanelAttachment {
         transformPose(ms, be);
         float progress = Mth.lerp(partialTicks, prevDialState, dialState);
 
-        if (miniature) {
+        if (miniature()) {
             CachedBuffers.partial(voltmeter ?
                                     CEEPartialModels.PANEL_ATTACHMENT_SMOL_VOLTMETER :
                                     CEEPartialModels.PANEL_ATTACHMENT_SMOL_AMMETER,
@@ -116,8 +108,13 @@ public class GaugePanelAttachment extends PanelAttachment {
 
     @Override
     public boolean addToGoggleTooltip(ElectricalPanelBlockEntity be, List<Component> tooltip, boolean isPlayerSneaking) {
-        CreateLang.translate("gui.gauge.info_header")
-                .forGoggles(tooltip);
+        if (label != null)
+            CEELang.builder()
+                    .text(label)
+                    .forGoggles(tooltip);
+        else
+            CreateLang.translate("gui.gauge.info_header")
+                    .forGoggles(tooltip);
 
         Lang.builder(CreateElectroEnergetics.ID)
                 .translate(voltmeter ? "generic.voltage" : "generic.current")
@@ -159,5 +156,9 @@ public class GaugePanelAttachment extends PanelAttachment {
             return;
 
         this.rmsVoltages.write(tag, "Voltages");
+    }
+
+    private boolean miniature() {
+        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
     }
 }

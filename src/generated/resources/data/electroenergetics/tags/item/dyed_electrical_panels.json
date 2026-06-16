@@ -1,0 +1,20 @@
+{
+  "values": [
+    "electroenergetics:white_electrical_panel",
+    "electroenergetics:orange_electrical_panel",
+    "electroenergetics:magenta_electrical_panel",
+    "electroenergetics:light_blue_electrical_panel",
+    "electroenergetics:yellow_electrical_panel",
+    "electroenergetics:lime_electrical_panel",
+    "electroenergetics:pink_electrical_panel",
+    "electroenergetics:gray_electrical_panel",
+    "electroenergetics:light_gray_electrical_panel",
+    "electroenergetics:cyan_electrical_panel",
+    "electroenergetics:purple_electrical_panel",
+    "electroenergetics:blue_electrical_panel",
+    "electroenergetics:brown_electrical_panel",
+    "electroenergetics:green_electrical_panel",
+    "electroenergetics:red_electrical_panel",
+    "electroenergetics:black_electrical_panel"
+  ]
+}

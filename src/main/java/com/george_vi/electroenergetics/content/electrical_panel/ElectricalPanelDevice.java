@@ -98,8 +98,10 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
 
     @Override
     public void write(CompoundTag tag) {
-        tag.putString("Layout", layoutType.getSerializedName());
         tag.putString("Facing", panelFacing.getSerializedName());
+        if (layoutType == ElectricalPanelLayoutType.NONE)
+            return;
+        tag.putString("Layout", layoutType.getSerializedName());
         for (int i = 0; i < attachments.length; i++) {
             if (attachments[i] == null)
                 continue;
@@ -119,5 +121,10 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
             if (attachments[i].label != null)
                 attachmentTag.putString("Label", attachments[i].label);
         }
+    }
+
+    @Override
+    public boolean shouldRemove(BlockState oldState, BlockState newState) {
+        return oldState.getBlock().getClass() != newState.getBlock().getClass();
     }
 }
