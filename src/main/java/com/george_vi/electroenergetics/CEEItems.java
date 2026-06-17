@@ -103,9 +103,6 @@ public class CEEItems {
             .tag(CEETags.FUSE_AMPERAGE_SETTING)
             .register();
 
-    public static final ItemEntry<Item> MINIATURE_MOMENTARY_SWITCH = REGISTRATE.item("miniature_momentary_switch", Item::new)
-            .register();
-
     public static final ItemEntry<ClampMeterItem> CLAMP_METER = REGISTRATE.item("clamp_meter", ClampMeterItem::new)
             .properties(p -> p.stacksTo(1))
             .model(AssetLookup.existingItemModel())

@@ -10,7 +10,6 @@ import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -25,11 +24,17 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
         super(level, pos, deviceSD, type);
     }
 
+    private boolean initialized;
+
     @Override
     public void preTick(BridgeCollector bridges) {
         for (PanelAttachment attachment : attachments)
-            if (attachment != null)
+            if (attachment != null) {
                 attachment.preTick(bridges);
+                if (!initialized)
+                    attachment.initialize();
+            }
+        initialized = true;
     }
 
     @Override
@@ -70,10 +75,10 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
             }
 
             if (attachments[i] == null) {
-                attachments[i] = type.createNew(pos, type.mode.getNodesFor(i, pos, layoutType), level, layoutType.slots[i], facing);
+                attachments[i] = type.createNew(pos, type.mode.getNodesFor(i, pos, layoutType), level, layoutType.slots[i], facing, level.registryAccess());
             }
 
-            attachments[i].read(attachmentTag.getCompound("Data"), false);
+            attachments[i].read(attachmentTag.getCompound("Data"), false, level.registryAccess());
             attachments[i].label = attachmentTag.contains("Label") ? attachmentTag.getString("Label") : null;
         }
     }
@@ -117,7 +122,7 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
 
             CompoundTag dataTag = new CompoundTag();
             attachmentTag.put("Data", dataTag);
-            attachments[i].write(dataTag, false);
+            attachments[i].write(dataTag, false, level.registryAccess());
             if (attachments[i].label != null)
                 attachmentTag.putString("Label", attachments[i].label);
         }
@@ -126,5 +131,13 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
     @Override
     public boolean shouldRemove(BlockState oldState, BlockState newState) {
         return oldState.getBlock().getClass() != newState.getBlock().getClass();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        for (PanelAttachment attachment : attachments)
+            if (attachment != null)
+                attachment.onRemoved(null);
     }
 }

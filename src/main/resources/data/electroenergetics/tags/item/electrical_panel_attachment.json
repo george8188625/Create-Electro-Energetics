@@ -10,6 +10,7 @@
     "electroenergetics:indicator_bulb",
     "electroenergetics:miniature_circuit_breaker",
 
+    { "id": "simulated:altitude_sensor", "required": false },
     "electroenergetics:synchroscope",
     "electroenergetics:frequency_meter"
   ]

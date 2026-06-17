@@ -154,6 +154,9 @@
   "electroenergetics.electric_motor.unlocked_symbol": "🔓",
   "electroenergetics.electric_motor.unlocked": "Unlocked",
   "electroenergetics.electric_motor.unlocked_explanation": "Dynamic",
+  "electroenergetics.electrical_panel_linking.title": "Linking",
+  "electroenergetics.electrical_panel_linking.frequency_slot_0": "Freq. #1",
+  "electroenergetics.electrical_panel_linking.frequency_slot_1": "Freq. #2",
 
   "electroenergetics.hint.synchroscope_misconfigured": "It appears this _Synchroscope_ has not been wired correctly. Ensure the _phases_ are connected in a consistent order.",
   "electroenergetics.hint.synchroscope_misconfigured.title": "Misconfigured",

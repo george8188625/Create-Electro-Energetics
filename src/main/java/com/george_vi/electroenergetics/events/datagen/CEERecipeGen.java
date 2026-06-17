@@ -665,15 +665,6 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/resistive_heater"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEItems.MINIATURE_MOMENTARY_SWITCH)
-                .pattern(" ")
-                .pattern("S")
-                .pattern("T")
-                .define('S', CEEBlocks.MOMENTARY_SWITCH)
-                .define('T', ItemTags.TERRACOTTA)
-                .unlockedBy("has_momentary_switch", has(CEEBlocks.MOMENTARY_SWITCH))
-                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/miniature_momentary_switch"));
-
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(CEETags.IRON_PLATE), RecipeCategory.DECORATIONS, CEEBlocks.HIGH_VOLTAGE_SIGN, 2)
                 .unlockedBy("has_iron_plate", has(CEETags.IRON_PLATE))
                 .save(recipeOutput, CreateElectroEnergetics.rl("stonecutting/high_voltage_sign"));

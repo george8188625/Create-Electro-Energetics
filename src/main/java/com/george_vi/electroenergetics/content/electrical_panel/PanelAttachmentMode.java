@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
 public enum PanelAttachmentMode {
+    FULL_NONE(0),
     FULL_SINGLE(2),
     FULL_DOUBLE(4),
     FULL_TRIPLE(6),
@@ -30,7 +31,7 @@ public enum PanelAttachmentMode {
         double y = rotatedClickPos.y;
 
         return switch (this) {
-            case FULL_SINGLE, FULL_DOUBLE, FULL_TRIPLE, FULL_QUAD -> ElectricalPanelSlot.FULL_SLOT;
+            case FULL_NONE, FULL_SINGLE, FULL_DOUBLE, FULL_TRIPLE, FULL_QUAD -> ElectricalPanelSlot.FULL_SLOT;
             case HALF_OR_THIRD -> {
                 if (x > (1 - y) ? x > y : y > x) {
                     if (x < 3 / 16f)
@@ -66,6 +67,7 @@ public enum PanelAttachmentMode {
             throw new IllegalArgumentException("attachmentIndex: " + attachmentIndex + " is too large for layout " + layout.getSerializedName() + '!');
 
         return switch (this) {
+            case FULL_NONE -> new InWorldNode[]{};
             case FULL_SINGLE -> new InWorldNode[] {
                     new InWorldNode(3, pos), new InWorldNode(16, pos)};
             case FULL_DOUBLE -> new InWorldNode[] {
@@ -106,7 +108,7 @@ public enum PanelAttachmentMode {
             return true;
 
         return switch (this) {
-            case FULL_SINGLE, FULL_DOUBLE, FULL_QUAD, FULL_TRIPLE ->
+            case FULL_NONE, FULL_SINGLE, FULL_DOUBLE, FULL_QUAD, FULL_TRIPLE ->
                     layout == ElectricalPanelLayoutType.FULL;
             case HALF ->
                     layout == ElectricalPanelLayoutType.HALF_HORIZONTAL ||

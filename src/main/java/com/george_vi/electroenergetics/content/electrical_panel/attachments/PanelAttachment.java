@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -29,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -79,11 +81,11 @@ public abstract class PanelAttachment {
      */
     public abstract void postTick(SimulationResults results);
 
-    public void read(CompoundTag tag, boolean clientPacket) {
+    public void read(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
 
     }
 
-    public void write(CompoundTag tag, boolean clientPacket) {
+    public void write(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
 
     }
 
@@ -120,6 +122,14 @@ public abstract class PanelAttachment {
     }
 
     /**
+     * Called on the logical server the first tick it's active.
+     */
+    public void initialize() {
+
+    }
+
+
+    /**
      * @return the center position of this attachment
      */
     public @NotNull Vec3 getCenter() {
@@ -132,8 +142,7 @@ public abstract class PanelAttachment {
                 be.sendData();
     }
 
-    @SuppressWarnings("unused")
-    public void onRemoved(Player player) {
+    public void onRemoved(@Nullable Player player) {
 
     }
 

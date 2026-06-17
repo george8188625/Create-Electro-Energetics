@@ -10,6 +10,7 @@ import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.gui.ScreenOpener;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -82,8 +83,8 @@ public abstract class BaseEnergyMeterAttachment extends PanelAttachment {
     }
 
     @Override
-    public void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    public void read(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
+        super.read(tag, clientPacket, registries);
         totalEnergy = tag.getDouble("TotalEnergy");
         activePower = tag.getDouble("ActivePower");
         disconnected = tag.getBoolean("Disconnected");
@@ -96,8 +97,8 @@ public abstract class BaseEnergyMeterAttachment extends PanelAttachment {
     }
 
     @Override
-    public void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    public void write(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
+        super.write(tag, clientPacket, registries);
         tag.putDouble("TotalEnergy", totalEnergy);
         tag.putDouble("ActivePower", activePower);
         tag.putBoolean("Disconnected", disconnected);

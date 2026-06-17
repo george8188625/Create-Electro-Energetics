@@ -13,6 +13,7 @@ import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -139,8 +140,8 @@ public class TriPolarEnergyMeterAttachment extends BaseEnergyMeterAttachment {
     }
 
     @Override
-    public void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    public void read(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
+        super.read(tag, clientPacket, registries);
         if (clientPacket)
             return;
         behaviour1 = new SwitchingBehaviour(tag.getCompound("Behaviour1"));
@@ -149,8 +150,8 @@ public class TriPolarEnergyMeterAttachment extends BaseEnergyMeterAttachment {
     }
 
     @Override
-    public void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    public void write(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
+        super.write(tag, clientPacket, registries);
         if (clientPacket)
             return;
         tag.put("Behaviour1", behaviour1.write());

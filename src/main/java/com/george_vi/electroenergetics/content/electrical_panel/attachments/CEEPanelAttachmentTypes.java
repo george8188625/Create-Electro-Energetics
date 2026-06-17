@@ -5,9 +5,15 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.electrical_panel.PanelAttachmentMode;
+import dev.simulated_team.simulated.index.SimBlocks;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class CEEPanelAttachmentTypes {
@@ -40,6 +46,16 @@ public class CEEPanelAttachmentTypes {
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> MINIATURE_CIRCUIT_BREAKER = PANEL_ATTACHMENT_TYPE
             .register("miniature_circuit_breaker", () -> new PanelAttachmentType(MCBPanelAttachment::new, CEEItems.MINIATURE_CIRCUIT_BREAKER, PanelAttachmentMode.THIRD));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> ALTITUDE_SENSOR = PANEL_ATTACHMENT_TYPE
+            .register("altitude_sensor", () -> new PanelAttachmentType(AltitudeSensorPanelAttachment::new, simItem(() -> SimBlocks.ALTITUDE_SENSOR), PanelAttachmentMode.FULL_NONE));
+
+
+    private static ItemLike simItem(Supplier<ItemLike> sup) {
+        if (ModList.get().isLoaded("simulated"))
+            return sup.get();
+        return Items.AIR;
+    }
 
     public static void register(IEventBus bus) {
         PANEL_ATTACHMENT_TYPE.register(bus);

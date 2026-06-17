@@ -1,0 +1,81 @@
+package com.george_vi.electroenergetics.content.electrical_panel.link;
+
+import com.george_vi.electroenergetics.CEEGuiTextures;
+import com.george_vi.electroenergetics.foundation.CEELang;
+import com.simibubi.create.foundation.gui.AllIcons;
+import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
+import com.simibubi.create.foundation.gui.widget.IconButton;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static com.simibubi.create.foundation.gui.AllGuiTextures.PLAYER_INVENTORY;
+
+public class ElectricalPanelLinkScreen extends AbstractSimiContainerScreen<ElectricalPanelLinkMenu> {
+    private final CEEGuiTextures background = CEEGuiTextures.ELECTRICAL_PANEL_LINK;
+
+    public ElectricalPanelLinkScreen(ElectricalPanelLinkMenu container, Inventory inv, Component title) {
+        super(container, inv, title);
+    }
+
+    @Override
+    protected void init() {
+        assert minecraft != null;
+        assert minecraft.player != null;
+
+        setWindowSize(background.getWidth(), background.getHeight() + 4 + PLAYER_INVENTORY.getHeight());
+        setWindowOffset(1, 0);
+        super.init();
+
+        int x = leftPos;
+        int y = topPos;
+
+        IconButton confirmButton = new IconButton(x + background.getWidth() - 33, y + background.getHeight() - 24, AllIcons.I_CONFIRM);
+        confirmButton.withCallback(() -> minecraft.player.closeContainer());
+
+        addRenderableWidget(confirmButton);
+
+//        extraAreas = ImmutableList.of(new Rect2i(x + background.getWidth() + 4, y + background.getHeight() - 44, 64, 56));
+    }
+
+    @Override
+    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+        int invX = getLeftOfCentered(PLAYER_INVENTORY.getWidth());
+        int invY = topPos + background.getHeight() + 4;
+        renderPlayerInventory(graphics, invX, invY);
+
+        int x = leftPos;
+        int y = topPos;
+
+        background.render(graphics, x, y);
+        graphics.drawString(font, title, x + 15, y + 4, 0x592424, false);
+    }
+
+    @Override
+    protected void renderTooltip(GuiGraphics graphics, int x, int y) {
+        if (!menu.getCarried()
+                .isEmpty() || this.hoveredSlot == null || hoveredSlot.container == menu.playerInventory) {
+            super.renderTooltip(graphics, x, y);
+            return;
+        }
+
+        List<Component> list = new LinkedList<>();
+        if (hoveredSlot.hasItem())
+            list = getTooltipFromContainerItem(hoveredSlot.getItem());
+
+        graphics.renderComponentTooltip(font, addToTooltip(list, hoveredSlot.getSlotIndex()), x, y);
+    }
+
+
+    private List<Component> addToTooltip(List<Component> list, int slot) {
+        if (slot == 0 || slot == 1)
+            list.add(CEELang.translateDirect("electrical_panel_linking.frequency_slot_" + slot)
+                    .withStyle(ChatFormatting.GOLD));
+        return list;
+    }
+
+}

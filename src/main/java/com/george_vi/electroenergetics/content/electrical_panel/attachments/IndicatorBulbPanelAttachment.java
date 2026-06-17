@@ -1,7 +1,6 @@
 package com.george_vi.electroenergetics.content.electrical_panel.attachments;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
-import com.george_vi.electroenergetics.content.bulb.BulbBlock;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
@@ -16,7 +15,7 @@ import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -167,7 +166,7 @@ public class IndicatorBulbPanelAttachment extends PanelAttachment {
     }
 
     @Override
-    public void read(CompoundTag tag, boolean clientPacket) {
+    public void read(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
         color = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
         light = tag.getFloat("Light");
 
@@ -176,7 +175,7 @@ public class IndicatorBulbPanelAttachment extends PanelAttachment {
     }
 
     @Override
-    public void write(CompoundTag tag, boolean clientPacket) {
+    public void write(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
         if (light != 0)
             tag.putFloat("Light", light);
         if (color != null)

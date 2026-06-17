@@ -103,6 +103,10 @@ public class CEEPartialModels {
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH_LEVER_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch_lever_dyeable"));
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch_dial"));
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH_DIAL_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch_dial_dyeable"));
+    public static final PartialModel PANEL_ATTACHMENT_SIM_LINEAR_ALTITUDE_SENSOR = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/compat/altitude_sensor_linear"));
+    public static final PartialModel PANEL_ATTACHMENT_SIM_RADIAL_ALTITUDE_SENSOR = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/compat/altitude_sensor_radial"));
+    public static final PartialModel PANEL_ATTACHMENT_LINK_ANTENNA = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/link_antenna"));
+    public static final PartialModel PANEL_ATTACHMENT_LINK_ANTENNA_POWERED = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/link_antenna_powered"));
 
     public static final PartialModel[] COLORED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];
     public static final PartialModel[] COLORED_HEAVILY_INSULATED_WIRE_SEGMENTS = new PartialModel[DyeColor.values().length];

@@ -17,6 +17,7 @@ import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -138,7 +139,7 @@ public class GaugePanelAttachment extends PanelAttachment {
     }
 
     @Override
-    public void read(CompoundTag tag, boolean clientPacket) {
+    public void read(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
         value = tag.getDouble("Value");
         if (clientPacket) {
             dialTarget = (float) Mth.clamp(voltmeter ? value / 1000 : value / 40, 0, 1);
@@ -150,7 +151,7 @@ public class GaugePanelAttachment extends PanelAttachment {
     }
 
     @Override
-    public void write(CompoundTag tag, boolean clientPacket) {
+    public void write(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
         tag.putDouble("Value", value);
         if (clientPacket)
             return;

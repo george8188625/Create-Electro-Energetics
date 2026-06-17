@@ -111,7 +111,7 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
 
                 CompoundTag dataTag = new CompoundTag();
                 attachmentTag.put("Data", dataTag);
-                attachments[i].write(dataTag, false);
+                attachments[i].write(dataTag, false, level.registryAccess());
                 if (attachments[i].label != null)
                     attachmentTag.putString("Label", attachments[i].label);
             }
@@ -205,7 +205,8 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             // Insert attachment
             attachments[slotIndex] = attachmentType.createNew(pos,
-                    attachmentType.mode.getNodesFor(slotIndex, pos, layout), level, layout.slots[slotIndex], facing);
+                    attachmentType.mode.getNodesFor(slotIndex, pos, layout), level, layout.slots[slotIndex], facing,
+                    level.registryAccess());
 
             attachments[slotIndex].onInserted(stack, player, hand, hitResult);
 

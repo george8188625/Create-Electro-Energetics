@@ -40,6 +40,7 @@ public class CreateElectroEnergetics
         CEEBlocks.register();
         CEEFluids.register();
         CEEPackets.register();
+        CEEMenuTypes.register();
         CEEEntityTypes.register();
         CEEPartialModels.register();
         CEEDisplaySources.register();

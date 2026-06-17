@@ -5,19 +5,25 @@ import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
+import com.george_vi.electroenergetics.content.electrical_panel.link.ElectricalPanelLink;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
+import com.simibubi.create.Create;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -28,11 +34,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 
-public class CutOffSwitchPanelAttachment extends PanelAttachment {
-
+public class CutOffSwitchPanelAttachment extends PanelAttachment implements ElectricalPanelLink {
     public SwitchingBehaviour behaviour;
     public boolean isClosed;
     Style style = Style.LEVER;
@@ -49,6 +55,8 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
     public void render(ElectricalPanelBlockEntity be, float partialTicks, PoseStack ms,
                        MultiBufferSource buffer, int light, int overlay) {
         transformPose(ms, be);
+
+        renderLinkAntenna(be, ms, buffer, light);
 
         CachedBuffers.partial(miniature() ? style.miniatureBody : style.body, be.getBlockState())
                 .light(light)
@@ -142,6 +150,15 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
                 AllItems.WRENCH.isIn(stack))
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
+        if (AllBlocks.REDSTONE_LINK.isIn(stack)) {
+            if (!level.isClientSide && player instanceof ServerPlayer && player.mayBuild())
+                player.openMenu(this, buf -> {
+                    for (int i = 0; i < 2; i++)
+                        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, getLinkFrequencies()[i]);
+                });
+            return ItemInteractionResult.SUCCESS;
+        }
+
         if (stack.getItem() == type.item.asItem()) {
             style = Style.values()[(style.ordinal() + 1) % Style.values().length];
             prevLeverAngle = 0;
@@ -160,22 +177,63 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
         if (!level.isClientSide()) {
             CEESoundEvents.playOnServer(level, pos, isClosed ? CEESoundEvents.CONTACT_OPEN.get() : CEESoundEvents.CONTACT_CLOSE.get(), 1f, 1f);
             isClosed ^= true;
+            updateLinkState();
             sendData();
         }
         return ItemInteractionResult.SUCCESS;
     }
 
     @Override
-    public void read(CompoundTag tag, boolean clientPacket) {
+    public void initialize() {
+        updateLinkState();
+    }
+
+    @Override
+    public int getTransmittedStrength() {
+        return isClosed && isAlive() ? 15 : 0;
+    }
+
+    @Override
+    public BlockPos getLocation() {
+        return pos;
+    }
+
+    @Override
+    public Level getLevel() {
+        return level;
+    }
+
+    @Override
+    public void onRemoved(Player player) {
+        super.onRemoved(player);
+        if (!level.isClientSide)
+            Create.REDSTONE_LINK_NETWORK_HANDLER.removeFromNetwork(getLevel(), this);
+    }
+
+    @Override
+    public void updateLinkState() {
+        ElectricalPanelLink.super.updateLinkState();
+        sendData();
+    }
+
+    @Override
+    public void removeLinkState() {
+        ElectricalPanelLink.super.removeLinkState();
+        sendData();
+    }
+
+    @Override
+    public void read(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
         if (!clientPacket)
             behaviour = new SwitchingBehaviour(tag.getCompound("Behaviour"));
         color = DyeColor.byName(tag.getString("Color"), null);
         isClosed = tag.getBoolean("IsClosed");
         style = Style.byId(tag.getString("Style"));
+        readLinkFrequencies(tag, registries);
     }
 
     @Override
-    public void write(CompoundTag tag, boolean clientPacket) {
+    public void write(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
         if (!clientPacket)
             tag.put("Behaviour", behaviour.write());
         if (isClosed)
@@ -184,6 +242,18 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
             tag.putString("Style", style.getSerializedName());
         if (color != null)
             tag.putString("Color", color.getSerializedName());
+        writeLinkFrequencies(tag, registries);
+    }
+
+    private boolean miniature() {
+        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
+    }
+
+    ItemStack[] linkFrequencies = new ItemStack[] {ItemStack.EMPTY, ItemStack.EMPTY};
+
+    @Override
+    public ItemStack[] getLinkFrequencies() {
+        return linkFrequencies;
     }
 
     private enum Style implements StringRepresentable {
@@ -224,9 +294,5 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment {
                     return type;
             return LEVER;
         }
-    }
-
-    private boolean miniature() {
-        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
     }
 }

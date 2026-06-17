@@ -96,10 +96,10 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
 
             if (attachments[i] == null) {
                 attachments[i] = type.createNew(worldPosition, type.mode.getNodesFor(i, worldPosition, layoutType),
-                        level, layoutType.slots[i], getBlockState().getValue(ElectricalPanelBlock.FACING));
+                        level, layoutType.slots[i], getBlockState().getValue(ElectricalPanelBlock.FACING), registries);
             }
 
-            attachments[i].read(attachmentTag.getCompound("Data"), clientPacket);
+            attachments[i].read(attachmentTag.getCompound("Data"), clientPacket, registries);
             attachments[i].label = attachmentTag.contains("Label") ? attachmentTag.getString("Label") : null;
         }
     }
@@ -125,7 +125,7 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
 
             CompoundTag dataTag = new CompoundTag();
             attachmentTag.put("Data", dataTag);
-            attachments[i].write(dataTag, clientPacket);
+            attachments[i].write(dataTag, clientPacket, registries);
             if (attachments[i].label != null)
                 attachmentTag.putString("Label", attachments[i].label);
         }

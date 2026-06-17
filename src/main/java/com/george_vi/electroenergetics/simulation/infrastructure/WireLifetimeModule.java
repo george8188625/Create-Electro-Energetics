@@ -84,9 +84,15 @@ public class WireLifetimeModule {
                     float distance = (float) topPos1.distanceTo(topPos2);
                     CatnipServices.NETWORK.sendToClientsAround(level, wireCenter,
                             connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendPositionedWireParticlesPacket(topPos1, topPos2, ParticleTypes.SMOKE, 350f * (0.05f / distance), 0.2f));
-                } else
-                    CatnipServices.NETWORK.sendToClientsAround(level, wireCenter,
-                            connection.node1().sourcePos().getCenter().distanceTo(connection.node2().sourcePos().getCenter()) + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE, wireType.getSag(), 0.2f));
+                } else {
+                    Vec3 pos1 = sd.getNodePosition(connection.node1());
+                    Vec3 pos2 = sd.getNodePosition(connection.node2());
+                    if (pos1 != null && pos2 != null) {
+                        double distance = pos1.distanceTo(pos2);
+                        CatnipServices.NETWORK.sendToClientsAround(level, wireCenter,
+                                distance + 20, new SendWireParticlesPacket(connection.node1(), connection.node2(), ParticleTypes.SMOKE, connectionData.wireData.getSag(distance), 0.2f));
+                    }
+                }
             }
 
             if (newTemp > wireType.getMaxTemperature() && increase) {

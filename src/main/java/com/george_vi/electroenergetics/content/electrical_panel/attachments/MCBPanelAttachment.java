@@ -18,6 +18,7 @@ import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -119,7 +120,7 @@ public class MCBPanelAttachment extends PanelAttachment {
     }
 
     @Override
-    public void read(CompoundTag tag, boolean clientPacket) {
+    public void read(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
         if (!clientPacket)
             behaviour = new SwitchingBehaviour(tag.getCompound("Behaviour"));
         isClosed = tag.getBoolean("IsClosed");
@@ -128,7 +129,7 @@ public class MCBPanelAttachment extends PanelAttachment {
     }
 
     @Override
-    public void write(CompoundTag tag, boolean clientPacket) {
+    public void write(CompoundTag tag, boolean clientPacket, HolderLookup.Provider registries) {
         if (!clientPacket)
             tag.put("Behaviour", behaviour.write());
         if (isClosed)
