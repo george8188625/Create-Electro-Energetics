@@ -62,12 +62,11 @@ public class MCBPanelAttachment extends PanelAttachment {
 
     @Override
     public void postTick(SimulationResults results) {
-        double voltage = results.getVoltageAt(nodes[0], nodes[1]);
+        double voltage = Math.abs(results.getVoltageAt(nodes[0], nodes[1]));
         double current = voltage / behaviour.resistance();
         Vec3 sparkPos = getCenter();
 
         temp = ElectricalDevice.updateTemp(temp, (float) current);
-
 
         if (current < 1 || !isClosed)
             this.temp = 0;

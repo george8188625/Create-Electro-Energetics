@@ -4,7 +4,6 @@ import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CEESoundEvents;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
-import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
 import com.george_vi.electroenergetics.content.electrical_panel.link.ElectricalPanelLink;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
@@ -58,7 +57,7 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment implements Elec
 
         renderLinkAntenna(be, ms, buffer, light);
 
-        CachedBuffers.partial(miniature() ? style.miniatureBody : style.body, be.getBlockState())
+        CachedBuffers.partial(miniature() ? (slot.isSixth() ? CEEPartialModels.PANEL_ATTACHMENT_TINY_SWITCH : style.miniatureBody) : style.body, be.getBlockState())
                 .light(light)
                 .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
 
@@ -246,7 +245,7 @@ public class CutOffSwitchPanelAttachment extends PanelAttachment implements Elec
     }
 
     private boolean miniature() {
-        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
+        return slot.fullWidth == 14;
     }
 
     ItemStack[] linkFrequencies = new ItemStack[] {ItemStack.EMPTY, ItemStack.EMPTY};

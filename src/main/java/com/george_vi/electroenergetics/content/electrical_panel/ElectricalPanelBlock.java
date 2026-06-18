@@ -18,6 +18,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -90,12 +91,7 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
     public CompoundTag getDefaultDeviceData(Level level, BlockPos pos, BlockState state) {
         CompoundTag tag = new CompoundTag();
         if (level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be) {
-            ElectricalPanelLayoutType layoutType = be.beLayoutType;
-            if (layoutType == ElectricalPanelLayoutType.NONE)
-                return tag;
             PanelAttachment[] attachments = be.beAttachments;
-            tag.putString("Layout", layoutType.getSerializedName());
-
             for (int i = 0; i < attachments.length; i++) {
                 if (attachments[i] == null)
                     continue;
@@ -105,7 +101,7 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
                     continue;
 
                 CompoundTag attachmentTag = new CompoundTag();
-                tag.put("Attachment" + i, attachmentTag);
+                tag.put("AttachmentSlot" + i, attachmentTag);
 
                 attachmentTag.putString("ID", id.toString());
 
@@ -170,42 +166,28 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
             return interactOnPanelItself(stack, state, level, pos, player, hand, hitResult);
 
         Direction facing = state.getValue(FACING);
-        ElectricalPanelLayoutType layout = be.getLayoutType();
         Vec3 localClickPos = hitResult.getLocation().subtract(Vec3.atLowerCornerOf(pos));
 
-        ElectricalPanelSlot clickedSlot;
+        ElectricalPanelSlot clickedSlot = be.getHoveringAttachmentIndex(localClickPos);
         PanelAttachmentType attachmentType = stack.is(CEETags.ELECTRICAL_PANEL_ATTACHMENT) ? PanelAttachmentType.getForItem(stack) : null;
-
-        if (layout == ElectricalPanelLayoutType.FULL) {
-            clickedSlot = ElectricalPanelSlot.FULL_SLOT;
-        } else if (layout == ElectricalPanelLayoutType.THIRD) {
-            clickedSlot = PanelAttachmentMode.THIRD.getSlot(facing, localClickPos);
-        } else if (layout == ElectricalPanelLayoutType.HALF_HORIZONTAL) {
-            clickedSlot = PanelAttachmentMode.HALF_ONLY_HORIZONTAL.getSlot(facing, localClickPos);
-        } else if (layout == ElectricalPanelLayoutType.HALF_VERTICAL) {
-            clickedSlot = PanelAttachmentMode.HALF_ONLY_VERTICAL.getSlot(facing, localClickPos);
-        } else if (attachmentType != null) {
-
-            clickedSlot = attachmentType.mode.getSlot(facing, localClickPos);
-        } else {
-            return interactOnPanelItself(stack, state, level, pos, player, hand, hitResult);
-        }
-
-        if (layout == ElectricalPanelLayoutType.NONE) {
-            be.setLayoutType(layout = clickedSlot.layoutType());
-
-            be.setAttachments(new PanelAttachment[layout.slots.length]);
-        }
-
-        int slotIndex = layout.getIndexOfSlot(clickedSlot);
         PanelAttachment[] attachments = be.getAttachments();
 
+        if (clickedSlot == null)
+            if (attachmentType != null)
+                clickedSlot = attachmentType.mode.getSlot(facing, localClickPos, attachments);
+
+        if (clickedSlot == null)
+            return interactOnPanelItself(stack, state, level, pos, player, hand, hitResult);
+
+        int slotIndex = clickedSlot.ordinal();
+
+
         if (attachments[slotIndex] == null) {
-            if (attachmentType == null || !attachmentType.mode.isCompatible(layout))
+            if (attachmentType == null)
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             // Insert attachment
             attachments[slotIndex] = attachmentType.createNew(pos,
-                    attachmentType.mode.getNodesFor(slotIndex, pos, layout), level, layout.slots[slotIndex], facing,
+                    attachmentType.mode.getNodesFor(pos, clickedSlot), level, clickedSlot, facing,
                     level.registryAccess());
 
             attachments[slotIndex].onInserted(stack, player, hand, hitResult);
@@ -290,9 +272,10 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
 
         Vec3 localClickPos = context.getClickLocation().subtract(Vec3.atLowerCornerOf(pos));
 
-        int slotIndex = be.getHoveringAttachmentIndex(localClickPos);
-        if (slotIndex == -1)
+        ElectricalPanelSlot clickedSlot = be.getHoveringAttachmentIndex(localClickPos);
+        if (clickedSlot == null)
             return super.onSneakWrenched(state, context);
+        int slotIndex = clickedSlot.ordinal();
 
         if (be.getAttachments()[slotIndex] == null)
             return super.onSneakWrenched(state, context);
@@ -300,10 +283,6 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
 
         PanelAttachment attachment = be.getAttachments()[slotIndex];
         be.getAttachments()[slotIndex] = null;
-        if (Arrays.stream(be.getAttachments()).allMatch(Objects::isNull)) {
-            be.setLayoutType(ElectricalPanelLayoutType.NONE);
-            be.setAttachments(new PanelAttachment[0]);
-        }
 
         attachment.onRemoved(player);
         if (player != null && !player.isCreative()) {
@@ -311,7 +290,8 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
                     .forEach(itemStack -> player.getInventory().placeItemBackInInventory(itemStack));
         }
         IWrenchable.playRemoveSound(level, pos);
-
+        if (level instanceof ServerLevel sl)
+            ensureNodesExist(sl, pos, defaultBlockState());
         be.attachmentUpdate();
         return InteractionResult.SUCCESS;
     }

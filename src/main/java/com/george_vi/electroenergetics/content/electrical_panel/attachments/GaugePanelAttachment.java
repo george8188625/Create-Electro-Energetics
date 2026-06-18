@@ -3,7 +3,6 @@ package com.george_vi.electroenergetics.content.electrical_panel.attachments;
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
-import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.RMSHolder;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -160,6 +159,6 @@ public class GaugePanelAttachment extends PanelAttachment {
     }
 
     private boolean miniature() {
-        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
+        return slot.fullWidth == 14;
     }
 }

@@ -1,0 +1,25 @@
+{
+  "values": [
+    "electroenergetics:connector",
+    "electroenergetics:pole_mount",
+    "electroenergetics:double_connector",
+    "electroenergetics:triple_connector",
+    "electroenergetics:quad_connector",
+    "electroenergetics:ground_rod",
+    "electroenergetics:fuse",
+    "electroenergetics:broken_fuse",
+    "electroenergetics:bulb",
+    "electroenergetics:broken_bulb",
+    "electroenergetics:cut_off_switch",
+    "electroenergetics:double_switch",
+    "electroenergetics:energy_meter",
+    "electroenergetics:tri_polar_energy_meter",
+    "electroenergetics:radiator_panel",
+    "electroenergetics:fuse_holder",
+    "electroenergetics:inductor",
+    "electroenergetics:momentary_switch",
+    "electroenergetics:emergency_stop_button",
+    "electroenergetics:indicator_bulb",
+    "electroenergetics:potentiometer"
+  ]
+}

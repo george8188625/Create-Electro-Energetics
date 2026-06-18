@@ -1,70 +1,103 @@
 package com.george_vi.electroenergetics.content.electrical_panel;
 
+import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachment;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 public enum PanelAttachmentMode {
-    FULL_NONE(0),
-    FULL_SINGLE(2),
-    FULL_DOUBLE(4),
-    FULL_TRIPLE(6),
-    FULL_QUAD(8),
-    HALF(2),
-    HALF_OR_THIRD(2),
-    HALF_ONLY_HORIZONTAL(2),
-    HALF_ONLY_VERTICAL(2),
-    THIRD(2),
+    FULL_NONE(0, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
+    FULL_SINGLE(2, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
+    FULL_DOUBLE(4, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
+    FULL_TRIPLE(6, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
+    FULL_QUAD(8, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
+    HALF(2, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.HALF_UPPER,
+            ElectricalPanelSlot.HALF_LEFT,
+            ElectricalPanelSlot.HALF_LOWER,
+            ElectricalPanelSlot.HALF_RIGHT
+    }),
+    HALF_OR_THIRD(2, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.HALF_UPPER,
+            ElectricalPanelSlot.HALF_LEFT,
+            ElectricalPanelSlot.HALF_LOWER,
+            ElectricalPanelSlot.HALF_RIGHT,
+            ElectricalPanelSlot.THIRD_RIGHT,
+            ElectricalPanelSlot.THIRD_CENTERED,
+            ElectricalPanelSlot.THIRD_LEFT
+    }),
+    HALF_OR_THIRD_OR_SMOL(2, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.HALF_UPPER,
+            ElectricalPanelSlot.HALF_LEFT,
+            ElectricalPanelSlot.HALF_LOWER,
+            ElectricalPanelSlot.HALF_RIGHT,
+            ElectricalPanelSlot.THIRD_RIGHT,
+            ElectricalPanelSlot.THIRD_CENTERED,
+            ElectricalPanelSlot.THIRD_LEFT,
+
+            ElectricalPanelSlot.THIRD_RIGHT_TOP,
+            ElectricalPanelSlot.THIRD_CENTERED_TOP,
+            ElectricalPanelSlot.THIRD_LEFT_TOP,
+            ElectricalPanelSlot.THIRD_RIGHT_BOTTOM,
+            ElectricalPanelSlot.THIRD_CENTERED_BOTTOM,
+            ElectricalPanelSlot.THIRD_LEFT_BOTTOM
+    }),
+    HALF_ONLY_HORIZONTAL(2, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.HALF_UPPER,
+            ElectricalPanelSlot.HALF_LOWER,
+    }),
+    HALF_ONLY_VERTICAL(2, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.HALF_LEFT,
+            ElectricalPanelSlot.HALF_RIGHT
+    }),
+    THIRD(2, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.THIRD_RIGHT,
+            ElectricalPanelSlot.THIRD_CENTERED,
+            ElectricalPanelSlot.THIRD_LEFT
+    }),
     ;
 
     public final int nodes;
+    public final ElectricalPanelSlot[] possibleSlots;
 
-    PanelAttachmentMode(int nodes) {
+    PanelAttachmentMode(int nodes, ElectricalPanelSlot[] possibleSlots) {
         this.nodes = nodes;
+        this.possibleSlots = possibleSlots;
     }
 
-    public ElectricalPanelSlot getSlot(Direction facing, Vec3 clickPosition) {
+    @Nullable
+    public ElectricalPanelSlot getSlot(Direction facing, Vec3 clickPosition, PanelAttachment[] existingAttachments) {
         Vec3 rotatedClickPos = VecHelper.rotateCentered(clickPosition, facing.toYRot() + 180, Direction.Axis.Y);
         double x = rotatedClickPos.x;
         double y = rotatedClickPos.y;
+        if (existingAttachments[ElectricalPanelSlot.FULL_SLOT.ordinal()] != null)
+            return null;
 
-        return switch (this) {
-            case FULL_NONE, FULL_SINGLE, FULL_DOUBLE, FULL_TRIPLE, FULL_QUAD -> ElectricalPanelSlot.FULL_SLOT;
-            case HALF_OR_THIRD -> {
-                if (x > (1 - y) ? x > y : y > x) {
-                    if (x < 3 / 16f)
-                        yield ElectricalPanelSlot.THIRD_RIGHT;
-                    if (x > 13 / 16f)
-                        yield ElectricalPanelSlot.THIRD_LEFT;
-                    if (x < 9 / 16f && x > 7 / 16f)
-                        yield ElectricalPanelSlot.THIRD_CENTERED;
+        ElectricalPanelSlot closestSlot = null;
+        double closestDistanceSqr = Double.MAX_VALUE;
+        SlotLoop:
+        for (ElectricalPanelSlot possibleSlot : possibleSlots) {
+            for (PanelAttachment attachment : existingAttachments)
+                if (attachment != null && attachment.slot.shape.intersects(possibleSlot.shape))
+                    continue SlotLoop;
+
+            if (possibleSlot.shape.minX < x && possibleSlot.shape.maxX > x &&
+                    possibleSlot.shape.minY < y && possibleSlot.shape.maxY > y) {
+
+                double distanceSqr = (x - possibleSlot.center.x) * (x - possibleSlot.center.x) + (y - possibleSlot.center.y) * (y - possibleSlot.center.y);
+                if (distanceSqr < closestDistanceSqr) {
+                    closestDistanceSqr = distanceSqr;
+                    closestSlot = possibleSlot;
                 }
-                if (x > (1 - y))
-                    yield x > y ? ElectricalPanelSlot.HALF_LEFT : ElectricalPanelSlot.HALF_UPPER;
-                yield x > y ? ElectricalPanelSlot.HALF_LOWER : ElectricalPanelSlot.HALF_RIGHT;
             }
-            case HALF -> {
-                if (x > (1 - y))
-                    yield x > y ? ElectricalPanelSlot.HALF_LEFT : ElectricalPanelSlot.HALF_UPPER;
-                yield x > y ? ElectricalPanelSlot.HALF_LOWER : ElectricalPanelSlot.HALF_RIGHT;
-            }
-            case HALF_ONLY_HORIZONTAL -> y > 0.5 ? ElectricalPanelSlot.HALF_UPPER : ElectricalPanelSlot.HALF_LOWER;
-            case HALF_ONLY_VERTICAL -> x > 0.5 ? ElectricalPanelSlot.HALF_LEFT : ElectricalPanelSlot.HALF_RIGHT;
-            case THIRD -> {
-                if (x > 10 / 16f)
-                    yield ElectricalPanelSlot.THIRD_LEFT;
-                else if (x > 6 / 16f)
-                    yield ElectricalPanelSlot.THIRD_CENTERED;
-                yield ElectricalPanelSlot.THIRD_RIGHT;
-            }
-        };
+        }
+        return closestSlot;
     }
 
-    public InWorldNode[] getNodesFor(int attachmentIndex, BlockPos pos, ElectricalPanelLayoutType layout) {
-        if (attachmentIndex >= layout.slots.length)
-            throw new IllegalArgumentException("attachmentIndex: " + attachmentIndex + " is too large for layout " + layout.getSerializedName() + '!');
+    public InWorldNode[] getNodesFor(BlockPos pos, ElectricalPanelSlot slot) {
 
         return switch (this) {
             case FULL_NONE -> new InWorldNode[]{};
@@ -82,47 +115,38 @@ public enum PanelAttachmentMode {
                     new InWorldNode(4, pos), new InWorldNode(6, pos),
                     new InWorldNode(13, pos), new InWorldNode(15, pos),
                     new InWorldNode(17, pos), new InWorldNode(19, pos)};
-            case HALF, HALF_ONLY_HORIZONTAL, HALF_ONLY_VERTICAL, HALF_OR_THIRD, THIRD -> {
-                if (layout == ElectricalPanelLayoutType.HALF_HORIZONTAL) {
-                    if (attachmentIndex == 1)
-                        yield new InWorldNode[] {new InWorldNode(22, pos), new InWorldNode(23, pos)};
-                    yield new InWorldNode[] {new InWorldNode(20, pos), new InWorldNode(21, pos)};
-                } else if (layout == ElectricalPanelLayoutType.HALF_VERTICAL) {
-                    if (attachmentIndex == 1)
-                        yield new InWorldNode[]{new InWorldNode(20, pos), new InWorldNode(22, pos)};
+            default -> {
+                if (slot == ElectricalPanelSlot.HALF_LOWER)
+                    yield new InWorldNode[]{new InWorldNode(22, pos), new InWorldNode(23, pos)};
+                else if (slot == ElectricalPanelSlot.HALF_UPPER)
+                    yield new InWorldNode[]{new InWorldNode(20, pos), new InWorldNode(21, pos)};
+                else if (slot == ElectricalPanelSlot.HALF_RIGHT)
+                    yield new InWorldNode[]{new InWorldNode(20, pos), new InWorldNode(22, pos)};
+                else if (slot == ElectricalPanelSlot.HALF_LEFT)
                     yield new InWorldNode[]{new InWorldNode(21, pos), new InWorldNode(23, pos)};
-                } else if (layout == ElectricalPanelLayoutType.THIRD) {
-                    if (attachmentIndex == 2)
-                        yield new InWorldNode[] {new InWorldNode(7, pos), new InWorldNode(10, pos)};
-                    if (attachmentIndex == 1)
-                        yield new InWorldNode[] {new InWorldNode(8, pos), new InWorldNode(11, pos)};
-                    yield new InWorldNode[] {new InWorldNode(9, pos), new InWorldNode(12, pos)};
-                }
-                yield new InWorldNode[] {};
+                else if (slot == ElectricalPanelSlot.THIRD_RIGHT)
+                    yield new InWorldNode[]{new InWorldNode(7, pos), new InWorldNode(10, pos)};
+                else if (slot == ElectricalPanelSlot.THIRD_CENTERED)
+                    yield new InWorldNode[]{new InWorldNode(8, pos), new InWorldNode(11, pos)};
+                else if (slot == ElectricalPanelSlot.THIRD_LEFT)
+                    yield new InWorldNode[]{new InWorldNode(9, pos), new InWorldNode(12, pos)};
+
+                else if (slot == ElectricalPanelSlot.THIRD_RIGHT_BOTTOM)
+                    yield new InWorldNode[]{new InWorldNode(131, pos), new InWorldNode(31, pos)};
+                else if (slot == ElectricalPanelSlot.THIRD_CENTERED_BOTTOM)
+                    yield new InWorldNode[]{new InWorldNode(135, pos), new InWorldNode(35, pos)};
+                else if (slot == ElectricalPanelSlot.THIRD_LEFT_BOTTOM)
+                    yield new InWorldNode[]{new InWorldNode(139, pos), new InWorldNode(39, pos)};
+
+                else if (slot == ElectricalPanelSlot.THIRD_RIGHT_TOP)
+                    yield new InWorldNode[]{new InWorldNode(291, pos), new InWorldNode(191, pos)};
+                else if (slot == ElectricalPanelSlot.THIRD_CENTERED_TOP)
+                    yield new InWorldNode[]{new InWorldNode(295, pos), new InWorldNode(195, pos)};
+                else if (slot == ElectricalPanelSlot.THIRD_LEFT_TOP)
+                    yield new InWorldNode[]{new InWorldNode(299, pos), new InWorldNode(199, pos)};
+
+                yield new InWorldNode[]{};
             }
-        };
-    }
-
-    public boolean isCompatible(ElectricalPanelLayoutType layout) {
-        if (layout == ElectricalPanelLayoutType.NONE)
-            return true;
-
-        return switch (this) {
-            case FULL_NONE, FULL_SINGLE, FULL_DOUBLE, FULL_QUAD, FULL_TRIPLE ->
-                    layout == ElectricalPanelLayoutType.FULL;
-            case HALF ->
-                    layout == ElectricalPanelLayoutType.HALF_HORIZONTAL ||
-                    layout == ElectricalPanelLayoutType.HALF_VERTICAL;
-            case HALF_OR_THIRD ->
-                    layout == ElectricalPanelLayoutType.HALF_HORIZONTAL ||
-                    layout == ElectricalPanelLayoutType.HALF_VERTICAL ||
-                    layout == ElectricalPanelLayoutType.THIRD;
-            case HALF_ONLY_HORIZONTAL ->
-                    layout == ElectricalPanelLayoutType.HALF_HORIZONTAL;
-            case HALF_ONLY_VERTICAL ->
-                    layout == ElectricalPanelLayoutType.HALF_VERTICAL;
-            case THIRD ->
-                    layout == ElectricalPanelLayoutType.THIRD;
         };
     }
 }

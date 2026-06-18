@@ -96,9 +96,11 @@ public class CEEPartialModels {
     public static final PartialModel PANEL_ATTACHMENT_SMOL_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_dial"));
 
     public static final PartialModel PANEL_ATTACHMENT_SMOL_INDICATOR_BULB = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_indicator_bulb"));
+    public static final PartialModel PANEL_ATTACHMENT_TINY_INDICATOR_BULB = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/tiny_indicator_bulb"));
     public static final PartialModel PANEL_ATTACHMENT_INDICATOR_BULB = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/indicator_bulb"));
 
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch"));
+    public static final PartialModel PANEL_ATTACHMENT_TINY_SWITCH = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/tiny_switch"));
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH_LEVER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch_lever"));
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH_LEVER_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch_lever_dyeable"));
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch_dial"));

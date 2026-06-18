@@ -1,0 +1,14 @@
+{
+  "values": [
+    "electroenergetics:redstone_relay",
+    "electroenergetics:rail_contact_shoe",
+    "electroenergetics:diode",
+    "electroenergetics:resistor",
+    "electroenergetics:creative_resistor",
+    "electroenergetics:buzzer",
+    "electroenergetics:capacitor",
+    "electroenergetics:high_voltage_sign",
+    "electroenergetics:electric_shock_sign",
+    "electroenergetics:grounding_sign"
+  ]
+}

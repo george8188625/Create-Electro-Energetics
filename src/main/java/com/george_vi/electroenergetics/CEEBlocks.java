@@ -98,6 +98,7 @@ public class CEEBlocks {
     }
 
     public static final BlockEntry<ConnectorBlock> CONNECTOR = REGISTRATE.block("connector", ConnectorBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> p.directionalBlock(c.get(), bs -> AssetLookup.partialBaseModel(c, p, bs.getValue(ConnectorBlock.STYLE).suffix)))
@@ -149,6 +150,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<PoleMountBlock> POLE_MOUNT = REGISTRATE.block("pole_mount", PoleMountBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::softMetal)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
@@ -162,6 +164,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<DoubleConnectorBlock> DOUBLE_CONNECTOR = REGISTRATE.block("double_connector", DoubleConnectorBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) ->
@@ -175,6 +178,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<TripleConnectorBlock> TRIPLE_CONNECTOR = REGISTRATE.block("triple_connector", TripleConnectorBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) ->
@@ -204,6 +208,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<QuadConnectorBlock> QUAD_CONNECTOR = REGISTRATE.block("quad_connector", QuadConnectorBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate(BlockStateGen.directionalBlockProvider(false))
@@ -214,6 +219,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<GroundRodBlock> GROUND_ROD = REGISTRATE.block("ground_rod", GroundRodBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_ORANGE))
             .blockstate((c, p) -> BlockStateGen.simpleBlock(c, p, s -> p.models().getExistingFile(p.modLoc("block/ground_rod"))))
@@ -245,6 +251,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<FuseBlock> FUSE = REGISTRATE.block("fuse", FuseBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .properties(BlockBehaviour.Properties::noOcclusion)
@@ -257,6 +264,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<FuseBlock> BROKEN_FUSE = REGISTRATE.block("broken_fuse", FuseBlock::broken)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .properties(BlockBehaviour.Properties::noOcclusion)
@@ -269,6 +277,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<BulbBlock> BULB = REGISTRATE.block("bulb", BulbBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> p.modLoc(bs.getValue(BulbBlock.COMPACT) ? "block/bulb/block_compact" : "block/bulb/block")))
@@ -282,6 +291,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<BulbBlock> BROKEN_BULB = REGISTRATE.block("broken_bulb", BulbBlock::broken)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p,
@@ -293,6 +303,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<CutOffSwitchBlock> CUT_OFF_SWITCH = REGISTRATE.block("cut_off_switch", properties -> new CutOffSwitchBlock(properties, false))
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p,
@@ -304,6 +315,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<CutOffSwitchBlock> DOUBLE_SWITCH = REGISTRATE.block("double_switch", properties -> new CutOffSwitchBlock(properties, true))
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p,
@@ -315,6 +327,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<RedstoneRelayBlock> REDSTONE_RELAY = REGISTRATE.block("redstone_relay", RedstoneRelayBlock::new)
+            .tag(CEETags.SUPER_LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p,
@@ -326,6 +339,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<EnergyMeterBlock> ENERGY_METER = REGISTRATE.block("energy_meter", EnergyMeterBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
@@ -344,6 +358,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<TriPolarEnergyMeterBlock> TRI_POLAR_ENERGY_METER = REGISTRATE.block("tri_polar_energy_meter", TriPolarEnergyMeterBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.getVariantBuilder(c.getEntry()).forAllStates((state ->
@@ -479,6 +494,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<RadiatorPanelBlock> RADIATOR_PANEL = REGISTRATE.block("radiator_panel", RadiatorPanelBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
@@ -639,6 +655,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<RailContactShoe> RAIL_CONTACT_SHOE = REGISTRATE.block("rail_contact_shoe", RailContactShoe::new)
+            .tag(CEETags.SUPER_LIGHT)
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::netheriteMetal)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
@@ -652,6 +669,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<DiodeBlock> DIODE = REGISTRATE.block("diode", DiodeBlock::new)
+            .tag(CEETags.SUPER_LIGHT)
             .initialProperties(SharedProperties::netheriteMetal)
             .properties(p -> p.mapColor(MapColor.COLOR_BLACK))
             .blockstate((c, p) ->
@@ -665,6 +683,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<ResistorBlock> RESISTOR = REGISTRATE.block("resistor", properties -> new ResistorBlock(properties, false))
+            .tag(CEETags.SUPER_LIGHT)
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
@@ -678,6 +697,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<ResistorBlock> CREATIVE_RESISTOR = REGISTRATE.block("creative_resistor", properties -> new ResistorBlock(properties, true))
+            .tag(CEETags.SUPER_LIGHT)
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_PURPLE))
@@ -690,6 +710,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<FuseHolderBlock> FUSE_HOLDER = REGISTRATE.block("fuse_holder", FuseHolderBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate(DirectionalRolledDeviceBlock::generateBlockState)
@@ -700,6 +721,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<BuzzerBlock> BUZZER = REGISTRATE.block("buzzer", BuzzerBlock::new)
+            .tag(CEETags.SUPER_LIGHT)
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
@@ -724,6 +746,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<CapacitorBlock> CAPACITOR = REGISTRATE.block("capacitor", CapacitorBlock::new)
+            .tag(CEETags.SUPER_LIGHT)
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
@@ -737,6 +760,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<InductorBlock> INDUCTOR = REGISTRATE.block("inductor", InductorBlock::new)
+            .tag(CEETags.LIGHT)
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
@@ -750,6 +774,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<MomentarySwitchBlock> MOMENTARY_SWITCH = REGISTRATE.block("momentary_switch", MomentarySwitchBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(MomentarySwitchBlock.CLOSED) ? p.modLoc("block/momentary_switch/block_closed") : p.modLoc("block/momentary_switch/block")))
@@ -760,6 +785,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<EmergencyStopBlock> EMERGENCY_STOP_BUTTON = REGISTRATE.block("emergency_stop_button", EmergencyStopBlock::new)
+            .tag(CEETags.LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
             .blockstate((c, p) -> DirectionalRolledDeviceBlock.generateBlockState(c, p, bs -> bs.getValue(EmergencyStopBlock.ACTIVATED) ? p.modLoc("block/emergency_stop_button/block_pressed") : p.modLoc("block/emergency_stop_button/block")))
@@ -770,6 +796,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<IndicatorBulbBlock> INDICATOR_BULB = REGISTRATE.block("indicator_bulb", IndicatorBulbBlock::new)
+            .tag(CEETags.LIGHT)
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_WHITE))
@@ -782,6 +809,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<WarningSignBlock> HIGH_VOLTAGE_SIGN = REGISTRATE.block("high_voltage_sign", WarningSignBlock::new)
+            .tag(CEETags.SUPER_LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs -> bs.getValue(WarningSignBlock.ATTACHED) ? AssetLookup.partialBaseModel(c, p, "attached") : AssetLookup.partialBaseModel(c, p)))
@@ -792,6 +820,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<WarningSignBlock> ELECTRIC_SHOCK_SIGN = REGISTRATE.block("electric_shock_sign", WarningSignBlock::new)
+            .tag(CEETags.SUPER_LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs -> bs.getValue(WarningSignBlock.ATTACHED) ? AssetLookup.partialBaseModel(c, p, "attached") : AssetLookup.partialBaseModel(c, p)))
@@ -802,6 +831,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<WarningSignBlock> GROUNDING_SIGN = REGISTRATE.block("grounding_sign", WarningSignBlock::new)
+            .tag(CEETags.SUPER_LIGHT)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs -> bs.getValue(WarningSignBlock.ATTACHED) ? AssetLookup.partialBaseModel(c, p, "attached") : AssetLookup.partialBaseModel(c, p)))
@@ -812,6 +842,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<PotentiometerBlock> POTENTIOMETER = REGISTRATE.block("potentiometer", PotentiometerBlock::new)
+            .tag(CEETags.LIGHT)
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
@@ -839,6 +870,7 @@ public class CEEBlocks {
             .register();
 
     public static final BlockEntry<ResistiveHeaterBlock> RESISTIVE_HEATER = REGISTRATE.block("resistive_heater", ResistiveHeaterBlock::new)
+            .tag(CEETags.FD_HEAT_SOURCES)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.get(), bs -> AssetLookup.partialBaseModel(c, p)))

@@ -85,6 +85,9 @@ public class CEETags {
     public static final TagKey<Block> SUPER_LIGHT = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("sable", "super_light"));
     public static final TagKey<Block> LIGHT = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("sable", "light"));
 
+    // Tags for Farmer's Delight compatibility
+    public static final TagKey<Block> FD_HEAT_SOURCES = TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.fromNamespaceAndPath("farmersdelight", "heat_sources"));
+
     public static @NotNull Item itemFromTag(TagKey<Item> tag) {
         var it = BuiltInRegistries.ITEM.getTagOrEmpty(tag).iterator();
         if (!it.hasNext())

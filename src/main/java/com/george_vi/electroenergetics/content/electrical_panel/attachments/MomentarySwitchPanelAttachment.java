@@ -53,7 +53,7 @@ public class MomentarySwitchPanelAttachment extends PanelAttachment implements E
         transformPose(ms, be);
         renderLinkAntenna(be, ms, buffer, light);
 
-        CachedBuffers.partial(miniature() ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH : CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH, be.getBlockState())
+        CachedBuffers.partial(miniature() ? (slot.isSixth() ? CEEPartialModels.PANEL_ATTACHMENT_TINY_INDICATOR_BULB : CEEPartialModels.PANEL_ATTACHMENT_SMOL_MOMENTARY_SWITCH) : CEEPartialModels.PANEL_ATTACHMENT_MOMENTARY_SWITCH, be.getBlockState())
                 .light(light)
                 .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
 
@@ -192,7 +192,7 @@ public class MomentarySwitchPanelAttachment extends PanelAttachment implements E
     }
 
     private boolean miniature() {
-        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
+        return slot.fullWidth == 14;
     }
 
     ItemStack[] linkFrequencies = new ItemStack[] {ItemStack.EMPTY, ItemStack.EMPTY};

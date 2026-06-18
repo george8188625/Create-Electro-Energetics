@@ -21,22 +21,21 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IHaveHoveringInformation, SpecialBlockEntityItemRequirement {
 
     // This exists purely to mirror the device's data, or for rendering on the client side.
     // The device actually owns those.
-    ElectricalPanelLayoutType beLayoutType = ElectricalPanelLayoutType.NONE;
-    PanelAttachment[] beAttachments = new PanelAttachment[0];
+    PanelAttachment[] beAttachments = new PanelAttachment[ElectricalPanelSlot.values().length];
 
     public ElectricalPanelBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -64,51 +63,83 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-        setLayoutType(ElectricalPanelLayoutType.byIdOrNone(tag.getString("Layout")));
         PanelAttachment[] attachments = getAttachments();
-        ElectricalPanelLayoutType layoutType = getLayoutType();
+        readAttachments(tag, attachments, worldPosition, level, registries, clientPacket, getBlockState().getValue(ElectricalPanelBlock.FACING));
+        if (Arrays.stream(attachments).allMatch(Objects::isNull)) {
+            Arrays.fill(attachments, null);
+            readLegacyAttachments(tag, attachments, worldPosition, level, registries, getBlockState().getValue(ElectricalPanelBlock.FACING));
+        }
+    }
 
-        if (attachments.length != layoutType.slots.length)
-            setAttachments(new PanelAttachment[layoutType.slots.length]);
-        attachments = getAttachments();
+    static void readLegacyAttachments(CompoundTag tag, PanelAttachment[] toFill, BlockPos worldPosition, Level level,
+                                      HolderLookup.Provider registries, Direction facing) {
 
-        for (int i = 0; i < attachments.length; i++) {
+        ElectricalPanelLayoutType layoutType = ElectricalPanelLayoutType.byIdOrNone(tag.getString("Layout"));
+
+        for (int i = 0; i < layoutType.slots.length; i++) {
             CompoundTag attachmentTag = tag.getCompound("Attachment" + i);
-            if (attachmentTag.isEmpty()) {
-                attachments[i] = null;
+            if (attachmentTag.isEmpty())
                 continue;
-            }
+
             String id = attachmentTag.getString("ID");
 
             ResourceLocation attachmentId = ResourceLocation.tryParse(id);
 
+            if (attachmentId == null)
+                continue;
+
+            PanelAttachmentType type = CEERegistries.PANEL_ATTACHMENT_TYPE.get(attachmentId);
+
+            if (type == null)
+                continue;
+
+            if (toFill[layoutType.slots[i].ordinal()] == null) {
+                toFill[layoutType.slots[i].ordinal()] = type.createNew(worldPosition, type.mode.getNodesFor(worldPosition, layoutType.slots[i]),
+                        level, layoutType.slots[i], facing, registries);
+            }
+        }
+    }
+
+
+    static void readAttachments(CompoundTag tag, PanelAttachment[] toFill, BlockPos worldPosition, Level level,
+                                HolderLookup.Provider registries, boolean clientPacket, Direction facing) {
+
+        for (int i = 0; i < toFill.length; i++) {
+            CompoundTag attachmentTag = tag.getCompound("AttachmentSlot" + i);
+            if (attachmentTag.isEmpty()) {
+                toFill[i] = null;
+                continue;
+            }
+
+            String id = attachmentTag.getString("ID");
+
+            ResourceLocation attachmentId = ResourceLocation.tryParse(id);
             if (attachmentId == null) {
-                attachments[i] = null;
+                toFill[i] = null;
                 continue;
             }
 
             PanelAttachmentType type = CEERegistries.PANEL_ATTACHMENT_TYPE.get(attachmentId);
-
             if (type == null) {
-                attachments[i] = null;
+                toFill[i] = null;
                 continue;
             }
 
-            if (attachments[i] == null) {
-                attachments[i] = type.createNew(worldPosition, type.mode.getNodesFor(i, worldPosition, layoutType),
-                        level, layoutType.slots[i], getBlockState().getValue(ElectricalPanelBlock.FACING), registries);
+            ElectricalPanelSlot slot = ElectricalPanelSlot.values()[i];
+
+            if (toFill[i] == null) {
+                toFill[i] = type.createNew(worldPosition, type.mode.getNodesFor(worldPosition, slot),
+                        level, slot, facing, registries);
             }
 
-            attachments[i].read(attachmentTag.getCompound("Data"), clientPacket, registries);
-            attachments[i].label = attachmentTag.contains("Label") ? attachmentTag.getString("Label") : null;
+            toFill[i].read(attachmentTag.getCompound("Data"), clientPacket, registries);
+            toFill[i].label = attachmentTag.contains("Label") ? attachmentTag.getString("Label") : null;
         }
     }
 
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-        ElectricalPanelLayoutType layoutType = getLayoutType();
-        tag.putString("Layout", layoutType.getSerializedName());
         PanelAttachment[] attachments = getAttachments();
         for (int i = 0; i < attachments.length; i++) {
             if (attachments[i] == null)
@@ -119,7 +150,7 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
                 continue;
 
             CompoundTag attachmentTag = new CompoundTag();
-            tag.put("Attachment" + i, attachmentTag);
+            tag.put("AttachmentSlot" + i, attachmentTag);
 
             attachmentTag.putString("ID", id.toString());
 
@@ -137,10 +168,10 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
         if (mc.hitResult == null)
             return false;
         Vec3 clickedPos = mc.hitResult.getLocation().subtract(Vec3.atLowerCornerOf(worldPosition));
-        int slot = getHoveringAttachmentIndex(clickedPos);
-        if (slot == -1 || beAttachments[slot] == null)
+        ElectricalPanelSlot slot = getHoveringAttachmentIndex(clickedPos);
+        if (slot == null || beAttachments[slot.ordinal()] == null)
             return false;
-        return beAttachments[slot].addToGoggleTooltip(this, tooltip, isPlayerSneaking);
+        return beAttachments[slot.ordinal()].addToGoggleTooltip(this, tooltip, isPlayerSneaking);
     }
 
     @Override
@@ -149,28 +180,14 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
         if (mc.hitResult == null)
             return false;
         Vec3 clickedPos = mc.hitResult.getLocation().subtract(Vec3.atLowerCornerOf(worldPosition));
-        int slot = getHoveringAttachmentIndex(clickedPos);
-        if (slot == -1 || beAttachments[slot] == null)
+        ElectricalPanelSlot slot = getHoveringAttachmentIndex(clickedPos);
+        if (slot == null || beAttachments[slot.ordinal()] == null)
             return false;
-        return beAttachments[slot].addToTooltip(this, tooltip, isPlayerSneaking);
+        return beAttachments[slot.ordinal()].addToTooltip(this, tooltip, isPlayerSneaking);
     }
 
     public void attachmentUpdate() {
         sendData();
-    }
-
-    public ElectricalPanelLayoutType getLayoutType() {
-        ElectricalPanelDevice device = deviceOrNull();
-        if (device != null)
-            return device.layoutType;
-        return beLayoutType;
-    }
-
-    public void setLayoutType(ElectricalPanelLayoutType layoutType) {
-        ElectricalPanelDevice device = deviceOrNull();
-        if (device != null)
-            device.layoutType = layoutType;
-        this.beLayoutType = layoutType;
     }
 
     public PanelAttachment[] getAttachments() {
@@ -200,44 +217,22 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
     /**
      * @return -1 if no attachment
      */
-    public int getHoveringAttachmentIndex(Vec3 localClickPos) {
+    @Nullable
+    public ElectricalPanelSlot getHoveringAttachmentIndex(Vec3 localClickPos) {
+        localClickPos = VecHelper.rotateCentered(localClickPos, getBlockState().getValue(ElectricalPanelBlock.FACING).toYRot() + 180, Direction.Axis.Y);
 
-        ElectricalPanelLayoutType layout = this.getLayoutType();
         PanelAttachment[] attachments = this.getAttachments();
 
-        BlockState state = this.getBlockState();
+        for (PanelAttachment attachment : attachments) {
+            if (attachment == null)
+                continue;
 
-        Direction facing = state.getValue(ElectricalPanelBlock.FACING);
-
-        ElectricalPanelSlot slot = null;
-        if (attachments.length == 0)
-            return -1;
-        if (attachments.length == 1 && attachments[0] != null) {
-            slot = ElectricalPanelSlot.FULL_SLOT;
-        } else if (layout == ElectricalPanelLayoutType.HALF_HORIZONTAL) {
-            slot = PanelAttachmentMode.HALF_ONLY_HORIZONTAL.getSlot(facing, localClickPos);
-        } else if (layout == ElectricalPanelLayoutType.HALF_VERTICAL) {
-            slot = PanelAttachmentMode.HALF_ONLY_VERTICAL.getSlot(facing, localClickPos);
-        } else if (layout == ElectricalPanelLayoutType.THIRD) {
-            slot = PanelAttachmentMode.THIRD.getSlot(facing, localClickPos);
+            if (attachment.slot.shape.minX < localClickPos.x && attachment.slot.shape.maxX > localClickPos.x &&
+                    attachment.slot.shape.minY < localClickPos.y && attachment.slot.shape.maxY > localClickPos.y)
+                return attachment.slot;
         }
 
-        if (slot == null)
-            return -1;
-
-        int slotIndex = layout.getIndexOfSlot(slot);
-        if (slotIndex == -1 || attachments[slotIndex] == null)
-            return -1;
-
-        Vec3 rotatedClickPos = VecHelper.rotateCentered(localClickPos, facing.toYRot() + 180, Direction.Axis.Y);
-        double x = rotatedClickPos.x;
-        double y = rotatedClickPos.y;
-        if (x < 2/16f || x > 14/16f || y < 2/16f || y > 14/16f)
-            return -1;
-
-        if (attachments[slotIndex] != null)
-            return slotIndex;
-        return  -1;
+        return null;
     }
 
     public Map<Integer, Vec3> getNodePositions() {

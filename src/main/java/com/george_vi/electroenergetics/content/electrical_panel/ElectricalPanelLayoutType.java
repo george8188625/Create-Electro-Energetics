@@ -4,6 +4,7 @@ import net.createmod.catnip.lang.Lang;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 
+// For backwards compatibility
 public enum ElectricalPanelLayoutType implements StringRepresentable {
     NONE(new ElectricalPanelSlot[0]),
     FULL(new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
@@ -22,14 +23,6 @@ public enum ElectricalPanelLayoutType implements StringRepresentable {
             if (type.getSerializedName().equals(id))
                 return type;
         return NONE;
-    }
-
-    public int getIndexOfSlot(ElectricalPanelSlot slot) {
-        for (int i = 0; i < slots.length; i++)
-            if (slots[i] == slot)
-                return i;
-
-        return -1;
     }
 
     @Override

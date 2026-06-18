@@ -6,7 +6,6 @@ import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.mojang.blaze3d.platform.Window;
 import com.simibubi.create.AllKeys;
-import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;

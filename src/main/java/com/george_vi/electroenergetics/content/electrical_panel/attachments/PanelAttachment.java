@@ -67,8 +67,9 @@ public abstract class PanelAttachment {
                 .translateY(
                         slot == ElectricalPanelSlot.HALF_LOWER ? -6/16f :
                         slot == ElectricalPanelSlot.HALF_UPPER ? 6/16f : 0)
-                .rotateZCenteredDegrees(slot.layoutType() == ElectricalPanelLayoutType.HALF_HORIZONTAL ? 90 : 0)
-                .translateX((float) slot.leftOffset);
+                .rotateZCenteredDegrees(slot.isHorizontal ? 90 : 0)
+                .translateX((float) slot.leftOffset)
+                .translateY((float) slot.topOffset);
     }
 
     /**
@@ -155,12 +156,12 @@ public abstract class PanelAttachment {
     public void renderLabel(ElectricalPanelBlockEntity be, float partialTicks, PoseStack ms,
                             MultiBufferSource buffer, int light, int overlay) {
         Direction facing = be.getBlockState().getValue(ElectricalPanelBlock.FACING);
-        boolean isHorizontal = be.getLayoutType() == ElectricalPanelLayoutType.HALF_HORIZONTAL;
-        int fullWidth = slot.layoutType() == ElectricalPanelLayoutType.THIRD ? 14 : be.getLayoutType() == ElectricalPanelLayoutType.FULL ? 48 : 24;
+        boolean isHorizontal = slot.isHorizontal;
+        int fullWidth = slot.fullWidth;
         if (isHorizontal)
             fullWidth = 48;
         float scale = 1 / 128f;
-        float y = be.getLayoutType() == ElectricalPanelLayoutType.FULL ? 2/16f : 4/16f;
+        float y = (float) ((slot == ElectricalPanelSlot.FULL_SLOT ? 2/16f : 4/16f) + slot.topOffset);
         Minecraft mc = Minecraft.getInstance();
         int width = mc.font.width(label);
         float leftOffset = 2 / 16f;

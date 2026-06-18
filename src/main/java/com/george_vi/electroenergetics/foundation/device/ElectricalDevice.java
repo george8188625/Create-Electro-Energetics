@@ -59,7 +59,7 @@ public interface ElectricalDevice {
      * @return new temp value in abstract units
      */
     static float updateTemp(float temp, float heat) {
-        if (Float.isNaN(temp))
+        if (!Float.isFinite(temp))
             temp = 0;
 
         float newTemp = heat + 30f;

@@ -1,6 +1,5 @@
 package com.george_vi.electroenergetics.content.electrical_panel;
 
-import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachmentType;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -64,33 +63,13 @@ public class ElectricalPanelClientTicker {
         if (attachmentType == null)
             return;
 
-        ElectricalPanelLayoutType layout = be.getLayoutType();
-
-        PanelAttachmentMode mode = attachmentType.mode;
-
         Vec3 localClickPos = result.getLocation().subtract(Vec3.atLowerCornerOf(targetPos));
-        ElectricalPanelSlot slot = null;
-        if (be.getAttachments().length == 0)
-            slot = mode.getSlot(facing, localClickPos);
-        if (be.getAttachments().length == 1 && be.getAttachments()[0] != null) {
-            slot = null;
-        } else if (layout == ElectricalPanelLayoutType.HALF_HORIZONTAL) {
-            slot = PanelAttachmentMode.HALF_ONLY_HORIZONTAL.getSlot(facing, localClickPos);
-        } else if (layout == ElectricalPanelLayoutType.HALF_VERTICAL) {
-            slot = PanelAttachmentMode.HALF_ONLY_VERTICAL.getSlot(facing, localClickPos);
-        } else if (layout == ElectricalPanelLayoutType.THIRD) {
-            slot = PanelAttachmentMode.THIRD.getSlot(facing, localClickPos);
-        }
-
-        if (slot == null || !attachmentType.mode.isCompatible(slot.layoutType()))
+        ElectricalPanelSlot slot = be.getHoveringAttachmentIndex(localClickPos);
+        if (slot != null)
             return;
-        else if (be.getAttachments().length != 0) {
-            int slotIndex = layout.getIndexOfSlot(slot);
-            if (slotIndex == -1)
-                return;
-            if (be.getAttachments()[slotIndex] != null)
-                return;
-        }
+        slot = attachmentType.mode.getSlot(facing, localClickPos, be.getAttachments());
+        if (slot == null)
+            return;
 
         AABB shape = slot.shape;
 
@@ -120,34 +99,13 @@ public class ElectricalPanelClientTicker {
         if (event.getTarget().getDirection() != facing || !(level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be))
             return;
 
-
-        ElectricalPanelLayoutType layout = be.getLayoutType();
-
         Vec3 localClickPos = event.getTarget().getLocation().subtract(localPos);
 
-        ElectricalPanelSlot slot = null;
-        if (be.getAttachments().length == 0)
-            return;
-        if (be.getAttachments().length == 1 && be.getAttachments()[0] != null) {
-            slot = ElectricalPanelSlot.FULL_SLOT;
-        } else if (layout == ElectricalPanelLayoutType.HALF_HORIZONTAL) {
-            slot = PanelAttachmentMode.HALF_ONLY_HORIZONTAL.getSlot(facing, localClickPos);
-        } else if (layout == ElectricalPanelLayoutType.HALF_VERTICAL) {
-            slot = PanelAttachmentMode.HALF_ONLY_VERTICAL.getSlot(facing, localClickPos);
-        } else if (layout == ElectricalPanelLayoutType.THIRD) {
-            slot = PanelAttachmentMode.THIRD.getSlot(facing, localClickPos);
-        }
-
+        ElectricalPanelSlot slot = be.getHoveringAttachmentIndex(localClickPos);
 
         if (slot == null)
             return;
-        else if (be.getAttachments().length != 0) {
-            int slotIndex = layout.getIndexOfSlot(slot);
-            if (slotIndex == -1)
-                return;
-            if (be.getAttachments()[slotIndex] == null)
-                return;
-        }
+
 
         Vec3 rotatedClickPos = VecHelper.rotateCentered(localClickPos, facing.toYRot() + 180, Direction.Axis.Y);
         double x = rotatedClickPos.x;

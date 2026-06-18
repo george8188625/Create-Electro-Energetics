@@ -75,7 +75,6 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
             }
             return; // Wire is wrong. It's going to be updated at some point.
         }
-
         int minSectionX = SectionPos.blockToSectionCoord(Math.min(pos1.x, pos2.x));
         int minSectionY = SectionPos.blockToSectionCoord(Math.min(pos1.y, pos2.y));
         int minSectionZ = SectionPos.blockToSectionCoord(Math.min(pos1.z, pos2.z));
@@ -94,60 +93,6 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
                 visualizationContext.renderOrigin().getZ());
         prevPos1 = pos1;
         prevPos2 = pos2;
-
-        List<Vec3> points = wireType.shouldScaleLast() ?
-                QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance)) :
-                QuadraticWireHelper.cablePointsRaw(pos1, pos2, wireData.getSag(distance));
-
-        createWire(visualizationContext, wireType, points, pos2, level);
-
-        if (endpointModel == null)
-            return;
-
-        if (points.size() < 2) {
-            startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
-                    .createInstance();
-            startInstance.setVisible(false);
-
-            endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
-                    .createInstance();
-            endInstance.setVisible(false);
-        }
-
-        Vec3 start = points.get(0);
-        BlockPos startBlockPos = BlockPos.containing(start);
-        Vec3 startNext = points.get(1);
-        BlockPos startNextBlockPos = BlockPos.containing(startNext);
-        Vec3 end = pos2;
-        BlockPos endBlockPos = BlockPos.containing(end);
-        Vec3 endNext = points.get(points.size() - 1);
-        BlockPos endNextBlockPos = BlockPos.containing(endNext);
-
-        startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
-                .createInstance();
-        startInstance.setVisible(true);
-        startInstance.setIdentityTransform()
-                .translate(start)
-                .rotateY((float) Mth.atan2(startNext.x() - start.x(), startNext.z() - start.z()))
-                .rotateX(-(float) Mth.atan2(startNext.y - start.y, Math.hypot(startNext.x - start.x, startNext.z - start.z)))
-                .rotateZ(0.001f)
-                .light(startBlockPos.equals(startNextBlockPos) ? LevelRenderer.getLightColor(level, startNextBlockPos) :
-                        WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, startNextBlockPos),
-                                LevelRenderer.getLightColor(level, startBlockPos)))
-                .setChanged();
-
-        endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
-                .createInstance();
-        endInstance.setVisible(true);
-        endInstance.setIdentityTransform()
-                .translate(end)
-                .rotateY((float) Mth.atan2(endNext.x() - end.x(), endNext.z() - end.z()))
-                .rotateX(-(float) Mth.atan2(endNext.y - end.y, Math.hypot(endNext.x - end.x, endNext.z - end.z)))
-                .rotateZ(0.001f)
-                .light(endBlockPos.equals(endNextBlockPos) ? LevelRenderer.getLightColor(level, endNextBlockPos) :
-                        WireRenderer.maxLightLevel(LevelRenderer.getLightColor(level, endNextBlockPos),
-                                LevelRenderer.getLightColor(level, endBlockPos)))
-                .setChanged();
     }
 
     public void recreateInstances(float partialTick) {
@@ -193,11 +138,25 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         List<Vec3> points = wireType.shouldScaleLast() ?
                 QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance)) :
                 QuadraticWireHelper.cablePointsRaw(pos1, pos2, wireData.getSag(distance));
-
         createWire(visualizationContext, wireType, points, pos2, level);
 
-        if (startInstance == null || endInstance == null || points.size() < 2)
+        PartialModel endpointModel = wireType.getEndPointModel();
+
+        if (endpointModel == null)
             return;
+
+        if (startInstance == null)
+            startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                    .createInstance();
+
+        if (endInstance == null)
+            endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                    .createInstance();
+
+        if (points.size() < 2) {
+            startInstance.setVisible(false);
+            endInstance.setVisible(false);
+        }
 
         Vec3 start = points.get(0);
         BlockPos startBlockPos = BlockPos.containing(start);

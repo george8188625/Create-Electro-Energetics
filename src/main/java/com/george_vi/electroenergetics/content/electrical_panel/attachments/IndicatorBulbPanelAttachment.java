@@ -2,7 +2,6 @@ package com.george_vi.electroenergetics.content.electrical_panel.attachments;
 
 import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
-import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelLayoutType;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolItem;
 import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
@@ -11,6 +10,7 @@ import com.george_vi.electroenergetics.simulation.electrical_properties.Electric
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.render.RenderTypes;
+import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -42,7 +42,12 @@ public class IndicatorBulbPanelAttachment extends PanelAttachment {
                        MultiBufferSource buffer, int light, int overlay) {
         transformPose(ms, be);
 
-        CachedBuffers.partial(miniature() ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_INDICATOR_BULB : CEEPartialModels.PANEL_ATTACHMENT_INDICATOR_BULB, be.getBlockState())
+        PartialModel partial = miniature() ? CEEPartialModels.PANEL_ATTACHMENT_SMOL_INDICATOR_BULB : CEEPartialModels.PANEL_ATTACHMENT_INDICATOR_BULB;
+
+        if (slot.isSixth())
+            partial = CEEPartialModels.PANEL_ATTACHMENT_TINY_INDICATOR_BULB;
+
+        CachedBuffers.partial(partial, be.getBlockState())
                 .light(light)
                 .renderInto(ms, buffer.getBuffer(RenderType.SOLID));
         float lightStrength = smoothLight.getValue(partialTicks);
@@ -139,9 +144,7 @@ public class IndicatorBulbPanelAttachment extends PanelAttachment {
 
     @Override
     public void postTick(SimulationResults results) {
-        double voltage = results.getVoltageAt(nodes[0], nodes[1]);
-        float newLight = 0;
-        newLight = (float) Math.min(1, Math.abs(results.getVoltageAt(nodes[0], nodes[1]) / 70));
+        float newLight = (float) Math.min(1, Math.abs(results.getVoltageAt(nodes[0], nodes[1]) / 70));
 
         if (Math.abs(light - newLight) > 0.02) {
             light = newLight;
@@ -183,6 +186,6 @@ public class IndicatorBulbPanelAttachment extends PanelAttachment {
     }
 
     private boolean miniature() {
-        return slot.layoutType() == ElectricalPanelLayoutType.THIRD;
+        return slot.fullWidth == 14;
     }
 }

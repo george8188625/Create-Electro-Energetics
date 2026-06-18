@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-17T23:47:40.433328136	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-06-18T20:01:46.773059608	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 efaff624fae8f426c8927b933899a261b68f7685 assets/electroenergetics/blockstates/accumulator.json
 bc7e544079464f9fb40950d4499967da027b352f assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -419,4 +419,7 @@ f3fdf7ab8ca0a87b6a9f1cd9d21a1c8c7c930d79 data/electroenergetics/tags/block/train
 3a34c47de28c402d3c1c8da678a6b127a2c09a45 data/electroenergetics/tags/item/hanged_wire_spools.json
 366eaf64ece2f69005676ad361d9188aaae975f1 data/electroenergetics/tags/item/wire_damper_item.json
 fed282a10066871630c4119a1ae03fd971a4b1f2 data/electroenergetics/tags/item/wire_spools.json
+1de3e29ea047878378dfad5bc17f2cbc38793fcb data/farmersdelight/tags/block/heat_sources.json
 89f80ecc938adcf3d30bd2484f8e51b1a985d478 data/minecraft/tags/block/mineable/pickaxe.json
+e5ea0844b2277b2ecbc27afb860795cacc26c654 data/sable/tags/block/light.json
+3fd5d3fc65dd21877724cdca793e58148e2d10fd data/sable/tags/block/super_light.json

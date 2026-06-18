@@ -2,7 +2,6 @@ package com.george_vi.electroenergetics.content.electrical_panel;
 
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachment;
-import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachmentType;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
@@ -15,9 +14,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class ElectricalPanelDevice extends SimpleElectricalDevice {
-    public ElectricalPanelLayoutType layoutType = ElectricalPanelLayoutType.NONE;
-    public PanelAttachment[] attachments = new PanelAttachment[0];
+    public PanelAttachment[] attachments = new PanelAttachment[ElectricalPanelSlot.values().length];
     Direction panelFacing = Direction.NORTH;
 
     public ElectricalPanelDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
@@ -46,40 +47,13 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
 
     @Override
     public void read(CompoundTag tag) {
-        layoutType = ElectricalPanelLayoutType.byIdOrNone(tag.getString("Layout"));
         Direction facing = Direction.byName(tag.getString("Facing"));
         if (facing == null)
             facing = Direction.NORTH;
-
-        if (attachments.length != layoutType.slots.length)
-            attachments = new PanelAttachment[layoutType.slots.length];
-
-        for (int i = 0; i < attachments.length; i++) {
-            CompoundTag attachmentTag = tag.getCompound("Attachment" + i);
-            if (attachmentTag.isEmpty())
-                continue;
-            String id = attachmentTag.getString("ID");
-
-            ResourceLocation attachmentId = ResourceLocation.tryParse(id);
-
-            if (attachmentId == null) {
-                attachments[i] = null;
-                continue;
-            }
-
-            PanelAttachmentType type = CEERegistries.PANEL_ATTACHMENT_TYPE.get(attachmentId);
-
-            if (type == null) {
-                attachments[i] = null;
-                continue;
-            }
-
-            if (attachments[i] == null) {
-                attachments[i] = type.createNew(pos, type.mode.getNodesFor(i, pos, layoutType), level, layoutType.slots[i], facing, level.registryAccess());
-            }
-
-            attachments[i].read(attachmentTag.getCompound("Data"), false, level.registryAccess());
-            attachments[i].label = attachmentTag.contains("Label") ? attachmentTag.getString("Label") : null;
+        ElectricalPanelBlockEntity.readAttachments(tag, attachments, pos, level, level.registryAccess(), false, facing);
+        if (Arrays.stream(attachments).allMatch(Objects::isNull)) {
+            Arrays.fill(attachments, null);
+            ElectricalPanelBlockEntity.readLegacyAttachments(tag, attachments, pos, level, level.registryAccess(), facing);
         }
     }
 
@@ -104,9 +78,6 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
     @Override
     public void write(CompoundTag tag) {
         tag.putString("Facing", panelFacing.getSerializedName());
-        if (layoutType == ElectricalPanelLayoutType.NONE)
-            return;
-        tag.putString("Layout", layoutType.getSerializedName());
         for (int i = 0; i < attachments.length; i++) {
             if (attachments[i] == null)
                 continue;
@@ -116,7 +87,7 @@ public class ElectricalPanelDevice extends SimpleElectricalDevice {
                 continue;
 
             CompoundTag attachmentTag = new CompoundTag();
-            tag.put("Attachment" + i, attachmentTag);
+            tag.put("AttachmentSlot" + i, attachmentTag);
 
             attachmentTag.putString("ID", id.toString());
 

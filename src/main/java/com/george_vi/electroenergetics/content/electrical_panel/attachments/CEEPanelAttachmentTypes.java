@@ -30,13 +30,13 @@ public class CEEPanelAttachmentTypes {
             .register("emergency_stop_button", () -> new PanelAttachmentType(EStopPanelAttachment::new, CEEBlocks.EMERGENCY_STOP_BUTTON, PanelAttachmentMode.HALF));
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> CUT_OFF_SWITCH = PANEL_ATTACHMENT_TYPE
-            .register("cut_off_switch", () -> new PanelAttachmentType(CutOffSwitchPanelAttachment::new, CEEBlocks.CUT_OFF_SWITCH, PanelAttachmentMode.HALF_OR_THIRD));
+            .register("cut_off_switch", () -> new PanelAttachmentType(CutOffSwitchPanelAttachment::new, CEEBlocks.CUT_OFF_SWITCH, PanelAttachmentMode.HALF_OR_THIRD_OR_SMOL));
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> INDICATOR_BULB = PANEL_ATTACHMENT_TYPE
-            .register("indicator_bulb", () -> new PanelAttachmentType(IndicatorBulbPanelAttachment::new, CEEBlocks.INDICATOR_BULB, PanelAttachmentMode.HALF_OR_THIRD));
+            .register("indicator_bulb", () -> new PanelAttachmentType(IndicatorBulbPanelAttachment::new, CEEBlocks.INDICATOR_BULB, PanelAttachmentMode.HALF_OR_THIRD_OR_SMOL));
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> MOMENTARY_SWITCH = PANEL_ATTACHMENT_TYPE
-            .register("momentary_switch", () -> new PanelAttachmentType(MomentarySwitchPanelAttachment::new, CEEBlocks.MOMENTARY_SWITCH, PanelAttachmentMode.HALF_OR_THIRD));
+            .register("momentary_switch", () -> new PanelAttachmentType(MomentarySwitchPanelAttachment::new, CEEBlocks.MOMENTARY_SWITCH, PanelAttachmentMode.HALF_OR_THIRD_OR_SMOL));
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> ENERGY_METER = PANEL_ATTACHMENT_TYPE
             .register("energy_meter", () -> new PanelAttachmentType(EnergyMeterAttachment::new, CEEBlocks.ENERGY_METER, PanelAttachmentMode.FULL_DOUBLE));
