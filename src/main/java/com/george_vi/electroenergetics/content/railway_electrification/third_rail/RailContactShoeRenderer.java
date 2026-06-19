@@ -23,7 +23,7 @@ public class RailContactShoeRenderer extends SmartBlockEntityRenderer<RailContac
         super.renderSafe(blockEntity, partialTicks, ms, buffer, light, overlay);
         BlockState state = blockEntity.getBlockState();
 
-        float distanceY = 0.125f;
+        float distanceY = Mth.lerp(partialTicks, blockEntity.prevDistanceY, blockEntity.distanceY);
         float yRot = state.getValue(FACING).toYRot();
         if (state.getValue(FACING).getAxis() == Direction.Axis.X)
             yRot += 180;

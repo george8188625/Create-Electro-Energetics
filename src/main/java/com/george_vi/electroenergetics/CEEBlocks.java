@@ -40,7 +40,7 @@ import com.george_vi.electroenergetics.content.potentiometer.PotentiometerBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographMovementBehaviour;
-import com.george_vi.electroenergetics.content.railway_electrification.third_rail.RailContactShoe;
+import com.george_vi.electroenergetics.content.railway_electrification.third_rail.RailContactShoeBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.third_rail.RailContactShoeMovementBehaviour;
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayBlock;
 import com.george_vi.electroenergetics.content.relay.RelayBlock;
@@ -654,7 +654,7 @@ public class CEEBlocks {
             .build()
             .register();
 
-    public static final BlockEntry<RailContactShoe> RAIL_CONTACT_SHOE = REGISTRATE.block("rail_contact_shoe", RailContactShoe::new)
+    public static final BlockEntry<RailContactShoeBlock> RAIL_CONTACT_SHOE = REGISTRATE.block("rail_contact_shoe", RailContactShoeBlock::new)
             .tag(CEETags.SUPER_LIGHT)
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::netheriteMetal)

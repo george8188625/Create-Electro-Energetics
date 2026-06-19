@@ -1,17 +1,18 @@
-package com.george_vi.electroenergetics.content.railway_electrification.pantograph;
+package com.george_vi.electroenergetics.content.railway_electrification.third_rail;
 
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireSimulationState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-public class PantographDevice extends SimpleElectricalDevice {
-    public PantographBlockEntity be;
+public class RailContactShoeDevice extends SimpleElectricalDevice {
+    public RailContactShoeBlockEntity be;
 
-    public PantographDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
+    public RailContactShoeDevice(Level level, BlockPos pos, DevicesSavedData deviceSD, SimulatedDeviceType<?> type) {
         super(level, pos, deviceSD, type);
     }
 
@@ -19,7 +20,7 @@ public class PantographDevice extends SimpleElectricalDevice {
     @Override
     public void preTick(BridgeCollector bridges) {
         if (this.be == null && level.isLoaded(pos))
-            if (level.getBlockEntity(pos) instanceof PantographBlockEntity newBE)
+            if (level.getBlockEntity(pos) instanceof RailContactShoeBlockEntity newBE)
                 this.be = newBE;
 
         if (this.be != null) {

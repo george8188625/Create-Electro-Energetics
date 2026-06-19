@@ -30,6 +30,7 @@ import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbDevic
 import com.george_vi.electroenergetics.content.pole.ConcretePoleDevice;
 import com.george_vi.electroenergetics.content.potentiometer.PotentiometerDevice;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographDevice;
+import com.george_vi.electroenergetics.content.railway_electrification.third_rail.RailContactShoeDevice;
 import com.george_vi.electroenergetics.content.redstone_relay.RedstoneRelayDevice;
 import com.george_vi.electroenergetics.content.relay.RelayDevice;
 import com.george_vi.electroenergetics.content.resistive_heater.ResistiveHeaterDevice;
@@ -242,6 +243,11 @@ public class CEESimulatedDevices {
     public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<ElectricalPanelDevice>> ELECTRICAL_PANEL = DEVICES.register("electrical_panel",
             () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("electrical_panel"),
                     ((type, level, pos, sd) -> new ElectricalPanelDevice(level, pos, sd, type))));
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<RailContactShoeDevice>> RAIL_CONTACT_SHOE = DEVICES.register("rail_contact_shoe",
+            () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("rail_contact_shoe"),
+                    ((type, level, pos, sd) -> new RailContactShoeDevice(level, pos, sd, type))));
+
 
 
 

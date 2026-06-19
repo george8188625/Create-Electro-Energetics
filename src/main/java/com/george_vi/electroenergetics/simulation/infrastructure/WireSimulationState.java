@@ -355,7 +355,23 @@ public class WireSimulationState {
     }
 
     public boolean relocateConnection(InWorldNodeConnection connection, WireData wireData) {
-        removeConnection(connection);
+        ConnectionEntry v = connections.get(connection);
+        if (v == null)
+            return false;
+        sd.wireCrossContactModule.onWireRemoved(connection, v);
+        SectionPos prevSection1 = null;
+        for (Vec3 point1 : v.points) {
+            SectionPos section1 = SectionPos.of(point1);
+            if (!Objects.equals(prevSection1, section1)) {
+                prevSection1 = section1;
+                Map<InWorldNodeConnection, ConnectionEntry> c = connectionsBySection.get(section1.asLong());
+                if (c == null)
+                    continue;
+                c.remove(connection);
+                if (c.isEmpty())
+                    connectionsBySection.remove(section1.asLong());
+            }
+        }
 
         Vec3 pos1 = sd.getNodePosition(connection.node1());
         Vec3 pos2 = sd.getNodePosition(connection.node2());
@@ -372,11 +388,13 @@ public class WireSimulationState {
         for (Vec3 point : points)
             miny = Math.min(miny, point.y());
 
-        List<CutWireEntry> cuts = new ArrayList<>();
-        cutsByWire.put(connection, cuts);
+
+        List<CutWireEntry> cuts = cutsByWire.get(connection);
+        if (cuts == null) // ???
+            cutsByWire.put(connection, cuts = new ArrayList<>());
+
         AABB bb = new AABB(pos1, pos2).setMinY(miny).inflate(0.25);
         ConnectionEntry connectionEntry = new ConnectionEntry(pos1, pos2, points, wireData, bb, cuts);
-        connections.put(connection, connectionEntry);
 
         long prevSection = 0;
         for (Vec3 point : points) {

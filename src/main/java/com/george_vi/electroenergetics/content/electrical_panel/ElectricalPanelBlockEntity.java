@@ -96,6 +96,8 @@ public class ElectricalPanelBlockEntity extends SmartBlockEntity implements IHav
             if (toFill[layoutType.slots[i].ordinal()] == null) {
                 toFill[layoutType.slots[i].ordinal()] = type.createNew(worldPosition, type.mode.getNodesFor(worldPosition, layoutType.slots[i]),
                         level, layoutType.slots[i], facing, registries);
+                toFill[layoutType.slots[i].ordinal()].read(attachmentTag.getCompound("Data"), false, registries);
+                toFill[layoutType.slots[i].ordinal()].label = attachmentTag.contains("Label") ? attachmentTag.getString("Label") : null;
             }
         }
     }

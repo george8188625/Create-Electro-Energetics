@@ -19,6 +19,7 @@ import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +34,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 
@@ -73,16 +75,20 @@ public class PantographBlockEntity extends SmartBlockEntity {
 
         SubLevelAccess subLevelAccess = SableCompanion.INSTANCE.getContaining(level, worldPosition);
 
-        if (subLevelAccess == null)
-            return;
-
-        if (level.isClientSide)
-            handleOnClient(subLevelAccess);
-        else
-            handleOnServer(subLevelAccess);
+        if (subLevelAccess == null) {
+            if (level.isClientSide)
+                handleOnClient(p -> p, p -> p);
+            else
+                handleOnServer(p -> p, p -> p);
+        } else {
+            if (level.isClientSide)
+                handleOnClient(subLevelAccess.logicalPose()::transformPosition, subLevelAccess.logicalPose()::transformPositionInverse);
+            else
+                handleOnServer(subLevelAccess.logicalPose()::transformPosition, subLevelAccess.logicalPose()::transformPositionInverse);
+        }
     }
 
-    private void handleOnClient(SubLevelAccess subLevelAccess) {
+    private void handleOnClient(UnaryOperator<Vec3> positionTransform, UnaryOperator<Vec3> inversePositionTransform) {
         boolean isDouble = getBlockState().getValue(PantographBlock.DOUBLE);
         double pantographX = getBlockState().getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 0.25 : 0.75;
         if (isDouble)
@@ -91,10 +97,6 @@ public class PantographBlockEntity extends SmartBlockEntity {
         float halfPantoReach = 1.625f;
 
         Vec3 pantographPos = new Vec3(axis == Direction.Axis.X ? pantographX : 0.5, halfPantoReach, axis == Direction.Axis.Z ? pantographX : 0.5).add(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
-
-        pantographPos = subLevelAccess.logicalPose().transformPosition(pantographPos);
-        pantographPos = subLevelAccess.logicalPose().transformPositionInverse(pantographPos);
-
 
         Vec3 connectionPoint = null;
 
@@ -105,8 +107,8 @@ public class PantographBlockEntity extends SmartBlockEntity {
             Vec3 end = connection.getFirst().node2().getPosition(level);
             if (start == null || end == null)
                 continue;
-            start = subLevelAccess.logicalPose().transformPositionInverse(start);
-            end = subLevelAccess.logicalPose().transformPositionInverse(end);
+            start = inversePositionTransform.apply(start);
+            end = inversePositionTransform.apply(end);
             float halfThickness = connection.getSecond().wireType().getThickness() * 0.5f;
             float progress = closestPointOnWire(start, end, pantographPos);
             Vec3 cp = checkCatenary(start, end, pantographPos, progress, halfPantoReach);
@@ -121,8 +123,8 @@ public class PantographBlockEntity extends SmartBlockEntity {
             Vec3 start = connection.getStartPos();
             Vec3 end = connection.getEndingPos();
 
-            start = subLevelAccess.logicalPose().transformPositionInverse(start);
-            end = subLevelAccess.logicalPose().transformPositionInverse(end);
+            start = inversePositionTransform.apply(start);
+            end = inversePositionTransform.apply(end);
             float progress = closestPointOnWire(start, end, pantographPos);
             Vec3 cp = checkCatenary(start, end, pantographPos, progress, halfPantoReach);
             if (cp != null) {
@@ -139,7 +141,7 @@ public class PantographBlockEntity extends SmartBlockEntity {
                     for (float z = -3; z < 3; z += 0.3f) {
                         Vec3 pos = pantographPos.add(x, y, z);
                         if (checkCatenary(pos, pos, pantographPos, 0f, halfPantoReach) != null) {
-                            pos = subLevelAccess.logicalPose().transformPosition(pos);
+                            pos = positionTransform.apply(pos);
                             level.addParticle(ParticleTypes.SCULK_CHARGE_POP, pos.x, pos.y, pos.z, 0, 0, 0);
                         }
                     }
@@ -167,7 +169,7 @@ public class PantographBlockEntity extends SmartBlockEntity {
         }
     }
 
-    private void handleOnServer(SubLevelAccess subLevelAccess) {
+    private void handleOnServer(UnaryOperator<Vec3> positionTransform, UnaryOperator<Vec3> inversePositionTransform) {
         if (!(level instanceof ServerLevel serverLevel))
             return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(serverLevel);
@@ -181,23 +183,22 @@ public class PantographBlockEntity extends SmartBlockEntity {
 
         Vec3 pantographPos = new Vec3(axis == Direction.Axis.X ? pantographX : 0.5, halfPantoReach, axis == Direction.Axis.Z ? pantographX : 0.5).add(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
 
-        pantographPos = subLevelAccess.logicalPose().transformPosition(pantographPos);
-        pantographPos = subLevelAccess.logicalPose().transformPositionInverse(pantographPos);
-
-
         Vec3 connectionPoint = null;
         InWorldNodeConnection connectedConnection = null;
         float connectionProgress = 0;
 
-        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> connection : sd.wireSimulationState.getAllConnections()) {
+
+        Vec3 inWorldPos = positionTransform.apply(pantographPos);
+        long sectionPos = SectionPos.asLong(Mth.floor(inWorldPos.x) >> 4, Mth.floor(inWorldPos.y) >> 4, Mth.floor(inWorldPos.z) >> 4);
+        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> connection : sd.wireSimulationState.getConnectionsInSection(sectionPos).entrySet()) {
             if (connection.getValue().wireData.wireType().getSag() != 0)
                 continue;
             Vec3 start = connection.getKey().node1().getPosition(level);
             Vec3 end = connection.getKey().node2().getPosition(level);
             if (start == null || end == null)
                 continue;
-            start = subLevelAccess.logicalPose().transformPositionInverse(start);
-            end = subLevelAccess.logicalPose().transformPositionInverse(end);
+            start = inversePositionTransform.apply(start);
+            end = inversePositionTransform.apply(end);
             float halfThickness = connection.getValue().wireData.wireType().getThickness() * 0.5f;
             float progress = closestPointOnWire(start, end, pantographPos);
             Vec3 cp = checkCatenary(start, end, pantographPos, progress, halfPantoReach);
@@ -214,8 +215,8 @@ public class PantographBlockEntity extends SmartBlockEntity {
             Vec3 start = connection.getStartPos();
             Vec3 end = connection.getEndingPos();
 
-            start = subLevelAccess.logicalPose().transformPositionInverse(start);
-            end = subLevelAccess.logicalPose().transformPositionInverse(end);
+            start = inversePositionTransform.apply(start);
+            end = inversePositionTransform.apply(end);
             float progress = closestPointOnWire(start, end, pantographPos);
             Vec3 cp = checkCatenary(start, end, pantographPos, progress, halfPantoReach);
             if (cp != null) {
@@ -281,13 +282,6 @@ public class PantographBlockEntity extends SmartBlockEntity {
             return connectorPlatePos;
         }
 
-//        double pantographX = getBlockState().getValue(PantographBlock.FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 0.5 : -0.5;
-//        Direction.Axis axis = getBlockState().getValue(FACING).getAxis();
-//        pantographX /= 2;
-//        float halfPantoReach = 1.625f;
-//
-//        Vec3 pantographPos = new Vec3(axis == Direction.Axis.X ? pantographX : 0.5, halfPantoReach, axis == Direction.Axis.Z ? pantographX : 0.5).add(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
-
         float lowerArmRadians = (-75 + extensionState * 30) * Mth.DEG_TO_RAD;
 
         double armHingePosY = Mth.cos(lowerArmRadians) * 1.875 + 0.5;
@@ -319,9 +313,6 @@ public class PantographBlockEntity extends SmartBlockEntity {
     Vec3 checkCatenary(Vec3 start, Vec3 end, Vec3 pantographPos, float closestPointOnWire, float halfPantoReach) {
 
         Vec3 closest = VecHelper.lerp(closestPointOnWire, start, end);
-//        context.world.addParticle(ParticleTypes.SCULK_CHARGE_POP, closest.x, closest.y, closest.z, 0, 0, 0);
-//        context.world.addParticle(ParticleTypes.SCULK_CHARGE_POP, pantographPos.x, pantographPos.y, pantographPos.z, 0, 0, 0);
-
         Vec3 distance = pantographPos.subtract(closest);
 
         distance = VecHelper.rotate(distance, getBlockState().getValue(FACING).toYRot() + 90, Direction.Axis.Y);
