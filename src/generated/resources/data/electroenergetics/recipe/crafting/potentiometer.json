@@ -3,10 +3,13 @@
   "category": "misc",
   "key": {
     "C": {
-      "item": "electroenergetics:connector"
+      "tag": "c:nuggets/copper"
     },
     "S": {
       "item": "create:shaft"
+    },
+    "T": {
+      "tag": "minecraft:terracotta"
     },
     "c": {
       "item": "minecraft:coal"
@@ -14,7 +17,7 @@
   },
   "pattern": [
     " S ",
-    "ccc",
+    "TcT",
     "CCC"
   ],
   "result": {

@@ -1,0 +1,61 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"render_type": "cutout",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "electroenergetics:block/redstone_variac",
+		"particle": "electroenergetics:block/redstone_variac"
+	},
+	"elements": [
+		{
+			"from": [4.9, 2, 4.9],
+			"to": [11.1, 0, 11.1],
+			"rotation": {"angle": 0, "axis": "y", "origin": [10, 2, 3]},
+			"faces": {
+				"north": {"uv": [1, 1.5, 5, 2.5], "texture": "#0"},
+				"east": {"uv": [1, 1.5, 5, 2.5], "texture": "#0"},
+				"south": {"uv": [1, 1.5, 5, 2.5], "texture": "#0"},
+				"west": {"uv": [1, 1.5, 5, 2.5], "texture": "#0"},
+				"down": {"uv": [1.5, 2.5, 4.5, 5.5], "texture": "#0"}
+			}
+		},
+		{
+			"from": [1.99, 1, 1.99],
+			"to": [2.99, 3, 5.99],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1.95, 1, 1.95]},
+			"faces": {
+				"north": {"uv": [6.5, 0, 7, 1], "texture": "#0"},
+				"west": {"uv": [5, 1, 7, 2], "texture": "#0"}
+			}
+		},
+		{
+			"from": [1.99, 1, 10.01],
+			"to": [5.99, 3, 14.01],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 2, 12.05]},
+			"faces": {
+				"south": {"uv": [5, 1, 7, 2], "rotation": 180, "texture": "#0"},
+				"west": {"uv": [5, 1, 7, 2], "rotation": 180, "texture": "#0"}
+			}
+		},
+		{
+			"from": [10.01, 1, 10.01],
+			"to": [14.01, 3, 14.01],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 2, 12.05]},
+			"faces": {
+				"east": {"uv": [5, 1, 7, 2], "texture": "#0"},
+				"south": {"uv": [5, 1, 7, 2], "texture": "#0"}
+			}
+		},
+		{
+			"from": [13.01, 1, 1.99],
+			"to": [14.01, 3, 5.99],
+			"rotation": {"angle": 0, "axis": "z", "origin": [14.05, 3, 1.95]},
+			"faces": {
+				"north": {"uv": [6.5, 0, 7, 1], "rotation": 180, "texture": "#0"},
+				"east": {"uv": [5, 1, 7, 2], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"render_layer": "cutout"
+}

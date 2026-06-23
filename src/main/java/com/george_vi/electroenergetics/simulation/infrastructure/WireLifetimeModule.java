@@ -70,7 +70,7 @@ public class WireLifetimeModule {
             connectionData.wireData.temperature = newTemp;
             boolean increase = newTemp > temp;
 
-            if (newTemp > wireType.getMaxTemperature() * 0.6 && level.isLoaded(connection.node1().sourcePos())) {
+            if (newTemp > wireType.getMaxTemperature() * 0.85 && level.isLoaded(connection.node1().sourcePos())) {
                 // Smoke particles
 
                 Vec3 wireCenter = VecHelper.lerp(0.5f, connection.node1().sourcePos().getCenter(), connection.node2().sourcePos().getCenter());

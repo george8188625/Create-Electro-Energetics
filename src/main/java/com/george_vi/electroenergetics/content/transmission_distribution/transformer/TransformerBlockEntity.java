@@ -115,8 +115,6 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
         sendData();
     }
 
-
-
     @OnlyIn(Dist.CLIENT)
     protected void tickAudio() {
 
@@ -221,6 +219,7 @@ public class TransformerBlockEntity extends SmartBlockEntity implements IHaveGog
         }
     }
 
+    @SuppressWarnings("unchecked")
     static Couple<Integer>[] ratios = new Couple[]{
             Couple.create(9, 10),
             Couple.create(8, 9),

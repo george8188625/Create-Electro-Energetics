@@ -142,10 +142,12 @@ public class ChangeLengthWireInteractionBehaviour extends WireInteractionBehavio
 
         ItemStack stack = mc.player.getMainHandItem();
         TagKey<Item> droppedTag = wireData.wireType().getDroppedTag();
-        if (droppedTag == null && wireData.wireType().getDrops() != stack.getItem())
-            return false;
-        if (droppedTag != null && !stack.is(droppedTag))
-            return false;
+        if (!stack.is(wireData.wireType().getSpooledItem())) {
+            if (droppedTag == null && wireData.wireType().getDrops() != stack.getItem())
+                return false;
+            if (droppedTag != null && !stack.is(droppedTag))
+                return false;
+        }
 
         CatnipServices.NETWORK.sendToServer(new ChangeLengthWirePacket(point, (byte) delta));
 

@@ -145,7 +145,8 @@ public class WireSpoolItem extends Item implements IInteractDetachedNodes {
 
             if (!player.isCreative()) {
                 heldItem.shrink(1);
-                player.getInventory().placeItemBackInInventory(CEEItems.EMPTY_SPOOL.asStack());
+                if (!CEEConfigs.server().alternateWirePlacement.get())
+                    player.getInventory().placeItemBackInInventory(CEEItems.EMPTY_SPOOL.asStack());
             }
 
             if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE))

@@ -65,6 +65,12 @@ public class CEEPartialModels {
     public static final PartialModel INDICATOR_BULB_CUBE = PartialModel.of(CreateElectroEnergetics.rl("block/indicator_bulb/cube"));
     public static final PartialModel WIRE_DAMPER_ATTACHMENT = PartialModel.of(CreateElectroEnergetics.rl("block/wire_damper_attachment"));
     public static final PartialModel POTENTIOMETER_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/potentiometer/dial"));
+    public static final PartialModel POTENTIOMETER_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/potentiometer/shaft"));
+    public static final PartialModel REDSTONE_POTENTIOMETER_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/redstone_potentiometer/dial"));
+    public static final PartialModel REDSTONE_POTENTIOMETER_REDSTONE = PartialModel.of(CreateElectroEnergetics.rl("block/redstone_potentiometer/redstone"));
+    public static final PartialModel VARIAC_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/variac/dial"));
+    public static final PartialModel VARIAC_SHAFT = PartialModel.of(CreateElectroEnergetics.rl("block/variac/shaft"));
+    public static final PartialModel REDSTONE_VARIAC_REDSTONE = PartialModel.of(CreateElectroEnergetics.rl("block/redstone_variac/redstone"));
     public static final PartialModel RESISTIVE_HEATER_HEATING_ELEMENT = PartialModel.of(CreateElectroEnergetics.rl("block/resistive_heater/heating_element"));
     public static final PartialModel RESISTIVE_HEATER_HEATING_ELEMENT_GLOW = PartialModel.of(CreateElectroEnergetics.rl("block/resistive_heater/heating_element_glow"));
     public static final PartialModel SYNCHROSCOPE_DIAL = PartialModel.of(CreateElectroEnergetics.rl("block/synchroscope/dial"));

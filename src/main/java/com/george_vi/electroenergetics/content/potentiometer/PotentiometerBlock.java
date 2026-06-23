@@ -18,7 +18,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -114,7 +116,7 @@ public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<Po
 
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
-        return face == Direction.UP;
+        return face.getAxis().isVertical();
     }
 
     @Override
@@ -141,5 +143,11 @@ public class PotentiometerBlock extends HorizontalKineticBlock implements IBE<Po
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int id) {
         return CEENodeConfigurations.POTENTIOMETER.getNodePos(state.getValue(HORIZONTAL_FACING), id);
+    }
+
+    @Override
+    public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
+        removeWiresByPlayer(context.getPlayer(), context.getLevel(), context.getClickedPos());
+        return super.onSneakWrenched(state, context);
     }
 }

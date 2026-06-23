@@ -37,6 +37,7 @@ import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlock
 import com.george_vi.electroenergetics.content.pole.ConcretePoleBlock;
 import com.george_vi.electroenergetics.content.pole.PoleMountBlock;
 import com.george_vi.electroenergetics.content.potentiometer.PotentiometerBlock;
+import com.george_vi.electroenergetics.content.potentiometer.RedstonePotentiometerBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographMovementBehaviour;
@@ -60,6 +61,8 @@ import com.george_vi.electroenergetics.content.transmission_distribution.transfo
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreBlock;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorBlock;
+import com.george_vi.electroenergetics.content.variac.RedstoneVariacBlock;
+import com.george_vi.electroenergetics.content.variac.VariacBlock;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.api.boiler.BoilerHeater;
@@ -851,7 +854,49 @@ public class CEEBlocks {
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
-                    .addMaxPower(() -> 1300)))
+                    .addMaxPower(CEEConfigs.server().powerValues.potentiometerMaxPower::get)))
+            .build()
+            .register();
+
+    public static final BlockEntry<RedstonePotentiometerBlock> REDSTONE_POTENTIOMETER = REGISTRATE.block("redstone_potentiometer", RedstonePotentiometerBlock::new)
+            .tag(CEETags.LIGHT)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxPower(CEEConfigs.server().powerValues.potentiometerMaxPower::get)))
+            .build()
+            .register();
+
+    public static final BlockEntry<VariacBlock> VARIAC = REGISTRATE.block("variac", VariacBlock::new)
+            .tag(CEETags.LIGHT)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxPower(CEEConfigs.server().powerValues.variacMaxPower::get)))
+            .build()
+            .register();
+
+    public static final BlockEntry<RedstoneVariacBlock> REDSTONE_VARIAC = REGISTRATE.block("redstone_variac", RedstoneVariacBlock::new)
+            .tag(CEETags.LIGHT)
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
+            .transform(pickaxeOnly())
+            .item()
+            .model((c, p) -> p.blockItem(c::getEntry, "/item"))
+            .onRegister(i -> ElectricStatsTooltipModifier.ALL_ENTRIES.register(i, new ElectricStatsTooltipModifier.ElectricStatSet()
+                    .addMaxPower(CEEConfigs.server().powerValues.variacMaxPower::get)))
             .build()
             .register();
 

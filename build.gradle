@@ -110,7 +110,7 @@ dependencies {
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
-    implementation("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:[${aeronautics_version},)")
+    implementation("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:[${sable_version},)")
     implementation("dev.eriksonn.aeronautics:aeronautics-neoforge-${minecraft_version}:${aeronautics_version}")
     implementation("dev.simulated_team.simulated:simulated-neoforge-${minecraft_version}:${simulated_version}")
     runtimeOnly("dev.ryanhcode.offroad:offroad-neoforge-${minecraft_version}:${offroad_version}")

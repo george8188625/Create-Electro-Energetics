@@ -105,8 +105,11 @@ public class CEECreativeTab {
                         output.accept(CEEBlocks.CAPACITOR.asStack());
                         output.accept(CEEBlocks.INDUCTOR.asStack());
                         output.accept(CEEBlocks.POTENTIOMETER.asStack());
+                        output.accept(CEEBlocks.VARIAC.asStack());
                         output.accept(CEEBlocks.RESISTOR.asStack());
                         output.accept(CEEBlocks.CREATIVE_RESISTOR.asStack());
+                        output.accept(CEEBlocks.REDSTONE_POTENTIOMETER.asStack());
+                        output.accept(CEEBlocks.REDSTONE_VARIAC.asStack());
                         if (FMLLoader.getDist().isDedicatedServer() || CEEConfigs.client().showACContent.get()) {
                             output.accept(CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES.asStack());
                             output.accept(CEEBlocks.SYNCHROSCOPE.asStack());

@@ -1,12 +1,22 @@
 package com.george_vi.electroenergetics.foundation.device;
 
+import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.devices.device.DeviceBlock;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
+import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -81,5 +91,37 @@ public interface ElectricalDeviceBlock<T extends SimulatedDevice> extends Device
 
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
         sd.registerOrUpdateNodes(pos, nodes);
+    }
+
+    /**
+     * Automatically puts broken wires in the inventory, or spool them if possible.
+     */
+    default void removeWiresByPlayer(Player player, Level level, BlockPos pos) {
+        if (!(level instanceof ServerLevel sl) || player == null)
+            return;
+
+        InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
+        for (InWorldNodeData nodeData : sd.getNodesAt(pos))
+            for (InWorldNodeConnection connection : sd.getConnections(nodeData)) {
+                WireData wireData = sd.removeConnection(connection);
+
+                if (CEEConfigs.server().alternateWirePlacement.get()) {
+                    player.getInventory().placeItemBackInInventory(wireData.wireType().getSpooledItem().getDefaultInstance());
+                } else {
+                    boolean found = false;
+                    for (int i = 0; i < player.getInventory().items.size(); i++) {
+                        ItemStack stack = player.getInventory().items.get(i);
+                        if (CEEItems.EMPTY_SPOOL.isIn(stack)) {
+                            stack.shrink(1);
+                            player.getInventory().placeItemBackInInventory(wireData.wireType().getSpooledItem().getDefaultInstance());
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        player.getInventory().placeItemBackInInventory(new ItemStack(wireData.wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
+                }
+            }
+        return;
     }
 }

@@ -1069,12 +1069,17 @@ public class InfrastructureSavedData extends SavedData {
         WireData data = removeConnection(connection);
         if (data == null)
             return null;
-        int n = CEEConfigs.server().wiresPerSpool.get();
         Vec3 pos1 = getNodePositionOrCenter(connection.node1());
         Vec3 pos2 = getNodePositionOrCenter(connection.node2());
-        for (int i = 0; i < n; i++) {
-            Vec3 pos = QuadraticWireHelper.posAt(pos1, pos2, (float) i / n);
-            Containers.dropItemStack(level, pos.x, pos.y, pos.z, new ItemStack(data.wireType().getDrops()));
+        if (CEEConfigs.server().alternateWirePlacement.get()) {
+            Vec3 pos = QuadraticWireHelper.posAt(pos1, pos2, 0.5f);
+            Containers.dropItemStack(level, pos.x, pos.y, pos.z, new ItemStack(data.wireType().getSpooledItem()));
+        } else {
+            int n = CEEConfigs.server().wiresPerSpool.get();
+            for (int i = 0; i < n; i++) {
+                Vec3 pos = QuadraticWireHelper.posAt(pos1, pos2, (float) i / n);
+                Containers.dropItemStack(level, pos.x, pos.y, pos.z, new ItemStack(data.wireType().getDrops()));
+            }
         }
         return data;
     }

@@ -151,7 +151,7 @@ public class BridgeCollector {
         }
 
         public Builder resistor(Node n1, Node n2, double resistance) {
-            collector.bridge(n1, n2, resistance, 0, 0);
+            collector.bridge(n1, n2, ElectricalProperties.resistor(resistance));
             return this;
         }
 

@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.electronic_components.resistor;
 
 import com.george_vi.electroenergetics.CEEFluids;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
@@ -34,9 +35,11 @@ public class ResistorDevice extends SimpleElectricalDevice {
     public void postTick(SimulationResults results) {
         if (creative)
             return;
-
         float loss = (float) results.getHeatLoss(pos, 0, 1);
-        this.temp = ElectricalDevice.updateTemp(this.temp, Math.min(loss, 10000));
+
+        float powerMultiplier = (CEEConfigs.server().powerValues.resistorMaxPower.getF() / 1300);
+
+        this.temp = ElectricalDevice.updateTemp(this.temp, Math.min(loss / powerMultiplier, 10_000));
         if (oilLogged)
             ElectricalDevice.handleTemp(level, pos, deviceSD, temp, 60_000, 80_000);
         else

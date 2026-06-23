@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.content.wire_spool;
 
 import com.george_vi.electroenergetics.CEEDataComponents;
 import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
@@ -79,7 +80,8 @@ public class EmptySpoolItem extends Item {
             AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);
 
             if (!player.isCreative()) {
-                heldItem.shrink(1);
+                if (!CEEConfigs.server().alternateWirePlacement.get())
+                    heldItem.shrink(1);
                 if (wireData == null)
                     player.getInventory().placeItemBackInInventory(CEEItems.COPPER_WIRE_SPOOL.asStack());
                 else

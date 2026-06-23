@@ -44,6 +44,9 @@ import com.george_vi.electroenergetics.content.transmission_distribution.sf6_bre
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerDevice;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorDevice;
+import com.george_vi.electroenergetics.content.variac.VariacDevice;
+import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceFactory;
 import com.george_vi.electroenergetics.foundation.base.TemporaryDevice;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import net.neoforged.bus.api.IEventBus;
@@ -244,12 +247,15 @@ public class CEESimulatedDevices {
             () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("electrical_panel"),
                     ((type, level, pos, sd) -> new ElectricalPanelDevice(level, pos, sd, type))));
 
-    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<RailContactShoeDevice>> RAIL_CONTACT_SHOE = DEVICES.register("rail_contact_shoe",
-            () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl("rail_contact_shoe"),
-                    ((type, level, pos, sd) -> new RailContactShoeDevice(level, pos, sd, type))));
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<RailContactShoeDevice>> RAIL_CONTACT_SHOE = register("rail_contact_shoe",
+            ((type, level, pos, sd) -> new RailContactShoeDevice(level, pos, sd, type)));
 
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<VariacDevice>> VARIAC = register("variac",
+            ((type, level, pos, sd) -> new VariacDevice(level, pos, sd, type)));
 
-
+    private static <T extends SimulatedDevice> DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<T>> register(String name, SimulatedDeviceFactory<T> factory) {
+        return DEVICES.register(name, () -> new SimulatedDeviceType<>(CreateElectroEnergetics.rl(name), factory));
+    }
 
     public static void register(IEventBus bus) {
         DEVICES.register(bus);

@@ -10,10 +10,12 @@ import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionB
 import com.george_vi.electroenergetics.content.wire_spool.ChangeLengthWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.DyeWireInteractionBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.EmptySpoolWireInteractionBehaviour;
+import com.george_vi.electroenergetics.content.wire_spool.WireCuttersWireInteractionBehaviour;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+@SuppressWarnings("unused")
 public class CEEWireInteractionBehaviours {
     private static final DeferredRegister<WireInteractionBehaviour> WIRE_INTERACTION_BEHAVIOURS =
             DeferredRegister.create(CEERegistries.WIRE_INTERACTION_BEHAVIOUR, CreateElectroEnergetics.ID);
@@ -22,6 +24,7 @@ public class CEEWireInteractionBehaviours {
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> BANNER = WIRE_INTERACTION_BEHAVIOURS.register("banner", BannerWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> BUNTING = WIRE_INTERACTION_BEHAVIOURS.register("bunting", BuntingWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> EMPTY_SPOOL = WIRE_INTERACTION_BEHAVIOURS.register("empty_spool", EmptySpoolWireInteractionBehaviour::new);
+    public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> WIRE_CUTTERS = WIRE_INTERACTION_BEHAVIOURS.register("wire_cutters", WireCuttersWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> CLAMP_METER = WIRE_INTERACTION_BEHAVIOURS.register("clamp_meter", ClampMeterWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> DYE = WIRE_INTERACTION_BEHAVIOURS.register("dye", DyeWireInteractionBehaviour::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> LINEMANS_STICK = WIRE_INTERACTION_BEHAVIOURS.register("linemans_stick", LinemansStickWireInteractionBehaviour::new);

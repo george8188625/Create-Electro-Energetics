@@ -5,7 +5,10 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import java.util.Objects;
 
 public class ElectricalProperties {
-    public static final ElectricalProperties ZERO_CONDUCTANCE = ElectricalProperties.resistor(1e+11d);
+    public static final ElectricalProperties ZERO_CONDUCTANCE = new ElectricalProperties(1e+11d, 0, 0, false);
+    public static final ElectricalProperties MILlI = new ElectricalProperties(0.001d, 0, 0, false);
+    public static final ElectricalProperties TEN_MILlI = new ElectricalProperties(0.01d, 0, 0, false);
+    public static final ElectricalProperties HUNDRED_MILlI = new ElectricalProperties(0.1d, 0, 0, false);
     public static final ElectricalProperties INFINITE_CONDUCTANCE = new ElectricalProperties(1e+11d, 0, 0, true);
 
     public double resistance;
@@ -30,6 +33,14 @@ public class ElectricalProperties {
     }
 
     public static ElectricalProperties resistor(double resistance) {
+        if (resistance == 1e+11d)
+            return ZERO_CONDUCTANCE;
+        if (resistance == 0.001)
+            return MILlI;
+        if (resistance == 0.01)
+            return TEN_MILlI;
+        if (resistance == 0.1)
+            return HUNDRED_MILlI;
         return new ElectricalProperties(resistance, 0, 0);
     }
 

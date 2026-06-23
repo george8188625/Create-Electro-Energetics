@@ -20,6 +20,9 @@
     "electroenergetics:momentary_switch",
     "electroenergetics:emergency_stop_button",
     "electroenergetics:indicator_bulb",
-    "electroenergetics:potentiometer"
+    "electroenergetics:potentiometer",
+    "electroenergetics:redstone_potentiometer",
+    "electroenergetics:variac",
+    "electroenergetics:redstone_variac"
   ]
 }

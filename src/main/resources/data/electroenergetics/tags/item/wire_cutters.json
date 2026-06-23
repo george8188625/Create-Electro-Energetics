@@ -1,0 +1,7 @@
+{
+  "values": [
+    { "id": "createdieselgenerators:wire_cutters", "required": false },
+    { "id": "immersiveengineering:wirecutter", "required": false },
+    { "id": "powergrid:wire_cutter", "required": false }
+  ]
+}

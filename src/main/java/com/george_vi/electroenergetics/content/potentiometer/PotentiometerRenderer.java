@@ -38,7 +38,6 @@ public class PotentiometerRenderer extends KineticBlockEntityRenderer<Potentiome
         else if (facing == Direction.WEST)
             rot = -45;
 
-
         CachedBuffers.partial(CEEPartialModels.POTENTIOMETER_DIAL, state)
                 .center()
                 .rotateYDegrees(be.smoothProgress.getValue(partialTicks) * 270 + rot)
@@ -49,7 +48,6 @@ public class PotentiometerRenderer extends KineticBlockEntityRenderer<Potentiome
 
     @Override
     protected SuperByteBuffer getRotatedModel(PotentiometerBlockEntity be, BlockState state) {
-        return CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, state, Direction.UP);
-
+        return CachedBuffers.partialFacing(CEEPartialModels.POTENTIOMETER_SHAFT, state, Direction.WEST);
     }
 }

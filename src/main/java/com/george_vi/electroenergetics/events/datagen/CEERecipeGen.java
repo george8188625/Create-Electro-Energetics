@@ -290,6 +290,22 @@ public class CEERecipeGen extends RecipeProvider {
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/redstone_relay"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.REDSTONE_VARIAC)
+                .pattern("V")
+                .pattern("R")
+                .define('V', CEEBlocks.VARIAC)
+                .define('R', Items.REDSTONE_TORCH)
+                .unlockedBy("has_variac", has(CEEBlocks.VARIAC))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/redstone_variac"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.REDSTONE_POTENTIOMETER)
+                .pattern("P")
+                .pattern("R")
+                .define('P', CEEBlocks.POTENTIOMETER)
+                .define('R', Items.REDSTONE_TORCH)
+                .unlockedBy("has_potentiometer", has(CEEBlocks.POTENTIOMETER))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/redstone_potentiometer"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.RELAY)
                 .pattern(" W ")
                 .pattern("ASA")
@@ -566,13 +582,25 @@ public class CEERecipeGen extends RecipeProvider {
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.POTENTIOMETER)
                 .pattern(" S ")
-                .pattern("ccc")
+                .pattern("TcT")
                 .pattern("CCC")
-                .define('C', CEEBlocks.CONNECTOR)
+                .define('T', ItemTags.TERRACOTTA)
+                .define('C', CEETags.COPPER_NUGGET)
                 .define('S', AllBlocks.SHAFT.asItem())
                 .define('c', Items.COAL)
                 .unlockedBy("has_connector", has(CEEBlocks.CONNECTOR))
                 .save(recipeOutput, CreateElectroEnergetics.rl("crafting/potentiometer"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.VARIAC)
+                .pattern(" S ")
+                .pattern("WTW")
+                .pattern("CCC")
+                .define('T', ItemTags.TERRACOTTA)
+                .define('C', CEETags.COPPER_NUGGET)
+                .define('S', AllBlocks.SHAFT.asItem())
+                .define('W', CEEItems.WIRE_SPOOL)
+                .unlockedBy("has_wire_spool", has(CEEItems.WIRE_SPOOL))
+                .save(recipeOutput, CreateElectroEnergetics.rl("crafting/variac"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEEBlocks.DIODE)
                 .pattern(" S ")

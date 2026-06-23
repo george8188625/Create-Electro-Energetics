@@ -65,27 +65,7 @@ public abstract class DirectionalKineticElectricBlock<T extends SimulatedDevice>
 
     @Override
     public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
-        Player player = context.getPlayer();
-        // Automatically put broken wires in the inventory, or spool them if possible.
-        if (context.getLevel() instanceof ServerLevel sl && player != null) {
-            InfrastructureSavedData sd = InfrastructureSavedData.load(sl);
-            for (InWorldNodeData nodeData : sd.getNodesAt(context.getClickedPos()))
-                for (InWorldNodeConnection connection : sd.getConnections(nodeData)) {
-                    WireData wireData = sd.removeConnection(connection);
-                    boolean found = false;
-                    for (int i = 0; i < player.getInventory().items.size(); i++) {
-                        ItemStack stack = player.getInventory().items.get(i);
-                        if (CEEItems.EMPTY_SPOOL.isIn(stack)) {
-                            stack.shrink(1);
-                            player.getInventory().placeItemBackInInventory(wireData.wireType().getSpooledItem().getDefaultInstance());
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found)
-                        player.getInventory().placeItemBackInInventory(new ItemStack(wireData.wireType().getDrops(), CEEConfigs.server().wiresPerSpool.get()));
-                }
-        }
+        removeWiresByPlayer(context.getPlayer(), context.getLevel(), context.getClickedPos());
         return super.onSneakWrenched(state, context);
     }
 }

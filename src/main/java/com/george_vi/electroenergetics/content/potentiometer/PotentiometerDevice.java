@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.potentiometer;
 
 import com.george_vi.electroenergetics.CEEFluids;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
@@ -35,7 +36,9 @@ public class PotentiometerDevice extends SimpleElectricalDevice {
         float loss = (float) results.getHeatLoss(pos, 0, 1);
         loss += (float) results.getHeatLoss(pos, 1, 2);
 
-        temp = ElectricalDevice.updateTemp(temp, Math.min(loss, 10000));
+        float powerMultiplier = (CEEConfigs.server().powerValues.potentiometerMaxPower.getF() / 1300);
+
+        temp = ElectricalDevice.updateTemp(temp, Math.min(loss / powerMultiplier, 10_000));
         if (oilLogged)
             ElectricalDevice.handleTemp(level, pos, deviceSD, temp, 60_000, 80_000);
         else

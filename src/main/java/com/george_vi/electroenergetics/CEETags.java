@@ -31,6 +31,9 @@ public class CEETags {
     public static final TagKey<Item> FUSE_AMPERAGE_SETTING = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("fuse_amperage_setting"));
     public static final TagKey<Item> DYED_ELECTRICAL_PANELS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("dyed_electrical_panels"));
 
+    // This tag defines items that can be used as wire cutters
+    public static final TagKey<Item> WIRE_CUTTERS = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("wire_cutters"));
+
     // This tag defines items that cause electrical panel covers to be hidden when held
     public static final TagKey<Item> ELECTRICAL_PANEL_SEE_THROUGH = TagKey.create(Registries.ITEM, CreateElectroEnergetics.rl("electrical_panel_see_through"));
 

@@ -104,8 +104,19 @@ public class CEEShapes {
     public static final VoxelShaper INDICATOR_BULB_1 = shape(9, 0, 5, 15, 11, 11).forDirectional();
 
     public static final VoxelShaper WARNING_SIGN = shape(1,2, 0,15,14,2).forHorizontal(Direction.NORTH);
+
     public static final VoxelShaper POTENTIOMETER = shape(2, 0, 2, 14, 4, 14)
             .add(5, 4, 5, 11, 16, 11).forDirectional();
+
+    public static final VoxelShaper REDSTONE_POTENTIOMETER = shape(2, 0, 2, 14, 4, 14)
+            .add(5, 4, 5, 11, 7, 11).forDirectional();
+
+    public static final VoxelShaper VARIAC = shape(2, 0, 2, 14, 4, 14)
+            .add(3, 4, 3, 13, 10, 13)
+            .add(5, 4, 5, 11, 16, 11).forDirectional();
+
+    public static final VoxelShaper REDSTONE_VARIAC = shape(2, 0, 2, 14, 4, 14)
+            .add(3, 4, 3, 13, 10, 13).forDirectional();
 
     public static final VoxelShaper CATENARY_HOLDER = shape(6, 0, 6, 10, 24, 10)
             .forAxis();

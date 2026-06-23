@@ -27,6 +27,8 @@ import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbBlock
 import com.george_vi.electroenergetics.content.indicator_bulb.IndicatorBulbRenderer;
 import com.george_vi.electroenergetics.content.potentiometer.PotentiometerBlockEntity;
 import com.george_vi.electroenergetics.content.potentiometer.PotentiometerRenderer;
+import com.george_vi.electroenergetics.content.potentiometer.RedstonePotentiometerBlockEntity;
+import com.george_vi.electroenergetics.content.potentiometer.RedstonePotentiometerRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlockEntity;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderRenderer;
 import com.george_vi.electroenergetics.content.railway_electrification.pantograph.PantographBlockEntity;
@@ -47,6 +49,10 @@ import com.george_vi.electroenergetics.content.transmission_distribution.hv_swit
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerBlockEntity;
 import com.george_vi.electroenergetics.content.transmission_distribution.transformer.TransformerCoreBlockEntity;
 import com.george_vi.electroenergetics.content.transmission_distribution.voltage_regulator.VoltageRegulatorBlockEntity;
+import com.george_vi.electroenergetics.content.variac.RedstoneVariacBlockEntity;
+import com.george_vi.electroenergetics.content.variac.RedstoneVariacRenderer;
+import com.george_vi.electroenergetics.content.variac.VariacBlockEntity;
+import com.george_vi.electroenergetics.content.variac.VariacRenderer;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.content.kinetics.base.OrientedRotatingVisual;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
@@ -185,6 +191,11 @@ public class CEEBlockEntityTypes {
             .renderer(() -> PotentiometerRenderer::new)
             .register();
 
+    public static final BlockEntityEntry<RedstonePotentiometerBlockEntity> REDSTONE_POTENTIOMETER = REGISTRATE.blockEntity("redstone_potentiometer", RedstonePotentiometerBlockEntity::new)
+            .validBlock(CEEBlocks.REDSTONE_POTENTIOMETER::get)
+            .renderer(() -> RedstonePotentiometerRenderer::new)
+            .register();
+
     public static final BlockEntityEntry<ResistiveHeaterBlockEntity> RESISTIVE_HEATER = REGISTRATE.blockEntity("resistive_heater", ResistiveHeaterBlockEntity::new)
             .validBlock(CEEBlocks.RESISTIVE_HEATER::get)
             .renderer(() -> ResistiveHeaterRenderer::new)
@@ -208,6 +219,16 @@ public class CEEBlockEntityTypes {
             .validBlock(CEEBlocks.ELECTRICAL_PANEL)
             .validBlocks(CEEBlocks.DYED_ELECTRICAL_PANELS)
             .renderer(() -> ElectricalPanelRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<VariacBlockEntity> VARIAC = REGISTRATE.blockEntity("variac", VariacBlockEntity::new)
+            .validBlock(CEEBlocks.VARIAC)
+            .renderer(() -> VariacRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<RedstoneVariacBlockEntity> REDSTONE_VARIAC = REGISTRATE.blockEntity("redstone_variac", RedstoneVariacBlockEntity::new)
+            .validBlock(CEEBlocks.REDSTONE_VARIAC)
+            .renderer(() -> RedstoneVariacRenderer::new)
             .register();
 
     public static void register() {
