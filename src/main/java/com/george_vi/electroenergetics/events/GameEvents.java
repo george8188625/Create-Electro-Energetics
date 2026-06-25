@@ -12,6 +12,7 @@ import com.george_vi.electroenergetics.content.bundled_wire.BundledWireApplyingB
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelClientTicker;
+import com.george_vi.electroenergetics.content.electrical_panel.special_interaction.CEEHoldInteractionHandler;
 import com.george_vi.electroenergetics.content.fuse.BlownFuseTracker;
 import com.george_vi.electroenergetics.content.fuse.FuseBlockItem;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickClientHandler;
@@ -80,6 +81,7 @@ public class GameEvents {
         BundledWireApplyingBehaviour.tick();
         WireInteractionHandler.tick();
         WireEffects.tick();
+        CEEHoldInteractionHandler.tick();
         ElectricTrainSounds.tick();
         ClientTrainGaugeData.tick();
         LinemansStickClientHandler.tick();
@@ -200,6 +202,13 @@ public class GameEvents {
 
         ItemStack stack = event.getItemStack();
 
+        if (CEEHoldInteractionHandler.isInteracting()) {
+            event.setCancellationResult(InteractionResult.FAIL);
+            event.setCanceled(true);
+            WireInteractionHandler.preventUseOnBlockPacket = true;
+            return;
+        }
+
         // Detached Node Interactions:
         if (WireApplyingBehaviour.targetingDetachedNode != null) {
             CatnipServices.NETWORK.sendToServer(new InteractDetachedNodePacket(WireApplyingBehaviour.targetingDetachedNode));
@@ -266,6 +275,13 @@ public class GameEvents {
                     AllSoundEvents.CLIPBOARD_CHECKMARK.playOnServer(level, hoveredNode.sourcePos());
 
             event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            WireInteractionHandler.preventUseOnBlockPacket = true;
+            return;
+        }
+
+        if (CEEHoldInteractionHandler.isInteracting()) {
+            event.setCancellationResult(InteractionResult.FAIL);
             event.setCanceled(true);
             WireInteractionHandler.preventUseOnBlockPacket = true;
             return;

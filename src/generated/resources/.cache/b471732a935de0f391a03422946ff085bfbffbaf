@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-23T18:08:19.026075117	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2026-06-25T22:35:38.018334221	Registrate Provider for electroenergetics [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 efaff624fae8f426c8927b933899a261b68f7685 assets/electroenergetics/blockstates/accumulator.json
 bc7e544079464f9fb40950d4499967da027b352f assets/electroenergetics/blockstates/alternator_brushes.json
 6b72c8deefc1f25685fbb695dfa33f40a78fa5a3 assets/electroenergetics/blockstates/alternator_rotor.json
@@ -95,8 +95,8 @@ f407a37a266195fcfc499e4b24ffdb23655d6ed6 assets/electroenergetics/blockstates/wh
 653b26ba9220e3d382341409d1077886f5dad212 assets/electroenergetics/blockstates/white_electrical_panel.json
 08773c07f26e18921d02a6d72d8e5009381faebe assets/electroenergetics/blockstates/yellow_electric_motor.json
 3ee703aa50d72c35efc595a82426b8b342a85b25 assets/electroenergetics/blockstates/yellow_electrical_panel.json
-9270164fc6186a5fe9bd854271018ae4a760ea8f assets/electroenergetics/lang/en_ud.json
-162b2fde67eff7d31df9c75612b5e4d6bd0673d4 assets/electroenergetics/lang/en_us.json
+6e8ef10c394bc48068c5c1e3a80845cee403b14d assets/electroenergetics/lang/en_ud.json
+22884900a9b3e94bd2052a8b49440953e37c4cf7 assets/electroenergetics/lang/en_us.json
 706ea17778dccc4e51f059c39b5c730336b598c6 assets/electroenergetics/models/block/black_electric_motor.json
 c4d97346cc2c5227ea79460ab456d978989a4917 assets/electroenergetics/models/block/black_electric_motor_roll.json
 1492e0e72ff03497c687dc88f5187eedba553d56 assets/electroenergetics/models/block/black_electrical_panel.json

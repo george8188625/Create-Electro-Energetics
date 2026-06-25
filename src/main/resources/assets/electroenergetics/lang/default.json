@@ -9,6 +9,7 @@
   "electroenergetics.clamp_meter.current": "Current:",
   "electroenergetics.fuse.set_amperage": "Fuse Amperage:",
   "electroenergetics.fuse.hold_to_configure": "Hold Left Alt and Scroll to configure",
+  "electroenergetics.analog_lever.strength": "Strength:",
 
   "electroenergetics.action_bar.wire_too_long": "Wire too long!",
   "electroenergetics.action_bar.wire_too_short": "Wire too short!",
@@ -156,6 +157,7 @@
   "electroenergetics.gauge.scaling_backward": "÷",
   "electroenergetics.electric_motor.unlocked_symbol": "🔓",
   "electroenergetics.electric_motor.unlocked": "Unlocked",
+  "electroenergetics.electric_motor.x_rpm": "%1$sx RPM",
   "electroenergetics.electric_motor.unlocked_explanation": "Dynamic",
   "electroenergetics.electrical_panel_linking.title": "Linking",
   "electroenergetics.electrical_panel_linking.frequency_slot_0": "Freq. #1",

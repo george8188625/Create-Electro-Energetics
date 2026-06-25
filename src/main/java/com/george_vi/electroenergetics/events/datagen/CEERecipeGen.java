@@ -758,7 +758,7 @@ public class CEERecipeGen extends RecipeProvider {
         transform.apply(new SequencedAssemblyRecipeBuilder(CreateElectroEnergetics.rl(name))).build(recipeOutput);
     }
 
-    public static void wireSpool(RecipeOutput recipeOutput, ItemEntry<WireSpoolItem> spool, ItemEntry<Item> wire) {
+    public static void wireSpool(RecipeOutput recipeOutput, ItemEntry<WireSpoolItem> spool, ItemEntry<?> wire) {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, spool)
                 .pattern(" w ")
                 .pattern("wsw")

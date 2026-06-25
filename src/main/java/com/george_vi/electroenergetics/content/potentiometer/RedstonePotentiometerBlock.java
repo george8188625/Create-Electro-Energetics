@@ -143,6 +143,10 @@ public class RedstonePotentiometerBlock extends SimpleElectricalDeviceBlock<Pote
         return CEENodeConfigurations.POTENTIOMETER.getNodePos(state.getValue(HORIZONTAL_FACING), id);
     }
 
+    @Override
+    public float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
+        return 2/16f;
+    }
 
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {

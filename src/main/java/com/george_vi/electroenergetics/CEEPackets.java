@@ -1,5 +1,6 @@
 package com.george_vi.electroenergetics;
 
+import com.george_vi.electroenergetics.content.electrical_panel.special_interaction.AnalogLeverPanelAttachmentChangeStatePacket;
 import com.george_vi.electroenergetics.content.energy_meter.ChangeEnergyMeterStatePacket;
 import com.george_vi.electroenergetics.content.fuse.ConfigureFusePacket;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.ClearCatenaryPacket;
@@ -43,6 +44,7 @@ public enum CEEPackets implements BasePacketPayload.PacketTypeProvider {
     REQUEST_VOLTAGE_DATA(RequestVoltageDataPacket.class, RequestVoltageDataPacket.STREAM_CODEC),
     SYNC_TRAIN_GAUGE_DATA(SyncTrainGaugeDataPacket.class, SyncTrainGaugeDataPacket.STREAM_CODEC),
     CONFIGURE_FUSE(ConfigureFusePacket.class, ConfigureFusePacket.STREAM_CODEC),
+    ANALOG_LEVER_PANEL_CHANGE_STATE(AnalogLeverPanelAttachmentChangeStatePacket.class, AnalogLeverPanelAttachmentChangeStatePacket.STREAM_CODEC),
     ;
 
     private final CatnipPacketRegistry.PacketType<?> type;

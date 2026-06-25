@@ -14,7 +14,27 @@ public enum PanelAttachmentMode {
     FULL_DOUBLE(4, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
     FULL_TRIPLE(6, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
     FULL_QUAD(8, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
+    HALF_NONE(0, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.HALF_UPPER,
+            ElectricalPanelSlot.HALF_LEFT,
+            ElectricalPanelSlot.HALF_LOWER,
+            ElectricalPanelSlot.HALF_RIGHT
+    }),
     HALF(2, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.HALF_UPPER,
+            ElectricalPanelSlot.HALF_LEFT,
+            ElectricalPanelSlot.HALF_LOWER,
+            ElectricalPanelSlot.HALF_RIGHT
+    }),
+    FULL_OR_HALF_NONE(0, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.FULL_SLOT,
+            ElectricalPanelSlot.HALF_UPPER,
+            ElectricalPanelSlot.HALF_LEFT,
+            ElectricalPanelSlot.HALF_LOWER,
+            ElectricalPanelSlot.HALF_RIGHT
+    }),
+    FULL_OR_HALF(2, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.FULL_SLOT,
             ElectricalPanelSlot.HALF_UPPER,
             ElectricalPanelSlot.HALF_LEFT,
             ElectricalPanelSlot.HALF_LOWER,
@@ -28,6 +48,31 @@ public enum PanelAttachmentMode {
             ElectricalPanelSlot.THIRD_RIGHT,
             ElectricalPanelSlot.THIRD_CENTERED,
             ElectricalPanelSlot.THIRD_LEFT
+    }),
+    HALF_OR_THIRD_NONE(2, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.HALF_UPPER,
+            ElectricalPanelSlot.HALF_LEFT,
+            ElectricalPanelSlot.HALF_LOWER,
+            ElectricalPanelSlot.HALF_RIGHT,
+            ElectricalPanelSlot.THIRD_RIGHT,
+            ElectricalPanelSlot.THIRD_CENTERED,
+            ElectricalPanelSlot.THIRD_LEFT
+    }),
+    HALF_OR_THIRD_OR_SMOL_NONE(0, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.HALF_UPPER,
+            ElectricalPanelSlot.HALF_LEFT,
+            ElectricalPanelSlot.HALF_LOWER,
+            ElectricalPanelSlot.HALF_RIGHT,
+            ElectricalPanelSlot.THIRD_RIGHT,
+            ElectricalPanelSlot.THIRD_CENTERED,
+            ElectricalPanelSlot.THIRD_LEFT,
+
+            ElectricalPanelSlot.THIRD_RIGHT_TOP,
+            ElectricalPanelSlot.THIRD_CENTERED_TOP,
+            ElectricalPanelSlot.THIRD_LEFT_TOP,
+            ElectricalPanelSlot.THIRD_RIGHT_BOTTOM,
+            ElectricalPanelSlot.THIRD_CENTERED_BOTTOM,
+            ElectricalPanelSlot.THIRD_LEFT_BOTTOM
     }),
     HALF_OR_THIRD_OR_SMOL(2, new ElectricalPanelSlot[] {
             ElectricalPanelSlot.HALF_UPPER,
@@ -100,7 +145,8 @@ public enum PanelAttachmentMode {
     public InWorldNode[] getNodesFor(BlockPos pos, ElectricalPanelSlot slot) {
 
         return switch (this) {
-            case FULL_NONE -> new InWorldNode[]{};
+            case FULL_NONE, FULL_OR_HALF_NONE, HALF_NONE, HALF_OR_THIRD_NONE, HALF_OR_THIRD_OR_SMOL_NONE
+                    -> new InWorldNode[]{};
             case FULL_SINGLE -> new InWorldNode[] {
                     new InWorldNode(3, pos), new InWorldNode(16, pos)};
             case FULL_DOUBLE -> new InWorldNode[] {

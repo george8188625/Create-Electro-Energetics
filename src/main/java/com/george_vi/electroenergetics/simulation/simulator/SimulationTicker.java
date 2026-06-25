@@ -73,26 +73,29 @@ public class SimulationTicker {
         profiler.push("setupNodes");
 
         Set<InWorldNode> inWorldNodes = sd.getNodes();
+        DevicesSavedData deviceSD = DevicesSavedData.load(level);
+        Collection<SimulatedDevice> devices = deviceSD.getDevices(CEESimulatedDeviceFeatureTypes.TICKING_ELECTRICAL.get());
+
+        if (inWorldNodes.isEmpty() && devices.isEmpty()) {
+            profiler.pop();
+            profiler.pop();
+            return;
+        }
+
+        circuitBuilder = sd.wireSimulationState.createCircuitBuilder();
+
+        profiler.popPush("preTick");
+
+        // PreTick
+        BridgeCollector bridgeCollector = new BridgeCollector(circuitBuilder, sd, microTicks);
+        for (SimulatedDevice device : devices)
+            ((TickingElectricalDevice)device).preTick(bridgeCollector);
 
         if (inWorldNodes.isEmpty()) {
             profiler.pop();
             profiler.pop();
             return;
         }
-
-        DevicesSavedData deviceSD = DevicesSavedData.load(level);
-
-        stats = new SimulationStats();
-
-        circuitBuilder = sd.wireSimulationState.createCircuitBuilder();
-
-        profiler.popPush("preTick");
-
-        Collection<SimulatedDevice> devices = deviceSD.getDevices(CEESimulatedDeviceFeatureTypes.TICKING_ELECTRICAL.get());
-        // PreTick
-        BridgeCollector bridgeCollector = new BridgeCollector(circuitBuilder, sd, microTicks);
-        for (SimulatedDevice device : devices)
-            ((TickingElectricalDevice)device).preTick(bridgeCollector);
 
         profiler.popPush("addToGraphEvent");
 
@@ -108,7 +111,7 @@ public class SimulationTicker {
         // This moves wire creation away from the main thread and into the electrical thread.
         List<ObjectDoublePair<DirectionalNodeConnection>> wiresToJoin = new ArrayList<>(sd.wireSimulationState.getLazyConnections());
 
-
+        stats = new SimulationStats();
         future = electricalWorkerThread.submit(() -> {
             circuitBuilder.connectAll(wiresToJoin);
             List<List<WrappedIndexedNode>> networks = circuitBuilder.dfsAndGround();

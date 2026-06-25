@@ -131,6 +131,7 @@ public class CEEItems {
                 .register();
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static @NotNull ItemEntry<HangingWireSpoolItem> hangingWireSpoolItem(String name, DeferredHolder<WireType, WireType> wireType) {
         return REGISTRATE.item(name, properties -> new HangingWireSpoolItem(properties, wireType))
                 .tag(CEETags.HANGED_WIRE_SPOOLS)

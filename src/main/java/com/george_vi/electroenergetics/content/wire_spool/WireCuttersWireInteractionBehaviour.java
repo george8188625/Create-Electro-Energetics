@@ -10,11 +10,13 @@ import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
 import com.simibubi.create.AllSoundEvents;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class WireCuttersWireInteractionBehaviour extends WireInteractionBehaviour {
     @Override
@@ -64,5 +66,10 @@ public class WireCuttersWireInteractionBehaviour extends WireInteractionBehaviou
     @Override
     public boolean isActiveFor(ItemStack stack, Player player) {
         return stack.is(CEETags.WIRE_CUTTERS);
+    }
+
+    @Override
+    public boolean canInteractOn(ClientLevel level, BlockState state, BlockPos pos) {
+        return true;
     }
 }

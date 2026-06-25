@@ -5,6 +5,8 @@ import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.electrical_panel.PanelAttachmentMode;
+import com.george_vi.electroenergetics.content.electrical_panel.special_interaction.AnalogLeverPanelAttachment;
+import com.simibubi.create.AllBlocks;
 import dev.simulated_team.simulated.index.SimBlocks;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
@@ -32,6 +34,9 @@ public class CEEPanelAttachmentTypes {
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> CUT_OFF_SWITCH = PANEL_ATTACHMENT_TYPE
             .register("cut_off_switch", () -> new PanelAttachmentType(CutOffSwitchPanelAttachment::new, CEEBlocks.CUT_OFF_SWITCH, PanelAttachmentMode.HALF_OR_THIRD_OR_SMOL));
 
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> ANALOG_LEVER = PANEL_ATTACHMENT_TYPE
+            .register("analog_lever", () -> new PanelAttachmentType(AnalogLeverPanelAttachment::new, AllBlocks.ANALOG_LEVER, PanelAttachmentMode.HALF_OR_THIRD_OR_SMOL_NONE));
+
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> INDICATOR_BULB = PANEL_ATTACHMENT_TYPE
             .register("indicator_bulb", () -> new PanelAttachmentType(IndicatorBulbPanelAttachment::new, CEEBlocks.INDICATOR_BULB, PanelAttachmentMode.HALF_OR_THIRD_OR_SMOL));
 
@@ -49,6 +54,9 @@ public class CEEPanelAttachmentTypes {
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> ALTITUDE_SENSOR = PANEL_ATTACHMENT_TYPE
             .register("altitude_sensor", () -> new PanelAttachmentType(AltitudeSensorPanelAttachment::new, simItem(() -> SimBlocks.ALTITUDE_SENSOR), PanelAttachmentMode.FULL_NONE));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> VELOCITY_SENSOR = PANEL_ATTACHMENT_TYPE
+            .register("velocity_sensor", () -> new PanelAttachmentType(VelocitySensorPanelAttachment::new, simItem(() -> SimBlocks.VELOCITY_SENSOR), PanelAttachmentMode.HALF_NONE));
 
 
     private static ItemLike simItem(Supplier<ItemLike> sup) {

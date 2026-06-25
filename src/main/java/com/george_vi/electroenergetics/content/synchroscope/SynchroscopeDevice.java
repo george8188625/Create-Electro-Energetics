@@ -82,7 +82,8 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
         p2 = results.getVoltages(new InWorldNode(2, pos), p2);
         s2 = results.getVoltages(new InWorldNode(5, pos), s2);
 
-        for (int i = 0; i < p.length; i++) {
+        int length = Math.min(p.length, Math.min(s.length, Math.min(p1.length, Math.min(s1.length, Math.min(p2.length, s2.length)))));
+        for (int i = 0; i < length; i++) {
             this.ticks++;
             double pi = p[i];
             double si = s[i];

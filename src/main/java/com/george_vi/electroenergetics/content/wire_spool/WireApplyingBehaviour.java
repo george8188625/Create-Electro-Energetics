@@ -11,6 +11,8 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryConnection;
 import com.george_vi.electroenergetics.content.railway_electrification.catenary.CatenaryHolderBlock;
+import com.george_vi.electroenergetics.content.voxel_wire.VoxelWireItem;
+import com.george_vi.electroenergetics.content.voxel_wire.VoxelWireNodePlacement;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
@@ -61,6 +63,7 @@ public class WireApplyingBehaviour {
         BlockState cursorOnState = level.getBlockState(result.getBlockPos());
 
         if (!(heldItem.getItem() instanceof WireSpoolItem) &&
+                !(heldItem.getItem() instanceof VoxelWireItem) &&
                 !CEEItems.EMPTY_SPOOL.isIn(heldItem) &&
                 !heldItem.is(CEETags.SEE_NODE_DATA) ||
                 (heldItem.is(CEETags.PANEL_ATTACHMENT_RENAME_ITEM) && cursorOnState.getBlock() instanceof ElectricalPanelBlock)) {
@@ -87,6 +90,47 @@ public class WireApplyingBehaviour {
             ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
             return;
         }
+
+        // voxel node placement
+        if (heldItem.getItem() instanceof VoxelWireItem) {
+            targetingDetachedNode = null;
+            ElectricPropertiesOverlay.INSTANCE.removeHoveredNode();
+
+            BlockPos pos = result.getBlockPos();
+            BlockState state = mc.level.getBlockState(pos);
+            VoxelWireNodePlacement placement = VoxelWireNodePlacement.get(pos, result.getDirection(), result.getLocation());
+            VoxelWireNodePlacement selectedPlacement = heldItem.get(CEEDataComponents.SELECTED_VOXEL_NODE_PLACEMENT);
+
+            boolean canConnect = true;
+            if (placement.equals(selectedPlacement))
+                canConnect = false;
+
+            Color connectionColor = new Color(canConnect ? .3f : .9f, canConnect ? .9f : .3f, .5f, 1f);
+            if (!state.isAir()) {
+                Outliner.getInstance().showAABB("electroenergetics_voxel_node", placement.getShape(), 3)
+                        .lineWidth(1 / 32f)
+                        .disableLineNormals()
+                        .colored(connectionColor);
+            }
+
+            if (selectedPlacement != null) {
+                Vec3 start = placement.getCenter();
+                Vec3 end = selectedPlacement.getCenter();
+                if (!state.isAir()) {
+                    Outliner.getInstance().showLine("electroenergetics_selected_voxel_wire_line", start, end)
+                            .lineWidth(1 / 16f)
+                            .disableLineNormals()
+                            .colored(connectionColor);
+                }
+
+                Outliner.getInstance().showAABB("electroenergetics_selected_voxel_node", selectedPlacement.getShape(), 3)
+                        .lineWidth(1 / 32f)
+                        .disableLineNormals()
+                        .colored(0xFFFFFF);
+            }
+            return;
+        }
+        //
 
         boolean toRemove = CEEItems.EMPTY_SPOOL.isIn(heldItem);
 

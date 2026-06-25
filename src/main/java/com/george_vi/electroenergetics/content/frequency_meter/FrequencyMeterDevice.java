@@ -57,8 +57,9 @@ public class FrequencyMeterDevice extends SimpleElectricalDevice {
     private float calculateFrequency(BlockPos pos, SimulationResults results) {
         p = results.getVoltages(new InWorldNode(0, pos), p);
         s = results.getVoltages(new InWorldNode(1, pos), s);
+        int length = Math.min(p.length, s.length);
 
-        for (int i = 0; i < p.length; i++) {
+        for (int i = 0; i < length; i++) {
             this.ticks++;
             double v = p[i] - s[i];
             if (Math.abs(v) < 1e-6d)

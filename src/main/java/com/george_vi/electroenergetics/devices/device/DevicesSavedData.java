@@ -126,6 +126,9 @@ public class DevicesSavedData extends SavedData {
             }
             addDevice(device.type, destinationPos, deviceTag);
         }
+
+        // well, it's always dirty
+        setDirty();
     }
 
     /**

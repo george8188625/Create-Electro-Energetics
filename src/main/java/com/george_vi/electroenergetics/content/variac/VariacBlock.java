@@ -143,6 +143,11 @@ public class VariacBlock extends HorizontalKineticBlock implements IBE<VariacBlo
     }
 
     @Override
+    public float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
+        return 2/16f;
+    }
+
+    @Override
     public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
         removeWiresByPlayer(context.getPlayer(), context.getLevel(), context.getClickedPos());
         return super.onSneakWrenched(state, context);

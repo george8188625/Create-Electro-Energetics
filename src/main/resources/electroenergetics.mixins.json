@@ -11,6 +11,7 @@
     "HumanoidModelMixin",
     "ItemInHandRendererMixin",
     "LevelRendererAccessor",
+    "MouseHandlerMixin",
     "MultiPlayerGameModeMixin",
     "SchematicRendererMixin"
   ],

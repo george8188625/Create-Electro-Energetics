@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.content.wire.interaction;
 
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.CEETags;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
@@ -67,6 +68,11 @@ public class WireInteractionHandler {
             BlockState state = mc.level.getBlockState(pos);
             if (state.getBlock() instanceof ElectricalPanelBlock) {
                 bestDist = Double.MAX_VALUE;
+            }
+
+            if (!behaviour.canInteractOn(mc.level, state, pos)) {
+                targetedPoint = null;
+                return;
             }
         }
 

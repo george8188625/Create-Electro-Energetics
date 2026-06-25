@@ -105,6 +105,19 @@ public class CEEPartialModels {
     public static final PartialModel PANEL_ATTACHMENT_TINY_INDICATOR_BULB = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/tiny_indicator_bulb"));
     public static final PartialModel PANEL_ATTACHMENT_INDICATOR_BULB = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/indicator_bulb"));
 
+    public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever"));
+    public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_SMOL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_analog_lever"));
+    public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_LEVER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever_lever"));
+    public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_LEVER_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever_lever_dyeable"));
+    public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_BALL_HEAD = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever_ball_head"));
+    public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_BALL_HEAD_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever_ball_head_dyeable"));
+    public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_THROTTLE_HEAD = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever_throttle_head"));
+    public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_THROTTLE_HEAD_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever_throttle_head_dyeable"));
+    public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_METAL_THINGY = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever_metal_thingy"));
+
+    public static final PartialModel PANEL_ATTACHMENT_VELOCITY_SENSOR = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/velocity_sensor"));
+    public static final PartialModel PANEL_ATTACHMENT_VELOCITY_SENSOR_WIDE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/velocity_sensor_wide"));
+
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch"));
     public static final PartialModel PANEL_ATTACHMENT_TINY_SWITCH = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/tiny_switch"));
     public static final PartialModel PANEL_ATTACHMENT_CUT_OFF_SWITCH_LEVER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/cut_off_switch_lever"));

@@ -24,6 +24,7 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
     InWorldNode node;
     float amperage;
     OverlayMode mode;
+    int analogLeverSignal;
     public boolean invalidConnection;
     public boolean connectionTooLong;
     public int ticks = 0;
@@ -33,6 +34,14 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
         this.node = node;
         if (mode != OverlayMode.HOVER_NODE) {
             mode = OverlayMode.HOVER_NODE;
+            ticks = 0;
+        }
+    }
+
+    public void setAnalogLever(int signal) {
+        this.analogLeverSignal = signal;
+        if (mode != OverlayMode.ANALOG_LEVER) {
+            mode = OverlayMode.ANALOG_LEVER;
             ticks = 0;
         }
     }
@@ -49,6 +58,13 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
         amperage = currentAmperage;
         if (mode != OverlayMode.AMPERAGE_CONFIGURATION) {
             mode = OverlayMode.AMPERAGE_CONFIGURATION;
+            ticks = 0;
+        }
+    }
+
+    public void removeAnalogLever() {
+        if (mode == OverlayMode.ANALOG_LEVER) {
+            mode = OverlayMode.NONE;
             ticks = 0;
         }
     }
@@ -77,7 +93,7 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.options.hideGui)
+        if (mc.options.hideGui || mc.level == null)
             return;
 
         int x = graphics.guiWidth() / 2;
@@ -120,10 +136,10 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
             }
 
         } else if (mode == OverlayMode.AMMETER) {
-            MutableComponent nodeLabel = CEELang.builder()
+            MutableComponent label = CEELang.builder()
                     .translate("clamp_meter.current")
                     .component().withStyle(ChatFormatting.BOLD);
-            graphics.drawString(mc.font, nodeLabel, x - mc.font.width(nodeLabel) / 2, y, titleColor.getRGB());
+            graphics.drawString(mc.font, label, x - mc.font.width(label) / 2, y, titleColor.getRGB());
             y += 12;
             MutableComponent formattedAmperage = CEELang.formatAmperage(amperage).component();
             graphics.drawString(mc.font, formattedAmperage, x - mc.font.width(formattedAmperage) / 2, y, color.getRGB());
@@ -131,12 +147,12 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
 
             Window window = mc.getWindow();
             y = window.getGuiScaledHeight() - 61 - 12;
-            MutableComponent nodeLabel = CEELang.builder()
+            MutableComponent title = CEELang.builder()
                     .translate("fuse.set_amperage")
                     .space()
                     .add(CEELang.formatAmperage(amperage).color(0xFFFFFF))
                     .component();
-            graphics.drawString(mc.font, nodeLabel, x - mc.font.width(nodeLabel) / 2, y, titleColor.getRGB());
+            graphics.drawString(mc.font, title, x - mc.font.width(title) / 2, y, titleColor.getRGB());
 
             if (AllKeys.altDown()) {
                 ticks = 0;
@@ -148,10 +164,18 @@ public class ElectricPropertiesOverlay implements LayeredDraw.Layer {
             MutableComponent text = CEELang.translateDirect("fuse.hold_to_configure");
 
             graphics.drawString(mc.font, text, x - mc.font.width(text) / 2, y, color.setAlpha(Mth.clamp(ticks - 10, 1, 10) / 10f).getRGB(), false);
+        } else if (mode == OverlayMode.ANALOG_LEVER) {
+            MutableComponent label = CEELang.builder()
+                    .translate("analog_lever.strength")
+                    .component().withStyle(ChatFormatting.BOLD);
+            graphics.drawString(mc.font, label, x - mc.font.width(label) / 2, y, titleColor.getRGB());
+            y += 12;
+            MutableComponent formattedStrength = Component.literal(String.valueOf(analogLeverSignal));
+            graphics.drawString(mc.font, formattedStrength, x - mc.font.width(formattedStrength) / 2, y, color.getRGB());
         }
     }
 
     enum OverlayMode {
-        NONE, HOVER_NODE, AMMETER, AMPERAGE_CONFIGURATION;
+        NONE, HOVER_NODE, AMMETER, AMPERAGE_CONFIGURATION, ANALOG_LEVER;
     }
 }

@@ -236,9 +236,9 @@ public class CEENodeConfigurations {
             .simple(Direction.UP);
 
     public static final NodeConfigurator POTENTIOMETER = new NodeConfigurator.Builder()
-            .add(new Vec3(5/16f, 2/16f, 4/16f))
-            .add(new Vec3(8/16f, 2/16f, 4/16f))
-            .add(new Vec3(11/16f, 2/16f, 4/16f))
+            .add(new Vec3(4/16f, 2/16f, 2/16f))
+            .add(new Vec3(8/16f, 2/16f, 2/16f))
+            .add(new Vec3(12/16f, 2/16f, 2/16f))
             .simple(Direction.NORTH);
 
     public static final NodeConfigurator RESISTIVE_HEATER = new NodeConfigurator.Builder()

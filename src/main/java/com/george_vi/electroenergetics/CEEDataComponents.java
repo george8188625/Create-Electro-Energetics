@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics;
 
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminationState;
+import com.george_vi.electroenergetics.content.voxel_wire.VoxelWireNodePlacement;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.mojang.serialization.Codec;
@@ -46,6 +47,11 @@ public class CEEDataComponents {
             builder -> builder
                     .persistent(BundledWireTerminationState.CODEC)
                     .networkSynchronized(BundledWireTerminationState.STREAM_CODEC));
+
+    public static final DataComponentType<VoxelWireNodePlacement> SELECTED_VOXEL_NODE_PLACEMENT = register("selected_voxel_node_placement",
+            builder -> builder
+                    .persistent(VoxelWireNodePlacement.CODEC)
+                    .networkSynchronized(VoxelWireNodePlacement.STREAM_CODEC));
 
     public static final DataComponentType<Integer> FUSE_AMPERAGE = register("fuse_amperage",
             builder -> builder

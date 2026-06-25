@@ -144,6 +144,11 @@ public class RedstoneVariacBlock extends SimpleElectricalDeviceBlock<VariacDevic
     }
 
     @Override
+    public float getNodeSize(Level level, BlockPos pos, BlockState state, int id) {
+        return 2/16f;
+    }
+
+    @Override
     public BlockState rotate(BlockState state, Rotation rot) {
         return state.setValue(HORIZONTAL_FACING, rot.rotate(state.getValue(HORIZONTAL_FACING)));
     }

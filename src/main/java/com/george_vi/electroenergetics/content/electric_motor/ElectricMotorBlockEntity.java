@@ -12,6 +12,7 @@ import com.simibubi.create.content.kinetics.deployer.DeployerBlock;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.math.VecHelper;
@@ -62,18 +63,26 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public void lazyTick() {
         super.lazyTick();
+        double voltage = averageVoltage.getSigned();
         if (generatedSpeed.isUnlocked()) {
-            motorSpeed = Mth.lerp(1f, motorSpeed, (float) Mth.clamp(averageVoltage.getSigned() / 4, -256, 256));
-            if (Math.abs(motorSpeed - speedBeforeLastChange) > 2) {
-                voltageBeforeLastChange = averageVoltage.getSigned();
+            float motorCapacity = calculateMotorCapacity(voltage);
+            float xRPM = generatedSpeed.getUnlockedStressRPMMultiplier();
+
+            float motorSpeed = Math.round(Mth.clamp(motorCapacity / xRPM,
+                    -AllConfigs.server().kinetics.maxRotationSpeed.get(),
+                    AllConfigs.server().kinetics.maxRotationSpeed.get())) * Mth.sign(voltage);
+
+            if (this.motorSpeed != motorSpeed) {
+                this.motorSpeed = motorSpeed;
+                voltageBeforeLastChange = voltage;
                 speedBeforeLastChange = motorSpeed;
                 reActivateSource = true;
             }
         } else {
             motorSpeed = averageVoltage.get() > 80 ? generatedSpeed.getValue() : 0;
 
-            if (Math.abs(averageVoltage.getSigned() - voltageBeforeLastChange) > 2) {
-                voltageBeforeLastChange = averageVoltage.getSigned();
+            if (Math.abs(voltage - voltageBeforeLastChange) > 2) {
+                voltageBeforeLastChange = voltage;
                 speedBeforeLastChange = motorSpeed;
                 reActivateSource = true;
             }
@@ -105,6 +114,12 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     }
 
     @Override
+    public void updateGeneratedRotation() {
+        detachKinetics();
+        super.updateGeneratedRotation();
+    }
+
+    @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         super.addBehaviours(behaviours);
         int max = 256;
@@ -117,17 +132,25 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     }
 
     public void updateRotation() {
+        double voltage = averageVoltage.getSigned();
         if (generatedSpeed.isUnlocked()) {
-            motorSpeed = Math.round(Mth.clamp(averageVoltage.getSigned() / 2, -256, 256));
-            if (Math.abs(motorSpeed - speedBeforeLastChange) > 2) {
-                voltageBeforeLastChange = averageVoltage.getSigned();
+            float motorCapacity = calculateMotorCapacity(voltage);
+            float xRPM = generatedSpeed.getUnlockedStressRPMMultiplier();
+
+            float motorSpeed = Mth.clamp(motorCapacity / xRPM,
+                    -AllConfigs.server().kinetics.maxRotationSpeed.get(),
+                    AllConfigs.server().kinetics.maxRotationSpeed.get()) * Mth.sign(voltage);
+
+            if (Math.abs(this.motorSpeed - motorSpeed) > 1) {
+                this.motorSpeed = motorSpeed;
+                voltageBeforeLastChange = voltage;
                 speedBeforeLastChange = motorSpeed;
                 reActivateSource = true;
             }
         } else {
             motorSpeed = generatedSpeed.getValue();
 
-            voltageBeforeLastChange = averageVoltage.getSigned();
+            voltageBeforeLastChange = voltage;
             speedBeforeLastChange = motorSpeed;
             reActivateSource = true;
         }
@@ -237,9 +260,13 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public float calculateAddedStressCapacity() {
         float speed = Math.abs(getMotorSpeed());
-        float capacity = speed == 0 ? 0 : (float) ((averageVoltage.get() * averageVoltage.get()) / CEEConfigs.server().resistanceValues.motorResistance.get()) / speed;
+        float capacity = speed == 0 ? 0 : calculateMotorCapacity(averageVoltage.get()) / speed;
         this.lastCapacityProvided = capacity;
         return capacity;
+    }
+
+    private float calculateMotorCapacity(double voltage) {
+        return (float) ((voltage * voltage) / CEEConfigs.server().resistanceValues.motorResistance.get());
     }
 
     @Override

@@ -10,7 +10,10 @@
     "electroenergetics:indicator_bulb",
     "electroenergetics:miniature_circuit_breaker",
 
+    "create:analog_lever",
+
     { "id": "simulated:altitude_sensor", "required": false },
+    { "id": "simulated:velocity_sensor", "required": false },
     "electroenergetics:synchroscope",
     "electroenergetics:frequency_meter"
   ]
