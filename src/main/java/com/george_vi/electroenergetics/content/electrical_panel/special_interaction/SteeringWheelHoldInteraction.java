@@ -11,13 +11,13 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
-public class AnalogLeverHoldInteraction implements HoldInteractionBehavior {
+public class SteeringWheelHoldInteraction implements HoldInteractionBehavior {
     public final BlockPos pos;
     public final int panelSlot;
     public int redstoneSignal;
     public float analogSignal;
 
-    public AnalogLeverHoldInteraction(BlockPos pos, int panelSlot, int redstoneSignal) {
+    public SteeringWheelHoldInteraction(BlockPos pos, int panelSlot, int redstoneSignal) {
         this.pos = pos;
         this.panelSlot = panelSlot;
         this.redstoneSignal = redstoneSignal;
@@ -50,7 +50,7 @@ public class AnalogLeverHoldInteraction implements HoldInteractionBehavior {
 
     @Override
     public void onMouseMove(double y, double x) {
-        analogSignal = Mth.clamp(analogSignal + (float) y * -0.05f, 0, 15);
+        analogSignal = Mth.clamp(analogSignal + (float) x * 0.05f, 0, 15);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class AnalogLeverHoldInteraction implements HoldInteractionBehavior {
             return false;
 
         if (mc.level != null && mc.level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity be) {
-            return be.getAttachments()[panelSlot] instanceof AnalogLeverPanelAttachment;
+            return be.getAttachments()[panelSlot] instanceof SteeringWheelPanelAttachment;
         }
         return false;
     }

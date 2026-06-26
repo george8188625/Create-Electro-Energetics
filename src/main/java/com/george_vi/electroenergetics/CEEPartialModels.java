@@ -105,6 +105,11 @@ public class CEEPartialModels {
     public static final PartialModel PANEL_ATTACHMENT_TINY_INDICATOR_BULB = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/tiny_indicator_bulb"));
     public static final PartialModel PANEL_ATTACHMENT_INDICATOR_BULB = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/indicator_bulb"));
 
+    public static final PartialModel PANEL_ATTACHMENT_STEERING_WHEEL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/steering_wheel"));
+    public static final PartialModel PANEL_ATTACHMENT_STEERING_WHEEL_WHEEL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/steering_wheel_wheel"));
+    public static final PartialModel PANEL_ATTACHMENT_STEERING_WHEEL_WHEEL_HANDLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/steering_wheel_wheel_handle"));
+    public static final PartialModel PANEL_ATTACHMENT_STEERING_WHEEL_WHEEL_HANDLE_DYEABLE = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/steering_wheel_wheel_handle_dyeable"));
+
     public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever"));
     public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_SMOL = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/miniature_analog_lever"));
     public static final PartialModel PANEL_ATTACHMENT_ANALOG_LEVER_LEVER = PartialModel.of(CreateElectroEnergetics.rl("block/electrical_panel/attachments/analog_lever_lever"));

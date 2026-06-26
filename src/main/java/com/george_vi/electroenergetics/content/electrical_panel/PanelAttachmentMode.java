@@ -14,6 +14,13 @@ public enum PanelAttachmentMode {
     FULL_DOUBLE(4, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
     FULL_TRIPLE(6, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
     FULL_QUAD(8, new ElectricalPanelSlot[] {ElectricalPanelSlot.FULL_SLOT}),
+    QUARTER_NONE(0, new ElectricalPanelSlot[] {
+            ElectricalPanelSlot.QUARTER_CENTER,
+            ElectricalPanelSlot.QUARTER_LEFT_LOWER,
+            ElectricalPanelSlot.QUARTER_LEFT_UPPER,
+            ElectricalPanelSlot.QUARTER_RIGHT_LOWER,
+            ElectricalPanelSlot.QUARTER_RIGHT_UPPER
+    }),
     HALF_NONE(0, new ElectricalPanelSlot[] {
             ElectricalPanelSlot.HALF_UPPER,
             ElectricalPanelSlot.HALF_LEFT,

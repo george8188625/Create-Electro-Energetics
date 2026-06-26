@@ -12,7 +12,7 @@ import com.george_vi.electroenergetics.content.bundled_wire.BundledWireApplyingB
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelClientTicker;
-import com.george_vi.electroenergetics.content.electrical_panel.special_interaction.CEEHoldInteractionHandler;
+import com.george_vi.electroenergetics.foundation.CEEHoldInteractionHandler;
 import com.george_vi.electroenergetics.content.fuse.BlownFuseTracker;
 import com.george_vi.electroenergetics.content.fuse.FuseBlockItem;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickClientHandler;

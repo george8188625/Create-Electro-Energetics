@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.content.electrical_panel.PanelAttachmentMode;
 import com.george_vi.electroenergetics.content.electrical_panel.special_interaction.AnalogLeverPanelAttachment;
+import com.george_vi.electroenergetics.content.electrical_panel.special_interaction.SteeringWheelPanelAttachment;
 import com.simibubi.create.AllBlocks;
 import dev.simulated_team.simulated.index.SimBlocks;
 import net.minecraft.world.item.Items;
@@ -36,6 +37,9 @@ public class CEEPanelAttachmentTypes {
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> ANALOG_LEVER = PANEL_ATTACHMENT_TYPE
             .register("analog_lever", () -> new PanelAttachmentType(AnalogLeverPanelAttachment::new, AllBlocks.ANALOG_LEVER, PanelAttachmentMode.HALF_OR_THIRD_OR_SMOL_NONE));
+
+    public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> STEERING_WHEEL = PANEL_ATTACHMENT_TYPE
+            .register("steering_wheel", () -> new PanelAttachmentType(SteeringWheelPanelAttachment::new, AllBlocks.TURNTABLE, PanelAttachmentMode.QUARTER_NONE));
 
     public static final DeferredHolder<PanelAttachmentType, PanelAttachmentType> INDICATOR_BULB = PANEL_ATTACHMENT_TYPE
             .register("indicator_bulb", () -> new PanelAttachmentType(IndicatorBulbPanelAttachment::new, CEEBlocks.INDICATOR_BULB, PanelAttachmentMode.HALF_OR_THIRD_OR_SMOL));

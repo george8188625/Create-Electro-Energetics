@@ -11,13 +11,13 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 import dev.ryanhcode.sable.companion.SableCompanion;
+import dev.ryanhcode.sable.companion.SubLevelAccess;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Position;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -28,6 +28,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 public class VelocitySensorPanelAttachment extends PanelAttachment {
@@ -45,17 +47,19 @@ public class VelocitySensorPanelAttachment extends PanelAttachment {
 
     @Override
     public void tickClient(ElectricalPanelBlockEntity be) {
-        Vec3 position = SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)pos.getCenter());
-        if (prevPos == null) {
-            prevPos = position;
+        SubLevelAccess subLevel = SableCompanion.INSTANCE.getContaining(level, pos);
+        if (subLevel == null) {
+            value = 0;
             return;
         }
 
-        double distance = position.distanceTo(prevPos);
+        Vec3 prevPosition = subLevel.lastPose().transformPosition(pos.getCenter());
+        Vec3 position = subLevel.logicalPose().transformPosition(pos.getCenter());
+
+        double distance = position.distanceTo(prevPosition);
         // distance meters / tick
         value = distance * 20;
         // value meters / second
-        prevPos = position;
 
         dialTarget = (float) Mth.clamp(value / 60f, 0, 1);
 
@@ -94,24 +98,24 @@ public class VelocitySensorPanelAttachment extends PanelAttachment {
         }
     }
 
-    Vec3 prevPos;
-
     @Override
     public void preTick(BridgeCollector bridges) {
         if (!level.isLoaded(pos))
             return;
 
-        Vec3 position = SableCompanion.INSTANCE.projectOutOfSubLevel(level, (Position)pos.getCenter());
-        if (prevPos == null) {
-            prevPos = position;
+        SubLevelAccess subLevel = SableCompanion.INSTANCE.getContaining(level, pos);
+        if (subLevel == null) {
+            value = 0;
             return;
         }
 
-        double distance = position.distanceTo(prevPos);
+        Vec3 prevPosition = subLevel.lastPose().transformPosition(pos.getCenter());
+        Vec3 position = subLevel.logicalPose().transformPosition(pos.getCenter());
+
+        double distance = position.distanceTo(prevPosition);
         // distance meters / tick
         value = distance * 20;
         // value meters / second
-        prevPos = position;
     }
 
     @Override
@@ -180,7 +184,7 @@ public class VelocitySensorPanelAttachment extends PanelAttachment {
         METERS_PER_S(1, " m/s"),
         KM_PER_H(3.6f, " km/h"),
 
-        MILES_PER_H(2.237f, " mph"), // who even uses this unit am I right
+        MILES_PER_H(2.237f, isAprilFools() ? " burgers per bald eagle" : " mph"), // who even uses this unit am I right
         ;
 
         public final float multiplier;
@@ -189,6 +193,13 @@ public class VelocitySensorPanelAttachment extends PanelAttachment {
         SpeedUnit(float multiplier, String suffix) {
             this.multiplier = multiplier;
             this.suffix = suffix;
+        }
+
+        private static boolean isAprilFools() {
+            LocalDate localdate = LocalDate.now();
+            int day = localdate.getDayOfMonth();
+            Month month = localdate.getMonth();
+            return month == Month.APRIL && day == 1;
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.electrical_panel.special_interaction;
+package com.george_vi.electroenergetics.foundation;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -9,7 +9,7 @@ public interface HoldInteractionBehavior {
     @OnlyIn(Dist.CLIENT)
     void tick();
 
-    void onMouseMove(double x, double y);
+    void onMouseMove(double y, double x);
 
     @OnlyIn(Dist.CLIENT)
     boolean isStillActive();

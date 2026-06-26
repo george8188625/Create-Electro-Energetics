@@ -1,4 +1,4 @@
-package com.george_vi.electroenergetics.content.electrical_panel.special_interaction;
+package com.george_vi.electroenergetics.foundation;
 
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -39,6 +39,6 @@ public class CEEHoldInteractionHandler {
 
     public static void onPlayerMove(double x, double y) {
         if (interaction != null)
-            interaction.onMouseMove(x, y);
+            interaction.onMouseMove(y, x);
     }
 }

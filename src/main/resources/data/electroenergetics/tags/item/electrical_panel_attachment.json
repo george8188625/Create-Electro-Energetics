@@ -11,6 +11,7 @@
     "electroenergetics:miniature_circuit_breaker",
 
     "create:analog_lever",
+    "create:turntable",
 
     { "id": "simulated:altitude_sensor", "required": false },
     { "id": "simulated:velocity_sensor", "required": false },
