@@ -8,11 +8,9 @@ import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.commands.CEECommands;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
 import com.george_vi.electroenergetics.content.bulb.BulbDevice;
-import com.george_vi.electroenergetics.content.bundled_wire.BundledWireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelClientTicker;
-import com.george_vi.electroenergetics.foundation.CEEHoldInteractionHandler;
 import com.george_vi.electroenergetics.content.fuse.BlownFuseTracker;
 import com.george_vi.electroenergetics.content.fuse.FuseBlockItem;
 import com.george_vi.electroenergetics.content.linemans_stick.LinemansStickClientHandler;
@@ -27,6 +25,7 @@ import com.george_vi.electroenergetics.content.wire_spool.ChangeLengthWireIntera
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.WireSparkEffectTicker;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.george_vi.electroenergetics.foundation.CEEHoldInteractionHandler;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
@@ -78,7 +77,6 @@ public class GameEvents {
         if (Minecraft.getInstance().level == null || Minecraft.getInstance().player == null)
             return;
         WireApplyingBehaviour.tick();
-        BundledWireApplyingBehaviour.tick();
         WireInteractionHandler.tick();
         WireEffects.tick();
         CEEHoldInteractionHandler.tick();

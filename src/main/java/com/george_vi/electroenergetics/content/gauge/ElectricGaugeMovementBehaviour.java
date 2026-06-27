@@ -59,7 +59,7 @@ public class ElectricGaugeMovementBehaviour implements MovementBehaviour {
                 // On server, read directly from train data
                 if (carriage.train instanceof ICEETrainExtension trainExtension) {
                     ElectricTrainData trainData = trainExtension.getElectricTrainData();
-                    voltage = trainData.displayVoltage;
+                    voltage = trainData.lastVoltage;
                     current = trainData.displayCurrent;
                 }
             }
@@ -75,13 +75,13 @@ public class ElectricGaugeMovementBehaviour implements MovementBehaviour {
             dialTarget = (float) Mth.clamp((voltage - minVoltage) / (maxVoltage - minVoltage), 0, 1);
         } else {
             // Scale from 0 to maximum theoretical current
-            // Max current = Max voltage / Min resistance
-            double maxVoltage = CEEConfigs.server().voltageValues.trainMaxVoltage.get();
-            double minResistance = Math.min(
-                CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get(),
-                CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get()
+            // Max current = Max Power / Min voltage
+            double minVoltage = CEEConfigs.server().voltageValues.trainMinVoltage.get();
+            double maxPower = Math.max(
+                CEEConfigs.server().resistanceValues.electricTrainAccelerationPowerConsumption.get(),
+                CEEConfigs.server().resistanceValues.electricTrainCruisePowerConsumption.get()
             );
-            double maxCurrent = maxVoltage / minResistance;
+            double maxCurrent = maxPower / minVoltage;
             dialTarget = (float) Mth.clamp(current / maxCurrent, 0, 1);
         }
 

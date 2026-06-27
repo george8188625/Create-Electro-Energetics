@@ -4,6 +4,7 @@ import net.createmod.catnip.config.ConfigBase;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class CVoltages extends ConfigBase {
+    public final ConfigInt motorMinVoltage = i(80, 0, "motorMinVoltage", "[in Volts]");
     public final ConfigInt trainMinVoltage = i(1900, 0, "trainMinVoltage", "[in Volts]");
     public final ConfigInt trainMaxVoltage = i(5000, 0, "trainMaxVoltage", "[in Volts]");
     public final ConfigDouble wireMaxVoltage = d(1500, 0, "wireMaxVoltage", "[in Volts]");

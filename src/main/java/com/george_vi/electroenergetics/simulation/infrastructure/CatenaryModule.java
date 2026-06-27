@@ -183,17 +183,22 @@ public class CatenaryModule {
             builder.addNode(trainNode);
             builder.ground(groundNode, 10);
 
-            double trainResistance;
-            if (Math.abs(train.speed) > 0.01) {
-                trainResistance = acceleration > 0.001
-                        ? CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get()
-                        : CEEConfigs.server().resistanceValues.electricTrainCruiseResistance.get();
-            } else {
-                trainResistance = 9999;
-            }
+            double power = 0.1;
+            if (Math.abs(train.speed) > 0.01)
+                power = acceleration > 0.001
+                        ? CEEConfigs.server().resistanceValues.electricTrainAccelerationPowerConsumption.get()
+                        : CEEConfigs.server().resistanceValues.electricTrainCruisePowerConsumption.get();
 
             if (trainData.accumulatorCharge < trainData.accumulators)
-                trainResistance = 1 / (1 / CEEConfigs.server().resistanceValues.electricTrainAccelerationResistance.get() + 1 / trainResistance);
+                power += CEEConfigs.server().resistanceValues.electricTrainAccelerationPowerConsumption.get();
+
+            // P = V*V/R
+            // P*R = V*V
+            // R = V*V/P
+
+            double lastVoltage = Math.abs(trainData.lastVoltage) < 1 ? 3000 : trainData.lastVoltage;
+            double trainResistance = lastVoltage * lastVoltage / power;
+
             builder.connect(groundNode, trainNode, ElectricalProperties.resistor(trainResistance));
 
             for (TrainPantographEntry pe : trainExtension.getElectricTrainData().pantographs)
@@ -230,7 +235,7 @@ public class CatenaryModule {
                 voltage = 0;
 
             // Store voltage for gauge displays on train contraptions
-            trainData.displayVoltage = voltage;
+            trainData.lastVoltage = voltage;
 
             boolean active = trainData.hasCreativeSource || voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
             double trainSpeed = train.derailed ? 0 : Math.abs(train.speed);

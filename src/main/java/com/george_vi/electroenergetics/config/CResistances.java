@@ -8,8 +8,8 @@ public class CResistances extends ConfigBase {
     public final ConfigDouble pumpResistance = d(200d, 0.1d, "pumpResistance", "[in Ohms]");
     public final ConfigDouble bulbResistance = d(1000d, 0.1d, "bulbResistance", "[in Ohms]");
     public final ConfigDouble resistiveHeaterResistance = d(45d, 0.1d, "resistiveHeaterResistance", "[in Ohms]");
-    public final ConfigDouble electricTrainAccelerationResistance = d(150d, 0.1d, "electricTrainAccelerationResistance", "[in Ohms]");
-    public final ConfigDouble electricTrainCruiseResistance = d(300d, 0.1d, "electricTrainCruiseResistance", "[in Ohms]");
+    public final ConfigDouble electricTrainAccelerationPowerConsumption = d(40_000d, 0.1d, "electricTrainAccelerationPowerConsumption", "[in Watts]");
+    public final ConfigDouble electricTrainCruisePowerConsumption = d(20_000d, 0.1d, "electricTrainCruisePowerConsumption", "[in Watts]");
     public final ConfigDouble wireResistance = d(0.005d, 0.0001d, "wireResistance", "[in Ohms / Meter]");
     public final ConfigDouble electrumWireResistance = d(0.005d, 0.0001d, "electrumWireResistance", "[in Ohms / Meter]");
     public final ConfigDouble ironWireResistance = d(0.01d, 0.0001d, "ironWireResistance", "[in Ohms / Meter]");

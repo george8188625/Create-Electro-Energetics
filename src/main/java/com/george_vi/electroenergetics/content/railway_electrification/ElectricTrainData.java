@@ -12,6 +12,7 @@ public class ElectricTrainData {
     public int accumulators = 0;
     public double accumulatorCharge = 0d;
     public boolean hasCreativeSource = false;
+    public double lastVoltage = 0d;
 
     public double lastSpeed;
     public AttachedNode trainNode;
@@ -19,8 +20,6 @@ public class ElectricTrainData {
     public WireSimulationState connectedWireState;
     public WireSimulationState.WireCutHandle wireCutHandle;
 
-    // Voltage value for display on gauges (voltmeters/ammeters) attached to train contraptions
-    public double displayVoltage = 0;
     // Total current draw for display on ammeters attached to train contraptions
     public double displayCurrent = 0;
 

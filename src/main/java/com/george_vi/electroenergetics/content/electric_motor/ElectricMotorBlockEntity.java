@@ -30,16 +30,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.ModList;
 
 import java.util.List;
 
 public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     float load = 0;
-    double voltageBeforeLastChange = 0;
-    float speedBeforeLastChange = 0;
-
-    float motorSpeed;
+    float prevMotorCapacity;
+    float prevMotorSpeed;
 
     protected KineticUnlockableScrollValueBehaviour generatedSpeed;
 
@@ -53,39 +52,27 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     LerpedFloat soundSpeed = LerpedFloat.linear();
 
+    int ticksSinceChange = 0;
+    int speedChangeThreshold;
 
     public ElectricMotorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        setLazyTickRate(12);
-        averageVoltage = new RMSHolder(8 * CEEConfigs.server().simulationConfig.microTicks.get());
+        averageVoltage = new RMSHolder(3 * CEEConfigs.server().simulationConfig.microTicks.get());
+        speedChangeThreshold = ModList.get().isLoaded("simulated") ? 1 : 12;
     }
 
     @Override
-    public void lazyTick() {
-        super.lazyTick();
-        double voltage = averageVoltage.getSigned();
-        if (generatedSpeed.isUnlocked()) {
-            float motorCapacity = calculateMotorCapacity(voltage);
-            float xRPM = generatedSpeed.getUnlockedStressRPMMultiplier();
+    public void tick() {
+        super.tick();
+        float motorCapacity = calculateMotorCapacity();
+        float motorSpeed = calculateMotorSpeed();
+        ticksSinceChange++;
 
-            float motorSpeed = Math.round(Mth.clamp(motorCapacity / xRPM,
-                    -AllConfigs.server().kinetics.maxRotationSpeed.get(),
-                    AllConfigs.server().kinetics.maxRotationSpeed.get())) * Mth.sign(voltage);
-
-            if (this.motorSpeed != motorSpeed) {
-                this.motorSpeed = motorSpeed;
-                voltageBeforeLastChange = voltage;
-                speedBeforeLastChange = motorSpeed;
-                reActivateSource = true;
-            }
-        } else {
-            motorSpeed = averageVoltage.get() > 80 ? generatedSpeed.getValue() : 0;
-
-            if (Math.abs(voltage - voltageBeforeLastChange) > 2) {
-                voltageBeforeLastChange = voltage;
-                speedBeforeLastChange = motorSpeed;
-                reActivateSource = true;
-            }
+        if ((motorCapacity != prevMotorCapacity || motorSpeed != prevMotorSpeed) && (ticksSinceChange >= speedChangeThreshold)) {
+            prevMotorSpeed = motorSpeed;
+            prevMotorCapacity = motorCapacity;
+            reActivateSource = true;
+            ticksSinceChange = 0;
         }
     }
 
@@ -93,11 +80,8 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
         tag.putFloat("Load", load);
-        tag.putFloat("MotorSpeed", motorSpeed);
-        if (!clientPacket) {
-            tag.putDouble("VoltageBeforeLastChange", voltageBeforeLastChange);
-            tag.putFloat("SpeedBeforeLastChange", speedBeforeLastChange);
-        }
+        tag.putFloat("PrevSpeed", prevMotorSpeed);
+        tag.putFloat("PrevCapacity", prevMotorCapacity);
         averageVoltage.write(tag, "Voltage");
     }
 
@@ -105,17 +89,13 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         load = tag.getFloat("Load");
-        motorSpeed = tag.getFloat("MotorSpeed");
-        if (!clientPacket) {
-            voltageBeforeLastChange = tag.getDouble("VoltageBeforeLastChange");
-            speedBeforeLastChange = tag.getFloat("SpeedBeforeLastChange");
-        }
+        prevMotorSpeed = tag.getFloat("PrevSpeed");
+        prevMotorCapacity = tag.getFloat("PrevCapacity");
         averageVoltage.read(tag, "Voltage");
     }
 
     @Override
     public void updateGeneratedRotation() {
-        detachKinetics();
         super.updateGeneratedRotation();
     }
 
@@ -127,33 +107,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
                 this, new ValueBox());
         generatedSpeed.between(-max, max);
         generatedSpeed.value = 32;
-        generatedSpeed.withCallback(i -> updateRotation());
         behaviours.add(generatedSpeed);
-    }
-
-    public void updateRotation() {
-        double voltage = averageVoltage.getSigned();
-        if (generatedSpeed.isUnlocked()) {
-            float motorCapacity = calculateMotorCapacity(voltage);
-            float xRPM = generatedSpeed.getUnlockedStressRPMMultiplier();
-
-            float motorSpeed = Mth.clamp(motorCapacity / xRPM,
-                    -AllConfigs.server().kinetics.maxRotationSpeed.get(),
-                    AllConfigs.server().kinetics.maxRotationSpeed.get()) * Mth.sign(voltage);
-
-            if (Math.abs(this.motorSpeed - motorSpeed) > 1) {
-                this.motorSpeed = motorSpeed;
-                voltageBeforeLastChange = voltage;
-                speedBeforeLastChange = motorSpeed;
-                reActivateSource = true;
-            }
-        } else {
-            motorSpeed = generatedSpeed.getValue();
-
-            voltageBeforeLastChange = voltage;
-            speedBeforeLastChange = motorSpeed;
-            reActivateSource = true;
-        }
     }
 
     @Override
@@ -222,15 +176,10 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
         return true;
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-    }
-
     @OnlyIn(Dist.CLIENT)
     public void tickAudio() {
         float speed = isOverStressed() ? 0 : this.speed;
-        soundSpeed.chase(speed, Math.abs(soundSpeed.getValue()) > Math.abs(speed) || generatedSpeed.isUnlocked() ? 5 : 1, LerpedFloat.Chaser.LINEAR);
+        soundSpeed.chase(speed, Math.abs(soundSpeed.getValue()) > Math.abs(speed) || generatedSpeed.isUnlocked() ? 13 : 1, LerpedFloat.Chaser.LINEAR);
         soundSpeed.tickChaser();
         float speedNormalized = Math.abs(soundSpeed.getValue()) / 256f;
         if (Math.abs(speedNormalized) < 0.1f)
@@ -259,23 +208,15 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public float calculateAddedStressCapacity() {
-        float speed = Math.abs(getMotorSpeed());
+        float speed = Math.abs(calculateMotorSpeed());
         float capacity = speed == 0 ? 0 : calculateMotorCapacity(averageVoltage.get()) / speed;
         this.lastCapacityProvided = capacity;
         return capacity;
     }
 
-    private float calculateMotorCapacity(double voltage) {
-        return (float) ((voltage * voltage) / CEEConfigs.server().resistanceValues.motorResistance.get());
-    }
-
     @Override
     public float getGeneratedSpeed() {
-        return convertToDirection(averageVoltage.get() < 80 ? 0 : getMotorSpeed(), getBlockState().getValue(ElectricMotorBlock.FACING));
-    }
-
-    private float getMotorSpeed() {
-        return motorSpeed;
+        return convertToDirection(calculateMotorSpeed(), getBlockState().getValue(ElectricMotorBlock.FACING));
     }
 
     @Override
@@ -325,5 +266,27 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
             return direction.getAxis() != facing.getAxis();
         }
 
+    }
+
+    float calculateMotorSpeed() {
+        double voltage = averageVoltage.getSigned();
+        if (generatedSpeed.isUnlocked()) {
+            float motorCapacity = calculateMotorCapacity(voltage);
+            float xRPM = generatedSpeed.getUnlockedStressRPMMultiplier();
+
+            return Mth.clamp(motorCapacity / xRPM,
+                    -AllConfigs.server().kinetics.maxRotationSpeed.get(),
+                    AllConfigs.server().kinetics.maxRotationSpeed.get()) * Mth.sign(voltage);
+        } else {
+            return averageVoltage.get() > CEEConfigs.server().voltageValues.motorMinVoltage.get() ? generatedSpeed.getValue() : 0;
+        }
+    }
+
+    float calculateMotorCapacity() {
+        return calculateMotorCapacity(averageVoltage.getSigned());
+    }
+
+    float calculateMotorCapacity(double voltage) {
+        return (float) ((voltage * voltage) / CEEConfigs.server().resistanceValues.motorResistance.get());
     }
 }
