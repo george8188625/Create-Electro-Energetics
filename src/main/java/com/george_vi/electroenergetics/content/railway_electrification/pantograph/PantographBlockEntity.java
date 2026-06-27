@@ -314,6 +314,8 @@ public class PantographBlockEntity extends SmartBlockEntity {
 
         Vec3 closest = VecHelper.lerp(closestPointOnWire, start, end);
         Vec3 distance = pantographPos.subtract(closest);
+        if (distance.y > 0.8)
+            return null;
 
         distance = VecHelper.rotate(distance, getBlockState().getValue(FACING).toYRot() + 90, Direction.Axis.Y);
         float xTol = (float) ((-distance.y + halfPantoReach) * 0.2f + 0.125f);
