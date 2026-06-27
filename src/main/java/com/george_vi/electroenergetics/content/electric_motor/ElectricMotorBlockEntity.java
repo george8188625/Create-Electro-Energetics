@@ -271,7 +271,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public float getGeneratedSpeed() {
-        return convertToDirection(averageVoltage.get() < 80 ? 0 : getMotorSpeed(), getBlockState().getValue(ElectricMotorBlock.FACING));
+        return convertToDirection(averageVoltage.get() < 80 && !generatedSpeed.isUnlocked() ? 0 : getMotorSpeed(), getBlockState().getValue(ElectricMotorBlock.FACING));
     }
 
     private float getMotorSpeed() {
