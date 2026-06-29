@@ -47,7 +47,7 @@ public class RedstonePotentiometerBlockEntity extends SmartBlockEntity {
             progress = Mth.lerp(0.6f, progress, targetProgress);
 
             if (prevProgress != progress) {
-                VariacDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, VariacDevice.class);
+                PotentiometerDevice device = DevicesSavedData.load(sl).getDevice(worldPosition, PotentiometerDevice.class);
 
                 if (device != null)
                     device.progress = progress;
