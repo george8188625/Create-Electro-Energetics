@@ -128,6 +128,11 @@ dependencies {
         }
     }
 
+    // Immersive Engineering — Faraday Suit compatibility
+    runtimeOnly "maven.modrinth:immersiveengineering:12.4.2-194"
+    // Fallback: use local jar if Modrinth is unreachable
+    // runtimeOnly files("../ImmersiveEngineering-1.21.1-12.4.2-194.jar")
+
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

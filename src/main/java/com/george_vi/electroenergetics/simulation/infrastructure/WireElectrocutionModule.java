@@ -16,16 +16,21 @@ import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -64,8 +69,29 @@ public class WireElectrocutionModule {
                 continue;
             if (((LivingEntity) entity).hasEffect(CEEMobEffects.DIELECTRIC))
                 continue;
+            if (entity instanceof LivingEntity living && isWearingFullFaradaySuit(living))
+                continue;
             computeElectrocutionFor(entity, builder);
         }
+    }
+
+    /**
+     * Checks if the entity is wearing the full Faraday Suit from Immersive Engineering.
+     * This is a soft dependency — if IE is not installed, the items won't exist in
+     * the registry and this method returns false.
+     */
+    private static boolean isWearingFullFaradaySuit(LivingEntity entity) {
+        return isFaradayItem(entity.getItemBySlot(EquipmentSlot.HEAD), "armor_faraday_helmet")
+                && isFaradayItem(entity.getItemBySlot(EquipmentSlot.CHEST), "armor_faraday_chestplate")
+                && isFaradayItem(entity.getItemBySlot(EquipmentSlot.LEGS), "armor_faraday_leggings")
+                && isFaradayItem(entity.getItemBySlot(EquipmentSlot.FEET), "armor_faraday_boots");
+    }
+
+    private static boolean isFaradayItem(ItemStack stack, String itemName) {
+        Item faradayItem = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("immersiveengineering", itemName));
+        if (faradayItem == null)
+            return false;
+        return stack.is(faradayItem);
     }
 
     private void computeElectrocutionFor(Entity entity, CircuitBuilder builder) {
