@@ -28,6 +28,7 @@ public class SynchroscopeBlockEntity extends SmartBlockEntity implements IHaveHo
     int counter = 0;
     public boolean validConnection;
     LerpedFloat smoothPhase = LerpedFloat.angular();
+    int redstoneSignal;
 
     public SynchroscopeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -47,6 +48,14 @@ public class SynchroscopeBlockEntity extends SmartBlockEntity implements IHaveHo
 //        if (AngleHelper.getShortestAngleDiff(smoothPhase.getValue(), phaseOffset) > 1)
 //            smoothPhase.chase(phaseOffset, 1, LerpedFloat.Chaser.EXP);
         smoothPhase.tickChaser();
+
+        if (!level.isClientSide()) {
+            int newRedstoneSignal = ((-Math.round(phaseOffset * (16.0f / 360.0f)) % 16) + 16) % 16;
+            if (newRedstoneSignal != redstoneSignal) {
+                redstoneSignal = newRedstoneSignal;
+                setChanged();
+            }
+        }
     }
 
     @Override

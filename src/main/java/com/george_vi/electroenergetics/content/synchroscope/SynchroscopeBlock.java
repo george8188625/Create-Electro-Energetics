@@ -13,6 +13,7 @@ import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -71,6 +72,18 @@ public class SynchroscopeBlock extends SimpleElectricalDeviceBlock<SynchroscopeD
     @Override
     protected FluidState getFluidState(BlockState state) {
         return fluidState(state);
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof SynchroscopeBlockEntity be)
+            return Mth.clamp(be.redstoneSignal, 0, 15);
+        return 0;
     }
 
     @Override
