@@ -1,7 +1,11 @@
 package com.george_vi.electroenergetics.content.energy_meter;
 
+import com.george_vi.electroenergetics.CEEBlockEntityTypes;
+import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
+import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import dan200.computercraft.api.peripheral.PeripheralCapability;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.minecraft.core.BlockPos;
@@ -9,6 +13,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +31,8 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
     public int ticks = 0;
     public boolean disconnected;
     public UUID owner;
+
+    public AbstractComputerBehaviour computerBehaviour;
 
     public void setTotalEnergy(double newTotalEnergy) {
         double d = (Math.abs(newTotalEnergy - totalEnergy));
@@ -73,6 +80,14 @@ public class EnergyMeterBlockEntity extends SmartBlockEntity {
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+        behaviours.add(computerBehaviour = CCProxy.behaviour(this));
+    }
 
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(
+                PeripheralCapability.get(),
+                CEEBlockEntityTypes.ENERGY_METER.get(),
+                (be, context) -> be.computerBehaviour.getPeripheralCapability()
+        );
     }
 }
