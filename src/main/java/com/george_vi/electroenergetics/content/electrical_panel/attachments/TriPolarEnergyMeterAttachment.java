@@ -4,7 +4,6 @@ import com.george_vi.electroenergetics.CEEPartialModels;
 import com.george_vi.electroenergetics.content.cut_off_switch.SwitchingBehaviour;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
 import com.george_vi.electroenergetics.events.datagen.CEEAdvancements;
-import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.simulation.electrical_properties.ElectricalProperties;
@@ -55,9 +54,9 @@ public class TriPolarEnergyMeterAttachment extends BaseEnergyMeterAttachment {
         if (r1 < 1e+10d)
             bridges.bridge(nodes[3], nodes[0], ElectricalProperties.resistor(r1));
         if (r2 < 1e+10d)
-            bridges.bridge(nodes[5], nodes[2], ElectricalProperties.resistor(r1));
+            bridges.bridge(nodes[5], nodes[2], ElectricalProperties.resistor(r2));
         if (r3 < 1e+10d)
-            bridges.bridge(nodes[4], nodes[1], ElectricalProperties.resistor(r1));
+            bridges.bridge(nodes[4], nodes[1], ElectricalProperties.resistor(r3));
 
         if (inverted) {
             bridges.bridge(nodes[5], nodes[4], ElectricalProperties.resistor(9999));
@@ -75,11 +74,11 @@ public class TriPolarEnergyMeterAttachment extends BaseEnergyMeterAttachment {
     double[] v5s;
     @Override
     public void postTick(SimulationResults results) {
-        v0s = results.getVoltages(new InWorldNode(3, pos), v0s);
-        v1s = results.getVoltages(new InWorldNode(4, pos), v1s);
-        v2s = results.getVoltages(new InWorldNode(5, pos), v2s);
-        v3s = results.getVoltages(new InWorldNode(0, pos), v3s);
-        v5s = results.getVoltages(new InWorldNode(2, pos), v5s);
+        v0s = results.getVoltages(nodes[3], v0s);
+        v1s = results.getVoltages(nodes[4], v1s);
+        v2s = results.getVoltages(nodes[5], v2s);
+        v3s = results.getVoltages(nodes[0], v3s);
+        v5s = results.getVoltages(nodes[2], v5s);
         double power = 0;
         double newTotalEnergy = totalEnergy;
         int length = Math.min(Math.min(v0s.length, Math.min(v1s.length, v2s.length)), Math.min(v3s.length, v5s.length));
@@ -92,6 +91,8 @@ public class TriPolarEnergyMeterAttachment extends BaseEnergyMeterAttachment {
             if (Math.abs(amps1) > 0.01) {
                 double vd = v0s[i] - v1s[i];
                 double thisPower = amps1 * vd;
+                if (!inverted)
+                    thisPower *= -1;
                 newTotalEnergy += (thisPower / 72000) / (1000 * length);
                 power += thisPower;
             }
@@ -99,6 +100,8 @@ public class TriPolarEnergyMeterAttachment extends BaseEnergyMeterAttachment {
             if (Math.abs(amps2) > 0.01) {
                 double vd = v2s[i] - v1s[i];
                 double thisPower = amps2 * vd;
+                if (!inverted)
+                    thisPower *= -1;
                 newTotalEnergy += (thisPower / 72000) / (1000 * length);
                 power += thisPower;
             }

@@ -43,12 +43,14 @@ public class EnergyMeterDevice extends SimpleElectricalDevice {
     double[] v0s;
     double[] v1s;
     double[] v2s;
+    double[] v3s;
 
     @Override
     public void postTick(SimulationResults results) {
         v0s = results.getVoltages(new InWorldNode(0, pos), v0s);
         v1s = results.getVoltages(new InWorldNode(1, pos), v1s);
         v2s = results.getVoltages(new InWorldNode(2, pos), v2s);
+        v3s = results.getVoltages(new InWorldNode(3, pos), v3s);
         double power = 0;
 
         int length = Math.min(v0s.length, Math.min(v1s.length, v2s.length));
@@ -59,7 +61,7 @@ public class EnergyMeterDevice extends SimpleElectricalDevice {
 
             if (Math.abs(amps) > 0.01) {
 //                energy += amps * (v0s[i] - v1s[i]) * (0.05/8);
-                double vs = v0s[i] - v1s[i];
+                double vs = v2s[i] - v3s[i];
                 double thisPower = amps * vs;
                 this.totalEnergy += (thisPower / 72000) / (1000 * length);
                 power += thisPower;

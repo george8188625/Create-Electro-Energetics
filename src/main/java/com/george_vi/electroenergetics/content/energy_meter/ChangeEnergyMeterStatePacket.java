@@ -3,7 +3,7 @@ package com.george_vi.electroenergetics.content.energy_meter;
 import com.george_vi.electroenergetics.CEEPackets;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelDevice;
-import com.george_vi.electroenergetics.content.electrical_panel.attachments.EnergyMeterAttachment;
+import com.george_vi.electroenergetics.content.electrical_panel.attachments.BaseEnergyMeterAttachment;
 import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachment;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
@@ -57,10 +57,15 @@ public record ChangeEnergyMeterStatePacket(boolean reset, boolean disconnect, Bl
                 device.isClosed = !disconnect;
             }
             case ElectricalPanelDevice device -> {
-                if (device.attachments.length != 1)
-                    return;
-                PanelAttachment attachment = device.attachments[0];
-                if (!(attachment instanceof EnergyMeterAttachment meter))
+                BaseEnergyMeterAttachment meter = null;
+                for (PanelAttachment attachment : device.attachments) {
+                    if (!(attachment instanceof BaseEnergyMeterAttachment energyMeter))
+                        continue;
+                    if (meter != null)
+                        return;
+                    meter = energyMeter;
+                }
+                if (meter == null)
                     return;
                 if (reset)
                     meter.totalEnergy = 0;
