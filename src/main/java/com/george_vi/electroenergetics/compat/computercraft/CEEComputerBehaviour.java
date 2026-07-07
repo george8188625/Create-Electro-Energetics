@@ -1,6 +1,10 @@
 package com.george_vi.electroenergetics.compat.computercraft;
 
+import com.george_vi.electroenergetics.compat.computercraft.peripherals.AccumulatorPeripheral;
 import com.george_vi.electroenergetics.compat.computercraft.peripherals.ElectricGaugePeripheral;
+import com.george_vi.electroenergetics.compat.computercraft.peripherals.EnergyMeterPeripheral;
+import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlockEntity;
+import com.george_vi.electroenergetics.content.energy_meter.EnergyMeterBlockEntity;
 import com.george_vi.electroenergetics.content.gauge.ElectricGaugeBlockEntity;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -23,6 +27,12 @@ public class CEEComputerBehaviour extends AbstractComputerBehaviour {
     public static Supplier<IPeripheral> getPeripheralFor(SmartBlockEntity be) {
         if (be instanceof ElectricGaugeBlockEntity egbe)
             return () -> new ElectricGaugePeripheral(egbe);
+
+        if (be instanceof AccumulatorBlockEntity abe)
+            return () -> new AccumulatorPeripheral(abe);
+
+        if (be instanceof EnergyMeterBlockEntity embe)
+            return () -> new EnergyMeterPeripheral(embe);
 
         throw new IllegalArgumentException(
                 "No peripheral available for " + BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType()));

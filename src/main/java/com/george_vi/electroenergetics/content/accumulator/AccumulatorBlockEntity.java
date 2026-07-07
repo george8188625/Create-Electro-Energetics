@@ -1,13 +1,18 @@
 package com.george_vi.electroenergetics.content.accumulator;
 
+import com.george_vi.electroenergetics.CEEBlockEntityTypes;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
+import com.george_vi.electroenergetics.compat.computercraft.CCProxy;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.electrical_properties.AccumulatorProperties;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
+import com.simibubi.create.compat.Mods;
+import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
+import dan200.computercraft.api.peripheral.PeripheralCapability;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -20,6 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import java.util.List;
 
@@ -27,6 +33,8 @@ public class AccumulatorBlockEntity extends SmartBlockEntity implements IHaveGog
     public double cell1Charge = 0;
     public double cell2Charge = 0;
     public boolean isDoubleCell = false;
+
+    public AbstractComputerBehaviour computerBehaviour;
 
     public AccumulatorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -105,7 +113,17 @@ public class AccumulatorBlockEntity extends SmartBlockEntity implements IHaveGog
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+        behaviours.add(computerBehaviour = CCProxy.behaviour(this));
+    }
 
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        if (Mods.COMPUTERCRAFT.isLoaded()) {
+            event.registerBlockEntity(
+                    PeripheralCapability.get(),
+                    CEEBlockEntityTypes.ACCUMULATOR.get(),
+                    (be, context) -> be.computerBehaviour.getPeripheralCapability()
+            );
+        }
     }
 
 }
