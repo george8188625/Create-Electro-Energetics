@@ -11,10 +11,13 @@ public class ElectricTrainData {
     public List<TrainPantographEntry> pantographs = new ArrayList<>();
     public int accumulators = 0;
     public double accumulatorCharge = 0d;
+    public double accumulatorVoltage = 0d;
     public boolean hasCreativeSource = false;
+    public boolean isPowered = false;
     public double lastVoltage = 0d;
 
     public double lastSpeed;
+    public float maxSpeed;
     public AttachedNode trainNode;
     public AttachedNode groundNode;
     public WireSimulationState connectedWireState;

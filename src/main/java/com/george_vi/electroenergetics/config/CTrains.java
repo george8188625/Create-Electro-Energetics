@@ -5,6 +5,9 @@ import net.createmod.catnip.config.ConfigBase;
 public class CTrains extends ConfigBase {
     public final ConfigInt ticksPerAccumulatorOnTrain = i(1200, 1, "trainAccumulatorTime", "[in Ticks / one Accumulator]");
     public final ConfigInt ticksPerAccumulatorChargeOnTrain = i(1200, 1, "trainAccumulatorChargeTime", "[in Ticks / one Accumulator]");
+    public final ConfigFloat electricTrainMinSpeed = f(30f, 0f, "electricTrainMinSpeed", "Speed at minimum train voltage. [in Blocks / Second]");
+    public final ConfigFloat electricTrainMaxSpeed = f(60f, 0f, "electricTrainMaxSpeed", "Speed at maximum train voltage. [in Blocks / Second]");
+    public final ConfigFloat electricTrainAcceleration = f(8f, 0f, "electricTrainAcceleration", "[in Blocks / Second²]");
     public final ConfigBool winterPantographSparks = b(true, "winterPantographSparks", "Sparks appear on electric trains in cold conditions.");
     public final ConfigFloat winterPantographSparkChance = f(0.01f, 0f, 1f, "winterPantographSparkChance", "Chance of a spark appearing in cold conditions.");
     public final ConfigFloat highSpeedPantographSparks = f(1.44f, 0f, "speedPantographSparkThreshold", "Trains faster than this value will have sparks on pantographs. Set to 0 to disable. [in Blocks / Tick]");

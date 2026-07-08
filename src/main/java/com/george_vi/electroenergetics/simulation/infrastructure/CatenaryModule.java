@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.simulation.infrastructure;
 
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.ElectricTrainData;
 import com.george_vi.electroenergetics.content.railway_electrification.gauges.SyncTrainGaugeDataPacket;
@@ -25,8 +26,10 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.jline.utils.Log;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class CatenaryModule {
     private static final double GAUGE_SYNC_THRESHOLD = 0.05; // 5% change threshold for network sync
@@ -237,7 +240,8 @@ public class CatenaryModule {
             // Store voltage for gauge displays on train contraptions
             trainData.lastVoltage = voltage;
 
-            boolean active = trainData.hasCreativeSource || voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
+            boolean minimumVoltageReached = voltage >= CEEConfigs.server().voltageValues.trainMinVoltage.get();
+            boolean active = trainData.hasCreativeSource || minimumVoltageReached;
             double trainSpeed = train.derailed ? 0 : Math.abs(train.speed);
 
             // Calculate total current draw for ammeter displays
@@ -292,8 +296,18 @@ public class CatenaryModule {
                         trainData.accumulatorCharge = Math.max(0d, trainData.accumulatorCharge - 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorOnTrain.get());
                     active = true;
                 }
-            } else if (trainData.accumulatorCharge < trainData.accumulators)
-                trainData.accumulatorCharge = Math.min(trainData.accumulators, trainData.accumulatorCharge + 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorChargeOnTrain.get());
+            } else if (minimumVoltageReached) {
+
+                if (trainData.accumulatorCharge < trainData.accumulators) {
+                    trainData.accumulatorVoltage = voltage;
+                    trainData.accumulatorCharge = Math.min(
+                            trainData.accumulators,
+                            trainData.accumulatorCharge + 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorChargeOnTrain.get()
+                    );
+                } else if (trainData.accumulatorCharge == trainData.accumulators) {
+                    trainData.accumulatorVoltage = voltage;
+                }
+            }
 
             Map<Integer, Vec3> positions = new HashMap<>();
             for (Carriage carriage : train.carriages) {
@@ -322,10 +336,28 @@ public class CatenaryModule {
                 CatnipServices.NETWORK.sendToClientsAround(level, pos,
                         100, new UpdateElectricTrainSoundPacket(train.id, carriageID, (float) trainSpeed, acceleration, active, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getId(trainExtension.getSoundType())));
             }
-            if (active)
-                if (train.fuelTicks <= 1) {
-                    train.fuelTicks = 10;
+            trainData.isPowered = active;
+
+            if (active) {
+                float minSpeed = CEEConfigs.server().trainValues.electricTrainMinSpeed.getF();
+                float maxSpeed = CEEConfigs.server().trainValues.electricTrainMaxSpeed.getF();
+
+                int minVoltage = CEEConfigs.server().voltageValues.trainMinVoltage.get();
+                int maxVoltage = CEEConfigs.server().voltageValues.trainMaxVoltage.get();
+
+                float multiplier = (float) ((voltage == 0 ? trainData.accumulatorVoltage : voltage) - minVoltage) / (maxVoltage - minVoltage);
+
+                if (multiplier > 1) {
+                    multiplier = 1;
                 }
+
+                if (multiplier <= 0) {
+                    trainData.maxSpeed = 0;
+                    trainData.isPowered = false;
+                } else {
+                    trainData.maxSpeed = minSpeed + (maxSpeed - minSpeed) * multiplier;
+                }
+            }
 
         }
     }
