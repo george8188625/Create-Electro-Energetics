@@ -223,6 +223,7 @@
   "electroenergetics.gui.goggles.state_of_charge": ":ǝbɹɐɥƆ ɟo ǝʇɐʇS",
   "electroenergetics.gui.goggles.stored_energy": ":ʎbɹǝuƎ pǝɹoʇS",
   "electroenergetics.gui.goggles.voltage": ":ǝbɐʇןoΛ",
+  "electroenergetics.hint.placeable_in_electrical_panel": "ןǝuɐd ןɐɔıɹʇɔǝןǝ uı ǝןqɐǝɔɐןԀo§8§",
   "electroenergetics.hint.synchroscope_misconfigured": "˙ɹǝpɹo ʇuǝʇsısuoɔ ɐ uı pǝʇɔǝuuoɔ ǝɹɐ ‾sǝsɐɥd‾ ǝɥʇ ǝɹnsuƎ ˙ʎןʇɔǝɹɹoɔ pǝɹıʍ uǝǝq ʇou sɐɥ ‾ǝdoɔsoɹɥɔuʎS‾ sıɥʇ sɹɐǝddɐ ʇI",
   "electroenergetics.hint.synchroscope_misconfigured.title": "pǝɹnbıɟuoɔsıW",
   "electroenergetics.inductor.inductance": "sʎɹuǝH uı ǝɔuɐʇɔnpuI ɹoʇɔnpuI",

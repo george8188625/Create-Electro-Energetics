@@ -10,6 +10,7 @@
   "electroenergetics.fuse.set_amperage": "Fuse Amperage:",
   "electroenergetics.fuse.hold_to_configure": "Hold Left Alt and Scroll to configure",
   "electroenergetics.analog_lever.strength": "Strength:",
+  "electroenergetics.hint.placeable_in_electrical_panel": "§8§oPlaceable in electrical panel",
 
   "electroenergetics.action_bar.wire_too_long": "Wire too long!",
   "electroenergetics.action_bar.wire_too_short": "Wire too short!",

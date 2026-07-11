@@ -11,6 +11,7 @@ public class CClient extends ConfigBase {
     public final ConfigBool debugPantographRange = b(false, "debugPantographRange", "Show the pantograph range box.");
     public final ConfigBool debugNodeID = b(false, "debugNodeID", "Display nodeID when hovering.");
     public final ConfigBool showBirdsOnWires = b(false, "showBirdsOnWires", "Display birds on wires.");
+    public final ConfigBool displayPanelTooltip = b(true, "displayPanelTooltip", "Display hint on items placeable in electrical panel.");
 
     @Override
     public String getName() {

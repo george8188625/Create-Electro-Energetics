@@ -223,6 +223,7 @@
   "electroenergetics.gui.goggles.state_of_charge": "State of Charge:",
   "electroenergetics.gui.goggles.stored_energy": "Stored Energy:",
   "electroenergetics.gui.goggles.voltage": "Voltage:",
+  "electroenergetics.hint.placeable_in_electrical_panel": "§8§oPlaceable in electrical panel",
   "electroenergetics.hint.synchroscope_misconfigured": "It appears this _Synchroscope_ has not been wired correctly. Ensure the _phases_ are connected in a consistent order.",
   "electroenergetics.hint.synchroscope_misconfigured.title": "Misconfigured",
   "electroenergetics.inductor.inductance": "Inductor Inductance in Henrys",

@@ -26,6 +26,7 @@ import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.content.wire_spool.WireSparkEffectTicker;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.foundation.CEEHoldInteractionHandler;
+import com.george_vi.electroenergetics.foundation.CEELang;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
@@ -59,6 +60,7 @@ import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -348,6 +350,15 @@ public class GameEvents {
     @SubscribeEvent
     public static void reloadLevelRenderer(ReloadLevelRendererEvent event) {
         WireRenderer.recreateVisuals();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void itemTooltip(ItemTooltipEvent event) {
+        if (event.getItemStack().is(CEETags.ELECTRICAL_PANEL_ATTACHMENT) &&
+                CEEConfigs.client().displayPanelTooltip.get()) {
+            event.getToolTip().add(CEELang.translateDirect("hint.placeable_in_electrical_panel"));
+        }
     }
 
 }
