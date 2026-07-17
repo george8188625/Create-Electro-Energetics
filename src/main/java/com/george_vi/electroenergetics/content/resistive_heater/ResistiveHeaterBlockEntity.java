@@ -82,6 +82,8 @@ public class ResistiveHeaterBlockEntity extends SmartBlockEntity implements IHav
     }
 
     public BlazeBurnerBlock.HeatLevel calculateHeatLevel(float heat) {
+        if (heat >= 0.8)
+            return BlazeBurnerBlock.HeatLevel.SEETHING;
         if (heat >= 0.6)
             return BlazeBurnerBlock.HeatLevel.KINDLED;
         if (heat >= 0.2)
