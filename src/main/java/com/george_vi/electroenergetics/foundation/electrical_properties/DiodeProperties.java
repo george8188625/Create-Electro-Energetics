@@ -1,9 +1,8 @@
 package com.george_vi.electroenergetics.foundation.electrical_properties;
 
-import com.george_vi.electroenergetics.simulation.electrical_properties.NonlinearProperties;
-import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
+import com.george_vi.electroenergetics.simulation.electrical_properties.NortonCoupleNonlinearProperties;
 
-public class DiodeProperties extends NonlinearProperties {
+public class DiodeProperties extends NortonCoupleNonlinearProperties {
 
     private double vOld;
     private final double vCrit, vt, is;
@@ -17,7 +16,7 @@ public class DiodeProperties extends NonlinearProperties {
     }
 
     @Override
-    public void stampNonLinear(double v1, double v2, SparseMatrix matrix, double[] rhs, int n1, int n2, boolean first) {
+    public void tick(double v1, double v2, boolean first) {
         double vd;
         if (first) {
             vd = vOld;
@@ -35,13 +34,13 @@ public class DiodeProperties extends NonlinearProperties {
 
         double Ieq = Id - gd * vd;
 
-        matrix.add(n1, n1, gd + leakage);
-        matrix.add(n2, n2, gd + leakage);
-        matrix.add(n1, n2, -gd);
-        matrix.add(n2, n1, -gd);
+        conductance = gd;
+        currentSource = -Ieq;
+    }
 
-        rhs[n1] -= Ieq;
-        rhs[n2] += Ieq;
+    @Override
+    public double gMin() {
+        return leakage;
     }
 
     private double limitStep(double vOld, double vNew) {

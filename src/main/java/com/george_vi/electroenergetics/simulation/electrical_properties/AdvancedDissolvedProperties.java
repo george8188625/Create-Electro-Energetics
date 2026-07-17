@@ -68,8 +68,8 @@ public class AdvancedDissolvedProperties extends MicroTickingElectricalPropertie
             int node2 = originalNodeIDs[i + 1];
             if (properties instanceof MicroTickingElectricalProperties microTicking) {
                 microTicking.tick(allVoltages, microTick, totalMicroTicks, node1, node2);
-            } else if (properties instanceof MicroTickingInvertedElectricalProperties inv) {
-                inv.original.tick(allVoltages, microTick, totalMicroTicks, node2, node1);
+            } else if (properties.invert() instanceof MicroTickingElectricalProperties microTicking) {
+                microTicking.tick(allVoltages, microTick, totalMicroTicks, node2, node1);
             }
 
             // Turns every Norton source into a voltage source with series resistance
@@ -106,8 +106,8 @@ public class AdvancedDissolvedProperties extends MicroTickingElectricalPropertie
             int node2 = originalNodeIDs[i + 1];
             if (originalProperties[i] instanceof MicroTickingElectricalProperties microTicking) {
                 microTicking.afterTick(allVoltages, node1, node2, microTick, totalMicroTicks);
-            } else if (originalProperties[i] instanceof MicroTickingInvertedElectricalProperties inv) {
-                inv.original.afterTick(allVoltages, node2, node1, microTick, totalMicroTicks);
+            } else if (originalProperties[i].invert() instanceof MicroTickingElectricalProperties microTicking) {
+                microTicking.afterTick(allVoltages, node2, node1, microTick, totalMicroTicks);
             }
         }
     }

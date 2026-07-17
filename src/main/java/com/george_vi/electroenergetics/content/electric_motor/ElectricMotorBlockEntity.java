@@ -270,7 +270,9 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     float calculateMotorSpeed() {
         double voltage = averageVoltage.getSigned();
-        if (generatedSpeed.isUnlocked()) {
+        if (Math.abs(voltage) < CEEConfigs.server().voltageValues.motorMinVoltage.get()) {
+            return 0;
+        } if (generatedSpeed.isUnlocked()) {
             float motorCapacity = calculateMotorCapacity(voltage);
             float xRPM = generatedSpeed.getUnlockedStressRPMMultiplier();
 
@@ -278,7 +280,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
                     -AllConfigs.server().kinetics.maxRotationSpeed.get(),
                     AllConfigs.server().kinetics.maxRotationSpeed.get()) * Mth.sign(voltage);
         } else {
-            return averageVoltage.get() > CEEConfigs.server().voltageValues.motorMinVoltage.get() ? generatedSpeed.getValue() : 0;
+            return generatedSpeed.getValue();
         }
     }
 

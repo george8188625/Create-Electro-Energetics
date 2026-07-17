@@ -51,7 +51,7 @@ public class TransformerElectricalProperties extends ElectricalProperties implem
     }
 
     @Override
-    public boolean canDissolve() {
-        return false;
+    public byte dissolveMode() {
+        return CANT_DISSOLVE;
     }
 }

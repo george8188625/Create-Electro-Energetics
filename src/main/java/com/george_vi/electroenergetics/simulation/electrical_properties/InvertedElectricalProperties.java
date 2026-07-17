@@ -1,8 +1,11 @@
 package com.george_vi.electroenergetics.simulation.electrical_properties;
 
-public final class MicroTickingInvertedElectricalProperties extends ElectricalProperties {
-    MicroTickingElectricalProperties original;
-    public MicroTickingInvertedElectricalProperties(MicroTickingElectricalProperties original) {
+/**
+ * Used as an opposite-direction connection for more advanced connections such as micro tickers or nonlinear connections.
+ */
+public final class InvertedElectricalProperties extends ElectricalProperties {
+    public ElectricalProperties original;
+    public InvertedElectricalProperties(ElectricalProperties original) {
         this.original = original;
     }
 
@@ -39,5 +42,10 @@ public final class MicroTickingInvertedElectricalProperties extends ElectricalPr
     @Override
     public ElectricalProperties invert() {
         return original;
+    }
+
+    @Override
+    public byte dissolveMode() {
+        return original.dissolveMode();
     }
 }

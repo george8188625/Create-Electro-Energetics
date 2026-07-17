@@ -52,11 +52,31 @@ public abstract class ElectricalProperties {
         return false;
     }
 
+    public double gMin() {
+        return 0;
+    }
+
     public boolean isSimpleResistor() {
         return false;
     }
 
-    public boolean canDissolve() {
-        return true;
+    public static final byte CANT_DISSOLVE = 0;
+    public static final byte DISSOLVE = 1;
+    public static final byte DISSOLVE_NONLINEAR = 2;
+
+    public byte dissolveMode() {
+        return DISSOLVE;
+    }
+
+    public static final byte NORMAL_OPTIMIZATION = 0;
+    public static final byte NONLINEAR_OPTIMIZATION = 1;
+
+    public boolean canDissolve(int optimizationPass) {
+        return switch (dissolveMode()) {
+            case CANT_DISSOLVE -> false;
+            case DISSOLVE -> true;
+            case DISSOLVE_NONLINEAR -> optimizationPass == NONLINEAR_OPTIMIZATION;
+            default -> throw new IllegalStateException("Unexpected dissolveMode value: " + dissolveMode());
+        };
     }
 }

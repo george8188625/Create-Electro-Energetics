@@ -1,6 +1,7 @@
 package com.george_vi.electroenergetics.simulation.electrical_properties;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class AdvancedParallelDissolvedProperties extends MicroTickingElectricalProperties implements IDissolvedProperties {
     public final ElectricalProperties[] originalProperties;
@@ -26,12 +27,10 @@ public class AdvancedParallelDissolvedProperties extends MicroTickingElectricalP
         double conductance = 0;
         double currentSource = 0;
         for (ElectricalProperties originalProperty : originalProperties) {
-            switch (originalProperty) {
-                case MicroTickingElectricalProperties microTicking ->
-                        microTicking.tick(allVoltages, microTick, totalMicroTicks, node1, node2);
-                case MicroTickingInvertedElectricalProperties inv ->
-                        inv.original.tick(allVoltages, microTick, totalMicroTicks, node1, node2);
-                default -> {}
+            if (originalProperty instanceof MicroTickingElectricalProperties microTicking) {
+                microTicking.tick(allVoltages, microTick, totalMicroTicks, node1, node2);
+            } else if (originalProperty.invert() instanceof MicroTickingElectricalProperties microTicking) {
+                microTicking.tick(allVoltages, microTick, totalMicroTicks, node1, node2);
             }
 
             conductance += originalProperty.conductance();
@@ -44,12 +43,10 @@ public class AdvancedParallelDissolvedProperties extends MicroTickingElectricalP
     @Override
     public void afterTick(double[] allVoltages, int n1, int n2, int microTick, int totalMicroTicks) {
         for (ElectricalProperties originalProperty : originalProperties) {
-            switch (originalProperty) {
-                case MicroTickingElectricalProperties microTicking ->
-                        microTicking.afterTick(allVoltages, node1, node2, microTick, totalMicroTicks);
-                case MicroTickingInvertedElectricalProperties inv ->
-                        inv.original.afterTick(allVoltages, node2, node1, microTick, totalMicroTicks);
-                case null, default -> {}
+            if (originalProperty instanceof MicroTickingElectricalProperties microTicking) {
+                microTicking.afterTick(allVoltages, node1, node2, microTick, totalMicroTicks);
+            } else if (originalProperty.invert() instanceof MicroTickingElectricalProperties microTicking) {
+                microTicking.afterTick(allVoltages, node2, node1, microTick, totalMicroTicks);
             }
         }
     }

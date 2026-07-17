@@ -9,7 +9,6 @@ import com.george_vi.electroenergetics.simulation.util.*;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.longs.*;
-import net.minecraft.util.Mth;
 
 import java.util.*;
 
@@ -25,7 +24,8 @@ public class Network {
     final Long2DoubleMap voltageSources = new Long2DoubleOpenHashMap();
     final Long2ObjectMap<ElectricalProperties> originalMicroTicked = new Long2ObjectOpenHashMap<>();
     final Long2ObjectMap<ElectricalProperties> simulationMicroTicked = new Long2ObjectOpenHashMap<>();
-    final Long2ObjectMap<NonlinearProperties> simulationNonLinear = new Long2ObjectOpenHashMap<>();
+    final LongList solverIterationTickerIDs = new LongArrayList();
+    final List<ISolverIterationTicker> solverIterationTickers = new ArrayList<>();
 
     public SparseMatrix conductanceMatrix;
     public double[] rhsVector;
@@ -83,15 +83,18 @@ public class Network {
                     continue;
 
                 optimizedNodeList.connect(nodeID, neighborID, connectionProperties);
-
-                if (connectionProperties instanceof MicroTickingElectricalProperties) {
+                if (connectionProperties instanceof ISolverIterationTicker t) {
+                    solverIterationTickers.add(t);
+                    solverIterationTickerIDs.add(DataPacker.pack(nodeID, neighborID));
+                } else if (connectionProperties.invert() instanceof ISolverIterationTicker t) {
+                    solverIterationTickers.add(t);
+                    solverIterationTickerIDs.add(DataPacker.pack(neighborID, nodeID));
+                } else if (connectionProperties instanceof MicroTickingElectricalProperties) {
                     simulationMicroTicked.put(DataPacker.pack(nodeID, neighborID), connectionProperties);
                     originalMicroTicked.put(DataPacker.pack(originalOptimizedNodes[nodeID], originalOptimizedNodes[neighborID]), connectionProperties);
-                } else if (connectionProperties instanceof MicroTickingInvertedElectricalProperties) {
-                    simulationMicroTicked.put(DataPacker.pack(neighborID, nodeID), connectionProperties.invert());
-                    originalMicroTicked.put(DataPacker.pack(originalOptimizedNodes[neighborID], originalOptimizedNodes[nodeID]), connectionProperties.invert());
-                } else if (connectionProperties instanceof NonlinearProperties) {
-                    simulationNonLinear.put(DataPacker.pack(nodeID, neighborID), (NonlinearProperties) connectionProperties);
+                } else if (connectionProperties.invert() instanceof MicroTickingElectricalProperties microTicking) {
+                    simulationMicroTicked.put(DataPacker.pack(neighborID, nodeID), microTicking);
+                    originalMicroTicked.put(DataPacker.pack(originalOptimizedNodes[neighborID], originalOptimizedNodes[nodeID]), microTicking);
                 } else if (connectionProperties instanceof CoupledProperties cp && cp.isPrimary()) {
                     coupledProperties.add(cp);
                 } else {
@@ -151,6 +154,14 @@ public class Network {
             firstIteration = true;
         }
 
+        for (int i = 0; i < solverIterationTickerIDs.size(); i++) {
+            long packedConnection = solverIterationTickerIDs.getLong(i);
+            int nodeID = DataPacker.unpackFirstI(packedConnection);
+            int neighborID = DataPacker.unpackSecondI(packedConnection);
+            ISolverIterationTicker ticker = solverIterationTickers.get(i);
+            ticker.tick(x[nodeID], x[neighborID], firstIteration);
+        }
+
         for (int nodeID = 0; nodeID < optimizedNodeList.totalNodes(); nodeID++) {
             double totalConductance = 0;
             for (Int2ObjectMap.Entry<ElectricalProperties> e : optimizedNodeList.getNeighbors(nodeID).int2ObjectEntrySet()) {
@@ -158,21 +169,22 @@ public class Network {
                 ElectricalProperties properties = e.getValue();
 
                 double conductance = properties.conductance();
-                totalConductance += conductance;
+                totalConductance += conductance + properties.gMin();
                 if (neighborID > nodeID)
                     continue;
+
+                if (properties instanceof NonlinearProperties nl) {
+                    nl.stampNonLinear(x[nodeID], x[neighborID], conductanceMatrix, rhsVector, nodeID, neighborID, firstIteration);
+                } else if (properties.invert() instanceof NonlinearProperties nl) {
+                    nl.stampNonLinear(x[neighborID], x[nodeID], conductanceMatrix, rhsVector, neighborID, nodeID, firstIteration);
+                }
+
 
                 // apply current source
                 if (properties.isCurrentSource()) {
                     double v = properties.currentSource();
                     rhsVector[nodeID] += v;
                     rhsVector[neighborID] -= v;
-                }
-
-                if (properties instanceof NonlinearProperties nl) {
-                    nl.stampNonLinear(x[nodeID], x[neighborID], conductanceMatrix, rhsVector, nodeID, neighborID, firstIteration);
-                } if (properties instanceof NonLinearInvertedElectricalProperties nli) {
-                    nli.original.stampNonLinear(x[neighborID], x[nodeID], conductanceMatrix, rhsVector, neighborID, nodeID, firstIteration);
                 }
 
                 if (conductance == 0)

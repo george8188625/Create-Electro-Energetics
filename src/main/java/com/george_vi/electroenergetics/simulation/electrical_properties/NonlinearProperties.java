@@ -3,11 +3,11 @@ package com.george_vi.electroenergetics.simulation.electrical_properties;
 import com.george_vi.electroenergetics.simulation.util.SparseMatrix;
 
 public abstract class NonlinearProperties extends ElectricalProperties {
-    NonLinearInvertedElectricalProperties inverted = null;
+    InvertedElectricalProperties inverted = null;
 
     @Override
     public final double resistance() {
-        return 1;
+        return 1e+11d;
     }
 
     @Override
@@ -16,15 +16,15 @@ public abstract class NonlinearProperties extends ElectricalProperties {
     }
 
     @Override
-    public final boolean canDissolve() {
-        return false;
+    public final ElectricalProperties invert() {
+        if (inverted == null)
+            return inverted = new InvertedElectricalProperties(this);
+        return inverted;
     }
 
     @Override
-    public final ElectricalProperties invert() {
-        if (inverted == null)
-            return inverted = new NonLinearInvertedElectricalProperties(this);
-        return inverted;
+    public byte dissolveMode() {
+        return CANT_DISSOLVE;
     }
 
     public abstract void stampNonLinear(double v1, double v2, SparseMatrix matrix, double[] rhs, int n1, int n2, boolean first);

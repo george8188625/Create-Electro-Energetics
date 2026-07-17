@@ -24,7 +24,6 @@ public class CircuitBuilder {
     List<SimulationNode> allIndexedNodes;
     Object2IntMap<Node> nodeIndexes;
     Int2IntMap defaultZeroPotentials;  // K -> node id, V -> priority
-    public Long2ObjectMap<MicroTickingElectricalProperties> microTickers = new Long2ObjectOpenHashMap<>();
     int id = 0;
 
     public CircuitBuilder(Set<InWorldNode> nodes) {
@@ -83,8 +82,6 @@ public class CircuitBuilder {
 
         SimulationNode indexedNode1 = allIndexedNodes.get(n1);
         SimulationNode indexedNode2 = allIndexedNodes.get(n2);
-        if (properties instanceof MicroTickingElectricalProperties ep)
-            microTickers.put(DataPacker.pack(n1, n2), ep);
 
         if (properties instanceof CoupledProperties cp && cp.isPrimary()) { // Mark the node so it's solved in the same circuit as the coupled nodes
             SimulationNode in1 = getNode(cp.coupledNodes().node1());
@@ -101,8 +98,6 @@ public class CircuitBuilder {
     public void connect(SimulationNode n1, SimulationNode n2, ElectricalProperties properties) {
         if (Double.isNaN(properties.resistance()) || Double.isNaN(properties.voltageSource()) || Double.isNaN(properties.currentSource()))
             return;
-        if (properties instanceof MicroTickingElectricalProperties ep)
-            microTickers.put(DataPacker.pack(n1.ordinal, n2.ordinal), ep);
 
         if (properties instanceof CoupledProperties cp && cp.isPrimary()) { // Mark the node so it's solved in the same circuit as the coupled nodes
             SimulationNode n = getNode(cp.coupledNodes().node1());

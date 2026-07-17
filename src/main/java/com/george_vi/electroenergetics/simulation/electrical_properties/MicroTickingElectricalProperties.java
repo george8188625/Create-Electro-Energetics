@@ -5,7 +5,7 @@ package com.george_vi.electroenergetics.simulation.electrical_properties;
  * This is because the electrical simulation is run off thread.
  */
 public abstract class MicroTickingElectricalProperties extends ElectricalProperties {
-    MicroTickingInvertedElectricalProperties inverted = null;
+    InvertedElectricalProperties inverted = null;
     public double resistance;
     public double currentSource;
     public double voltageSource;
@@ -52,7 +52,7 @@ public abstract class MicroTickingElectricalProperties extends ElectricalPropert
     @Override
     public final ElectricalProperties invert() {
         if (inverted == null)
-            return inverted = new MicroTickingInvertedElectricalProperties(this);
+            return inverted = new InvertedElectricalProperties(this);
         return inverted;
     }
 }

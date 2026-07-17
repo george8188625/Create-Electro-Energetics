@@ -16,6 +16,8 @@ public class NetworkOptimizer {
     final Network network;
     final CircuitBuilder builder;
 
+    public byte optimizationPass = ElectricalProperties.NORMAL_OPTIMIZATION;
+
     public NetworkOptimizer(Network network) {
         this.network = network;
         this.builder = network.builder;
@@ -143,7 +145,7 @@ public class NetworkOptimizer {
             Int2ObjectMap<ElectricalProperties> nodeAdjacency = getAdjacency(node);
             if (nodeAdjacency.size() == 2 && groundConductance <= 0) {
                 Iterator<ElectricalProperties> it = nodeAdjacency.values().iterator();
-                if (it.next().canDissolve() && it.next().canDissolve()) {
+                if (it.next().canDissolve(optimizationPass) && it.next().canDissolve(optimizationPass)) {
                     toDissolve.add(node);
                     node.dissolveState = TO_DISSOLVE;
                 }
@@ -169,8 +171,8 @@ public class NetworkOptimizer {
             Deque<ElectricalProperties> resistanceChain = new ArrayDeque<>();
             resistanceChain.add(getAdjacency(prevNode).get(node.ordinal));
             resistanceChain.add(getAdjacency(node).get(nextNode.ordinal));
-            if (!resistanceChain.getFirst().canDissolve() ||
-                    !resistanceChain.getLast().canDissolve())
+            if (!resistanceChain.getFirst().canDissolve(optimizationPass) ||
+                    !resistanceChain.getLast().canDissolve(optimizationPass))
                 continue;
             node.dissolveState = DISSOLVED;
 
@@ -192,7 +194,7 @@ public class NetworkOptimizer {
                     continue;
                 }
 
-                if (!propertiesInPlace.canDissolve())
+                if (!propertiesInPlace.canDissolve(optimizationPass))
                     continue;
                 Int2ObjectMap<ElectricalProperties> prevAdjacency = overrideAdjacency(prevNode);
                 Int2ObjectMap<ElectricalProperties> nextAdjacency = overrideAdjacency(nextNode);
@@ -232,7 +234,7 @@ public class NetworkOptimizer {
                 if (getAdjacency(nodeChain.getLast()).containsKey(newLeftNode.ordinal))
                     break;
                 ElectricalProperties p = getAdjacency(newLeftNode).get(leftNode.ordinal);
-                if (!p.canDissolve())
+                if (!p.canDissolve(optimizationPass))
                     break;
                 prevLeftNode = leftNode;
                 leftNode = newLeftNode;
@@ -258,7 +260,7 @@ public class NetworkOptimizer {
                 if (getAdjacency(nodeChain.getFirst()).containsKey(newRightNode.ordinal))
                     break;
                 ElectricalProperties p = getAdjacency(rightNode).get(newRightNode.ordinal);
-                if (!p.canDissolve())
+                if (!p.canDissolve(optimizationPass))
                     break;
                 prevRightNode = rightNode;
                 rightNode = newRightNode;
@@ -328,7 +330,7 @@ public class NetworkOptimizer {
                 CoupledPropertiesOptimizationEntry.MODE_RIGHT_BRANCH :
                 CoupledPropertiesOptimizationEntry.MODE_LEFT_BRANCH;
 
-        if (!leftProperties.canDissolve() || !rightProperties.canDissolve()) {
+        if (!leftProperties.canDissolve(optimizationPass) || !rightProperties.canDissolve(optimizationPass)) {
             // can't dissolve
             return false;
         } else if (leftProperties.isSimpleResistor() && rightProperties.isSimpleResistor()) {

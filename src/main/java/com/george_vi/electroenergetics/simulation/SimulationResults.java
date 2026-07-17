@@ -89,7 +89,7 @@ public class SimulationResults {
             int id2 = nodeId2 * microTicks;
             double rms = 0;
             for (int j = 0; j < microTicks; j++)
-                rms += (voltages[id1+j] - voltages[id2+j]) / properties.resistance() + properties.currentSource();
+                rms += (voltages[id1+j] - voltages[id2+j]) / properties.resistance() - properties.currentSource();
             rms /= microTicks;
             return rms;
         }
