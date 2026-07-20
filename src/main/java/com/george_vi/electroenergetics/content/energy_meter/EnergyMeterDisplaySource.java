@@ -14,7 +14,7 @@ public class EnergyMeterDisplaySource extends NumericSingleLineDisplaySource {
         if (!(blockEntity instanceof EnergyMeterBlockEntity be))
             return ZERO.copy();
 
-        return CEELang.formatEnergy(be.totalEnergy * 1000).component();
+        return CEELang.formatEnergy(be.totalEnergy * 1000 * be.scale.getScale()).component();
     }
 
     @Override

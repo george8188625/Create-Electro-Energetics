@@ -14,7 +14,7 @@ public class ActivePowerDisplaySource extends NumericSingleLineDisplaySource {
         if (!(blockEntity instanceof EnergyMeterBlockEntity be))
             return ZERO.copy();
 
-        return CEELang.formatPower(be.activePower).component();
+        return CEELang.formatPower(be.activePower * be.scale.getScale()).component();
     }
 
     @Override

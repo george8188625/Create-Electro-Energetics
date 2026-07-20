@@ -5,7 +5,6 @@ import com.george_vi.electroenergetics.CEEGuiTextures;
 import com.george_vi.electroenergetics.CreateElectroEnergetics;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.widget.IconButton;
-import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.lang.Lang;
@@ -14,7 +13,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -42,7 +41,7 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
         super.init();
 
         confirmButton = new IconButton(guiLeft + CEEGuiTextures.ENERGY_METER.getWidth() - 33, guiTop + CEEGuiTextures.ENERGY_METER.getHeight() - 25, AllIcons.I_CONFIRM);
-        confirmButton.withCallback(() -> onClose());
+        confirmButton.withCallback(this::onClose);
         addRenderableWidget(confirmButton);
 
         disconnectX = guiLeft + CEEGuiTextures.ENERGY_METER.getWidth() - 28;
@@ -52,7 +51,7 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
     }
 
     @Override
-    protected void renderWindow(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    protected void renderWindow(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int x = guiLeft;
         int y = guiTop;
 
@@ -65,8 +64,8 @@ public class EnergyMeterScreen extends AbstractSimiScreen {
         int stringWidth = font.width(title);
         graphics.drawString(font, title, x - stringWidth / 2 + windowWidth / 2, y + 4, 0xFFFFEE);
 
-        double smoothTotalEnergy = be.smoothTotalEnergy.getValue(partialTicks);
-        double totalEnergy = be.smoothTotalEnergy.getValue(partialTicks);
+        double smoothTotalEnergy = be.smoothTotalEnergy.getValue(partialTicks) * be.scale.getScale();
+        double totalEnergy = be.smoothTotalEnergy.getValue(partialTicks) * be.scale.getScale();
 
 
         totalEnergy = 10_000_000 + totalEnergy;

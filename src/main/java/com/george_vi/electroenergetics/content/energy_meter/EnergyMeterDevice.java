@@ -93,7 +93,7 @@ public class EnergyMeterDevice extends SimpleElectricalDevice {
             else {
                 this.be.setTotalEnergy((float) this.totalEnergy);
                 this.be.activePower = this.isClosed ? power : 0;
-                if (be.owner != null && totalEnergy > 10_000) {
+                if (be.owner != null && totalEnergy * be.scale.getScale() > 10_000) {
                     Player player = Objects.requireNonNull(level.getServer()).getPlayerList().getPlayer(be.owner);
 
                     if (player != null)
