@@ -85,12 +85,12 @@ public class SynchroscopeDevice extends SimpleElectricalDevice {
         int length = Math.min(p.length, Math.min(s.length, Math.min(p1.length, Math.min(s1.length, Math.min(p2.length, s2.length)))));
         for (int i = 0; i < length; i++) {
             this.ticks++;
-            double pi = p[i];
-            double si = s[i];
-            double pi1 = p1[i];
-            double si1 = s1[i];
-            double pi2 = p2[i];
-            double si2 = s2[i];
+            double pi = p[i] - p1[i];
+            double si = s[i] - s1[i];
+            double pi1 = p1[i] - p2[i];
+            double si1 = s1[i] - s2[i];
+            double pi2 = p2[i] - p[i];
+            double si2 = s2[i] - s[i];
 
             if (pi > 0 && this.prevP <= 0) {
                 double interpolated = this.ticks + (-this.prevP / (pi - this.prevP));
