@@ -16,6 +16,7 @@ public class CResistances extends ConfigBase {
     public final ConfigDouble ironRailResistance = d(0.003d, 0.0001d, "ironRailResistance", "[in Ohms / Meter]");
     public final ConfigDouble indicatorBulbResistance = d(1000, 0.0001d, "indicatorBulbResistance", "[in Ohms]");
     public final ConfigDouble electricFanResistance = d(200, 0.0001d, "electricFanResistance", "[in Ohms]");
+    public final ConfigDouble converterMinResistance = d(20, 0.0001d, "converterMinResistance", "[in Ohms]");
 
     @Override
     public String getName() {

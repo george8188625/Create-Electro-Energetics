@@ -86,7 +86,7 @@ public class ConverterDevice extends SimpleElectricalDevice {
 
             displayedPower = -power;
             if (vd > 1)
-                this.resistance = Math.max(20, vd / (Math.max((getMaxEnergy() - this.storedEnergy), 0.01) / vd));
+                this.resistance = Math.max(CEEConfigs.server().resistanceValues.converterMinResistance.get(), vd / (Math.max((getMaxEnergy() - this.storedEnergy), 0.01) / vd));
 
         }
 
