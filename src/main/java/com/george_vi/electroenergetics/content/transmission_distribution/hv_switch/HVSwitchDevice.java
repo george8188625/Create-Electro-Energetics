@@ -62,14 +62,6 @@ public class HVSwitchDevice extends SimpleElectricalDevice {
                 state = SwitchState.ARCING;
                 airResistance = Mth.lerp(progress, 200000, 100);
             }
-        } else if (progress > 0.6 && isConnecting)
-            state = SwitchState.MOVING;
-        else if (state == SwitchState.CONNECTED && progress < 0.8 && !isConnecting) {
-            if (current > 0.05) {
-                state = SwitchState.ARCING;
-                airResistance = Mth.lerp(progress, 200000, 100);
-            } else
-                state = SwitchState.DISCONNECTED;
         } else if (state == SwitchState.ARCING) {
             if (!isConnecting) {
                 if (voltage < Mth.lerp(progress, 3000, 1) ||
@@ -78,6 +70,14 @@ public class HVSwitchDevice extends SimpleElectricalDevice {
                 }
             }
             airResistance = Mth.lerp(progress, 200000, 100);
+        } else if (progress > 0.6 && isConnecting)
+            state = SwitchState.MOVING;
+        else if (state == SwitchState.CONNECTED && progress < 0.8 && !isConnecting) {
+            if (current > 0.05) {
+                state = SwitchState.ARCING;
+                airResistance = Mth.lerp(progress, 200000, 100);
+            } else
+                state = SwitchState.DISCONNECTED;
         }
 
         if (state == SwitchState.MOVING)
