@@ -289,6 +289,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
     }
 
     float calculateMotorCapacity(double voltage) {
-        return (float) ((voltage * voltage) / CEEConfigs.server().resistanceValues.motorResistance.get());
+        return (float) ((voltage * voltage) / CEEConfigs.server().resistanceValues.motorResistance.get())
+                * CEEConfigs.server().rotorValues.rotorStressMultiplier.getF();
     }
 }
