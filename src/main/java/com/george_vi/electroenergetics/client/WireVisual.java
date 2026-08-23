@@ -123,8 +123,10 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
                     instance.delete();
                 instances.clear();
             }
-            startInstance.setVisible(false);
-            endInstance.setVisible(false);
+            if (startInstance != null)
+                startInstance.setVisible(false);
+            if (endInstance != null)
+                endInstance.setVisible(false);
             return;
         }
 
