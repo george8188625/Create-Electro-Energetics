@@ -197,6 +197,10 @@ public class InfrastructureSavedData extends SavedData {
                 CompoundTag tg = new CompoundTag();
                 tg.put("Pos", NbtUtils.writeBlockPos(otherPos));
                 CatenaryConnectionData data = CATENARY_DATA.get(new CatenaryConnection(e.getKey(), otherPos));
+                if (data == null) {
+                    LOGGER.warn("Corrupted catenary adjacency data during serialization! Skipping...");
+                    continue;
+                }
                 tg.putFloat("Temperature", data.temperature);
                 tg.putBoolean("IsLow", data.isLow);
                 tg.putDouble("Length", data.length);
