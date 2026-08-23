@@ -17,7 +17,7 @@ public class CholeskySolver {
             double sum = rowJ.get(j);
             for (int k : rowJ.getNz()) {
                 if (k >= j) continue;
-                sum -= rowJ.values[k] * rowJ.values[k];
+                sum -= rowJ.get(k) * rowJ.get(k);
             }
 
             if (sum <= 0)
@@ -30,7 +30,7 @@ public class CholeskySolver {
                 double s = rowI.get(j);
                 for (int k : rowI.getNz()) {
                     if (k >= j) continue;
-                    s -= rowI.values[k] * rowJ.values[k];
+                    s -= rowI.get(k) * rowJ.get(k);
                 }
                 double lij = s / ljj;
                 if (lij != 0) {
@@ -48,7 +48,7 @@ public class CholeskySolver {
             double sum = b[i];
             for (int col : rowI.getNz()) {
                 if (col >= i) continue;
-                sum -= rowI.values[col] * y[col];
+                sum -= rowI.get(col) * y[col];
             }
 
             y[i] = sum / A.getValue(i, i);

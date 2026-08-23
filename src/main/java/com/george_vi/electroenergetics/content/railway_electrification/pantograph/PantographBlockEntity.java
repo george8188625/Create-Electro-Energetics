@@ -14,6 +14,7 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.SubLevelAccess;
+import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
@@ -32,8 +33,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
@@ -187,10 +187,23 @@ public class PantographBlockEntity extends SmartBlockEntity {
         InWorldNodeConnection connectedConnection = null;
         float connectionProgress = 0;
 
+        Map<InWorldNodeConnection, ConnectionEntry> toCheck = new HashMap<>();
 
         Vec3 inWorldPos = positionTransform.apply(pantographPos);
         long sectionPos = SectionPos.asLong(Mth.floor(inWorldPos.x) >> 4, Mth.floor(inWorldPos.y) >> 4, Mth.floor(inWorldPos.z) >> 4);
-        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> connection : sd.wireSimulationState.getConnectionsInSection(sectionPos).entrySet()) {
+        sd.wireSimulationState.getConnectionsInSection(sectionPos, toCheck::put);
+        for (Direction direction : Direction.values()) {
+            double positionAlongAxis = (inWorldPos.get(direction.getAxis()) % 16 + 16) % 16 - 8;
+            if (positionAlongAxis < direction.getAxisDirection().getStep() * 6)
+                continue;
+            sd.wireSimulationState.getConnectionsInSection(
+                    SectionPos.asLong(
+                            SectionPos.x(sectionPos) + direction.getNormal().getX(),
+                            SectionPos.y(sectionPos) + direction.getNormal().getY(),
+                            SectionPos.z(sectionPos) + direction.getNormal().getZ()), toCheck::put);
+        }
+
+        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> connection : toCheck.entrySet()) {
             if (connection.getValue().wireData.wireType().getSag() != 0)
                 continue;
             Vec3 start = connection.getKey().node1().getPosition(level);

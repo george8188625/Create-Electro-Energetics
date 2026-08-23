@@ -1,7 +1,7 @@
 package com.george_vi.electroenergetics.simulation.util;
 
 public class SparseRow {
-    double[] values;
+    private final double[] values;
     private int[] nzCols;
     private int nzColsSize;
 
@@ -54,5 +54,9 @@ public class SparseRow {
 
     public int getFlatNzSize() {
         return nzColsSize;
+    }
+
+    public void add(int col, double val) {
+        put(col, values[col] + val);
     }
 }

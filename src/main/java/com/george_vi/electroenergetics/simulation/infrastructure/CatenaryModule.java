@@ -85,8 +85,22 @@ public class CatenaryModule {
                     pantographPos = pivotPosition.add(pantographPos);
 //                    level.sendParticles(ParticleTypes.ELECTRIC_SPARK, pantographPos.x, pantographPos.y, pantographPos.z, 3, 0, 0, 0, 0);
 
-                    long section = SectionPos.asLong(Mth.floor(pantographPos.x) >> 4, Mth.floor(pantographPos.y) >> 4, Mth.floor(pantographPos.z) >> 4);
-                    for (ConnectionEntry connectionEntry : levelWireSimulationState.getConnectionsInSection(section).values()) {
+                    Set<ConnectionEntry> toCheck = new HashSet<>();
+
+                    long sectionPos = SectionPos.asLong(Mth.floor(pantographPos.x) >> 4, Mth.floor(pantographPos.y) >> 4, Mth.floor(pantographPos.z) >> 4);
+                    sd.wireSimulationState.getConnectionsInSection(sectionPos, toCheck::add);
+                    for (Direction direction : Direction.values()) {
+                        double positionAlongAxis = (pantographPos.get(direction.getAxis()) % 16 + 16) % 16 - 8;
+                        if (positionAlongAxis < direction.getAxisDirection().getStep() * 6)
+                            continue;
+                        sd.wireSimulationState.getConnectionsInSection(
+                                SectionPos.asLong(
+                                        SectionPos.x(sectionPos) + direction.getNormal().getX(),
+                                        SectionPos.y(sectionPos) + direction.getNormal().getY(),
+                                        SectionPos.z(sectionPos) + direction.getNormal().getZ()), toCheck::add);
+                    }
+
+                    for (ConnectionEntry connectionEntry : toCheck) {
                         if (connectionEntry.wireData.wireType().getSag() != 0 && !(connectionEntry.wireData instanceof CatenaryConnectionData))
                             continue;
                         Vec3 start = connectionEntry.pos1;
@@ -131,8 +145,7 @@ public class CatenaryModule {
                                 pantograph.onConnection = connectionEntry;
                             }
                             // If connected to another within this dimension
-                            else if (trainData.connectedWireState == levelWireSimulationState)
-                            {
+                            else if (trainData.connectedWireState == levelWireSimulationState) {
                                 if (pantograph.onConnection != connectionEntry ||
                                         !trainData.connectedWireState.cutExists(trainData.wireCutHandle, pantograph.node)) {
                                     trainData.connectedWireState.removeCut(trainData.wireCutHandle, pantograph.node);

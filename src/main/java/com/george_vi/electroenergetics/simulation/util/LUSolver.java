@@ -40,17 +40,16 @@ public class LUSolver {
             SparseRow rowK = A.data[k];
             for (int i = k + 1; i < n; i++) {
                 SparseRow rowI = A.data[i];
-                double aik = k == max ? tempIK[i] : rowI.values[k];
+                double aik = k == max ? tempIK[i] : rowI.get(k);
                 if (aik == 0) continue;
 
-                double m = aik / rowK.values[k];
+                double m = aik / rowK.get(k);
                 rowI.put(k, m);
 
                 for (int jIndex = 0; jIndex < rowK.getFlatNzSize(); jIndex++) {
                     int j = rowK.getFlatNz()[jIndex];
                     if (j <= k) continue;
-                    double newValue = rowI.values[j] - m * rowK.values[j];
-                    rowI.put(j, newValue);
+                    rowI.add(j, -m * rowK.get(j));
                 }
             }
         }
@@ -63,7 +62,7 @@ public class LUSolver {
             for (int colIndex = 0; colIndex < rowI.getFlatNzSize(); colIndex++) {
                 int col = rowI.getFlatNz()[colIndex];
                 if (col < i)
-                    sum -= rowI.values[col] * y[col];
+                    sum -= rowI.get(col) * y[col];
             }
             y[i] = sum;
         }
@@ -76,10 +75,10 @@ public class LUSolver {
             for (int colIndex = 0; colIndex < rowI.getFlatNzSize(); colIndex++) {
                 int col = rowI.getFlatNz()[colIndex];
                 if (col < n && col > i)
-                    sum -= rowI.values[col] * x[col];
+                    sum -= rowI.get(col) * x[col];
             }
 
-            x[i] = sum / rowI.values[i];
+            x[i] = sum / rowI.get(i);
         }
 
         return x;

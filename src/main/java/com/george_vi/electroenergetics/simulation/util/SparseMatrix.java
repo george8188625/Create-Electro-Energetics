@@ -12,7 +12,7 @@ public class SparseMatrix {
     }
 
     public double getValue(int row, int col) {
-        return data[row].values[col];
+        return data[row].get(col);
     }
 
     public void set(int row, int col, double val) {

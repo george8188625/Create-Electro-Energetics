@@ -19,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class WireSimulationState {
     public final InfrastructureSavedData sd;
@@ -326,6 +328,18 @@ public class WireSimulationState {
         removeCutsFrom(handle);
         handle.invalidated = true;
         freeHandleIDs.push(handle.id);
+    }
+
+    public void getConnectionsInSection(long section, Consumer<ConnectionEntry> consumer) {
+        Map<InWorldNodeConnection, ConnectionEntry> connections = connectionsBySection.get(section);
+        if (connections != null)
+            connections.forEach((k, v) -> consumer.accept(v));
+    }
+
+    public void getConnectionsInSection(long section, BiConsumer<InWorldNodeConnection, ConnectionEntry> consumer) {
+        Map<InWorldNodeConnection, ConnectionEntry> connections = connectionsBySection.get(section);
+        if (connections != null)
+            connections.forEach(consumer);
     }
 
     public Map<InWorldNodeConnection, ConnectionEntry> getConnectionsInSection(long section) {
