@@ -6,9 +6,9 @@ import com.george_vi.electroenergetics.content.electrical_panel.link.ElectricalP
 import com.simibubi.create.compat.jei.GhostIngredientHandler;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
-import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,14 +25,13 @@ public class CEEJEI implements IModPlugin {
 
     @Override
     public void registerIngredientAliases(@NotNull IIngredientAliasRegistration registration) {
-        registration.addAlias(TypedItemStack.create(CEEBlocks.SF6_BREAKER.asStack()), "sf6");
-        registration.addAlias(TypedItemStack.create(CEEBlocks.HV_SWITCH.asStack()), "hv switch");
-        registration.addAlias(TypedItemStack.create(CEEBlocks.HV_CAPACITOR.asStack()), "hv capacitor");
-        registration.addAlias(TypedItemStack.create(CEEBlocks.ALTERNATOR_ROTOR.asStack()), "generator");
-        registration.addAlias(TypedItemStack.create(CEEBlocks.STATOR.asStack()), "generator");
-        registration.addAlias(TypedItemStack.create(CEEBlocks.ALTERNATOR_BRUSHES.asStack()), "generator");
-        registration.addAlias(TypedItemStack.create(CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES.asStack()), "generator");
-        registration.addAlias(TypedItemStack.create(CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES.asStack()), "generator");
+        registration.addAlias(VanillaTypes.ITEM_STACK, CEEBlocks.SF6_BREAKER.asStack(), "sf6");
+        registration.addAlias(VanillaTypes.ITEM_STACK, CEEBlocks.HV_SWITCH.asStack(), "hv switch");
+        registration.addAlias(VanillaTypes.ITEM_STACK, CEEBlocks.HV_CAPACITOR.asStack(), "hv capacitor");
+        registration.addAlias(VanillaTypes.ITEM_STACK, CEEBlocks.ALTERNATOR_ROTOR.asStack(), "generator");
+        registration.addAlias(VanillaTypes.ITEM_STACK, CEEBlocks.STATOR.asStack(), "generator");
+        registration.addAlias(VanillaTypes.ITEM_STACK, CEEBlocks.ALTERNATOR_BRUSHES.asStack(), "generator");
+        registration.addAlias(VanillaTypes.ITEM_STACK, CEEBlocks.THREE_PHASE_ALTERNATOR_BRUSHES.asStack(), "generator");
 
     }
 
