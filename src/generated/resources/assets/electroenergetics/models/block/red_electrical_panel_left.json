@@ -1,5 +1,5 @@
 {
-  "parent": "electroenergetics:block/electrical_panel/block",
+  "parent": "electroenergetics:block/electrical_panel/block_left",
   "textures": {
     "casing": "electroenergetics:block/electrical_panel/red",
     "inside": "electroenergetics:block/electrical_panel/red_inside"

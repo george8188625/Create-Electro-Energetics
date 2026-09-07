@@ -82,6 +82,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -91,6 +92,9 @@ import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+
+import java.util.Map;
+import java.util.Optional;
 
 import static com.george_vi.electroenergetics.CreateElectroEnergetics.REGISTRATE;
 import static com.simibubi.create.api.behaviour.movement.MovementBehaviour.movementBehaviour;
@@ -574,15 +578,31 @@ public class CEEBlocks {
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
-            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), bs ->
-                    !(bs.getValue(ElectricalPanelBlock.BOTTOM) || bs.getValue(ElectricalPanelBlock.TOP)) ?
-                            AssetLookup.partialBaseModel(c, p, "middle") :
-                            bs.getValue(ElectricalPanelBlock.BOTTOM) && bs.getValue(ElectricalPanelBlock.TOP) ?
-                                    AssetLookup.partialBaseModel(c, p) :
-                            bs.getValue(ElectricalPanelBlock.BOTTOM) ?
-                                    AssetLookup.partialBaseModel(c, p, "bottom") :
-                                    AssetLookup.partialBaseModel(c, p, "top")
-            ))
+            .blockstate((c, p) -> {
+                var builder = p.getMultipartBuilder(c.getEntry());
+                Map<String, Optional<BooleanProperty>> connections = Map.of(
+                        "middle", Optional.empty(),
+                        "top",    Optional.of(ElectricalPanelBlock.TOP),
+                        "bottom", Optional.of(ElectricalPanelBlock.BOTTOM),
+                        "left",   Optional.of(ElectricalPanelBlock.LEFT),
+                        "right",  Optional.of(ElectricalPanelBlock.RIGHT)
+                );
+
+                for (Direction direction : Direction.Plane.HORIZONTAL) {
+                    int yRot = (int) (direction.toYRot() + 180) % 360;
+
+                    connections.forEach((part, propOpt) -> {
+                        var partBuilder = builder.part()
+                                .modelFile(AssetLookup.partialBaseModel(c, p, part))
+                                .rotationY(yRot)
+                                .uvLock(false)
+                                .addModel()
+                                .condition(ElectricalPanelBlock.FACING, direction);
+
+                        propOpt.ifPresent(prop -> partBuilder.condition(prop, true));
+                    });
+                }
+            })
             .transform(pickaxeOnly())
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
@@ -1003,18 +1023,35 @@ public class CEEBlocks {
                     .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
                     .initialProperties(SharedProperties::stone)
                     .properties(p -> p.mapColor(color))
-                    .blockstate((c, p) ->
-                            p.horizontalBlock(c.getEntry(), bs ->
-                            (!(bs.getValue(ElectricalPanelBlock.BOTTOM) || bs.getValue(ElectricalPanelBlock.TOP)) ?
-                                    p.models().withExistingParent(c.getName() + "_middle", p.modLoc("block/electrical_panel/block_middle")) :
-                                    bs.getValue(ElectricalPanelBlock.BOTTOM) && bs.getValue(ElectricalPanelBlock.TOP) ?
-                                            p.models().withExistingParent(c.getName(), p.modLoc("block/electrical_panel/block")) :
-                                    bs.getValue(ElectricalPanelBlock.BOTTOM) ?
-                                            p.models().withExistingParent(c.getName() + "_bottom", p.modLoc("block/electrical_panel/block_bottom")) :
-                                            p.models().withExistingParent(c.getName() + "_top", p.modLoc("block/electrical_panel/block_top")))
-                                    .texture("casing", p.modLoc("block/electrical_panel/" + color.getSerializedName()))
-                                    .texture("inside", p.modLoc("block/electrical_panel/" + color.getSerializedName() + "_inside"))
-                    ))
+                    .blockstate((c, p) -> {
+                        var builder = p.getMultipartBuilder(c.getEntry());
+                        Map<String, Optional<BooleanProperty>> connections = Map.of(
+                                "middle", Optional.empty(),
+                                "top",    Optional.of(ElectricalPanelBlock.TOP),
+                                "bottom", Optional.of(ElectricalPanelBlock.BOTTOM),
+                                "left",   Optional.of(ElectricalPanelBlock.LEFT),
+                                "right",  Optional.of(ElectricalPanelBlock.RIGHT)
+                        );
+
+                        for (Direction direction : Direction.Plane.HORIZONTAL) {
+                            int yRot = (int) (direction.toYRot() + 180) % 360;
+
+                            connections.forEach((part, propOpt) -> {
+                                var model = p.models().withExistingParent(c.getName() + "_" + part, p.modLoc("block/electrical_panel/block_" + part))
+                                        .texture("casing", p.modLoc("block/electrical_panel/" + color.getSerializedName()))
+                                        .texture("inside", p.modLoc("block/electrical_panel/" + color.getSerializedName() + "_inside"));
+
+                                var partBuilder = builder.part()
+                                        .modelFile(model)
+                                        .rotationY(yRot)
+                                        .uvLock(false)
+                                        .addModel()
+                                        .condition(ElectricalPanelBlock.FACING, direction);
+
+                                propOpt.ifPresent(prop -> partBuilder.condition(prop, true));
+                            });
+                        }
+                    })
                     .transform(pickaxeOnly())
                     .item()
                     .tag(CEETags.DYED_ELECTRICAL_PANELS)

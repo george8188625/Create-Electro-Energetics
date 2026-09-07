@@ -58,16 +58,27 @@ import java.util.*;
 public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<ElectricalPanelDevice> implements ProperOilAndWaterloggedBlock, IBE<ElectricalPanelBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<LoggedState> LOGGED_STATE = ProperOilAndWaterloggedBlock.LOGGED_STATE;
+
+    public static final BooleanProperty LOCKED_LEFT = BooleanProperty.create("locked_left");
+    public static final BooleanProperty LOCKED_RIGHT = BooleanProperty.create("locked_right");
+
     public static final BooleanProperty TOP = BooleanProperty.create("top");
     public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
+    public static final BooleanProperty LEFT = BooleanProperty.create("left");
+    public static final BooleanProperty RIGHT = BooleanProperty.create("right");
+
     public final DyeColor color;
 
     public ElectricalPanelBlock(Properties properties, DyeColor color) {
         super(properties);
         registerDefaultState(defaultBlockState()
                 .setValue(LOGGED_STATE, LoggedState.DRY)
+                .setValue(LOCKED_LEFT, false)
+                .setValue(LOCKED_RIGHT, false)
                 .setValue(TOP, false)
                 .setValue(BOTTOM, false)
+                .setValue(LEFT, false)
+                .setValue(RIGHT, false)
         );
         this.color = color;
     }
@@ -78,13 +89,19 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
 
     @Override
     public @Nullable BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
+        Direction facing = context.getHorizontalDirection().getOpposite();
+
         BlockState below = context.getLevel().getBlockState(context.getClickedPos().below());
         BlockState above = context.getLevel().getBlockState(context.getClickedPos().above());
-        Direction facing = context.getHorizontalDirection().getOpposite();
+        BlockState left = context.getLevel().getBlockState(context.getClickedPos().relative(facing.getClockWise()));
+        BlockState right = context.getLevel().getBlockState(context.getClickedPos().relative(facing.getCounterClockWise()));
+
         return withWater(defaultBlockState()
                 .setValue(FACING, facing)
                 .setValue(BOTTOM, below.getBlock() != this || below.getValue(FACING) != facing)
-                .setValue(TOP, above.getBlock() != this || above.getValue(FACING) != facing),
+                .setValue(TOP, above.getBlock() != this || above.getValue(FACING) != facing)
+                .setValue(LEFT, left.getBlock() != this || left.getValue(FACING) != facing)
+                .setValue(RIGHT, right.getBlock() != this || right.getValue(FACING) != facing),
                 context);
     }
 
@@ -119,16 +136,24 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
     @Override
     protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
                                      LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        Direction facing = state.getValue(FACING);
+
         BlockState below = level.getBlockState(pos.below());
         BlockState above = level.getBlockState(pos.above());
+        BlockState left = level.getBlockState(pos.relative(facing.getClockWise()));
+        BlockState right = level.getBlockState(pos.relative(facing.getCounterClockWise()));
 
         updateWater(level, state, pos);
 
         boolean bottom = below.getBlock() != this || below.getValue(FACING) != state.getValue(FACING);
         boolean top = above.getBlock() != this || above.getValue(FACING) != state.getValue(FACING);
+        boolean toLeft = state.getValue(LOCKED_LEFT) || !(left.getBlock() == this && left.getValue(FACING) == facing && !left.getValue(LOCKED_RIGHT));
+        boolean toRight = state.getValue(LOCKED_RIGHT) || !(right.getBlock() == this && right.getValue(FACING) == facing && !right.getValue(LOCKED_LEFT));
 
         return state.setValue(BOTTOM, bottom)
-                .setValue(TOP, top);
+                .setValue(TOP, top)
+                .setValue(LEFT, toLeft)
+                .setValue(RIGHT, toRight);
     }
 
     @Override
@@ -144,7 +169,7 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(FACING, LOGGED_STATE, TOP, BOTTOM);
+        builder.add(FACING, LOGGED_STATE, LOCKED_LEFT, LOCKED_RIGHT, TOP, BOTTOM, LEFT, RIGHT);
     }
 
     @Override
@@ -260,6 +285,30 @@ public class ElectricalPanelBlock extends SimpleElectricalDeviceBlock<Electrical
         }
 
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    public InteractionResult onWrenched(BlockState state, UseOnContext context) {
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+
+        if (context.getClickedFace() == state.getValue(FACING) &&
+                level.getBlockEntity(pos) instanceof ElectricalPanelBlockEntity) {
+
+            Vec3 localClickPos = context.getClickLocation().subtract(Vec3.atLowerCornerOf(pos));
+            Vec3 rotatedPos = VecHelper.rotateCentered(localClickPos, state.getValue(FACING).toYRot(), Direction.Axis.Y);
+            BooleanProperty side = rotatedPos.x < 0.5 ? LOCKED_LEFT : LOCKED_RIGHT;
+
+            BlockState updatedState = state.cycle(side);
+            updatedState = Block.updateFromNeighbourShapes(updatedState, level, pos);
+
+            if (!level.isClientSide())
+                level.setBlock(pos, updatedState, Block.UPDATE_ALL);
+
+            IWrenchable.playRotateSound(level, pos);
+            return InteractionResult.SUCCESS;
+        }
+        return super.onWrenched(state, context);
     }
 
     @Override
