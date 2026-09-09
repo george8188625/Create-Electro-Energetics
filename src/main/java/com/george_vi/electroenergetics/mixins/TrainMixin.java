@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.mixins;
 
 import com.george_vi.electroenergetics.CEEElectricTrainSoundTypes;
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.railway_electrification.ElectricTrainData;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.TrainSoundModifier;
 import com.george_vi.electroenergetics.content.railway_electrification.sound_effects.sound_types.ElectricTrainSoundType;
@@ -87,5 +88,25 @@ public class TrainMixin implements ICEETrainExtension {
         electricTrainData.hasCreativeSource = tag.getBoolean("CEECreativeSource");
         electricTrainData.lastVoltage = tag.getDouble("CEELastVoltage");
         return originalTrain;
+    }
+
+    @WrapMethod(method = "maxSpeed")
+    public float electroEnergetics$maxSpeed(Operation<Float> original) {
+        ElectricTrainData electricTrainData = electroenergetics$electricTrainData;
+
+        if (electricTrainData.isPowered) {
+            return electricTrainData.maxSpeed / 20;
+        }
+        return original.call();
+    }
+
+    @WrapMethod(method = "acceleration")
+    public float electroEnergetics$acceleration(Operation<Float> original) {
+        ElectricTrainData electricTrainData = electroenergetics$electricTrainData;
+
+        if (electricTrainData.isPowered) {
+            return CEEConfigs.server().trainValues.electricTrainAcceleration.getF() / 400;
+        }
+        return original.call();
     }
 }

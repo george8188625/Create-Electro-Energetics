@@ -250,7 +250,8 @@ public class CatenaryModule {
             // Store voltage for gauge displays on train contraptions
             trainData.lastVoltage = voltage;
 
-            boolean active = trainData.hasCreativeSource || voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
+            boolean minimumVoltageReached = voltage >= CEEConfigs.server().voltageValues.trainMinVoltage.get();
+            boolean active = trainData.hasCreativeSource || minimumVoltageReached;
             double trainSpeed = train.derailed ? 0 : Math.abs(train.speed);
 
             // Calculate total current draw for ammeter displays
@@ -301,12 +302,29 @@ public class CatenaryModule {
 
             if (!active) {
                 if (trainData.accumulatorCharge > 0) {
-                    if (trainSpeed > 0.001)
-                        trainData.accumulatorCharge = Math.max(0d, trainData.accumulatorCharge - 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorOnTrain.get());
+                    if (trainSpeed > 0.001) {
+                        trainData.accumulatorCharge = Math.max(
+                                0d,
+                                trainData.accumulatorCharge - 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorOnTrain.get()
+                        );
+                        trainData.accumulatorActualVoltage = trainData.accumulatorChargeVoltage * trainData.accumulatorCharge / trainData.accumulators;
+                    }
                     active = true;
                 }
-            } else if (trainData.accumulatorCharge < trainData.accumulators)
-                trainData.accumulatorCharge = Math.min(trainData.accumulators, trainData.accumulatorCharge + 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorChargeOnTrain.get());
+            } else if (minimumVoltageReached) {
+
+                if (trainData.accumulatorCharge < trainData.accumulators) {
+                    trainData.accumulatorCharge = Math.min(
+                            trainData.accumulators,
+                            trainData.accumulatorCharge + 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorChargeOnTrain.get()
+                    );
+
+                    trainData.accumulatorChargeVoltage = voltage * trainData.accumulatorCharge / trainData.accumulators;
+                } else if (trainData.accumulatorCharge == trainData.accumulators) {
+                    trainData.accumulatorChargeVoltage = voltage;
+                }
+                trainData.accumulatorActualVoltage = trainData.accumulatorChargeVoltage;
+            }
 
             Map<Integer, Vec3> positions = new HashMap<>();
             for (Carriage carriage : train.carriages) {
@@ -335,10 +353,28 @@ public class CatenaryModule {
                 CatnipServices.NETWORK.sendToClientsAround(level, pos,
                         100, new UpdateElectricTrainSoundPacket(train.id, carriageID, (float) trainSpeed, acceleration, active, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getId(trainExtension.getSoundType())));
             }
-            if (active)
-                if (train.fuelTicks <= 1) {
-                    train.fuelTicks = 10;
+            trainData.isPowered = active;
+
+            if (active) {
+                float minSpeed = CEEConfigs.server().trainValues.electricTrainMinSpeed.getF();
+                float maxSpeed = CEEConfigs.server().trainValues.electricTrainMaxSpeed.getF();
+
+                int minVoltage = CEEConfigs.server().voltageValues.trainMinVoltage.get();
+                int maxVoltage = CEEConfigs.server().voltageValues.trainMaxVoltage.get();
+
+                float multiplier = (float) ((voltage == 0 ? trainData.accumulatorActualVoltage : voltage) - minVoltage) / (maxVoltage - minVoltage);
+
+                if (multiplier > 1) {
+                    multiplier = 1;
                 }
+
+                if (multiplier <= 0) {
+                    trainData.maxSpeed = 0;
+                    trainData.isPowered = false;
+                } else {
+                    trainData.maxSpeed = minSpeed + (maxSpeed - minSpeed) * multiplier;
+                }
+            }
 
         }
     }
