@@ -64,6 +64,8 @@ public class TrainMixin implements ICEETrainExtension {
             tag.putString("CEETrainSoundType", id.toString());
         tag.putInt("CEEAccumulators", electroenergetics$electricTrainData.accumulators);
         tag.putDouble("CEEAccumulatorCharge", electroenergetics$electricTrainData.accumulatorCharge);
+        tag.putDouble("CEEAccumulatorChargeVoltage", electroenergetics$electricTrainData.accumulatorChargeVoltage);
+        tag.putDouble("CEEAccumulatorActualVoltage", electroenergetics$electricTrainData.accumulatorActualVoltage);
         tag.putBoolean("CEECreativeSource", electroenergetics$electricTrainData.hasCreativeSource);
         tag.putDouble("CEELastVoltage", electroenergetics$electricTrainData.lastVoltage);
         return tag;
@@ -85,6 +87,8 @@ public class TrainMixin implements ICEETrainExtension {
         ElectricTrainData electricTrainData = train.getElectricTrainData();
         electricTrainData.accumulators = tag.getInt("CEEAccumulators");
         electricTrainData.accumulatorCharge = tag.getDouble("CEEAccumulatorCharge");
+        electricTrainData.accumulatorChargeVoltage = tag.getDouble("CEEAccumulatorChargeVoltage");
+        electricTrainData.accumulatorActualVoltage = tag.getDouble("CEEAccumulatorActualVoltage");
         electricTrainData.hasCreativeSource = tag.getBoolean("CEECreativeSource");
         electricTrainData.lastVoltage = tag.getDouble("CEELastVoltage");
         return originalTrain;
