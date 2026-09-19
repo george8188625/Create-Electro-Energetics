@@ -35,11 +35,12 @@ public class MomentarySwitchDevice extends SimpleElectricalDevice {
         if (level.isLoaded(pos)) {
             pPos = Vec3.atCenterOf(pos);
             BlockState blockState = level.getBlockState(pos);
-            pPos = pPos.subtract(Vec3.atLowerCornerOf(blockState.getValue(CutOffSwitchBlock.FACING).getNormal()).multiply(0.125, 0.125, 0.125));
-            if (this.closedTicks == 0) {
-                if (blockState.getBlock() instanceof MomentarySwitchBlock block)
+            if (blockState.getBlock() instanceof MomentarySwitchBlock block) {
+                pPos = pPos.subtract(Vec3.atLowerCornerOf(blockState.getValue(CutOffSwitchBlock.FACING).getNormal()).multiply(0.125, 0.125, 0.125));
+                if (this.closedTicks == 0) {
                     block.openSwitch(blockState, (ServerLevel) level, pos);
-                level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
+                    level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.1f, 1);
+                }
             }
         }
 
