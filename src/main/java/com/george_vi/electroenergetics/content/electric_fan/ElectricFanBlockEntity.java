@@ -71,7 +71,8 @@ public class ElectricFanBlockEntity extends SmartBlockEntity implements IAirCurr
             updateChute();
         }
 
-        CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickAudio);
+        if (level.isClientSide)
+            CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickAudio);
 
         // From EncasedFanBlockEntity#tick
 

@@ -110,7 +110,7 @@ public class ModEvents {
         event.register(ModelResourceLocation.standalone(CreateElectroEnergetics.rl("block/strut/concrete_pole")));
     }
 
-        @OnlyIn(Dist.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void clientInit(FMLClientSetupEvent event) {
         PonderIndex.addPlugin(new CEEPonderPlugin());
