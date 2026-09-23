@@ -196,21 +196,32 @@ public class CatenaryModule {
             builder.addNode(trainNode);
             builder.ground(groundNode, 10);
 
-            double power = 0.1;
-            if (Math.abs(train.speed) > 0.01)
-                power = acceleration > 0.001
-                        ? CEEConfigs.server().resistanceValues.electricTrainAccelerationPowerConsumption.get()
-                        : CEEConfigs.server().resistanceValues.electricTrainCruisePowerConsumption.get();
+            double trainSpeedMs = Math.abs(train.speed) * 20d;
+            double accelerationMs2 = acceleration * 400d;
+            double massKg = Math.max(1d, train.carriages.size()) * CEEConfigs.server().resistanceValues.electricTrainMassPerCarriage.get();
 
-            if (trainData.accumulatorCharge < trainData.accumulators)
-                power += CEEConfigs.server().resistanceValues.electricTrainAccelerationPowerConsumption.get();
+            double basicResistance = (
+                    CEEConfigs.server().resistanceValues.electricTrainBasicResistanceA.get()
+                            + CEEConfigs.server().resistanceValues.electricTrainBasicResistanceB.get() * trainSpeedMs
+                            + CEEConfigs.server().resistanceValues.electricTrainBasicResistanceC.get() * trainSpeedMs * trainSpeedMs
+            ) * massKg * 9.81d * 1e-3;
 
-            // P = V*V/R
-            // P*R = V*V
-            // R = V*V/P
+            double accelerationForce = (1d + CEEConfigs.server().resistanceValues.electricTrainRotatingMassFactor.get()) * massKg * accelerationMs2;
+            double gradeForce = 0d; // Level track by default; gradient support can be added when track slope data is available.
+            double totalForce = basicResistance + accelerationForce + gradeForce;
+
+            // P = F * v, adjusted by the configured efficiency, auxiliary load, and design margin.
+            // Regen braking is not modeled here, so avoid negative/zero resistances.
+            double electricalPower = 0.1d;
+            if (totalForce > 0d) {
+                double effectiveSpeedMs = Math.max(trainSpeedMs, 1d);
+                double tractionScale = Math.max(CEEConfigs.server().resistanceValues.electricTrainDriveEfficiency.get()
+                        * CEEConfigs.server().resistanceValues.electricTrainAuxiliaryLoadFactor.get(), 1e-6d);
+                electricalPower = totalForce * effectiveSpeedMs * CEEConfigs.server().resistanceValues.electricTrainMarginFactor.get() / tractionScale;
+            }
 
             double lastVoltage = Math.abs(trainData.lastVoltage) < 1 ? 3000 : trainData.lastVoltage;
-            double trainResistance = lastVoltage * lastVoltage / power;
+            double trainResistance = lastVoltage * lastVoltage / electricalPower;
 
             builder.connect(groundNode, trainNode, ElectricalProperties.resistor(trainResistance));
 
@@ -250,7 +261,8 @@ public class CatenaryModule {
             // Store voltage for gauge displays on train contraptions
             trainData.lastVoltage = voltage;
 
-            boolean active = trainData.hasCreativeSource || voltage > CEEConfigs.server().voltageValues.trainMinVoltage.get();
+            boolean minimumVoltageReached = voltage >= CEEConfigs.server().voltageValues.trainMinVoltage.get();
+            boolean active = trainData.hasCreativeSource || minimumVoltageReached;
             double trainSpeed = train.derailed ? 0 : Math.abs(train.speed);
 
             // Calculate total current draw for ammeter displays
@@ -301,12 +313,29 @@ public class CatenaryModule {
 
             if (!active) {
                 if (trainData.accumulatorCharge > 0) {
-                    if (trainSpeed > 0.001)
-                        trainData.accumulatorCharge = Math.max(0d, trainData.accumulatorCharge - 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorOnTrain.get());
+                    if (trainSpeed > 0.001) {
+                        trainData.accumulatorCharge = Math.max(
+                                0d,
+                                trainData.accumulatorCharge - 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorOnTrain.get()
+                        );
+                        trainData.accumulatorActualVoltage = trainData.accumulatorChargeVoltage * trainData.accumulatorCharge / trainData.accumulators;
+                    }
                     active = true;
                 }
-            } else if (trainData.accumulatorCharge < trainData.accumulators)
-                trainData.accumulatorCharge = Math.min(trainData.accumulators, trainData.accumulatorCharge + 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorChargeOnTrain.get());
+            } else if (minimumVoltageReached) {
+
+                if (trainData.accumulatorCharge < trainData.accumulators) {
+                    trainData.accumulatorCharge = Math.min(
+                            trainData.accumulators,
+                            trainData.accumulatorCharge + 1d / CEEConfigs.server().trainValues.ticksPerAccumulatorChargeOnTrain.get()
+                    );
+
+                    trainData.accumulatorChargeVoltage = voltage * trainData.accumulatorCharge / trainData.accumulators;
+                } else if (trainData.accumulatorCharge == trainData.accumulators) {
+                    trainData.accumulatorChargeVoltage = voltage;
+                }
+                trainData.accumulatorActualVoltage = trainData.accumulatorChargeVoltage;
+            }
 
             Map<Integer, Vec3> positions = new HashMap<>();
             for (Carriage carriage : train.carriages) {
@@ -335,10 +364,28 @@ public class CatenaryModule {
                 CatnipServices.NETWORK.sendToClientsAround(level, pos,
                         100, new UpdateElectricTrainSoundPacket(train.id, carriageID, (float) trainSpeed, acceleration, active, CEERegistries.ELECTRIC_TRAIN_SOUND_TYPE.getId(trainExtension.getSoundType())));
             }
-            if (active)
-                if (train.fuelTicks <= 1) {
-                    train.fuelTicks = 10;
+            trainData.isPowered = active;
+
+            if (active) {
+                float minSpeed = CEEConfigs.server().trainValues.electricTrainMinSpeed.getF();
+                float maxSpeed = CEEConfigs.server().trainValues.electricTrainMaxSpeed.getF();
+
+                int minVoltage = CEEConfigs.server().voltageValues.trainMinVoltage.get();
+                int maxVoltage = CEEConfigs.server().voltageValues.trainMaxVoltage.get();
+
+                float multiplier = (float) ((voltage == 0 ? trainData.accumulatorActualVoltage : voltage) - minVoltage) / (maxVoltage - minVoltage);
+
+                if (multiplier > 1) {
+                    multiplier = 1;
                 }
+
+                if (multiplier <= 0) {
+                    trainData.maxSpeed = 0;
+                    trainData.isPowered = false;
+                } else {
+                    trainData.maxSpeed = minSpeed + (maxSpeed - minSpeed) * multiplier;
+                }
+            }
 
         }
     }
