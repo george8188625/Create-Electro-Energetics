@@ -19,6 +19,7 @@ import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
 import dev.engine_room.flywheel.lib.visual.SimpleTickableVisual;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -66,7 +67,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         }
     }
 
-    public void recreateInstances(ClientLevel level, float partialTick) {
+    public void recreateInstances(ClientLevel level, float partialTick, boolean light) {
         Vec3 pos1 = connection.node1().getPosition(level, partialTick);
         Vec3 pos2 = connection.node2().getPosition(level, partialTick);
 
@@ -99,12 +100,13 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         pos1 = pos1.subtract(origin.getX(), origin.getY(), origin.getZ());
         pos2 = pos2.subtract(origin.getX(), origin.getY(), origin.getZ());
 
-        if (pos1.equals(prevPos1) && pos2.equals(prevPos2) && prevLength == wireData.length)
+        if (pos1.equals(prevPos1) && pos2.equals(prevPos2) && prevLength == wireData.length && !light)
             return;
 
         prevPos1 = pos1;
         prevPos2 = pos2;
         prevLength = wireData.length;
+        lightsDirty = true;
 
         double distance = pos1.distanceTo(pos2);
         if (wireType.shouldScaleLast())
@@ -183,7 +185,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     @Override
     public void updateLight(float partialTick) {
         ClientLevel level = Minecraft.getInstance().level;
-        recreateInstances(level, partialTick);
+        recreateInstances(level, partialTick, true);
     }
 
     private void createWire(VisualizationContext visualizationContext, WireType wireType, WirePoints points, Vec3 pos2,
@@ -206,7 +208,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
             BlockPos pointBlockPos = BlockPos.containing(point).offset(visualizationContext.renderOrigin());
             BlockPos nextBlockPos = BlockPos.containing(nextPoint).offset(visualizationContext.renderOrigin());
-            BlockPos middleBlockPos = BlockPos.containing(point.add(nextPoint).multiply(0.5, 0.5, 0.5)).offset(visualizationContext.renderOrigin());
+            BlockPos middleBlockPos = BlockPos.containing(VecHelper.lerp(0.5f, point, nextPoint)).offset(visualizationContext.renderOrigin());
             if (!renderEnds && (i == 0 || i == points.size() - 1)) {
                 instance.setVisible(false);
                 continue;
@@ -247,6 +249,6 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     @Override
     public void beginFrame(DynamicVisual.Context ctx) {
         ClientLevel level = Minecraft.getInstance().level;
-        recreateInstances(level, ctx.partialTick());
+        recreateInstances(level, ctx.partialTick(), false);
     }
 }
