@@ -167,6 +167,7 @@ public class WireInteractionHandler {
                     .colored(behaviour.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
                     .disableLineNormals();
         } else if (displayType == WireInteractionBehaviour.DisplayType.LINE) {
+            points = QuadraticWireHelper.wirePoints(pos1, pos2, bestWireData.getSag(bestWirePointDistance), points);
             points.add(pos2.x, pos2.y, pos2.z);
 
             for (int i = 0; i < points.size() - 1; i++) {

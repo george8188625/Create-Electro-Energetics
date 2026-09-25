@@ -92,7 +92,6 @@ public class WirePoints {
         values[i] = x;
         values[i + 1] = y;
         values[i + 2] = z;
-        size++;
 
         minX = minY = minZ = Double.MAX_VALUE;
         maxX = maxY = maxZ = Double.MIN_VALUE;
