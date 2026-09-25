@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.SendSparkPacket;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDevice;
 import com.george_vi.electroenergetics.foundation.device.SimpleElectricalDevice;
+import com.george_vi.electroenergetics.foundation.device.SpawnPreventingDevice;
 import com.george_vi.electroenergetics.simulation.BridgeCollector;
 import com.george_vi.electroenergetics.simulation.SimulationResults;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
@@ -18,7 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-public class BulbDevice extends SimpleElectricalDevice {
+public class BulbDevice extends SimpleElectricalDevice implements SpawnPreventingDevice {
 
     public float temp;
     public boolean destroyed;

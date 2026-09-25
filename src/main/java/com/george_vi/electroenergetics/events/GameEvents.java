@@ -6,8 +6,8 @@ import com.george_vi.electroenergetics.client.ElectricPropertiesOverlay;
 import com.george_vi.electroenergetics.client.WireEffects;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.commands.CEECommands;
+import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.content.accumulator.AccumulatorBlock;
-import com.george_vi.electroenergetics.content.bulb.BulbDevice;
 import com.george_vi.electroenergetics.content.converter.ConverterBlockEntity;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelClientTicker;
@@ -241,7 +241,7 @@ public class GameEvents {
             if (!stack.is(CEETags.NODE_RENAME_ITEM))
                 return;
 
-            InWorldNode hoveredNode = InWorldNode.closestNode(level, event.getHitVec().getLocation(), 1.5f);
+            InWorldNode hoveredNode = InWorldNode.closestNode(level, event.getHitVec().getLocation(), 1.5f, BlockPos.containing(event.getHitVec().getLocation()));
             BlockState hoveredBlockState = level.getBlockState(pos);
 
             if (stack.is(CEETags.PANEL_ATTACHMENT_RENAME_ITEM) && hoveredBlockState.getBlock() instanceof ElectricalPanelBlock)
@@ -334,13 +334,13 @@ public class GameEvents {
 
     @SubscribeEvent
     public static void spawnMob(MobSpawnEvent.SpawnPlacementCheck event) {
-        if (event.getSpawnType() != MobSpawnType.NATURAL || event.getResult() == MobSpawnEvent.SpawnPlacementCheck.Result.FAIL)
+        if (!CEEConfigs.server().bulbsPreventMobSpawns.get() ||
+                event.getSpawnType() != MobSpawnType.NATURAL ||
+                event.getResult() == MobSpawnEvent.SpawnPlacementCheck.Result.FAIL)
             return;
         DevicesSavedData sd = DevicesSavedData.load(event.getLevel().getLevel());
-        boolean foundBulb = sd.getDevices(CEESimulatedDeviceFeatureTypes.TICKING_ELECTRICAL.get()).stream()
-                .filter(d -> d instanceof BulbDevice && d.pos.getCenter().distanceToSqr(event.getPos().getCenter()) <= 400)
-                .anyMatch(d -> true);
-        if (foundBulb)
+        if (sd.getDevices(CEESimulatedDeviceFeatureTypes.SPAWN_PREVENTING.get()).stream()
+                .anyMatch(d -> d.pos.distSqr(event.getPos()) <= 400))
             event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
     }
 

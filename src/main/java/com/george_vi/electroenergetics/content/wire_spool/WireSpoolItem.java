@@ -79,7 +79,7 @@ public class WireSpoolItem extends Item implements IInteractDetachedNodes {
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> db))
             return InteractionResult.PASS;
 
-        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1.5f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1.5f, BlockPos.containing(context.getClickLocation()));
 
         if (hoveredNode == null)
             hoveredNode = InWorldNode.closestNode(level, pos, state, 1.5f, context.getClickLocation());

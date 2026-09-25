@@ -2,20 +2,26 @@ package com.george_vi.electroenergetics.foundation.nodes;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.createmod.catnip.math.VecHelper;
+import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
+import java.util.function.Function;
 
 public class NodeConfigurator {
-    protected final Int2ObjectMap<Vec3> nodes;
+    protected final Function<Vec3, Int2ObjectMap<Vec3>> nodes = Util.memoize(this::getRotatedNodesRaw);
+    protected final Int2ObjectMap<Vec3> originalNodes;
     protected final Direction origin;
 
     public NodeConfigurator(Int2ObjectMap<Vec3> nodes, Direction origin) {
-        this.nodes = new Int2ObjectArrayMap<>(nodes);
+        this.originalNodes = new Int2ObjectOpenHashMap<>(nodes);
         this.origin = origin;
     }
+
+    //
 
     public NodeConfigurator rotate(Vec3 vec) {
         return new NodeConfigurator(getRotatedNodes(vec), origin);
@@ -43,6 +49,8 @@ public class NodeConfigurator {
         return rotate(origin, direction, roll);
     }
 
+    //
+
     protected Int2ObjectMap<Vec3> rotate(Direction origin, Direction direction) {
         return getRotatedNodes(rotationValues(origin).reverse().add(rotationValues(direction)));
     }
@@ -52,18 +60,21 @@ public class NodeConfigurator {
     }
 
     protected Int2ObjectMap<Vec3> getRotatedNodes(Vec3 vec) {
+        return nodes.apply(vec);
+    }
+
+    protected Int2ObjectMap<Vec3> getRotatedNodesRaw(Vec3 vec) {
         Int2ObjectMap<Vec3> result = new Int2ObjectArrayMap<>();
-        nodes.forEach((id, node) ->
+        originalNodes.forEach((id, node) ->
                 result.put(id.intValue(),
                         VecHelper.rotate(node.subtract(VecHelper.CENTER_OF_ORIGIN), vec.x, vec.y, vec.z)
                                 .add(VecHelper.CENTER_OF_ORIGIN)));
-
         return result;
     }
 
     protected Int2ObjectMap<Vec3> getScaledNodes(double x, double y, double z) {
         Int2ObjectMap<Vec3> result = new Int2ObjectArrayMap<>();
-        nodes.forEach((id, node) ->
+        originalNodes.forEach((id, node) ->
                 result.put(id.intValue(), node
                         .subtract(VecHelper.CENTER_OF_ORIGIN)
                         .multiply(x, y, z)

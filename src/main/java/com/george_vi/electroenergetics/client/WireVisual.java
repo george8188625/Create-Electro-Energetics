@@ -2,6 +2,7 @@ package com.george_vi.electroenergetics.client;
 
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.foundation.WirePoints;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
@@ -22,7 +23,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -33,6 +34,7 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     private final InWorldNodeConnection connection;
     private final WireType wireType;
     private final WireData wireData;
+    private final WirePoints points = new WirePoints(0);
     private final VisualizationContext visualizationContext;
 
     private double prevLength;
@@ -42,7 +44,9 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
     private TransformedInstance startInstance;
     private TransformedInstance endInstance;
 
-    final LongSet lightSections;
+    protected SectionCollector lightCollector;
+    protected boolean lightsDirty;
+    protected final LongSet lightSections = new LongOpenHashSet();
 
     public WireVisual(VisualizationContext visualizationContext, InWorldNodeConnection connection, WireType wireType, WireData wireData) {
         this.visualizationContext = visualizationContext;
@@ -50,56 +54,19 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         this.wireType = wireType;
         this.wireData = wireData;
 
-        ClientLevel level = Minecraft.getInstance().level;
-        Vec3 pos1 = connection.node1().getPosition(level);
-        Vec3 pos2 = connection.node2().getPosition(level);
-
-        if (pos1 == null || pos2 == null) {
-            pos1 = connection.node1().sourcePos().getCenter();
-            pos2 = connection.node2().sourcePos().getCenter();
-        }
-        double distance = pos1.distanceTo(pos2);
-
-        lightSections = new LongOpenHashSet();
         PartialModel endpointModel = wireType.getEndPointModel();
+        if (endpointModel != null) {
+            startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                    .createInstance();
+            startInstance.setVisible(false);
 
-        if (distance > 1000) {
-            if (endpointModel != null) {
-                startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
-                        .createInstance();
-                startInstance.setVisible(false);
-
-                endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
-                        .createInstance();
-                endInstance.setVisible(false);
-            }
-            return; // Wire is wrong. It's going to be updated at some point.
+            endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
+                    .createInstance();
+            endInstance.setVisible(false);
         }
-        int minSectionX = SectionPos.blockToSectionCoord(Math.min(pos1.x, pos2.x));
-        int minSectionY = SectionPos.blockToSectionCoord(Math.min(pos1.y, pos2.y));
-        int minSectionZ = SectionPos.blockToSectionCoord(Math.min(pos1.z, pos2.z));
-        int maxSectionX = SectionPos.blockToSectionCoord(Math.max(pos1.x, pos2.x));
-        int maxSectionY = SectionPos.blockToSectionCoord(Math.max(pos1.y, pos2.y));
-        int maxSectionZ = SectionPos.blockToSectionCoord(Math.max(pos1.z, pos2.z));
-
-        for (int x = minSectionX; x <= maxSectionX; x++)
-            for (int y = minSectionY; y <= maxSectionY; y++)
-                for (int z = minSectionZ; z <= maxSectionZ; z++)
-                    lightSections.add(SectionPos.asLong(x, y, z));
-
-        pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(),
-                visualizationContext.renderOrigin().getZ());
-        pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(),
-                visualizationContext.renderOrigin().getZ());
-        prevPos1 = pos1;
-        prevPos2 = pos2;
     }
 
-    public void recreateInstances(float partialTick) {
-
-        ClientLevel level = Minecraft.getInstance().level;
-        assert level != null;
-
+    public void recreateInstances(ClientLevel level, float partialTick) {
         Vec3 pos1 = connection.node1().getPosition(level, partialTick);
         Vec3 pos2 = connection.node2().getPosition(level, partialTick);
 
@@ -121,11 +88,16 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
                     instance.delete();
                 instances.clear();
             }
+            if (startInstance != null)
+                startInstance.setVisible(false);
+            if (endInstance != null)
+                endInstance.setVisible(false);
             return;
         }
 
-        pos1 = pos1.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
-        pos2 = pos2.subtract(visualizationContext.renderOrigin().getX(), visualizationContext.renderOrigin().getY(), visualizationContext.renderOrigin().getZ());
+        Vec3i origin = visualizationContext.renderOrigin();
+        pos1 = pos1.subtract(origin.getX(), origin.getY(), origin.getZ());
+        pos2 = pos2.subtract(origin.getX(), origin.getY(), origin.getZ());
 
         if (pos1.equals(prevPos1) && pos2.equals(prevPos2) && prevLength == wireData.length)
             return;
@@ -135,27 +107,28 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
         prevLength = wireData.length;
 
         double distance = pos1.distanceTo(pos2);
-        List<Vec3> points = wireType.shouldScaleLast() ?
-                QuadraticWireHelper.cablePoints(pos1, pos2, wireData.getSag(distance)) :
-                QuadraticWireHelper.cablePointsRaw(pos1, pos2, wireData.getSag(distance));
+        if (wireType.shouldScaleLast())
+            QuadraticWireHelper.wirePoints(pos1, pos2, wireData.getSag(distance), points);
+        else
+            QuadraticWireHelper.wirePointsRaw(pos1, pos2, wireData.getSag(distance), 1, points);
         createWire(visualizationContext, wireType, points, pos2, level);
 
         PartialModel endpointModel = wireType.getEndPointModel();
-
         if (endpointModel == null)
             return;
 
         if (startInstance == null)
-            startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
-                    .createInstance();
+            startInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED,
+                            Models.partial(endpointModel)).createInstance();
 
         if (endInstance == null)
-            endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(endpointModel))
-                    .createInstance();
+            endInstance = visualizationContext.instancerProvider().instancer(InstanceTypes.TRANSFORMED,
+                            Models.partial(endpointModel)).createInstance();
 
         if (points.size() < 2) {
             startInstance.setVisible(false);
             endInstance.setVisible(false);
+            return;
         }
 
         Vec3 start = points.get(0);
@@ -193,7 +166,6 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
     @Override
     public void update(float partialTick) {
-//        recreateInstances(partialTick);
     }
 
     @Override
@@ -210,11 +182,11 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
     @Override
     public void updateLight(float partialTick) {
-        // forces it to recreate the wires on the next frame.
-        prevLength = -1;
+        ClientLevel level = Minecraft.getInstance().level;
+        recreateInstances(level, partialTick);
     }
 
-    private void createWire(VisualizationContext visualizationContext, WireType wireType, List<Vec3> points, Vec3 pos2,
+    private void createWire(VisualizationContext visualizationContext, WireType wireType, WirePoints points, Vec3 pos2,
                             ClientLevel level) {
         // The reason that it doesn't remove instances here, is it's not safe to do this here. It just sets to invisible.
         boolean renderEnds = wireType.shouldScaleLast();
@@ -259,16 +231,22 @@ public class WireVisual implements EffectVisual<WireEffect>, LightUpdatedVisual,
 
     @Override
     public void setSectionCollector(SectionCollector collector) {
-        collector.sections(lightSections);
+        lightCollector = collector;
     }
 
     @Override
     public void tick(TickableVisual.Context context) {
-//        update(0);
+        if (lightsDirty) {
+            lightsDirty = false;
+            lightSections.clear();
+            points.forEachSection(lightSections::add);
+            lightCollector.sections(lightSections);
+        }
     }
 
     @Override
     public void beginFrame(DynamicVisual.Context ctx) {
-        recreateInstances(ctx.partialTick());
+        ClientLevel level = Minecraft.getInstance().level;
+        recreateInstances(level, ctx.partialTick());
     }
 }

@@ -32,8 +32,8 @@ public class QuadraticWireHelper {
         return cablePoints(pos1, pos2, dip, 1f);
     }
 
-    public static WirePoints wirePoints(Vec3 pos1, Vec3 pos2, float dip) {
-        return wirePoints(pos1, pos2, dip, 1f);
+    public static WirePoints wirePoints(Vec3 pos1, Vec3 pos2, float dip, WirePoints points) {
+        return wirePoints(pos1, pos2, dip, 1, points);
     }
 
     public static List<Vec3> cablePointsRaw(Vec3 pos1, Vec3 pos2, float dip) {
@@ -70,10 +70,10 @@ public class QuadraticWireHelper {
     }
 
 
-    public static WirePoints wirePoints(Vec3 pos1, Vec3 pos2, float dip, float detail) {
+    public static WirePoints wirePoints(Vec3 pos1, Vec3 pos2, float dip, float detail, WirePoints points) {
         float distance = (float) pos1.distanceTo(pos2);
         if (distance > 1000) // prevent world bricking
-            return new WirePoints(0);
+            return points == null ? new WirePoints(0) : points;
 
         double resolution = (distance * 2);
         if (dip > 40) {
@@ -88,17 +88,25 @@ public class QuadraticWireHelper {
         int totalPoints = (int) (resolution / detail);
         int ppp = (int) Math.max(1, (resolution / totalPoints));
 
-        WirePoints wirePoints = new WirePoints(totalPoints + 1);
+        if (points == null) {
+            points = new WirePoints(totalPoints + 1);
+        } else  {
+            points.preSize(totalPoints);
+            points.clear();
+        }
+
         float a = (0.05f / distance) * dip;
         for (int x = 0; x < resolution; x++) {
-            float particleLevel = (float) (a * x * (x - resolution));
-            double pX = (pos2.x - pos1.x) * (invResolution) * x + pos1.x;
-            double pY = (pos2.y - pos1.y) * (invResolution) * x + pos1.y + particleLevel;
-            double pZ = (pos2.z - pos1.z) * (invResolution) * x + pos1.z;
-            if (x % ppp == 0)
-                wirePoints.add(pX, pY, pZ);
+            if (x % ppp == 0) {
+                float particleLevel = (float) (a * x * (x - resolution));
+                double pX = (pos2.x - pos1.x) * (invResolution) * x + pos1.x;
+                double pY = (pos2.y - pos1.y) * (invResolution) * x + pos1.y + particleLevel;
+                double pZ = (pos2.z - pos1.z) * (invResolution) * x + pos1.z;
+                points.add(pX, pY, pZ);
+            }
         }
-        return wirePoints;
+
+        return points;
     }
 
     public static List<Vec3> cablePoints(Vec3 pos1, Vec3 pos2, float dip, float detail) {
@@ -131,6 +139,33 @@ public class QuadraticWireHelper {
         }
         return points;
     }
+
+    public static WirePoints wirePointsRaw(Vec3 pos1, Vec3 pos2, float dip, float detail, WirePoints points) {
+        float distance = (float) pos1.distanceTo(pos2);
+        if (distance > 1000) // prevent world bricking
+            return points == null ? new WirePoints(0) : points;
+
+        double resolution = Mth.ceil(distance * 2);
+
+        double invResolution = 1 / resolution;
+        int totalPoints = Mth.ceil(resolution / detail);
+        int ppp = Math.max(1, Mth.ceil(resolution / totalPoints));
+        if (points == null)
+            points = new WirePoints(totalPoints);
+        points.preSize(totalPoints);
+        float a = (0.05f / distance) * dip;
+        for (int x = 0; x < resolution; x++) {
+            if (x % ppp == 0) {
+                float particleLevel = (float) (a * x * (x - resolution));
+                double pX = (pos2.x - pos1.x) * (invResolution) * x + pos1.x;
+                double pY = (pos2.y - pos1.y) * (invResolution) * x + pos1.y + particleLevel;
+                double pZ = (pos2.z - pos1.z) * (invResolution) * x + pos1.z;
+                points.add(pX, pY, pZ);
+            }
+        }
+        return points;
+    }
+
 
     public static List<Vec3> cablePointsRaw(Vec3 pos1, Vec3 pos2, float dip, float detail) {
         float distance = (float) pos1.distanceTo(pos2);

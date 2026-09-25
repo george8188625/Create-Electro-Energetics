@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CServer extends ConfigBase {
 
+    public final ConfigBool bulbsPreventMobSpawns = b(true, "bulbsPreventMobSpawns", "Bulbs prevent mob spawns even when they are off");
     public final ConfigDouble wattFeTConversionRate = d(34, 0.0001d, "wattFeTConversionRate", "this many watts is one FE/tick");
     public final ConfigDouble converterMaxPowerKw = d(100, 1, "converterMaxPower", "[in kW]");
     public final ConfigInt maxWireLength = i(128, 8, "wireLength", "[in Meters]");

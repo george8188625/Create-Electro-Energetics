@@ -1,6 +1,12 @@
 package com.george_vi.electroenergetics.foundation;
 
+import net.minecraft.core.SectionPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Arrays;
+import java.util.function.LongConsumer;
 
 public class WirePoints {
     private double[] values;
@@ -141,5 +147,36 @@ public class WirePoints {
 
     public int size() {
         return size;
+    }
+
+    public void forEachSection(LongConsumer consumer) {
+        if (size == 0)
+            return;
+        long prevPos = SectionPos.asLong(Mth.floor(getX(0)) >> 4, Mth.floor(getY(0)) >> 4, Mth.floor(getZ(0)) >> 4);
+        consumer.accept(prevPos);
+        for (int i = 1; i < size; i++) {
+            long newPos = SectionPos.asLong(Mth.floor(getX(i)) >> 4, Mth.floor(getY(i)) >> 4, Mth.floor(getZ(i)) >> 4);
+            if (newPos != prevPos) {
+                prevPos = newPos;
+                consumer.accept(prevPos);
+            }
+        }
+    }
+
+    public void preSize(int size) {
+        if (size * 3 > values.length)
+            values = Arrays.copyOf(values, size * 3);
+    }
+
+    public void clear() {
+        size = 0;
+    }
+
+    public AABB getAABB() {
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    public AABB getAABB(double inflate) {
+        return new AABB(minX - inflate, minY - inflate, minZ - inflate, maxX + inflate, maxY + inflate, maxZ + inflate);
     }
 }

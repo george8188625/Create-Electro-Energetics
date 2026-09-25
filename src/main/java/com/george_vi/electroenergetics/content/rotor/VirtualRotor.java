@@ -31,7 +31,7 @@ public class VirtualRotor {
         double damping = 0.1;
         double nominalOmega = 360 * (rpm * (40.0 / 256.0)) / 20 / totalMicroTicks;
 
-        double netEnergy = torqueAccumulated - (stress / 20.0);
+        double netEnergy = torqueAccumulated;
 
         angleError += netEnergy / inertia;
         angleError *= (1.0 - damping);

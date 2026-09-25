@@ -6,6 +6,7 @@ import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlock;
 import com.george_vi.electroenergetics.content.wire_spool.WireApplyingBehaviour;
 import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.foundation.WirePoints;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
@@ -81,6 +82,7 @@ public class WireInteractionHandler {
         Vec3 bestPosition = null;
         WireData bestWireData = null;
         double bestWirePointDistance = 0;
+        WirePoints points = null;
 
         for (Pair<InWorldNodeConnection, WireData> wire : WireRenderer.getAllConnections()) {
             InWorldNodeConnection connection = wire.getFirst();
@@ -94,13 +96,9 @@ public class WireInteractionHandler {
             }
 
             double wirePointsDistance = pos1.distanceTo(pos2);
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, wire.getSecond().getSag(wirePointsDistance), 1f);
+            points = QuadraticWireHelper.wirePoints(pos1, pos2, wire.getSecond().getSag(wirePointsDistance), 1f, points);
 
-            double miny = pos1.y;
-            for (Vec3 point : points)
-                miny = Math.min(miny, point.y());
-
-            AABB wireBB = new AABB(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z).setMinY(miny).inflate(0.1);
+            AABB wireBB = points.getAABB(1);
             if (!wireBB.contains(from) && wireBB.clip(from, to).isEmpty())
                 continue;
 
@@ -169,9 +167,7 @@ public class WireInteractionHandler {
                     .colored(behaviour.getWireDisplayColor(targetedPoint, mc.level, mc.player, stackInHand))
                     .disableLineNormals();
         } else if (displayType == WireInteractionBehaviour.DisplayType.LINE) {
-
-            List<Vec3> points = QuadraticWireHelper.cablePoints(pos1, pos2, bestWireData.getSag(bestWirePointDistance), 1f);
-            points.add(pos2);
+            points.add(pos2.x, pos2.y, pos2.z);
 
             for (int i = 0; i < points.size() - 1; i++) {
                 Vec3 point = points.get(i);

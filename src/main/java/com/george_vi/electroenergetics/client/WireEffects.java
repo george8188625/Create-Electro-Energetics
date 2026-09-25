@@ -55,7 +55,7 @@ public class WireEffects {
             }
 
             double distance = pos1.distanceTo(pos2);
-            WirePoints points = QuadraticWireHelper.wirePoints(pos1, pos2, wire.getSecond().getSag(distance));
+            WirePoints points = QuadraticWireHelper.wirePoints(pos1, pos2, wire.getSecond().getSag(distance), null);
 
             spawnDrippingWater(points);
 
@@ -94,7 +94,7 @@ public class WireEffects {
             Vec3 pos1 = connection.pos1().getBottomCenter();
             Vec3 pos2 = connection.pos2().getBottomCenter();
 
-            WirePoints points = QuadraticWireHelper.wirePoints(pos1, pos2, 0);
+            WirePoints points = QuadraticWireHelper.wirePoints(pos1, pos2, 0, null);
 
             spawnDrippingWater(points);
 
@@ -111,7 +111,7 @@ public class WireEffects {
 
             float distance = (float) topPos1.distanceTo(topPos2);
 
-            WirePoints topPoints = QuadraticWireHelper.wirePoints(topPos1, topPos2, 350f * (0.05f / distance), 4);
+            WirePoints topPoints = QuadraticWireHelper.wirePoints(topPos1, topPos2, 350f * (0.05f / distance), 4, null);
 
             spawnDrippingWater(topPoints);
         }

@@ -71,29 +71,9 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
         this(id, new BlockPos(x, y, z));
     }
 
-    public static InWorldNode closestNode(Level level, Vec3 clickedPos, float threshold) {
-
-        List<Pair<Vec3, InWorldNode>> nodes = new ArrayList<>();
-
-        List<BlockPos> offsets = getNodeSearchBlockPositions(clickedPos);
-
-        for (BlockPos offset : offsets) {
-            BlockPos pos = BlockPos.containing(clickedPos).offset(offset);
-            BlockState state = level.getBlockState(pos);
-            if (state.getBlock() instanceof ElectricalDeviceBlock<?> db)
-                for (Map.Entry<Integer, Vec3> e : db.getNodePositions(level, pos, state).entrySet()) {
-                    int id = e.getKey();
-                    Vec3 nodePos = e.getValue();
-                    if (db.isNodeAccessible(level, pos, state, id))
-                        nodes.add(Pair.of(nodePos, new InWorldNode(id, pos)));
-                }
-        }
-
-        return nodes.stream()
-                .filter(e -> e.getSecond().toGlobalPos(e.getFirst(), level).distanceTo(clickedPos) <= threshold)
-                .min(Comparator.comparingDouble(e -> e.getSecond().toGlobalPos(e.getFirst(), level).distanceTo(clickedPos)))
-                .map(Pair::getSecond)
-                .orElse(null);
+    public static InWorldNode closestNode(Level level, Vec3 clickedPos, float threshold, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        return closestNode(level, pos, state, threshold, clickedPos);
     }
 
     public static InWorldNode closestNode(Level level, BlockPos pos, BlockState state, float threshold, Vec3 clickedPos) {
@@ -353,7 +333,7 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
 
         //
 
-        InWorldNode hoveredNode = InWorldNode.closestNode(level, hoveredLocation, 1.5f);
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, hoveredLocation, 1.5f, BlockPos.containing(hoveredLocation));
         if (hoveredNode == null)
             hoveredNode = InWorldNode.closestNode(level, hoveredPos, level.getBlockState(hoveredPos), 1.5f, hoveredLocation);
 

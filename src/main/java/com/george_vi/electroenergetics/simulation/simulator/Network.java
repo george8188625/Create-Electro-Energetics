@@ -543,7 +543,7 @@ public class Network {
             } else if (entry instanceof CoupledPropertiesOptimizationEntry optimization) {
                 double leftPrimary = toFill[optimization.leftPrimary() * totalMicroTicks + microTick];
                 double rightPrimary = toFill[optimization.rightPrimary() * totalMicroTicks + microTick];
-                double voltage = leftPrimary - rightPrimary;
+                double voltage = rightPrimary - leftPrimary;
                 double current = voltage / optimization.replacementResistance();
                 double scaledCurrent = current / optimization.ratio();
                 double scaledVoltage = voltage * optimization.ratio();

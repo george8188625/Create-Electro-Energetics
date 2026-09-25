@@ -227,7 +227,7 @@ public class WireRenderer {
             mc.getProfiler().popPush("renderBirds");
             IntSet birdPositions = WireEffects.birds.get(connection);
             if (birdPositions != null) {
-                WirePoints wirePoints = QuadraticWireHelper.wirePoints(pos1, pos2, wire.getSecond().getSag(distance));
+                WirePoints wirePoints = QuadraticWireHelper.wirePoints(pos1, pos2, wire.getSecond().getSag(distance), null);
                 for (int birdPos : birdPositions) {
                     if (birdPos >= wirePoints.size())
                         continue;

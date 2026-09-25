@@ -24,25 +24,14 @@ public class CreativeBatteryDevice extends SimpleElectricalDevice {
 
     @Override
     public void preTick(BridgeCollector bridges) {
-
-        boolean ideal = !CEEConfigs.server().simulationConfig.creativeBatteryThevenin.get();
         double voltage = this.voltage;
 
-        if (ideal) {
-            if (this.acFrequency == 0)
-                bridges.builder(pos)
-                        .idealVoltageSource(0, 1, voltage);
-            else
-                bridges.builder(pos)
-                        .connect(0, 1, new ACSource(voltage, this.phaseOffset, 0));
-        } else {
-            if (this.acFrequency == 0)
-                bridges.builder(pos)
-                        .voltageSourceWithResistance(0, 1, 0.001d, voltage);
-            else
-                bridges.builder(pos)
-                        .connect(0, 1, new ACSource(voltage, this.phaseOffset, 0.001d));
-        }
+        if (this.acFrequency == 0)
+            bridges.builder(pos)
+                    .voltageSourceWithResistance(0, 1, 0.001d, voltage);
+        else
+            bridges.builder(pos)
+                    .connect(0, 1, new ACSource(voltage, this.phaseOffset, 0.001d));
         bridges.defaultZeroPotential(new InWorldNode(0, pos), 200);
     }
 
