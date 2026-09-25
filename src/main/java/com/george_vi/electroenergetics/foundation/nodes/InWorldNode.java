@@ -333,7 +333,7 @@ public class InWorldNode extends Node implements Comparable<InWorldNode> {
 
         //
 
-        InWorldNode hoveredNode = InWorldNode.closestNode(level, hoveredLocation, 1.5f, BlockPos.containing(hoveredLocation));
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, hoveredLocation, 1.5f, hitResult.getBlockPos());
         if (hoveredNode == null)
             hoveredNode = InWorldNode.closestNode(level, hoveredPos, level.getBlockState(hoveredPos), 1.5f, hoveredLocation);
 

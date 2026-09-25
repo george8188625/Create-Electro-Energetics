@@ -58,7 +58,7 @@ public class EmptySpoolItem extends Item {
             return InteractionResult.SUCCESS;
         }
 
-        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1.5f, BlockPos.containing(context.getClickLocation()));
+        InWorldNode hoveredNode = InWorldNode.closestNode(level, context.getClickLocation(), 1.5f, context.getClickedPos());
 
         if (heldItem.getComponents().has(CEEDataComponents.SELECTED_NODE)) {
             if (!(player.level() instanceof ServerLevel sl))

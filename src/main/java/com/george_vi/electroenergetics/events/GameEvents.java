@@ -243,7 +243,7 @@ public class GameEvents {
             if (!stack.is(CEETags.NODE_RENAME_ITEM))
                 return;
 
-            InWorldNode hoveredNode = InWorldNode.closestNode(level, event.getHitVec().getLocation(), 1.5f, BlockPos.containing(event.getHitVec().getLocation()));
+            InWorldNode hoveredNode = InWorldNode.closestNode(level, event.getHitVec().getLocation(), 1.5f, event.getHitVec().getBlockPos());
             BlockState hoveredBlockState = level.getBlockState(pos);
 
             if (stack.is(CEETags.PANEL_ATTACHMENT_RENAME_ITEM) && hoveredBlockState.getBlock() instanceof ElectricalPanelBlock)
