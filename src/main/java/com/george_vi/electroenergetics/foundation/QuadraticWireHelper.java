@@ -150,9 +150,12 @@ public class QuadraticWireHelper {
         double invResolution = 1 / resolution;
         int totalPoints = Mth.ceil(resolution / detail);
         int ppp = Math.max(1, Mth.ceil(resolution / totalPoints));
-        if (points == null)
+        if (points == null) {
             points = new WirePoints(totalPoints);
-        points.preSize(totalPoints);
+        } else {
+            points.preSize(totalPoints);
+            points.clear();
+        }
         float a = (0.05f / distance) * dip;
         for (int x = 0; x < resolution; x++) {
             if (x % ppp == 0) {
