@@ -211,9 +211,13 @@ public class WireRenderer {
             if (pos1 == null) {
                 if (DetachedNodeHelper.isDetached(node1))
                     continue;
+                if (InWorldNode.isFromSubLevel(level, node1.sourcePos()))
+                    continue;
                 pos1 = node1.sourcePos().getCenter();
             } if (pos2 == null) {
                 if (DetachedNodeHelper.isDetached(node2))
+                    continue;
+                if (InWorldNode.isFromSubLevel(level, node2.sourcePos()))
                     continue;
                 pos2 = node2.sourcePos().getCenter();
             }
