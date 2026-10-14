@@ -80,7 +80,7 @@ public class VariacDevice extends SimpleElectricalDevice {
         float loss = 0;
         if (wasActive) {
             double primaryCurrent = results.getCurrentThrough(pos, 0, PRIMARY_DIV);
-            double primaryVoltage = results.getVoltageAt(0, 1);
+            double primaryVoltage = results.getVoltageAt(pos, 0, 1);
             loss = (float) Math.abs(primaryCurrent * primaryVoltage);
         }
         float powerMultiplier = (CEEConfigs.server().powerValues.variacMaxPower.getF() / 1300);
