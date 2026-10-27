@@ -67,6 +67,7 @@ import com.george_vi.electroenergetics.content.variac.VariacBlock;
 import com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.api.boiler.BoilerHeater;
+import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.content.kinetics.gauge.GaugeGenerator;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.BlockStateGen;
@@ -76,7 +77,6 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Rarity;
@@ -931,11 +931,16 @@ public class CEEBlocks {
             .properties(p -> p.mapColor(MapColor.COLOR_GRAY))
             .blockstate((c, p) -> p.horizontalBlock(c.get(), bs -> AssetLookup.partialBaseModel(c, p)))
             .transform(pickaxeOnly())
-            .onRegister((b) -> BoilerHeater.REGISTRY.register(b, ((level, pos, state) -> {
-                if (level.getBlockEntity(pos) instanceof ResistiveHeaterBlockEntity be)
-                    return state.getValue(ResistiveHeaterBlock.LIT) ? Mth.clamp(be.heat, 0, 1.5f) : -1;
-                return -1;
-            })))
+            .onRegister((b) -> BoilerHeater.REGISTRY.register(b, (level, pos, state) -> {
+                BlazeBurnerBlock.HeatLevel heatLevel = state.getValue(ResistiveHeaterBlock.HEAT_LEVEL);
+                if (heatLevel == BlazeBurnerBlock.HeatLevel.NONE)
+                    return BoilerHeater.NO_HEAT;
+                if (heatLevel == BlazeBurnerBlock.HeatLevel.SEETHING)
+                    return 2;
+                if (heatLevel.isAtLeast(BlazeBurnerBlock.HeatLevel.FADING))
+                    return 1;
+                return BoilerHeater.PASSIVE_HEAT;
+            }))
             .item()
             .model((c, p) -> p.blockItem(c::getEntry, "/item"))
             .build()

@@ -45,7 +45,8 @@ public class ResistiveHeaterBlock extends SimpleElectricalDeviceBlock<ResistiveH
         super(properties);
         registerDefaultState(defaultBlockState()
                 .setValue(WATERLOGGED, false)
-                .setValue(LIT, false));
+                .setValue(LIT, false)
+                .setValue(HEAT_LEVEL, BlazeBurnerBlock.HeatLevel.NONE));
     }
 
     @Nullable
