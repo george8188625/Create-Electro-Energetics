@@ -21,7 +21,6 @@ import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -87,18 +86,10 @@ public class CatenaryModule {
 
                     Set<ConnectionEntry> toCheck = new HashSet<>();
 
-                    long sectionPos = SectionPos.asLong(Mth.floor(pantographPos.x) >> 4, Mth.floor(pantographPos.y) >> 4, Mth.floor(pantographPos.z) >> 4);
-                    sd.wireSimulationState.getConnectionsInSection(sectionPos, toCheck::add);
-                    for (Direction direction : Direction.values()) {
-                        double positionAlongAxis = (pantographPos.get(direction.getAxis()) % 16 + 16) % 16 - 8;
-                        if (positionAlongAxis < direction.getAxisDirection().getStep() * 6)
-                            continue;
-                        sd.wireSimulationState.getConnectionsInSection(
-                                SectionPos.asLong(
-                                        SectionPos.x(sectionPos) + direction.getNormal().getX(),
-                                        SectionPos.y(sectionPos) + direction.getNormal().getY(),
-                                        SectionPos.z(sectionPos) + direction.getNormal().getZ()), toCheck::add);
-                    }
+                    // Wires are indexed by the sections their sample points (every half block) fall in, so look
+                    // a little past the pantograph's reach to catch wires just across a section border
+                    double searchMargin = Math.max(pantograph.type.sidewaysReach, pantograph.type.reach / 2) + 0.5;
+                    sd.wireSimulationState.getConnectionsNear(pantographPos, searchMargin, toCheck::add);
 
                     for (ConnectionEntry connectionEntry : toCheck) {
                         if (connectionEntry.wireData.wireType().getSag() != 0 && !(connectionEntry.wireData instanceof CatenaryConnectionData))

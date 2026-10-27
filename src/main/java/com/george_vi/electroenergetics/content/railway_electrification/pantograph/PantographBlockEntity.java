@@ -20,7 +20,6 @@ import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.SectionPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -190,18 +189,8 @@ public class PantographBlockEntity extends SmartBlockEntity {
         Map<InWorldNodeConnection, ConnectionEntry> toCheck = new HashMap<>();
 
         Vec3 inWorldPos = positionTransform.apply(pantographPos);
-        long sectionPos = SectionPos.asLong(Mth.floor(inWorldPos.x) >> 4, Mth.floor(inWorldPos.y) >> 4, Mth.floor(inWorldPos.z) >> 4);
-        sd.wireSimulationState.getConnectionsInSection(sectionPos, toCheck::put);
-        for (Direction direction : Direction.values()) {
-            double positionAlongAxis = (inWorldPos.get(direction.getAxis()) % 16 + 16) % 16 - 8;
-            if (positionAlongAxis < direction.getAxisDirection().getStep() * 6)
-                continue;
-            sd.wireSimulationState.getConnectionsInSection(
-                    SectionPos.asLong(
-                            SectionPos.x(sectionPos) + direction.getNormal().getX(),
-                            SectionPos.y(sectionPos) + direction.getNormal().getY(),
-                            SectionPos.z(sectionPos) + direction.getNormal().getZ()), toCheck::put);
-        }
+        // Look a little past the reach checked in checkCatenary (1.5 sideways, halfPantoReach vertically)
+        sd.wireSimulationState.getConnectionsNear(inWorldPos, Math.max(1.5, halfPantoReach) + 0.5, toCheck::put);
 
         for (Map.Entry<InWorldNodeConnection, ConnectionEntry> connection : toCheck.entrySet()) {
             if (connection.getValue().wireData.wireType().getSag() != 0)

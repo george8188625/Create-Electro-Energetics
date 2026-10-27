@@ -17,15 +17,14 @@ import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.SectionPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -124,8 +123,10 @@ public class RailContactShoeBlockEntity extends SmartBlockEntity {
         float connectionProgress = 0;
 
         Vec3 inWorldPos = positionTransform.apply(pantographPos);
-        long sectionPos = SectionPos.asLong(Mth.floor(inWorldPos.x) >> 4, Mth.floor(inWorldPos.y) >> 4, Mth.floor(inWorldPos.z) >> 4);
-        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> connection : sd.wireSimulationState.getConnectionsInSection(sectionPos).entrySet()) {
+        // Look a little past the reach checked in checkCatenary (0.5 sideways, halfPantoReach vertically)
+        Map<InWorldNodeConnection, ConnectionEntry> toCheck = new HashMap<>();
+        sd.wireSimulationState.getConnectionsNear(inWorldPos, Math.max(0.5, halfPantoReach) + 0.5, toCheck::put);
+        for (Map.Entry<InWorldNodeConnection, ConnectionEntry> connection : toCheck.entrySet()) {
             if (connection.getValue().wireData.wireType().getSag() != 0)
                 continue;
             Vec3 start = connection.getKey().node1().getPosition(level);

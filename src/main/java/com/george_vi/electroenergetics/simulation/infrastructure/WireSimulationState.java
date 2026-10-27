@@ -342,6 +342,27 @@ public class WireSimulationState {
             connections.forEach(consumer);
     }
 
+    /**
+     * Collects the connections indexed in every section within {@code margin} blocks of {@code pos},
+     * including the edge and corner neighbours, so a wire just across a section border is not missed.
+     * A connection may be passed to the consumer more than once.
+     *
+     * @param margin how far from {@code pos} to look, in blocks (less than 16)
+     */
+    public void getConnectionsNear(Vec3 pos, double margin, BiConsumer<InWorldNodeConnection, ConnectionEntry> consumer) {
+        int minX = Mth.floor(pos.x - margin) >> 4, maxX = Mth.floor(pos.x + margin) >> 4;
+        int minY = Mth.floor(pos.y - margin) >> 4, maxY = Mth.floor(pos.y + margin) >> 4;
+        int minZ = Mth.floor(pos.z - margin) >> 4, maxZ = Mth.floor(pos.z + margin) >> 4;
+        for (int x = minX; x <= maxX; x++)
+            for (int y = minY; y <= maxY; y++)
+                for (int z = minZ; z <= maxZ; z++)
+                    getConnectionsInSection(SectionPos.asLong(x, y, z), consumer);
+    }
+
+    public void getConnectionsNear(Vec3 pos, double margin, Consumer<ConnectionEntry> consumer) {
+        getConnectionsNear(pos, margin, (connection, entry) -> consumer.accept(entry));
+    }
+
     public Map<InWorldNodeConnection, ConnectionEntry> getConnectionsInSection(long section) {
         Map<InWorldNodeConnection, ConnectionEntry> out = connectionsBySection.get(section);
         if (out == null)
